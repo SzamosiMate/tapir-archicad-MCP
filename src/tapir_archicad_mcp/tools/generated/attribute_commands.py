@@ -46,7 +46,7 @@ def create_building_materials(port: int, params: CreateBuildingMaterialsParamete
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreateBuildingMaterials",
-            parameters=params.model_dump()
+            parameters=params.model_dump(mode='json')
         )
         return CreateBuildingMaterialsResult.model_validate(result_dict)
 
@@ -82,7 +82,7 @@ def create_composites(port: int, params: CreateCompositesParameters) -> CreateCo
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreateComposites",
-            parameters=params.model_dump()
+            parameters=params.model_dump(mode='json')
         )
         return CreateCompositesResult.model_validate(result_dict)
 
@@ -118,7 +118,7 @@ def create_layers(port: int, params: CreateLayersParameters) -> CreateLayersResu
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreateLayers",
-            parameters=params.model_dump()
+            parameters=params.model_dump(mode='json')
         )
         return CreateLayersResult.model_validate(result_dict)
 
@@ -154,7 +154,7 @@ def get_attributes_by_type(port: int, params: GetAttributesByTypeParameters) -> 
 
         result_dict = conn_header.core.post_tapir_command(
             command="GetAttributesByType",
-            parameters=params.model_dump()
+            parameters=params.model_dump(mode='json')
         )
         return GetAttributesByTypeResult.model_validate(result_dict)
 
@@ -190,7 +190,7 @@ def get_building_material_physical_properties(port: int, params: GetBuildingMate
 
         result_dict = conn_header.core.post_tapir_command(
             command="GetBuildingMaterialPhysicalProperties",
-            parameters=params.model_dump()
+            parameters=params.model_dump(mode='json')
         )
         return GetBuildingMaterialPhysicalPropertiesResult.model_validate(result_dict)
 

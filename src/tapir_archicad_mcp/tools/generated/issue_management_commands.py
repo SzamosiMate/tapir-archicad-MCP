@@ -49,7 +49,7 @@ def add_comment_to_issue(port: int, params: AddCommentToIssueParameters) -> None
 
         conn_header.core.post_tapir_command(
             command="AddCommentToIssue",
-            parameters=params.model_dump()
+            parameters=params.model_dump(mode='json')
         )
         return None
 
@@ -85,7 +85,7 @@ def attach_elements_to_issue(port: int, params: AttachElementsToIssueParameters)
 
         conn_header.core.post_tapir_command(
             command="AttachElementsToIssue",
-            parameters=params.model_dump()
+            parameters=params.model_dump(mode='json')
         )
         return None
 
@@ -121,7 +121,7 @@ def create_issue(port: int, params: CreateIssueParameters) -> CreateIssueResult:
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreateIssue",
-            parameters=params.model_dump()
+            parameters=params.model_dump(mode='json')
         )
         return CreateIssueResult.model_validate(result_dict)
 
@@ -157,7 +157,7 @@ def delete_issue(port: int, params: DeleteIssueParameters) -> None:
 
         conn_header.core.post_tapir_command(
             command="DeleteIssue",
-            parameters=params.model_dump()
+            parameters=params.model_dump(mode='json')
         )
         return None
 
@@ -193,7 +193,7 @@ def detach_elements_from_issue(port: int, params: DetachElementsFromIssueParamet
 
         conn_header.core.post_tapir_command(
             command="DetachElementsFromIssue",
-            parameters=params.model_dump()
+            parameters=params.model_dump(mode='json')
         )
         return None
 
@@ -229,7 +229,7 @@ def export_issues_to_bcf(port: int, params: ExportIssuesToBCFParameters) -> None
 
         conn_header.core.post_tapir_command(
             command="ExportIssuesToBCF",
-            parameters=params.model_dump()
+            parameters=params.model_dump(mode='json')
         )
         return None
 
@@ -265,7 +265,7 @@ def get_comments_from_issue(port: int, params: GetCommentsFromIssueParameters) -
 
         result_dict = conn_header.core.post_tapir_command(
             command="GetCommentsFromIssue",
-            parameters=params.model_dump()
+            parameters=params.model_dump(mode='json')
         )
         return GetCommentsFromIssueResult.model_validate(result_dict)
 
@@ -301,7 +301,7 @@ def get_elements_attached_to_issue(port: int, params: GetElementsAttachedToIssue
 
         result_dict = conn_header.core.post_tapir_command(
             command="GetElementsAttachedToIssue",
-            parameters=params.model_dump()
+            parameters=params.model_dump(mode='json')
         )
         return GetElementsAttachedToIssueResult.model_validate(result_dict)
 
@@ -373,7 +373,7 @@ def import_issues_from_bcf(port: int, params: ImportIssuesFromBCFParameters) -> 
 
         conn_header.core.post_tapir_command(
             command="ImportIssuesFromBCF",
-            parameters=params.model_dump()
+            parameters=params.model_dump(mode='json')
         )
         return None
 

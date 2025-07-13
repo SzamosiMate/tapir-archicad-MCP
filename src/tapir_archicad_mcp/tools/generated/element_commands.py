@@ -78,7 +78,7 @@ def change_selection_of_elements(port: int, params: ChangeSelectionOfElementsPar
 
         result_dict = conn_header.core.post_tapir_command(
             command="ChangeSelectionOfElements",
-            parameters=params.model_dump()
+            parameters=params.model_dump(mode='json')
         )
         return ChangeSelectionOfElementsResult.model_validate(result_dict)
 
@@ -114,7 +114,7 @@ def create_columns(port: int, params: CreateColumnsParameters) -> CreateColumnsR
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreateColumns",
-            parameters=params.model_dump()
+            parameters=params.model_dump(mode='json')
         )
         return CreateColumnsResult.model_validate(result_dict)
 
@@ -150,7 +150,7 @@ def create_meshes(port: int, params: CreateMeshesParameters) -> CreateMeshesResu
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreateMeshes",
-            parameters=params.model_dump()
+            parameters=params.model_dump(mode='json')
         )
         return CreateMeshesResult.model_validate(result_dict)
 
@@ -186,7 +186,7 @@ def create_objects(port: int, params: CreateObjectsParameters) -> CreateObjectsR
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreateObjects",
-            parameters=params.model_dump()
+            parameters=params.model_dump(mode='json')
         )
         return CreateObjectsResult.model_validate(result_dict)
 
@@ -222,7 +222,7 @@ def create_polylines(port: int, params: CreatePolylinesParameters) -> CreatePoly
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreatePolylines",
-            parameters=params.model_dump()
+            parameters=params.model_dump(mode='json')
         )
         return CreatePolylinesResult.model_validate(result_dict)
 
@@ -258,7 +258,7 @@ def create_slabs(port: int, params: CreateSlabsParameters) -> CreateSlabsResult:
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreateSlabs",
-            parameters=params.model_dump()
+            parameters=params.model_dump(mode='json')
         )
         return CreateSlabsResult.model_validate(result_dict)
 
@@ -294,7 +294,7 @@ def create_zones(port: int, params: CreateZonesParameters) -> CreateZonesResult:
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreateZones",
-            parameters=params.model_dump()
+            parameters=params.model_dump(mode='json')
         )
         return CreateZonesResult.model_validate(result_dict)
 
@@ -330,7 +330,7 @@ def filter_elements(port: int, params: FilterElementsParameters) -> FilterElemen
 
         result_dict = conn_header.core.post_tapir_command(
             command="FilterElements",
-            parameters=params.model_dump()
+            parameters=params.model_dump(mode='json')
         )
         return FilterElementsResult.model_validate(result_dict)
 
@@ -366,7 +366,7 @@ def get3_d_bounding_boxes(port: int, params: Get3DBoundingBoxesParameters) -> Ge
 
         result_dict = conn_header.core.post_tapir_command(
             command="Get3DBoundingBoxes",
-            parameters=params.model_dump()
+            parameters=params.model_dump(mode='json')
         )
         return Get3DBoundingBoxesResult.model_validate(result_dict)
 
@@ -402,7 +402,7 @@ def get_all_elements(port: int, params: GetAllElementsParameters) -> GetAllEleme
 
         result_dict = conn_header.core.post_tapir_command(
             command="GetAllElements",
-            parameters=params.model_dump()
+            parameters=params.model_dump(mode='json')
         )
         return GetAllElementsResult.model_validate(result_dict)
 
@@ -438,7 +438,7 @@ def get_classifications_of_elements(port: int, params: GetClassificationsOfEleme
 
         result_dict = conn_header.core.post_tapir_command(
             command="GetClassificationsOfElements",
-            parameters=params.model_dump()
+            parameters=params.model_dump(mode='json')
         )
         return GetClassificationsOfElementsResult.model_validate(result_dict)
 
@@ -474,7 +474,7 @@ def get_connected_elements(port: int, params: GetConnectedElementsParameters) ->
 
         result_dict = conn_header.core.post_tapir_command(
             command="GetConnectedElements",
-            parameters=params.model_dump()
+            parameters=params.model_dump(mode='json')
         )
         return GetConnectedElementsResult.model_validate(result_dict)
 
@@ -510,7 +510,7 @@ def get_details_of_elements(port: int, params: GetDetailsOfElementsParameters) -
 
         result_dict = conn_header.core.post_tapir_command(
             command="GetDetailsOfElements",
-            parameters=params.model_dump()
+            parameters=params.model_dump(mode='json')
         )
         return GetDetailsOfElementsResult.model_validate(result_dict)
 
@@ -546,7 +546,7 @@ def get_elements_by_type(port: int, params: GetElementsByTypeParameters) -> GetE
 
         result_dict = conn_header.core.post_tapir_command(
             command="GetElementsByType",
-            parameters=params.model_dump()
+            parameters=params.model_dump(mode='json')
         )
         return GetElementsByTypeResult.model_validate(result_dict)
 
@@ -582,7 +582,7 @@ def get_gdl_parameters_of_elements(port: int, params: GetGDLParametersOfElements
 
         result_dict = conn_header.core.post_tapir_command(
             command="GetGDLParametersOfElements",
-            parameters=params.model_dump()
+            parameters=params.model_dump(mode='json')
         )
         return GetGDLParametersOfElementsResult.model_validate(result_dict)
 
@@ -654,7 +654,7 @@ def get_subelements_of_hierarchical_elements(port: int, params: GetSubelementsOf
 
         result_dict = conn_header.core.post_tapir_command(
             command="GetSubelementsOfHierarchicalElements",
-            parameters=params.model_dump()
+            parameters=params.model_dump(mode='json')
         )
         return GetSubelementsOfHierarchicalElementsResult.model_validate(result_dict)
 
@@ -690,7 +690,7 @@ def highlight_elements(port: int, params: HighlightElementsParameters) -> None:
 
         conn_header.core.post_tapir_command(
             command="HighlightElements",
-            parameters=params.model_dump()
+            parameters=params.model_dump(mode='json')
         )
         return None
 
@@ -726,7 +726,7 @@ def move_elements(port: int, params: MoveElementsParameters) -> MoveElementsResu
 
         result_dict = conn_header.core.post_tapir_command(
             command="MoveElements",
-            parameters=params.model_dump()
+            parameters=params.model_dump(mode='json')
         )
         return MoveElementsResult.model_validate(result_dict)
 
@@ -762,7 +762,7 @@ def set_classifications_of_elements(port: int, params: SetClassificationsOfEleme
 
         result_dict = conn_header.core.post_tapir_command(
             command="SetClassificationsOfElements",
-            parameters=params.model_dump()
+            parameters=params.model_dump(mode='json')
         )
         return SetClassificationsOfElementsResult.model_validate(result_dict)
 
@@ -798,7 +798,7 @@ def set_details_of_elements(port: int, params: SetDetailsOfElementsParameters) -
 
         result_dict = conn_header.core.post_tapir_command(
             command="SetDetailsOfElements",
-            parameters=params.model_dump()
+            parameters=params.model_dump(mode='json')
         )
         return SetDetailsOfElementsResult.model_validate(result_dict)
 
@@ -834,7 +834,7 @@ def set_gdl_parameters_of_elements(port: int, params: SetGDLParametersOfElements
 
         result_dict = conn_header.core.post_tapir_command(
             command="SetGDLParametersOfElements",
-            parameters=params.model_dump()
+            parameters=params.model_dump(mode='json')
         )
         return SetGDLParametersOfElementsResult.model_validate(result_dict)
 

@@ -37,7 +37,7 @@ def generate_documentation(port: int, params: GenerateDocumentationParameters) -
 
         conn_header.core.post_tapir_command(
             command="GenerateDocumentation",
-            parameters=params.model_dump()
+            parameters=params.model_dump(mode='json')
         )
         return None
 

@@ -47,7 +47,7 @@ def get_database_id_from_navigator_item_id(port: int, params: GetDatabaseIdFromN
 
         result_dict = conn_header.core.post_tapir_command(
             command="GetDatabaseIdFromNavigatorItemId",
-            parameters=params.model_dump()
+            parameters=params.model_dump(mode='json')
         )
         return GetDatabaseIdFromNavigatorItemIdResult.model_validate(result_dict)
 
@@ -119,7 +119,7 @@ def get_view2_d_transformations(port: int, params: GetView2DTransformationsParam
 
         result_dict = conn_header.core.post_tapir_command(
             command="GetView2DTransformations",
-            parameters=params.model_dump()
+            parameters=params.model_dump(mode='json')
         )
         return GetView2DTransformationsResult.model_validate(result_dict)
 
@@ -155,7 +155,7 @@ def get_view_settings(port: int, params: GetViewSettingsParameters) -> GetViewSe
 
         result_dict = conn_header.core.post_tapir_command(
             command="GetViewSettings",
-            parameters=params.model_dump()
+            parameters=params.model_dump(mode='json')
         )
         return GetViewSettingsResult.model_validate(result_dict)
 
@@ -191,7 +191,7 @@ def publish_publisher_set(port: int, params: PublishPublisherSetParameters) -> N
 
         conn_header.core.post_tapir_command(
             command="PublishPublisherSet",
-            parameters=params.model_dump()
+            parameters=params.model_dump(mode='json')
         )
         return None
 
@@ -227,7 +227,7 @@ def set_view_settings(port: int, params: SetViewSettingsParameters) -> SetViewSe
 
         result_dict = conn_header.core.post_tapir_command(
             command="SetViewSettings",
-            parameters=params.model_dump()
+            parameters=params.model_dump(mode='json')
         )
         return SetViewSettingsResult.model_validate(result_dict)
 
@@ -263,7 +263,7 @@ def update_drawings(port: int, params: UpdateDrawingsParameters) -> None:
 
         conn_header.core.post_tapir_command(
             command="UpdateDrawings",
-            parameters=params.model_dump()
+            parameters=params.model_dump(mode='json')
         )
         return None
 

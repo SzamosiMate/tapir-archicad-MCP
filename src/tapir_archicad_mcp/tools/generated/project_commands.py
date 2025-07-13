@@ -187,7 +187,7 @@ def open_project(port: int, params: OpenProjectParameters) -> None:
 
         conn_header.core.post_tapir_command(
             command="OpenProject",
-            parameters=params.model_dump()
+            parameters=params.model_dump(mode='json')
         )
         return None
 
@@ -223,7 +223,7 @@ def set_project_info_field(port: int, params: SetProjectInfoFieldParameters) -> 
 
         conn_header.core.post_tapir_command(
             command="SetProjectInfoField",
-            parameters=params.model_dump()
+            parameters=params.model_dump(mode='json')
         )
         return None
 
@@ -259,7 +259,7 @@ def set_stories(port: int, params: SetStoriesParameters) -> None:
 
         conn_header.core.post_tapir_command(
             command="SetStories",
-            parameters=params.model_dump()
+            parameters=params.model_dump(mode='json')
         )
         return None
 

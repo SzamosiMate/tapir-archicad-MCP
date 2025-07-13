@@ -122,7 +122,7 @@ def _generate_tool_function_code(command: dict, valid_model_names: set[str]) -> 
     param_signature = f", params: {params_model}" if has_params else ""
     return_annotation = result_model if has_result else "None"
 
-    params_for_api_call = "params.model_dump()" if has_params else "{}"
+    params_for_api_call = "params.model_dump(mode='json')" if has_params else "{}"
 
     if has_result:
         call_and_return_block = dedent(f'''

@@ -40,7 +40,7 @@ def apply_favorites_to_element_defaults(port: int, params: ApplyFavoritesToEleme
 
         result_dict = conn_header.core.post_tapir_command(
             command="ApplyFavoritesToElementDefaults",
-            parameters=params.model_dump()
+            parameters=params.model_dump(mode='json')
         )
         return ApplyFavoritesToElementDefaultsResult.model_validate(result_dict)
 
@@ -76,7 +76,7 @@ def create_favorites_from_elements(port: int, params: CreateFavoritesFromElement
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreateFavoritesFromElements",
-            parameters=params.model_dump()
+            parameters=params.model_dump(mode='json')
         )
         return CreateFavoritesFromElementsResult.model_validate(result_dict)
 
