@@ -1,0 +1,23 @@
+[project]
+name = "tapir-archicad-mcp"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "SzamosiMate", email = "szamimate@yahoo.com" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "fastmcp>=2.10.5",
+    "multiconn-archicad",
+]
+
+[project.scripts]
+tapir-archicad-mcp = "tapir_archicad_mcp:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.uv.sources]
+multiconn-archicad = { url = "https://github.com/SzamosiMate/multiconn_archicad/releases/latest/download/multiconn_archicad-0.3.2-py3-none-any.whl" }
