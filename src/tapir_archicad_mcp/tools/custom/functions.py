@@ -12,7 +12,7 @@ log = logging.getLogger()
 
 
 @mcp.tool(
-    name="tapir_discovery_list_active_archicads",
+    name="discovery_list_active_archicads",
     title="List Active Archicad Instances",
     description="Refreshes connections and lists all actively running and connected Archicad instances."
 )
