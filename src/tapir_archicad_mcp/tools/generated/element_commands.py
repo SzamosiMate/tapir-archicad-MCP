@@ -19,8 +19,6 @@ CreatePolylinesParameters,
 CreatePolylinesResult,
 CreateSlabsParameters,
 CreateSlabsResult,
-CreateZonesParameters,
-CreateZonesResult,
 FilterElementsParameters,
 FilterElementsResult,
 Get3DBoundingBoxesParameters,
@@ -267,42 +265,6 @@ def create_slabs(port: int, params: CreateSlabsParameters) -> CreateSlabsResult:
         raise ValueError(f"Received an invalid response from the Archicad API: {e}")
     except Exception as e:
         log.error(f"Error executing CreateSlabs on port {port}: {e}")
-        raise e
-
-
-@mcp.tool(
-    name="elements_create_zones",
-    title="CreateZones",
-    description="Creates Zone elements based on the given parameters."
-)
-def create_zones(port: int, params: CreateZonesParameters) -> CreateZonesResult:
-    """
-    Creates Zone elements based on the given parameters.
-
-    To find a valid 'port' number, use the 'tapir_discovery_list_active_archicads' tool.
-    """
-    log.info(f"Executing create_zones tool on port {port}")
-    multi_conn = multi_conn_instance.get()
-
-    target_port = Port(port)
-    if target_port not in multi_conn.active:
-        raise ValueError(f"Port {port} is not an active Archicad connection.")
-
-    conn_header = multi_conn.active[target_port]
-
-    try:
-
-        result_dict = conn_header.core.post_tapir_command(
-            command="CreateZones",
-            parameters=params.model_dump(mode='json')
-        )
-        return CreateZonesResult.model_validate(result_dict)
-
-    except ValidationError as e:
-        log.error(f"Validation error for CreateZones result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
-    except Exception as e:
-        log.error(f"Error executing CreateZones on port {port}: {e}")
         raise e
 
 
