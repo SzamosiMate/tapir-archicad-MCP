@@ -3,7 +3,6 @@
 
 from .application_commands import *
 from .attribute_commands import *
-from .developer_commands import *
 from .element_commands import *
 from .favorites_commands import *
 from .issue_management_commands import *
