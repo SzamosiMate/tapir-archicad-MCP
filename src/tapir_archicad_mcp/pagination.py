@@ -1,6 +1,5 @@
 import base64
 from pydantic import BaseModel
-import time
 from typing import List, Optional, Any, Tuple, Dict
 
 PAGINATION_CACHE: Dict[str, Tuple[BaseModel, float]] = {}

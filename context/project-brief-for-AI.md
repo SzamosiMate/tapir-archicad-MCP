@@ -1,3 +1,4 @@
+---
 ### **Project: Python MCP Server for Archicad's Tapir API**
 
 **High-Level Goal:**
@@ -23,7 +24,11 @@ You are an expert Python developer specializing in AI agents, API integration, a
     *   Fetching the latest command metadata from the `multiconn_archicad` repository.
     *   Creating Python files for each command group (e.g., `elements.py`).
     *   Within each file, generating the `@mcp.tool()` decorated Python functions, strongly typed with the imported Pydantic models.
-    *   Implementing data pre-processing logic within the generated functions to fix known mismatches between the Tapir API's JSON response and the library's Pydantic models (e.g., unwrapping nested or root-level objects).
+    *   **Implementing Server-Side Pagination:** For API calls that can return thousands of items, the generator implements a robust, cursor-based pagination wrapper.
+        *   It uses a configuration dictionary (`PAGINATED_COMMANDS`) to map a command to the specific response field containing the list to paginate. This elegantly handles complex responses with multiple lists.
+        *   For these commands, it automatically generates a new Pydantic response model that inherits from the original, includes the sliced list for the current page, and adds an optional `next_page_token: str | None`.
+        *   The generated tool functions include logic to cache the full API response on the first request (keyed by port and parameters) and use a generic pagination handler for subsequent requests.
+        *   The docstring for every paginated tool is automatically updated to instruct the AI on how to use the `page_token` to iterate through all results.
     *   Ensuring parameters are correctly serialized to JSON using `model_dump(mode='json')`.
 
 4.  **Discovery and Targeting:**
@@ -35,12 +40,7 @@ You are an expert Python developer specializing in AI agents, API integration, a
 
 Based on our analysis, the following areas are key candidates for future enhancement:
 
-1.  **Pagination for Long Responses:** Some API calls (e.g., `GetAllProperties`, `GetAllElements`) can return thousands of items, exceeding the MCP client's 1MB response limit. The next iteration should implement a pagination strategy for these tools.
-    *   The tool function should be updated to accept an optional `page_token: str | None`.
-    *   The tool's return model should be updated to include the list of items for the current page and an optional `next_page_token: str | None`.
-    *   The docstring must clearly instruct the AI on how to use these tokens to iterate through all results.
-
-2.  **Enhanced User Configuration:***Solving the Context Window Problem:** We identified that loading all 80+ tools would overwhelm the AI's context window. The final, and most significant, architectural decision was to refactor the project into a **multi-server dispatcher**.
+1.  **Enhanced User Configuration:***Solving the Context Window Problem:** We identified that loading all 80+ tools would overwhelm the AI's context window. The final, and most significant, architectural decision was to refactor the project into a **multi-server dispatcher**.
     *   The single codebase can now be launched as multiple, independent server processes.
     *   Each process loads only one group of tools, selected via a `--group` command-line argument.
     *   This allows the end-user to have granular control over which toolsets are active by configuring multiple server entries in their `claude_desktop_config.json` file.
