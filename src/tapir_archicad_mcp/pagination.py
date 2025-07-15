@@ -2,9 +2,10 @@ import base64
 from pydantic import BaseModel
 from typing import List, Optional, Any, Tuple, Dict
 
+from tapir_archicad_mcp import constants
+
 PAGINATION_CACHE: Dict[str, Tuple[BaseModel, float]] = {}
-CACHE_LIFETIME_SECONDS = 300
-PAGE_SIZE = 100
+
 
 class PaginatedResult(BaseModel):
     """A generic container for a paginated list and the next token."""
@@ -26,7 +27,7 @@ def handle_paginated_request(
         except (TypeError, ValueError):
             raise ValueError("Invalid or expired page_token.")
 
-    end_index = start_index + PAGE_SIZE
+    end_index = start_index + constants.DEFAULT_PAGE_SIZE
     page_items = full_list[start_index:end_index]
 
     new_next_token = None

@@ -17,7 +17,7 @@ You are an expert Python developer specializing in AI agents, API integration, a
     *   Users will configure this in their `claude_desktop_config.json` by creating a separate entry for each tool group they wish to activate.
 
 2.  **Granular, Grouped Toolset:** The server will expose all 80+ Tapir commands as **individual, distinct MCP tools**.
-    *   Tool names must follow the convention `tapir_{short_group}_{command_name_snake}` to provide logical grouping and adhere to the MCP specification's 64-character limit.
+    *   Tool names must follow the convention `{short_group}_{command_name_snake}` to provide logical grouping and adhere to the MCP specification's 64-character limit.
     *   A mapping from the full group name (e.g., "Issue Management Commands") to a short name (e.g., "issues") will be used.
 
 3.  **Generator-Centric Workflow:** The core of the project is a code generator script (`scripts/generate_tools.py`) that **wraps** the existing models from the `multiconn_archicad` library, rather than generating models from scratch. The generator is responsible for:
