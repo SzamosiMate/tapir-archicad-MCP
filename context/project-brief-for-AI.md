@@ -1,96 +1,48 @@
-### **Project: Generate a Python MCP Server for Archicad's Tapir API**
+### **Project: Python MCP Server for Archicad's Tapir API**
 
 **High-Level Goal:**
 
-Create a Python-based Model Context Protocol (MCP) server that acts as a comprehensive wrapper for Archicad's Tapir JSON API. The server should be able to connect to and manage multiple running Archicad instances and expose their functionality as a structured set of tools to an AI agent.
+Create a Python-based Model Context Protocol (MCP) server that acts as a comprehensive wrapper for Archicad's Tapir JSON API. The server codebase should be able to connect to and manage multiple running Archicad instances and expose their functionality as a structured, configurable set of tools to an AI agent.
 
 **Context and Provided Files:**
 
-You are an expert Python developer specializing in AI agents, API integration, and robust software architecture. You will be provided with the following files that constitute the `multiconn_archicad` library and the Tapir API definition:
-
-1.  `core_commands.py`: Contains the low-level logic for sending commands to the Archicad JSON API.
-2.  `multi_conn.py`: The main class for managing connections to multiple Archicad instances.
-3.  Supporting library files (`conn_header.py`, `basic_types.py`, etc.): Core data structures for the connection library.
-4.  A **master JSON schema file** (`master_schema.json`): This file defines all available Tapir commands, their parameters, their return values, their descriptions, and their documentation categories. It uses `$ref` for object references.
+You are an expert Python developer specializing in AI agents, API integration, and robust software architecture. You will primarily use the pre-generated Pydantic models from the `multiconn_archicad` library and the command metadata from its `_command_details.json` file to build the server.
 
 **Core Architectural Requirements:**
 
-Based on a detailed design discussion, the server **must** adhere to the following architectural principles:
+1.  **Multi-Server Dispatcher Architecture:** The project will be a single Python codebase that can be launched as **multiple, distinct MCP server processes**. Each server process will load only a specific "group" of tools (e.g., "elements", "attributes").
+    *   This is the primary strategy to manage the AI's context window, allowing users to enable only the toolsets they need.
+    *   The tool group will be selected at runtime via a `--group <group_name>` command-line argument.
+    *   Users will configure this in their `claude_desktop_config.json` by creating a separate entry for each tool group they wish to activate.
 
-1.  **Single "Meta" Server:** The implementation will be a **single MCP server** that uses the `MultiConn` object from the `multiconn_archicad` library internally. This server will act as a gateway to all available Archicad instances, rather than creating one server per instance.
+2.  **Granular, Grouped Toolset:** The server will expose all 80+ Tapir commands as **individual, distinct MCP tools**.
+    *   Tool names must follow the convention `tapir_{short_group}_{command_name_snake}` to provide logical grouping and adhere to the MCP specification's 64-character limit.
+    *   A mapping from the full group name (e.g., "Issue Management Commands") to a short name (e.g., "issues") will be used.
 
-2.  **Flat, Grouped Toolset:** The server will expose all 80+ Tapir commands as **individual, distinct MCP tools**.
-    *   We have decided **against** a single generic `run_command` tool in favor of providing granular control and discoverability.
-    *   Tool names **must** follow a prefixing convention based on the command's documentation category from the master schema (e.g., `tapir_layers_create`, `tapir_elements_getDetails`). This provides logical grouping for both the AI and potential user interfaces.
-
-3.  **Static Pydantic Model Generation:** The server's workflow will be built around a **static code generation** step. A Python script will be responsible for reading the `master_schema.json` and generating a `tapir_models.py` file.
-    *   This `tapir_models.py` file will contain a Pydantic `BaseModel` for every command's parameters (e.g., `CreateLayersParams`) and every command's result (e.g., `CreateLayersResult`).
-    *   This approach is chosen for its performance, type safety, testability, and superior developer experience.
+3.  **Generator-Centric Workflow:** The core of the project is a code generator script (`scripts/generate_tools.py`) that **wraps** the existing models from the `multiconn_archicad` library, rather than generating models from scratch. The generator is responsible for:
+    *   Fetching the latest command metadata from the `multiconn_archicad` repository.
+    *   Creating Python files for each command group (e.g., `elements.py`).
+    *   Within each file, generating the `@mcp.tool()` decorated Python functions, strongly typed with the imported Pydantic models.
+    *   Implementing data pre-processing logic within the generated functions to fix known mismatches between the Tapir API's JSON response and the library's Pydantic models (e.g., unwrapping nested or root-level objects).
+    *   Ensuring parameters are correctly serialized to JSON using `model_dump(mode='json')`.
 
 4.  **Discovery and Targeting:**
-    *   The server must provide a core helper tool, `list_active_archicads()`, which returns a list of running Archicad instances, including their `port` and `projectName`.
-    *   Every generated Tapir tool **must** accept a `port: int` parameter to allow the AI to target a specific Archicad instance.
+    *   A core, handwritten tool, `tapir_discovery_list_active_archicads`, is essential. It must return a curated list of running Archicad instances, including their `port`, `projectName`, and `projectType` (`teamwork`, `solo`, or `untitled`).
+    *   Every generated Tapir tool must accept a `port: int` parameter to allow the AI to target a specific Archicad instance.
+    *   The docstring for every generated tool must explicitly mention that the discovery tool should be used to find a valid `port`.
 
-**Implementation Plan:**
+**Future Areas for Improvement:**
 
-Please provide the complete Python code for the following two key components:
+Based on our analysis, the following areas are key candidates for future enhancement:
 
-**Part 1: The Code Generator (`generate_mcp_components.py`)**
+1.  **Pagination for Long Responses:** Some API calls (e.g., `GetAllProperties`, `GetAllElements`) can return thousands of items, exceeding the MCP client's 1MB response limit. The next iteration should implement a pagination strategy for these tools.
+    *   The tool function should be updated to accept an optional `page_token: str | None`.
+    *   The tool's return model should be updated to include the list of items for the current page and an optional `next_page_token: str | None`.
+    *   The docstring must clearly instruct the AI on how to use these tokens to iterate through all results.
 
-This script will be the heart of the build process. It should perform two main functions:
+2.  **Enhanced User Configuration:***Solving the Context Window Problem:** We identified that loading all 80+ tools would overwhelm the AI's context window. The final, and most significant, architectural decision was to refactor the project into a **multi-server dispatcher**.
+    *   The single codebase can now be launched as multiple, independent server processes.
+    *   Each process loads only one group of tools, selected via a `--group` command-line argument.
+    *   This allows the end-user to have granular control over which toolsets are active by configuring multiple server entries in their `claude_desktop_config.json` file.
 
-1.  **Generate Pydantic Models:**
-    *   Read and parse `master_schema.json`.
-    *   Correctly handle and resolve all `$ref` references within the schema. The `jsonschema` library is recommended for this.
-    *   For each of the 80+ commands, generate two Pydantic model classes: one for its `parameters` and one for its `result`.
-    *   Write all generated Pydantic classes into a single file named `tapir_models.py`.
-    *   Also, generate a master dictionary `ALL_COMMAND_MODELS` that maps command name strings to their generated `Params` model classes (e.g., `"CreateLayers": CreateLayersParams`).
-
-2.  **Generate MCP Tool Functions:**
-    *   For each command, generate the complete Python code for its corresponding `@mcp.tool()` decorated function.
-    *   The function signature should be strongly typed using the generated Pydantic models (e.g., `def tool_CreateLayers(port: int, params: CreateLayersParams) -> CreateLayersResult:`).
-    *   The function body should contain the logic to call the `multiconn_archicad` library, validate the result against the Pydantic `Result` model, and return it.
-    *   Write all generated tool functions into a single file named `tapir_tools.py`.
-
-**Part 2: The Main Server File (`mcp_tapir_server.py`)**
-
-This file will be the main entry point for the MCP server. It should be clean and primarily responsible for wiring everything together.
-
-*   It should use `mcp.server.fastmcp.FastMCP`.
-*   It should instantiate the `MultiConn` object on startup.
-*   It should import all the generated tools from `tapir_tools.py` and register them with the `FastMCP` instance.
-*   It must include the handwritten implementation for the `list_active_archicads()` tool.
-*   It should include the `if __name__ == "__main__":` block to make the server runnable.
-
-**Example of a Generated Tool Function (for guidance):**
-
-The code generated for the `CreateLayers` command in `tapir_tools.py` should look conceptually like this:
-
-```python
-# In the generated tapir_tools.py
-
-from .tapir_models import CreateLayersParams, CreateLayersResult
-from mcp.server.fastmcp import tool
-from multiconn_archicad.basic_types import Port
-
-# Note: This is an example. The actual implementation will need access to the 
-# multi_conn instance from the main server file. This can be handled by passing it
-# or using a global/context variable pattern.
-
-@tool(name="tapir_layers_create")
-def tapir_create_layers(port: int, params: CreateLayersParams) -> CreateLayersResult:
-    """
-    Creates one or more new layers in the project. (Description from schema)
-    """
-    target_port = Port(port)
-    # Assume 'multi_conn' is accessible here
-    if target_port not in multi_conn.open_port_headers:
-        raise ValueError(f"Port {port} is not a valid Archicad instance.")
-    
-    conn_header = multi_conn.open_port_headers[target_port]
-    result_dict = conn_header.core.post_tapir_command(
-        command="CreateLayers",
-        parameters=params.model_dump()
-    )
-    return CreateLayersResult(**result_dict)
-```
+This iterative process has resulted in a highly flexible, robust, and user-configurable server architecture that is ready for further development.

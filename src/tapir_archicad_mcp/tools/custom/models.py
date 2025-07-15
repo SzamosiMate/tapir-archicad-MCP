@@ -12,4 +12,4 @@ class ArchicadInstanceInfo(BaseModel):
     project_path: Optional[str] = Field(None, alias="projectPath", description="The full file path of the project, if it is a saved solo or teamwork project.")
 
     class Config:
-        allow_population_by_field_name = True
+        validate_by_name = True
