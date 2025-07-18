@@ -51,14 +51,7 @@ source .venv/bin/activate
 uv sync
 ```
 
-### 4. Generate the Tools
-
-This project uses a build-time script to generate the MCP tool functions from the Tapir API schema. You must run this script once before starting the server.
-```bash
-uv run python scripts/generate_tools.py
-```
-
-### 5. Configure Claude for Desktop
+### 4. Configure Claude for Desktop
 
 Finally, tell Claude how to run your server. Open your `claude_desktop_config.json` file and add the following configuration.
 
