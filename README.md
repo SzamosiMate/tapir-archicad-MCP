@@ -51,7 +51,18 @@ source .venv/bin/activate
 uv sync
 ```
 
-### 4. Configure Claude for Desktop
+### 4. macOS Compatibility (Optional)
+
+If you're running on macOS, you may need to apply a compatibility patch for the `multiconn_archicad` library:
+
+```bash
+# Run the macOS compatibility patch
+python scripts/apply_macos_patch.py
+```
+
+This patch allows the server to work on macOS by providing dummy implementations for Windows-specific UI automation features.
+
+### 5. Configure Claude for Desktop
 
 Finally, tell Claude how to run your server. Open your `claude_desktop_config.json` file and add the following configuration.
 
