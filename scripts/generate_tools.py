@@ -92,7 +92,7 @@ def _generate_imports_for_group(commands: list[dict], valid_model_names: set[str
         return ""
     import_statements = ",\n".join(f"    {imp}" for imp in sorted(list(imports)))
     return dedent(f"""
-    from multiconn_archicad.models.commands import (
+    from multiconn_archicad.models.tapir.commands import (
     {import_statements}
     )
     """)

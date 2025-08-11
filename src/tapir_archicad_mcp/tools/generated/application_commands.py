@@ -5,7 +5,7 @@ from multiconn_archicad.basic_types import Port
 from tapir_archicad_mcp.app import mcp
 from tapir_archicad_mcp.context import multi_conn_instance
 
-from multiconn_archicad.models.commands import (
+from multiconn_archicad.models.tapir.commands import (
     GetAddOnVersionResult,
 GetCurrentWindowTypeResult
 )
