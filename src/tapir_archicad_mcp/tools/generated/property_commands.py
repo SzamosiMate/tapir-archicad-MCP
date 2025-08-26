@@ -8,7 +8,7 @@ import time
 from typing import Any
 from tapir_archicad_mcp.pagination import handle_paginated_request, PAGINATION_CACHE, CACHE_LIFETIME_SECONDS
 
-from multiconn_archicad.models.commands import (
+from multiconn_archicad.models.tapir.commands import (
     CreatePropertyDefinitionsParameters,
 CreatePropertyDefinitionsResult,
 CreatePropertyGroupsParameters,
@@ -22,6 +22,8 @@ GetPropertyValuesOfAttributesParameters,
 GetPropertyValuesOfAttributesResult,
 GetPropertyValuesOfElementsParameters,
 GetPropertyValuesOfElementsResult,
+SetPropertyValuesOfAttributesParameters,
+SetPropertyValuesOfAttributesResult,
 SetPropertyValuesOfElementsParameters,
 SetPropertyValuesOfElementsResult
 )
@@ -294,6 +296,40 @@ def get_property_values_of_elements(port: int, params: GetPropertyValuesOfElemen
         raise ValueError(f"Received an invalid response from the Archicad API: {e}")
     except Exception as e:
         log.error(f"Error executing GetPropertyValuesOfElements on port {port}: {e}")
+        raise e
+
+
+
+@mcp.tool(
+    name="properties_set_property_values_of_attributes",
+    title="SetPropertyValuesOfAttributes",
+    description="Sets the property values of attributes."
+)
+def set_property_values_of_attributes(port: int, params: SetPropertyValuesOfAttributesParameters) -> SetPropertyValuesOfAttributesResult:
+    """
+    Sets the property values of attributes.
+
+    To find a valid 'port' number, use the 'tapir_discovery_list_active_archicads' tool.
+    """
+    log.info(f"Executing set_property_values_of_attributes tool on port {port}")
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="SetPropertyValuesOfAttributes",
+            parameters=params.model_dump(mode='json')
+        )
+        return SetPropertyValuesOfAttributesResult.model_validate(result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for SetPropertyValuesOfAttributes result: {e}")
+        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+    except Exception as e:
+        log.error(f"Error executing SetPropertyValuesOfAttributes on port {port}: {e}")
         raise e
 
 

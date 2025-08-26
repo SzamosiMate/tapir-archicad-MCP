@@ -10,12 +10,11 @@ log = logging.getLogger()
 ROOT_DIR = Path(__file__).parent.parent
 GENERATED_TOOLS_DIR = ROOT_DIR / "src" / "tapir_archicad_mcp" / "tools" / "generated"
 
-COMMAND_DETAILS_URL = "https://raw.githubusercontent.com/SzamosiMate/multiconn_archicad/main/code_generation/schema/_command_details.json"
-COMMAND_MODEL_NAMES_URL = "https://raw.githubusercontent.com/SzamosiMate/multiconn_archicad/main/code_generation/schema/_command_model_names.json"
+COMMAND_DETAILS_URL = "https://raw.githubusercontent.com/SzamosiMate/multiconn_archicad/main/code_generation/tapir/schema/_command_details.json"
+COMMAND_MODEL_NAMES_URL = "https://raw.githubusercontent.com/SzamosiMate/multiconn_archicad/main/code_generation/tapir/schema/_command_model_names.json"
 
 COMMANDS_TO_EXCLUDE = {
     "GetProjectInfo", "GetArchicadLocation", "QuitArchicad", "GenerateDocumentation",
-    "GetRevisionIssues", "SetPropertyValuesOfAttributes", "CreateZones",
 }
 
 PAGINATED_COMMANDS = {
@@ -92,7 +91,7 @@ def _generate_imports_for_group(commands: list[dict], valid_model_names: set[str
         return ""
     import_statements = ",\n".join(f"    {imp}" for imp in sorted(list(imports)))
     return dedent(f"""
-    from multiconn_archicad.models.commands import (
+    from multiconn_archicad.models.tapir.commands import (
     {import_statements}
     )
     """)

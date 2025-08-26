@@ -5,13 +5,14 @@ from multiconn_archicad.basic_types import Port
 from tapir_archicad_mcp.app import mcp
 from tapir_archicad_mcp.context import multi_conn_instance
 
-from multiconn_archicad.models.commands import (
+from multiconn_archicad.models.tapir.commands import (
     GetCurrentRevisionChangesOfLayoutsParameters,
 GetCurrentRevisionChangesOfLayoutsResult,
 GetDocumentRevisionsResult,
 GetRevisionChangesOfElementsParameters,
 GetRevisionChangesOfElementsResult,
-GetRevisionChangesResult
+GetRevisionChangesResult,
+GetRevisionIssuesResult
 )
 
 
@@ -150,4 +151,38 @@ def get_revision_changes_of_elements(port: int, params: GetRevisionChangesOfElem
         raise ValueError(f"Received an invalid response from the Archicad API: {e}")
     except Exception as e:
         log.error(f"Error executing GetRevisionChangesOfElements on port {port}: {e}")
+        raise e
+
+
+
+@mcp.tool(
+    name="revisions_get_revision_issues",
+    title="GetRevisionIssues",
+    description="Retrieves all issues."
+)
+def get_revision_issues(port: int) -> GetRevisionIssuesResult:
+    """
+    Retrieves all issues.
+
+    To find a valid 'port' number, use the 'tapir_discovery_list_active_archicads' tool.
+    """
+    log.info(f"Executing get_revision_issues tool on port {port}")
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="GetRevisionIssues",
+            parameters={}
+        )
+        return GetRevisionIssuesResult.model_validate(result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for GetRevisionIssues result: {e}")
+        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+    except Exception as e:
+        log.error(f"Error executing GetRevisionIssues on port {port}: {e}")
         raise e

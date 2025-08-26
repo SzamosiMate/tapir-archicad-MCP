@@ -4,7 +4,7 @@ from typing import List, Optional, Any, Tuple, Dict
 
 PAGINATION_CACHE: Dict[str, Tuple[BaseModel, float]] = {}
 CACHE_LIFETIME_SECONDS = 300
-PAGE_SIZE = 100
+PAGE_SIZE = 200
 
 class PaginatedResult(BaseModel):
     """A generic container for a paginated list and the next token."""
