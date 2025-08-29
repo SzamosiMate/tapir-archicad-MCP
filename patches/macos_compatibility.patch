@@ -1,0 +1,30 @@
+import sys
+from .dialog_handler_base import UnhandledDialogError, DialogHandlerBase, EmptyDialogHandler
+
+# Platform-specific imports
+if sys.platform == "win32":
+    from .win_dialog_handler import WinDialogHandler
+    from .win_int_handler_factory import win_int_handler_factory
+    __all__: tuple[str, ...] = (
+        "WinDialogHandler",
+        "win_int_handler_factory",
+        "UnhandledDialogError",
+        "DialogHandlerBase",
+        "EmptyDialogHandler",
+    )
+else:
+    # On non-Windows platforms, create dummy classes
+    class WinDialogHandler(DialogHandlerBase):
+        def __init__(self, *args, **kwargs):
+            raise NotImplementedError("WinDialogHandler is not available on non-Windows platforms")
+    
+    def win_int_handler_factory(*args, **kwargs):
+        raise NotImplementedError("win_int_handler_factory is not available on non-Windows platforms")
+    
+    __all__: tuple[str, ...] = (
+        "WinDialogHandler",
+        "win_int_handler_factory",
+        "UnhandledDialogError",
+        "DialogHandlerBase",
+        "EmptyDialogHandler",
+    ) 
