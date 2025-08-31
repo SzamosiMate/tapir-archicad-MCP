@@ -2,8 +2,8 @@
 import logging
 from pydantic import ValidationError
 from multiconn_archicad.basic_types import Port
-from tapir_archicad_mcp.app import mcp
 from tapir_archicad_mcp.context import multi_conn_instance
+from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
 import time
 from typing import Any
 from tapir_archicad_mcp.pagination import handle_paginated_request, PAGINATION_CACHE, CACHE_LIFETIME_SECONDS
@@ -24,19 +24,10 @@ GetBuildingMaterialPhysicalPropertiesResult
 
 log = logging.getLogger()
 
-
-@mcp.tool(
-    name="attributes_create_building_materials",
-    title="CreateBuildingMaterials",
-    description="Creates Building Material attributes based on the given parameters."
-)
 def create_building_materials(port: int, params: CreateBuildingMaterialsParameters) -> CreateBuildingMaterialsResult:
     """
     Creates Building Material attributes based on the given parameters.
-
-    To find a valid 'port' number, use the 'tapir_discovery_list_active_archicads' tool.
     """
-    log.info(f"Executing create_building_materials tool on port {port}")
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
     if target_port not in multi_conn.active:
@@ -58,19 +49,20 @@ def create_building_materials(port: int, params: CreateBuildingMaterialsParamete
         raise e
 
 
-
-@mcp.tool(
-    name="attributes_create_composites",
-    title="CreateComposites",
-    description="Creates Composite attributes based on the given parameters."
+register_tool_for_dispatch(
+    create_building_materials,
+    name="attributes_create_building_materials",
+    title="CreateBuildingMaterials",
+    description="Creates Building Material attributes based on the given parameters.",
+    params_model=CreateBuildingMaterialsParameters,
+    result_model=CreateBuildingMaterialsResult
 )
+
+
 def create_composites(port: int, params: CreateCompositesParameters) -> CreateCompositesResult:
     """
     Creates Composite attributes based on the given parameters.
-
-    To find a valid 'port' number, use the 'tapir_discovery_list_active_archicads' tool.
     """
-    log.info(f"Executing create_composites tool on port {port}")
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
     if target_port not in multi_conn.active:
@@ -92,19 +84,20 @@ def create_composites(port: int, params: CreateCompositesParameters) -> CreateCo
         raise e
 
 
-
-@mcp.tool(
-    name="attributes_create_layers",
-    title="CreateLayers",
-    description="Creates Layer attributes based on the given parameters."
+register_tool_for_dispatch(
+    create_composites,
+    name="attributes_create_composites",
+    title="CreateComposites",
+    description="Creates Composite attributes based on the given parameters.",
+    params_model=CreateCompositesParameters,
+    result_model=CreateCompositesResult
 )
+
+
 def create_layers(port: int, params: CreateLayersParameters) -> CreateLayersResult:
     """
     Creates Layer attributes based on the given parameters.
-
-    To find a valid 'port' number, use the 'tapir_discovery_list_active_archicads' tool.
     """
-    log.info(f"Executing create_layers tool on port {port}")
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
     if target_port not in multi_conn.active:
@@ -126,6 +119,15 @@ def create_layers(port: int, params: CreateLayersParameters) -> CreateLayersResu
         raise e
 
 
+register_tool_for_dispatch(
+    create_layers,
+    name="attributes_create_layers",
+    title="CreateLayers",
+    description="Creates Layer attributes based on the given parameters.",
+    params_model=CreateLayersParameters,
+    result_model=CreateLayersResult
+)
+
 
 class PaginatedGetAttributesByTypeResult(GetAttributesByTypeResult):
     """A paginated version of the GetAttributesByTypeResult."""
@@ -133,21 +135,12 @@ class PaginatedGetAttributesByTypeResult(GetAttributesByTypeResult):
     next_page_token: str | None = None
 
 
-
-@mcp.tool(
-    name="attributes_get_attributes_by_type",
-    title="GetAttributesByType",
-    description="Returns the details of every attribute of the given type."
-)
 def get_attributes_by_type(port: int, params: GetAttributesByTypeParameters, page_token: str | None = None) -> PaginatedGetAttributesByTypeResult:
     """
     Returns the details of every attribute of the given type.
-    This response is paginated. If 'next_page_token' is returned, call this function
-    again with that token to get the next page of results.
-
-    To find a valid 'port' number, use the 'tapir_discovery_list_active_archicads' tool.
+        This response is paginated. If 'next_page_token' is returned, call this function
+        again with that token to get the next page of results.
     """
-    log.info(f"Executing get_attributes_by_type tool on port {port}")
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
     if target_port not in multi_conn.active:
@@ -190,19 +183,20 @@ def get_attributes_by_type(port: int, params: GetAttributesByTypeParameters, pag
         raise e
 
 
-
-@mcp.tool(
-    name="attributes_get_building_material_physical_properties",
-    title="GetBuildingMaterialPhysicalProperties",
-    description="Retrieves the physical properties of the given Building Materials."
+register_tool_for_dispatch(
+    get_attributes_by_type,
+    name="attributes_get_attributes_by_type",
+    title="GetAttributesByType",
+    description="Returns the details of every attribute of the given type.",
+    params_model=GetAttributesByTypeParameters,
+    result_model=PaginatedGetAttributesByTypeResult
 )
+
+
 def get_building_material_physical_properties(port: int, params: GetBuildingMaterialPhysicalPropertiesParameters) -> GetBuildingMaterialPhysicalPropertiesResult:
     """
     Retrieves the physical properties of the given Building Materials.
-
-    To find a valid 'port' number, use the 'tapir_discovery_list_active_archicads' tool.
     """
-    log.info(f"Executing get_building_material_physical_properties tool on port {port}")
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
     if target_port not in multi_conn.active:
@@ -222,3 +216,13 @@ def get_building_material_physical_properties(port: int, params: GetBuildingMate
     except Exception as e:
         log.error(f"Error executing GetBuildingMaterialPhysicalProperties on port {port}: {e}")
         raise e
+
+
+register_tool_for_dispatch(
+    get_building_material_physical_properties,
+    name="attributes_get_building_material_physical_properties",
+    title="GetBuildingMaterialPhysicalProperties",
+    description="Retrieves the physical properties of the given Building Materials.",
+    params_model=GetBuildingMaterialPhysicalPropertiesParameters,
+    result_model=GetBuildingMaterialPhysicalPropertiesResult
+)

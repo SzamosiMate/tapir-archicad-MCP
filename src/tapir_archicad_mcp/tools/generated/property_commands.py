@@ -2,8 +2,8 @@
 import logging
 from pydantic import ValidationError
 from multiconn_archicad.basic_types import Port
-from tapir_archicad_mcp.app import mcp
 from tapir_archicad_mcp.context import multi_conn_instance
+from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
 import time
 from typing import Any
 from tapir_archicad_mcp.pagination import handle_paginated_request, PAGINATION_CACHE, CACHE_LIFETIME_SECONDS
@@ -31,19 +31,10 @@ SetPropertyValuesOfElementsResult
 
 log = logging.getLogger()
 
-
-@mcp.tool(
-    name="properties_create_property_definitions",
-    title="CreatePropertyDefinitions",
-    description="Creates Custom Property Definitions based on the given parameters."
-)
 def create_property_definitions(port: int, params: CreatePropertyDefinitionsParameters) -> CreatePropertyDefinitionsResult:
     """
     Creates Custom Property Definitions based on the given parameters.
-
-    To find a valid 'port' number, use the 'tapir_discovery_list_active_archicads' tool.
     """
-    log.info(f"Executing create_property_definitions tool on port {port}")
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
     if target_port not in multi_conn.active:
@@ -65,19 +56,20 @@ def create_property_definitions(port: int, params: CreatePropertyDefinitionsPara
         raise e
 
 
-
-@mcp.tool(
-    name="properties_create_property_groups",
-    title="CreatePropertyGroups",
-    description="Creates Property Groups based on the given parameters."
+register_tool_for_dispatch(
+    create_property_definitions,
+    name="properties_create_property_definitions",
+    title="CreatePropertyDefinitions",
+    description="Creates Custom Property Definitions based on the given parameters.",
+    params_model=CreatePropertyDefinitionsParameters,
+    result_model=CreatePropertyDefinitionsResult
 )
+
+
 def create_property_groups(port: int, params: CreatePropertyGroupsParameters) -> CreatePropertyGroupsResult:
     """
     Creates Property Groups based on the given parameters.
-
-    To find a valid 'port' number, use the 'tapir_discovery_list_active_archicads' tool.
     """
-    log.info(f"Executing create_property_groups tool on port {port}")
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
     if target_port not in multi_conn.active:
@@ -99,19 +91,20 @@ def create_property_groups(port: int, params: CreatePropertyGroupsParameters) ->
         raise e
 
 
-
-@mcp.tool(
-    name="properties_delete_property_definitions",
-    title="DeletePropertyDefinitions",
-    description="Deletes the given Custom Property Definitions."
+register_tool_for_dispatch(
+    create_property_groups,
+    name="properties_create_property_groups",
+    title="CreatePropertyGroups",
+    description="Creates Property Groups based on the given parameters.",
+    params_model=CreatePropertyGroupsParameters,
+    result_model=CreatePropertyGroupsResult
 )
+
+
 def delete_property_definitions(port: int, params: DeletePropertyDefinitionsParameters) -> DeletePropertyDefinitionsResult:
     """
     Deletes the given Custom Property Definitions.
-
-    To find a valid 'port' number, use the 'tapir_discovery_list_active_archicads' tool.
     """
-    log.info(f"Executing delete_property_definitions tool on port {port}")
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
     if target_port not in multi_conn.active:
@@ -133,19 +126,20 @@ def delete_property_definitions(port: int, params: DeletePropertyDefinitionsPara
         raise e
 
 
-
-@mcp.tool(
-    name="properties_delete_property_groups",
-    title="DeletePropertyGroups",
-    description="Deletes the given Custom Property Groups."
+register_tool_for_dispatch(
+    delete_property_definitions,
+    name="properties_delete_property_definitions",
+    title="DeletePropertyDefinitions",
+    description="Deletes the given Custom Property Definitions.",
+    params_model=DeletePropertyDefinitionsParameters,
+    result_model=DeletePropertyDefinitionsResult
 )
+
+
 def delete_property_groups(port: int, params: DeletePropertyGroupsParameters) -> DeletePropertyGroupsResult:
     """
     Deletes the given Custom Property Groups.
-
-    To find a valid 'port' number, use the 'tapir_discovery_list_active_archicads' tool.
     """
-    log.info(f"Executing delete_property_groups tool on port {port}")
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
     if target_port not in multi_conn.active:
@@ -167,6 +161,15 @@ def delete_property_groups(port: int, params: DeletePropertyGroupsParameters) ->
         raise e
 
 
+register_tool_for_dispatch(
+    delete_property_groups,
+    name="properties_delete_property_groups",
+    title="DeletePropertyGroups",
+    description="Deletes the given Custom Property Groups.",
+    params_model=DeletePropertyGroupsParameters,
+    result_model=DeletePropertyGroupsResult
+)
+
 
 class PaginatedGetAllPropertiesResult(GetAllPropertiesResult):
     """A paginated version of the GetAllPropertiesResult."""
@@ -174,21 +177,12 @@ class PaginatedGetAllPropertiesResult(GetAllPropertiesResult):
     next_page_token: str | None = None
 
 
-
-@mcp.tool(
-    name="properties_get_all_properties",
-    title="GetAllProperties",
-    description="Returns all user defined and built-in properties."
-)
 def get_all_properties(port: int, page_token: str | None = None) -> PaginatedGetAllPropertiesResult:
     """
     Returns all user defined and built-in properties.
-    This response is paginated. If 'next_page_token' is returned, call this function
-    again with that token to get the next page of results.
-
-    To find a valid 'port' number, use the 'tapir_discovery_list_active_archicads' tool.
+        This response is paginated. If 'next_page_token' is returned, call this function
+        again with that token to get the next page of results.
     """
-    log.info(f"Executing get_all_properties tool on port {port}")
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
     if target_port not in multi_conn.active:
@@ -231,19 +225,20 @@ def get_all_properties(port: int, page_token: str | None = None) -> PaginatedGet
         raise e
 
 
-
-@mcp.tool(
-    name="properties_get_property_values_of_attributes",
-    title="GetPropertyValuesOfAttributes",
-    description="Returns the property values of the attributes for the given property."
+register_tool_for_dispatch(
+    get_all_properties,
+    name="properties_get_all_properties",
+    title="GetAllProperties",
+    description="Returns all user defined and built-in properties.",
+    params_model=None,
+    result_model=PaginatedGetAllPropertiesResult
 )
+
+
 def get_property_values_of_attributes(port: int, params: GetPropertyValuesOfAttributesParameters) -> GetPropertyValuesOfAttributesResult:
     """
     Returns the property values of the attributes for the given property.
-
-    To find a valid 'port' number, use the 'tapir_discovery_list_active_archicads' tool.
     """
-    log.info(f"Executing get_property_values_of_attributes tool on port {port}")
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
     if target_port not in multi_conn.active:
@@ -265,19 +260,20 @@ def get_property_values_of_attributes(port: int, params: GetPropertyValuesOfAttr
         raise e
 
 
-
-@mcp.tool(
-    name="properties_get_property_values_of_elements",
-    title="GetPropertyValuesOfElements",
-    description="Returns the property values of the elements for the given property. It works for subelements of hierarchal elements also."
+register_tool_for_dispatch(
+    get_property_values_of_attributes,
+    name="properties_get_property_values_of_attributes",
+    title="GetPropertyValuesOfAttributes",
+    description="Returns the property values of the attributes for the given property.",
+    params_model=GetPropertyValuesOfAttributesParameters,
+    result_model=GetPropertyValuesOfAttributesResult
 )
+
+
 def get_property_values_of_elements(port: int, params: GetPropertyValuesOfElementsParameters) -> GetPropertyValuesOfElementsResult:
     """
     Returns the property values of the elements for the given property. It works for subelements of hierarchal elements also.
-
-    To find a valid 'port' number, use the 'tapir_discovery_list_active_archicads' tool.
     """
-    log.info(f"Executing get_property_values_of_elements tool on port {port}")
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
     if target_port not in multi_conn.active:
@@ -299,19 +295,20 @@ def get_property_values_of_elements(port: int, params: GetPropertyValuesOfElemen
         raise e
 
 
-
-@mcp.tool(
-    name="properties_set_property_values_of_attributes",
-    title="SetPropertyValuesOfAttributes",
-    description="Sets the property values of attributes."
+register_tool_for_dispatch(
+    get_property_values_of_elements,
+    name="properties_get_property_values_of_elements",
+    title="GetPropertyValuesOfElements",
+    description="Returns the property values of the elements for the given property. It works for subelements of hierarchal elements also.",
+    params_model=GetPropertyValuesOfElementsParameters,
+    result_model=GetPropertyValuesOfElementsResult
 )
+
+
 def set_property_values_of_attributes(port: int, params: SetPropertyValuesOfAttributesParameters) -> SetPropertyValuesOfAttributesResult:
     """
     Sets the property values of attributes.
-
-    To find a valid 'port' number, use the 'tapir_discovery_list_active_archicads' tool.
     """
-    log.info(f"Executing set_property_values_of_attributes tool on port {port}")
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
     if target_port not in multi_conn.active:
@@ -333,19 +330,20 @@ def set_property_values_of_attributes(port: int, params: SetPropertyValuesOfAttr
         raise e
 
 
-
-@mcp.tool(
-    name="properties_set_property_values_of_elements",
-    title="SetPropertyValuesOfElements",
-    description="Sets the property values of elements. It works for subelements of hierarchal elements also."
+register_tool_for_dispatch(
+    set_property_values_of_attributes,
+    name="properties_set_property_values_of_attributes",
+    title="SetPropertyValuesOfAttributes",
+    description="Sets the property values of attributes.",
+    params_model=SetPropertyValuesOfAttributesParameters,
+    result_model=SetPropertyValuesOfAttributesResult
 )
+
+
 def set_property_values_of_elements(port: int, params: SetPropertyValuesOfElementsParameters) -> SetPropertyValuesOfElementsResult:
     """
     Sets the property values of elements. It works for subelements of hierarchal elements also.
-
-    To find a valid 'port' number, use the 'tapir_discovery_list_active_archicads' tool.
     """
-    log.info(f"Executing set_property_values_of_elements tool on port {port}")
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
     if target_port not in multi_conn.active:
@@ -365,3 +363,13 @@ def set_property_values_of_elements(port: int, params: SetPropertyValuesOfElemen
     except Exception as e:
         log.error(f"Error executing SetPropertyValuesOfElements on port {port}: {e}")
         raise e
+
+
+register_tool_for_dispatch(
+    set_property_values_of_elements,
+    name="properties_set_property_values_of_elements",
+    title="SetPropertyValuesOfElements",
+    description="Sets the property values of elements. It works for subelements of hierarchal elements also.",
+    params_model=SetPropertyValuesOfElementsParameters,
+    result_model=SetPropertyValuesOfElementsResult
+)

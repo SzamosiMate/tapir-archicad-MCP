@@ -2,8 +2,8 @@
 import logging
 from pydantic import ValidationError
 from multiconn_archicad.basic_types import Port
-from tapir_archicad_mcp.app import mcp
 from tapir_archicad_mcp.context import multi_conn_instance
+from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
 
 from multiconn_archicad.models.tapir.commands import (
     GetDatabaseIdFromNavigatorItemIdParameters,
@@ -22,19 +22,10 @@ UpdateDrawingsParameters
 
 log = logging.getLogger()
 
-
-@mcp.tool(
-    name="navigator_get_database_id_from_navigator_item_id",
-    title="GetDatabaseIdFromNavigatorItemId",
-    description="Gets the ID of the database associated with the supplied navigator item id"
-)
 def get_database_id_from_navigator_item_id(port: int, params: GetDatabaseIdFromNavigatorItemIdParameters) -> GetDatabaseIdFromNavigatorItemIdResult:
     """
     Gets the ID of the database associated with the supplied navigator item id
-
-    To find a valid 'port' number, use the 'tapir_discovery_list_active_archicads' tool.
     """
-    log.info(f"Executing get_database_id_from_navigator_item_id tool on port {port}")
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
     if target_port not in multi_conn.active:
@@ -56,19 +47,20 @@ def get_database_id_from_navigator_item_id(port: int, params: GetDatabaseIdFromN
         raise e
 
 
-
-@mcp.tool(
-    name="navigator_get_model_view_options",
-    title="GetModelViewOptions",
-    description="Gets all model view options"
+register_tool_for_dispatch(
+    get_database_id_from_navigator_item_id,
+    name="navigator_get_database_id_from_navigator_item_id",
+    title="GetDatabaseIdFromNavigatorItemId",
+    description="Gets the ID of the database associated with the supplied navigator item id",
+    params_model=GetDatabaseIdFromNavigatorItemIdParameters,
+    result_model=GetDatabaseIdFromNavigatorItemIdResult
 )
+
+
 def get_model_view_options(port: int) -> GetModelViewOptionsResult:
     """
     Gets all model view options
-
-    To find a valid 'port' number, use the 'tapir_discovery_list_active_archicads' tool.
     """
-    log.info(f"Executing get_model_view_options tool on port {port}")
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
     if target_port not in multi_conn.active:
@@ -90,19 +82,20 @@ def get_model_view_options(port: int) -> GetModelViewOptionsResult:
         raise e
 
 
-
-@mcp.tool(
-    name="navigator_get_view2_d_transformations",
-    title="GetView2DTransformations",
-    description="Get zoom and rotation of 2D views"
+register_tool_for_dispatch(
+    get_model_view_options,
+    name="navigator_get_model_view_options",
+    title="GetModelViewOptions",
+    description="Gets all model view options",
+    params_model=None,
+    result_model=GetModelViewOptionsResult
 )
+
+
 def get_view2_d_transformations(port: int, params: GetView2DTransformationsParameters) -> GetView2DTransformationsResult:
     """
     Get zoom and rotation of 2D views
-
-    To find a valid 'port' number, use the 'tapir_discovery_list_active_archicads' tool.
     """
-    log.info(f"Executing get_view2_d_transformations tool on port {port}")
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
     if target_port not in multi_conn.active:
@@ -124,19 +117,20 @@ def get_view2_d_transformations(port: int, params: GetView2DTransformationsParam
         raise e
 
 
-
-@mcp.tool(
-    name="navigator_get_view_settings",
-    title="GetViewSettings",
-    description="Gets the view settings of navigator items"
+register_tool_for_dispatch(
+    get_view2_d_transformations,
+    name="navigator_get_view2_d_transformations",
+    title="GetView2DTransformations",
+    description="Get zoom and rotation of 2D views",
+    params_model=GetView2DTransformationsParameters,
+    result_model=GetView2DTransformationsResult
 )
+
+
 def get_view_settings(port: int, params: GetViewSettingsParameters) -> GetViewSettingsResult:
     """
     Gets the view settings of navigator items
-
-    To find a valid 'port' number, use the 'tapir_discovery_list_active_archicads' tool.
     """
-    log.info(f"Executing get_view_settings tool on port {port}")
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
     if target_port not in multi_conn.active:
@@ -158,19 +152,20 @@ def get_view_settings(port: int, params: GetViewSettingsParameters) -> GetViewSe
         raise e
 
 
-
-@mcp.tool(
-    name="navigator_publish_publisher_set",
-    title="PublishPublisherSet",
-    description="Performs a publish operation on the currently opened project. Only the given publisher set will be published."
+register_tool_for_dispatch(
+    get_view_settings,
+    name="navigator_get_view_settings",
+    title="GetViewSettings",
+    description="Gets the view settings of navigator items",
+    params_model=GetViewSettingsParameters,
+    result_model=GetViewSettingsResult
 )
+
+
 def publish_publisher_set(port: int, params: PublishPublisherSetParameters) -> None:
     """
     Performs a publish operation on the currently opened project. Only the given publisher set will be published.
-
-    To find a valid 'port' number, use the 'tapir_discovery_list_active_archicads' tool.
     """
-    log.info(f"Executing publish_publisher_set tool on port {port}")
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
     if target_port not in multi_conn.active:
@@ -192,19 +187,20 @@ def publish_publisher_set(port: int, params: PublishPublisherSetParameters) -> N
         raise e
 
 
-
-@mcp.tool(
-    name="navigator_set_view_settings",
-    title="SetViewSettings",
-    description="Sets the view settings of navigator items"
+register_tool_for_dispatch(
+    publish_publisher_set,
+    name="navigator_publish_publisher_set",
+    title="PublishPublisherSet",
+    description="Performs a publish operation on the currently opened project. Only the given publisher set will be published.",
+    params_model=PublishPublisherSetParameters,
+    result_model=None
 )
+
+
 def set_view_settings(port: int, params: SetViewSettingsParameters) -> SetViewSettingsResult:
     """
     Sets the view settings of navigator items
-
-    To find a valid 'port' number, use the 'tapir_discovery_list_active_archicads' tool.
     """
-    log.info(f"Executing set_view_settings tool on port {port}")
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
     if target_port not in multi_conn.active:
@@ -226,19 +222,20 @@ def set_view_settings(port: int, params: SetViewSettingsParameters) -> SetViewSe
         raise e
 
 
-
-@mcp.tool(
-    name="navigator_update_drawings",
-    title="UpdateDrawings",
-    description="Performs a drawing update on the given elements."
+register_tool_for_dispatch(
+    set_view_settings,
+    name="navigator_set_view_settings",
+    title="SetViewSettings",
+    description="Sets the view settings of navigator items",
+    params_model=SetViewSettingsParameters,
+    result_model=SetViewSettingsResult
 )
+
+
 def update_drawings(port: int, params: UpdateDrawingsParameters) -> None:
     """
     Performs a drawing update on the given elements.
-
-    To find a valid 'port' number, use the 'tapir_discovery_list_active_archicads' tool.
     """
-    log.info(f"Executing update_drawings tool on port {port}")
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
     if target_port not in multi_conn.active:
@@ -258,3 +255,13 @@ def update_drawings(port: int, params: UpdateDrawingsParameters) -> None:
     except Exception as e:
         log.error(f"Error executing UpdateDrawings on port {port}: {e}")
         raise e
+
+
+register_tool_for_dispatch(
+    update_drawings,
+    name="navigator_update_drawings",
+    title="UpdateDrawings",
+    description="Performs a drawing update on the given elements.",
+    params_model=UpdateDrawingsParameters,
+    result_model=None
+)

@@ -2,8 +2,8 @@
 import logging
 from pydantic import ValidationError
 from multiconn_archicad.basic_types import Port
-from tapir_archicad_mcp.app import mcp
 from tapir_archicad_mcp.context import multi_conn_instance
+from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
 
 from multiconn_archicad.models.tapir.commands import (
     ApplyFavoritesToElementDefaultsParameters,
@@ -15,19 +15,10 @@ CreateFavoritesFromElementsResult
 
 log = logging.getLogger()
 
-
-@mcp.tool(
-    name="favorites_apply_favorites_to_element_defaults",
-    title="ApplyFavoritesToElementDefaults",
-    description="Apply the given favorites to element defaults."
-)
 def apply_favorites_to_element_defaults(port: int, params: ApplyFavoritesToElementDefaultsParameters) -> ApplyFavoritesToElementDefaultsResult:
     """
     Apply the given favorites to element defaults.
-
-    To find a valid 'port' number, use the 'tapir_discovery_list_active_archicads' tool.
     """
-    log.info(f"Executing apply_favorites_to_element_defaults tool on port {port}")
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
     if target_port not in multi_conn.active:
@@ -49,19 +40,20 @@ def apply_favorites_to_element_defaults(port: int, params: ApplyFavoritesToEleme
         raise e
 
 
-
-@mcp.tool(
-    name="favorites_create_favorites_from_elements",
-    title="CreateFavoritesFromElements",
-    description="Create favorites from the given elements."
+register_tool_for_dispatch(
+    apply_favorites_to_element_defaults,
+    name="favorites_apply_favorites_to_element_defaults",
+    title="ApplyFavoritesToElementDefaults",
+    description="Apply the given favorites to element defaults.",
+    params_model=ApplyFavoritesToElementDefaultsParameters,
+    result_model=ApplyFavoritesToElementDefaultsResult
 )
+
+
 def create_favorites_from_elements(port: int, params: CreateFavoritesFromElementsParameters) -> CreateFavoritesFromElementsResult:
     """
     Create favorites from the given elements.
-
-    To find a valid 'port' number, use the 'tapir_discovery_list_active_archicads' tool.
     """
-    log.info(f"Executing create_favorites_from_elements tool on port {port}")
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
     if target_port not in multi_conn.active:
@@ -81,3 +73,13 @@ def create_favorites_from_elements(port: int, params: CreateFavoritesFromElement
     except Exception as e:
         log.error(f"Error executing CreateFavoritesFromElements on port {port}: {e}")
         raise e
+
+
+register_tool_for_dispatch(
+    create_favorites_from_elements,
+    name="favorites_create_favorites_from_elements",
+    title="CreateFavoritesFromElements",
+    description="Create favorites from the given elements.",
+    params_model=CreateFavoritesFromElementsParameters,
+    result_model=CreateFavoritesFromElementsResult
+)

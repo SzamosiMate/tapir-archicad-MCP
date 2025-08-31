@@ -7,6 +7,8 @@ from textwrap import dedent, indent
 
 log = logging.getLogger()
 
+REGISTER_AS_MCP_TOOLS = False
+
 ROOT_DIR = Path(__file__).parent.parent
 GENERATED_TOOLS_DIR = ROOT_DIR / "src" / "tapir_archicad_mcp" / "tools" / "generated"
 
@@ -37,6 +39,7 @@ GROUP_NAME_MAPPING = {
     "Library Commands": "library", "Navigator Commands": "navigator", "Issue Management Commands": "issues",
     "Revision Management Commands": "revisions", "Teamwork Commands": "teamwork", "Developer Commands": "dev",
 }
+
 
 def camel_to_snake(name: str) -> str:
     s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
@@ -100,11 +103,11 @@ def _generate_imports_for_group(commands: list[dict], valid_model_names: set[str
 def _generate_paginated_model_code(original_result_model: str, paginated_result_model: str,
                                    list_attribute_name: str) -> str:
     return dedent(f'''
-    class {paginated_result_model}({original_result_model}):
-        """A paginated version of the {original_result_model}."""
-        {list_attribute_name}: list[Any]
-        next_page_token: str | None = None
-    ''')
+class {paginated_result_model}({original_result_model}):
+    """A paginated version of the {original_result_model}."""
+    {list_attribute_name}: list[Any]
+    next_page_token: str | None = None
+''')
 
 
 def _generate_standard_call_block(command_name_camel: str, result_model: str, has_params: bool,
@@ -175,51 +178,70 @@ def _generate_tool_function_code(command: dict, valid_model_names: set[str]) -> 
     is_paginated = command_name_camel in PAGINATED_COMMANDS
 
     param_signature = f", params: {params_model}" if has_params else ""
+
     docstring_addendum = ""
     model_code = ""
 
     if is_paginated:
         list_attribute_name = PAGINATED_COMMANDS[command_name_camel]
         paginated_result_model = f"Paginated{result_model}"
-
         param_signature += ", page_token: str | None = None"
         return_annotation = paginated_result_model
         docstring_addendum = PAGINATED_DOCSTRING_ADDENDUM
-
         model_code = _generate_paginated_model_code(result_model, paginated_result_model, list_attribute_name)
         call_block = _generate_paginated_call_block(command_name_camel, result_model,
                                                     paginated_result_model, list_attribute_name, has_params)
+        param_reg_arg = params_model if has_params else "None"
+        result_reg_arg = paginated_result_model
     else:
         return_annotation = result_model if has_result else "None"
         call_block = _generate_standard_call_block(command_name_camel, result_model, has_params, has_result)
+        param_reg_arg = params_model if has_params else "None"
+        result_reg_arg = result_model if has_result else "None"
 
-    docstring = f'''"""\n    {command["description"]}{docstring_addendum}\n\n    To find a valid 'port' number, use the 'tapir_discovery_list_active_archicads' tool.\n    """'''
+    docstring = f'''"""\n{command["description"]}{docstring_addendum}\n"""'''
 
-    function_code = dedent(f'''
-    @mcp.tool(
+    decorator = ""
+    if REGISTER_AS_MCP_TOOLS:
+        decorator = dedent(f'''
+        @mcp.tool(
+            name="{tool_name}",
+            title="{command_name_camel}",
+            description="{command["description"]}"
+        )
+        ''')
+
+    # --- FIX: Replaced dedent with a clean f-string for correct indentation ---
+    function_code = f'''{decorator}def {command_name_snake}(port: int{param_signature}) -> {return_annotation}:
+{indent(docstring, "    ")}
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {{port}} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+{indent(call_block, "        ")}
+    except ValidationError as e:
+        log.error(f"Validation error for {command_name_camel} result: {{e}}")
+        raise ValueError(f"Received an invalid response from the Archicad API: {{e}}")
+    except Exception as e:
+        log.error(f"Error executing {command_name_camel} on port {{port}}: {{e}}")
+        raise e
+'''
+
+    registration_call = dedent(f"""
+    register_tool_for_dispatch(
+        {command_name_snake},
         name="{tool_name}",
         title="{command_name_camel}",
-        description="{command["description"]}"
+        description="{command["description"]}",
+        params_model={param_reg_arg},
+        result_model={result_reg_arg}
     )
-    def {command_name_snake}(port: int{param_signature}) -> {return_annotation}:
-    {indent(docstring, "    ")}
-        log.info(f"Executing {command_name_snake} tool on port {{port}}")
-        multi_conn = multi_conn_instance.get()
-        target_port = Port(port)
-        if target_port not in multi_conn.active:
-            raise ValueError(f"Port {{port}} is not an active Archicad connection.")
-        conn_header = multi_conn.active[target_port]
-        try:
-    {indent(call_block, "            ")}
-        except ValidationError as e:
-            log.error(f"Validation error for {command_name_camel} result: {{e}}")
-            raise ValueError(f"Received an invalid response from the Archicad API: {{e}}")
-        except Exception as e:
-            log.error(f"Error executing {command_name_camel} on port {{port}}: {{e}}")
-            raise e
-    ''')
+    """)
 
-    return f"{model_code}\n\n{function_code}" if model_code else function_code
+    full_code = f"{model_code}\n\n{function_code}\n{registration_call}"
+    return full_code.strip() + "\n"
 
 
 def generate_tool_files(grouped_commands: dict[str, list[dict]], out_dir: Path, valid_model_names: set[str]):
@@ -235,8 +257,8 @@ def generate_tool_files(grouped_commands: dict[str, list[dict]], out_dir: Path, 
             "import logging",
             "from pydantic import ValidationError",
             "from multiconn_archicad.basic_types import Port",
-            "from tapir_archicad_mcp.app import mcp",
             "from tapir_archicad_mcp.context import multi_conn_instance",
+            "from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch",
         ]
         if is_any_paginated:
             common_imports.extend([
@@ -246,6 +268,11 @@ def generate_tool_files(grouped_commands: dict[str, list[dict]], out_dir: Path, 
             ])
         if imports_block:
             common_imports.append(imports_block)
+
+        if REGISTER_AS_MCP_TOOLS:
+            common_imports.extend([
+                "from tapir_archicad_mcp.app import mcp",
+            ])
 
         common_imports.append("\nlog = logging.getLogger()")
 

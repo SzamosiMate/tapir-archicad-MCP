@@ -2,8 +2,8 @@
 import logging
 from pydantic import ValidationError
 from multiconn_archicad.basic_types import Port
-from tapir_archicad_mcp.app import mcp
 from tapir_archicad_mcp.context import multi_conn_instance
+from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
 
 from multiconn_archicad.models.tapir.commands import (
     GetGeoLocationResult,
@@ -18,19 +18,10 @@ SetStoriesParameters
 
 log = logging.getLogger()
 
-
-@mcp.tool(
-    name="project_get_geo_location",
-    title="GetGeoLocation",
-    description="Gets the project location details."
-)
 def get_geo_location(port: int) -> GetGeoLocationResult:
     """
     Gets the project location details.
-
-    To find a valid 'port' number, use the 'tapir_discovery_list_active_archicads' tool.
     """
-    log.info(f"Executing get_geo_location tool on port {port}")
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
     if target_port not in multi_conn.active:
@@ -52,19 +43,20 @@ def get_geo_location(port: int) -> GetGeoLocationResult:
         raise e
 
 
-
-@mcp.tool(
-    name="project_get_hotlinks",
-    title="GetHotlinks",
-    description="Gets the file system locations (path) of the hotlink modules. The hotlinks can have tree hierarchy in the project."
+register_tool_for_dispatch(
+    get_geo_location,
+    name="project_get_geo_location",
+    title="GetGeoLocation",
+    description="Gets the project location details.",
+    params_model=None,
+    result_model=GetGeoLocationResult
 )
+
+
 def get_hotlinks(port: int) -> GetHotlinksResult:
     """
     Gets the file system locations (path) of the hotlink modules. The hotlinks can have tree hierarchy in the project.
-
-    To find a valid 'port' number, use the 'tapir_discovery_list_active_archicads' tool.
     """
-    log.info(f"Executing get_hotlinks tool on port {port}")
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
     if target_port not in multi_conn.active:
@@ -86,19 +78,20 @@ def get_hotlinks(port: int) -> GetHotlinksResult:
         raise e
 
 
-
-@mcp.tool(
-    name="project_get_project_info_fields",
-    title="GetProjectInfoFields",
-    description="Retrieves the names and values of all project info fields."
+register_tool_for_dispatch(
+    get_hotlinks,
+    name="project_get_hotlinks",
+    title="GetHotlinks",
+    description="Gets the file system locations (path) of the hotlink modules. The hotlinks can have tree hierarchy in the project.",
+    params_model=None,
+    result_model=GetHotlinksResult
 )
+
+
 def get_project_info_fields(port: int) -> GetProjectInfoFieldsResult:
     """
     Retrieves the names and values of all project info fields.
-
-    To find a valid 'port' number, use the 'tapir_discovery_list_active_archicads' tool.
     """
-    log.info(f"Executing get_project_info_fields tool on port {port}")
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
     if target_port not in multi_conn.active:
@@ -120,19 +113,20 @@ def get_project_info_fields(port: int) -> GetProjectInfoFieldsResult:
         raise e
 
 
-
-@mcp.tool(
-    name="project_get_stories",
-    title="GetStories",
-    description="Retrieves information about the story sructure of the currently loaded project."
+register_tool_for_dispatch(
+    get_project_info_fields,
+    name="project_get_project_info_fields",
+    title="GetProjectInfoFields",
+    description="Retrieves the names and values of all project info fields.",
+    params_model=None,
+    result_model=GetProjectInfoFieldsResult
 )
+
+
 def get_stories(port: int) -> GetStoriesResult:
     """
     Retrieves information about the story sructure of the currently loaded project.
-
-    To find a valid 'port' number, use the 'tapir_discovery_list_active_archicads' tool.
     """
-    log.info(f"Executing get_stories tool on port {port}")
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
     if target_port not in multi_conn.active:
@@ -154,19 +148,20 @@ def get_stories(port: int) -> GetStoriesResult:
         raise e
 
 
-
-@mcp.tool(
-    name="project_open_project",
-    title="OpenProject",
-    description="Opens the given project."
+register_tool_for_dispatch(
+    get_stories,
+    name="project_get_stories",
+    title="GetStories",
+    description="Retrieves information about the story sructure of the currently loaded project.",
+    params_model=None,
+    result_model=GetStoriesResult
 )
+
+
 def open_project(port: int, params: OpenProjectParameters) -> None:
     """
     Opens the given project.
-
-    To find a valid 'port' number, use the 'tapir_discovery_list_active_archicads' tool.
     """
-    log.info(f"Executing open_project tool on port {port}")
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
     if target_port not in multi_conn.active:
@@ -188,19 +183,20 @@ def open_project(port: int, params: OpenProjectParameters) -> None:
         raise e
 
 
-
-@mcp.tool(
-    name="project_set_project_info_field",
-    title="SetProjectInfoField",
-    description="Sets the value of a project info field."
+register_tool_for_dispatch(
+    open_project,
+    name="project_open_project",
+    title="OpenProject",
+    description="Opens the given project.",
+    params_model=OpenProjectParameters,
+    result_model=None
 )
+
+
 def set_project_info_field(port: int, params: SetProjectInfoFieldParameters) -> None:
     """
     Sets the value of a project info field.
-
-    To find a valid 'port' number, use the 'tapir_discovery_list_active_archicads' tool.
     """
-    log.info(f"Executing set_project_info_field tool on port {port}")
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
     if target_port not in multi_conn.active:
@@ -222,19 +218,20 @@ def set_project_info_field(port: int, params: SetProjectInfoFieldParameters) -> 
         raise e
 
 
-
-@mcp.tool(
-    name="project_set_stories",
-    title="SetStories",
-    description="Sets the story sructure of the currently loaded project."
+register_tool_for_dispatch(
+    set_project_info_field,
+    name="project_set_project_info_field",
+    title="SetProjectInfoField",
+    description="Sets the value of a project info field.",
+    params_model=SetProjectInfoFieldParameters,
+    result_model=None
 )
+
+
 def set_stories(port: int, params: SetStoriesParameters) -> None:
     """
     Sets the story sructure of the currently loaded project.
-
-    To find a valid 'port' number, use the 'tapir_discovery_list_active_archicads' tool.
     """
-    log.info(f"Executing set_stories tool on port {port}")
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
     if target_port not in multi_conn.active:
@@ -254,3 +251,13 @@ def set_stories(port: int, params: SetStoriesParameters) -> None:
     except Exception as e:
         log.error(f"Error executing SetStories on port {port}: {e}")
         raise e
+
+
+register_tool_for_dispatch(
+    set_stories,
+    name="project_set_stories",
+    title="SetStories",
+    description="Sets the story sructure of the currently loaded project.",
+    params_model=SetStoriesParameters,
+    result_model=None
+)

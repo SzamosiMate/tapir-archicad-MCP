@@ -13,3 +13,11 @@ class ArchicadInstanceInfo(BaseModel):
 
     class Config:
         validate_by_name = True
+
+
+class ToolInfo(BaseModel):
+    """Metadata describing a discoverable Archicad API tool."""
+    name: str = Field(description="The unique, snake-cased name of the tool (e.g., 'elements_get_all_elements'). Use this name in 'archicad_call_tool'.")
+    title: str = Field(description="The original CamelCase API command name.")
+    description: str = Field(description="A brief explanation of the tool's function.")
+    input_schema: dict = Field(description="The JSON schema required for the 'arguments' parameter when calling 'archicad_call_tool'. Always includes 'port'.")

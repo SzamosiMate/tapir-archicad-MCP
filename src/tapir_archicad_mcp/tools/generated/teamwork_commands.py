@@ -2,8 +2,8 @@
 import logging
 from pydantic import ValidationError
 from multiconn_archicad.basic_types import Port
-from tapir_archicad_mcp.app import mcp
 from tapir_archicad_mcp.context import multi_conn_instance
+from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
 
 from multiconn_archicad.models.tapir.commands import (
     ReleaseElementsParameters,
@@ -14,19 +14,10 @@ ReserveElementsResult
 
 log = logging.getLogger()
 
-
-@mcp.tool(
-    name="teamwork_release_elements",
-    title="ReleaseElements",
-    description="Releases elements in Teamwork mode."
-)
 def release_elements(port: int, params: ReleaseElementsParameters) -> None:
     """
     Releases elements in Teamwork mode.
-
-    To find a valid 'port' number, use the 'tapir_discovery_list_active_archicads' tool.
     """
-    log.info(f"Executing release_elements tool on port {port}")
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
     if target_port not in multi_conn.active:
@@ -48,19 +39,20 @@ def release_elements(port: int, params: ReleaseElementsParameters) -> None:
         raise e
 
 
-
-@mcp.tool(
-    name="teamwork_reserve_elements",
-    title="ReserveElements",
-    description="Reserves elements in Teamwork mode."
+register_tool_for_dispatch(
+    release_elements,
+    name="teamwork_release_elements",
+    title="ReleaseElements",
+    description="Releases elements in Teamwork mode.",
+    params_model=ReleaseElementsParameters,
+    result_model=None
 )
+
+
 def reserve_elements(port: int, params: ReserveElementsParameters) -> ReserveElementsResult:
     """
     Reserves elements in Teamwork mode.
-
-    To find a valid 'port' number, use the 'tapir_discovery_list_active_archicads' tool.
     """
-    log.info(f"Executing reserve_elements tool on port {port}")
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
     if target_port not in multi_conn.active:
@@ -82,19 +74,20 @@ def reserve_elements(port: int, params: ReserveElementsParameters) -> ReserveEle
         raise e
 
 
-
-@mcp.tool(
-    name="teamwork_teamwork_receive",
-    title="TeamworkReceive",
-    description="Performs a receive operation on the currently opened Teamwork project."
+register_tool_for_dispatch(
+    reserve_elements,
+    name="teamwork_reserve_elements",
+    title="ReserveElements",
+    description="Reserves elements in Teamwork mode.",
+    params_model=ReserveElementsParameters,
+    result_model=ReserveElementsResult
 )
+
+
 def teamwork_receive(port: int) -> None:
     """
     Performs a receive operation on the currently opened Teamwork project.
-
-    To find a valid 'port' number, use the 'tapir_discovery_list_active_archicads' tool.
     """
-    log.info(f"Executing teamwork_receive tool on port {port}")
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
     if target_port not in multi_conn.active:
@@ -116,19 +109,20 @@ def teamwork_receive(port: int) -> None:
         raise e
 
 
-
-@mcp.tool(
-    name="teamwork_teamwork_send",
-    title="TeamworkSend",
-    description="Performs a send operation on the currently opened Teamwork project."
+register_tool_for_dispatch(
+    teamwork_receive,
+    name="teamwork_teamwork_receive",
+    title="TeamworkReceive",
+    description="Performs a receive operation on the currently opened Teamwork project.",
+    params_model=None,
+    result_model=None
 )
+
+
 def teamwork_send(port: int) -> None:
     """
     Performs a send operation on the currently opened Teamwork project.
-
-    To find a valid 'port' number, use the 'tapir_discovery_list_active_archicads' tool.
     """
-    log.info(f"Executing teamwork_send tool on port {port}")
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
     if target_port not in multi_conn.active:
@@ -148,3 +142,13 @@ def teamwork_send(port: int) -> None:
     except Exception as e:
         log.error(f"Error executing TeamworkSend on port {port}: {e}")
         raise e
+
+
+register_tool_for_dispatch(
+    teamwork_send,
+    name="teamwork_teamwork_send",
+    title="TeamworkSend",
+    description="Performs a send operation on the currently opened Teamwork project.",
+    params_model=None,
+    result_model=None
+)
