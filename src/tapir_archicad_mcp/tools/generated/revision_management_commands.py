@@ -2,8 +2,8 @@
 import logging
 from pydantic import ValidationError
 from multiconn_archicad.basic_types import Port
-from tapir_archicad_mcp.app import mcp
 from tapir_archicad_mcp.context import multi_conn_instance
+from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
 
 from multiconn_archicad.models.tapir.commands import (
     GetCurrentRevisionChangesOfLayoutsParameters,
@@ -18,19 +18,10 @@ GetRevisionIssuesResult
 
 log = logging.getLogger()
 
-
-@mcp.tool(
-    name="revisions_get_current_revision_changes_of_layouts",
-    title="GetCurrentRevisionChangesOfLayouts",
-    description="Retrieves all changes belong to the last revision of the given layouts."
-)
 def get_current_revision_changes_of_layouts(port: int, params: GetCurrentRevisionChangesOfLayoutsParameters) -> GetCurrentRevisionChangesOfLayoutsResult:
     """
     Retrieves all changes belong to the last revision of the given layouts.
-
-    To find a valid 'port' number, use the 'tapir_discovery_list_active_archicads' tool.
     """
-    log.info(f"Executing get_current_revision_changes_of_layouts tool on port {port}")
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
     if target_port not in multi_conn.active:
@@ -52,19 +43,20 @@ def get_current_revision_changes_of_layouts(port: int, params: GetCurrentRevisio
         raise e
 
 
-
-@mcp.tool(
-    name="revisions_get_document_revisions",
-    title="GetDocumentRevisions",
-    description="Retrieves all document revisions."
+register_tool_for_dispatch(
+    get_current_revision_changes_of_layouts,
+    name="revisions_get_current_revision_changes_of_layouts",
+    title="GetCurrentRevisionChangesOfLayouts",
+    description="Retrieves all changes belong to the last revision of the given layouts.",
+    params_model=GetCurrentRevisionChangesOfLayoutsParameters,
+    result_model=GetCurrentRevisionChangesOfLayoutsResult
 )
+
+
 def get_document_revisions(port: int) -> GetDocumentRevisionsResult:
     """
     Retrieves all document revisions.
-
-    To find a valid 'port' number, use the 'tapir_discovery_list_active_archicads' tool.
     """
-    log.info(f"Executing get_document_revisions tool on port {port}")
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
     if target_port not in multi_conn.active:
@@ -86,19 +78,20 @@ def get_document_revisions(port: int) -> GetDocumentRevisionsResult:
         raise e
 
 
-
-@mcp.tool(
-    name="revisions_get_revision_changes",
-    title="GetRevisionChanges",
-    description="Retrieves all changes."
+register_tool_for_dispatch(
+    get_document_revisions,
+    name="revisions_get_document_revisions",
+    title="GetDocumentRevisions",
+    description="Retrieves all document revisions.",
+    params_model=None,
+    result_model=GetDocumentRevisionsResult
 )
+
+
 def get_revision_changes(port: int) -> GetRevisionChangesResult:
     """
     Retrieves all changes.
-
-    To find a valid 'port' number, use the 'tapir_discovery_list_active_archicads' tool.
     """
-    log.info(f"Executing get_revision_changes tool on port {port}")
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
     if target_port not in multi_conn.active:
@@ -120,19 +113,20 @@ def get_revision_changes(port: int) -> GetRevisionChangesResult:
         raise e
 
 
-
-@mcp.tool(
-    name="revisions_get_revision_changes_of_elements",
-    title="GetRevisionChangesOfElements",
-    description="Retrieves the changes belong to the given elements."
+register_tool_for_dispatch(
+    get_revision_changes,
+    name="revisions_get_revision_changes",
+    title="GetRevisionChanges",
+    description="Retrieves all changes.",
+    params_model=None,
+    result_model=GetRevisionChangesResult
 )
+
+
 def get_revision_changes_of_elements(port: int, params: GetRevisionChangesOfElementsParameters) -> GetRevisionChangesOfElementsResult:
     """
     Retrieves the changes belong to the given elements.
-
-    To find a valid 'port' number, use the 'tapir_discovery_list_active_archicads' tool.
     """
-    log.info(f"Executing get_revision_changes_of_elements tool on port {port}")
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
     if target_port not in multi_conn.active:
@@ -154,19 +148,20 @@ def get_revision_changes_of_elements(port: int, params: GetRevisionChangesOfElem
         raise e
 
 
-
-@mcp.tool(
-    name="revisions_get_revision_issues",
-    title="GetRevisionIssues",
-    description="Retrieves all issues."
+register_tool_for_dispatch(
+    get_revision_changes_of_elements,
+    name="revisions_get_revision_changes_of_elements",
+    title="GetRevisionChangesOfElements",
+    description="Retrieves the changes belong to the given elements.",
+    params_model=GetRevisionChangesOfElementsParameters,
+    result_model=GetRevisionChangesOfElementsResult
 )
+
+
 def get_revision_issues(port: int) -> GetRevisionIssuesResult:
     """
     Retrieves all issues.
-
-    To find a valid 'port' number, use the 'tapir_discovery_list_active_archicads' tool.
     """
-    log.info(f"Executing get_revision_issues tool on port {port}")
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
     if target_port not in multi_conn.active:
@@ -186,3 +181,13 @@ def get_revision_issues(port: int) -> GetRevisionIssuesResult:
     except Exception as e:
         log.error(f"Error executing GetRevisionIssues on port {port}: {e}")
         raise e
+
+
+register_tool_for_dispatch(
+    get_revision_issues,
+    name="revisions_get_revision_issues",
+    title="GetRevisionIssues",
+    description="Retrieves all issues.",
+    params_model=None,
+    result_model=GetRevisionIssuesResult
+)

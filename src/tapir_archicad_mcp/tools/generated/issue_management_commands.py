@@ -2,8 +2,8 @@
 import logging
 from pydantic import ValidationError
 from multiconn_archicad.basic_types import Port
-from tapir_archicad_mcp.app import mcp
 from tapir_archicad_mcp.context import multi_conn_instance
+from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
 import time
 from typing import Any
 from tapir_archicad_mcp.pagination import handle_paginated_request, PAGINATION_CACHE, CACHE_LIFETIME_SECONDS
@@ -27,19 +27,10 @@ ImportIssuesFromBCFParameters
 
 log = logging.getLogger()
 
-
-@mcp.tool(
-    name="issues_add_comment_to_issue",
-    title="AddCommentToIssue",
-    description="Adds a new comment to the specified issue."
-)
 def add_comment_to_issue(port: int, params: AddCommentToIssueParameters) -> None:
     """
     Adds a new comment to the specified issue.
-
-    To find a valid 'port' number, use the 'tapir_discovery_list_active_archicads' tool.
     """
-    log.info(f"Executing add_comment_to_issue tool on port {port}")
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
     if target_port not in multi_conn.active:
@@ -61,19 +52,20 @@ def add_comment_to_issue(port: int, params: AddCommentToIssueParameters) -> None
         raise e
 
 
-
-@mcp.tool(
-    name="issues_attach_elements_to_issue",
-    title="AttachElementsToIssue",
-    description="Attaches elements to the specified issue."
+register_tool_for_dispatch(
+    add_comment_to_issue,
+    name="issues_add_comment_to_issue",
+    title="AddCommentToIssue",
+    description="Adds a new comment to the specified issue.",
+    params_model=AddCommentToIssueParameters,
+    result_model=None
 )
+
+
 def attach_elements_to_issue(port: int, params: AttachElementsToIssueParameters) -> None:
     """
     Attaches elements to the specified issue.
-
-    To find a valid 'port' number, use the 'tapir_discovery_list_active_archicads' tool.
     """
-    log.info(f"Executing attach_elements_to_issue tool on port {port}")
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
     if target_port not in multi_conn.active:
@@ -95,19 +87,20 @@ def attach_elements_to_issue(port: int, params: AttachElementsToIssueParameters)
         raise e
 
 
-
-@mcp.tool(
-    name="issues_create_issue",
-    title="CreateIssue",
-    description="Creates a new issue."
+register_tool_for_dispatch(
+    attach_elements_to_issue,
+    name="issues_attach_elements_to_issue",
+    title="AttachElementsToIssue",
+    description="Attaches elements to the specified issue.",
+    params_model=AttachElementsToIssueParameters,
+    result_model=None
 )
+
+
 def create_issue(port: int, params: CreateIssueParameters) -> CreateIssueResult:
     """
     Creates a new issue.
-
-    To find a valid 'port' number, use the 'tapir_discovery_list_active_archicads' tool.
     """
-    log.info(f"Executing create_issue tool on port {port}")
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
     if target_port not in multi_conn.active:
@@ -129,19 +122,20 @@ def create_issue(port: int, params: CreateIssueParameters) -> CreateIssueResult:
         raise e
 
 
-
-@mcp.tool(
-    name="issues_delete_issue",
-    title="DeleteIssue",
-    description="Deletes the specified issue."
+register_tool_for_dispatch(
+    create_issue,
+    name="issues_create_issue",
+    title="CreateIssue",
+    description="Creates a new issue.",
+    params_model=CreateIssueParameters,
+    result_model=CreateIssueResult
 )
+
+
 def delete_issue(port: int, params: DeleteIssueParameters) -> None:
     """
     Deletes the specified issue.
-
-    To find a valid 'port' number, use the 'tapir_discovery_list_active_archicads' tool.
     """
-    log.info(f"Executing delete_issue tool on port {port}")
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
     if target_port not in multi_conn.active:
@@ -163,19 +157,20 @@ def delete_issue(port: int, params: DeleteIssueParameters) -> None:
         raise e
 
 
-
-@mcp.tool(
-    name="issues_detach_elements_from_issue",
-    title="DetachElementsFromIssue",
-    description="Detaches elements from the specified issue."
+register_tool_for_dispatch(
+    delete_issue,
+    name="issues_delete_issue",
+    title="DeleteIssue",
+    description="Deletes the specified issue.",
+    params_model=DeleteIssueParameters,
+    result_model=None
 )
+
+
 def detach_elements_from_issue(port: int, params: DetachElementsFromIssueParameters) -> None:
     """
     Detaches elements from the specified issue.
-
-    To find a valid 'port' number, use the 'tapir_discovery_list_active_archicads' tool.
     """
-    log.info(f"Executing detach_elements_from_issue tool on port {port}")
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
     if target_port not in multi_conn.active:
@@ -197,19 +192,20 @@ def detach_elements_from_issue(port: int, params: DetachElementsFromIssueParamet
         raise e
 
 
-
-@mcp.tool(
-    name="issues_export_issues_to_bcf",
-    title="ExportIssuesToBCF",
-    description="Exports specified issues to a BCF file."
+register_tool_for_dispatch(
+    detach_elements_from_issue,
+    name="issues_detach_elements_from_issue",
+    title="DetachElementsFromIssue",
+    description="Detaches elements from the specified issue.",
+    params_model=DetachElementsFromIssueParameters,
+    result_model=None
 )
+
+
 def export_issues_to_bcf(port: int, params: ExportIssuesToBCFParameters) -> None:
     """
     Exports specified issues to a BCF file.
-
-    To find a valid 'port' number, use the 'tapir_discovery_list_active_archicads' tool.
     """
-    log.info(f"Executing export_issues_to_bcf tool on port {port}")
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
     if target_port not in multi_conn.active:
@@ -231,19 +227,20 @@ def export_issues_to_bcf(port: int, params: ExportIssuesToBCFParameters) -> None
         raise e
 
 
-
-@mcp.tool(
-    name="issues_get_comments_from_issue",
-    title="GetCommentsFromIssue",
-    description="Retrieves comments information from the specified issue."
+register_tool_for_dispatch(
+    export_issues_to_bcf,
+    name="issues_export_issues_to_bcf",
+    title="ExportIssuesToBCF",
+    description="Exports specified issues to a BCF file.",
+    params_model=ExportIssuesToBCFParameters,
+    result_model=None
 )
+
+
 def get_comments_from_issue(port: int, params: GetCommentsFromIssueParameters) -> GetCommentsFromIssueResult:
     """
     Retrieves comments information from the specified issue.
-
-    To find a valid 'port' number, use the 'tapir_discovery_list_active_archicads' tool.
     """
-    log.info(f"Executing get_comments_from_issue tool on port {port}")
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
     if target_port not in multi_conn.active:
@@ -265,19 +262,20 @@ def get_comments_from_issue(port: int, params: GetCommentsFromIssueParameters) -
         raise e
 
 
-
-@mcp.tool(
-    name="issues_get_elements_attached_to_issue",
-    title="GetElementsAttachedToIssue",
-    description="Retrieves attached elements of the specified issue, filtered by attachment type."
+register_tool_for_dispatch(
+    get_comments_from_issue,
+    name="issues_get_comments_from_issue",
+    title="GetCommentsFromIssue",
+    description="Retrieves comments information from the specified issue.",
+    params_model=GetCommentsFromIssueParameters,
+    result_model=GetCommentsFromIssueResult
 )
+
+
 def get_elements_attached_to_issue(port: int, params: GetElementsAttachedToIssueParameters) -> GetElementsAttachedToIssueResult:
     """
     Retrieves attached elements of the specified issue, filtered by attachment type.
-
-    To find a valid 'port' number, use the 'tapir_discovery_list_active_archicads' tool.
     """
-    log.info(f"Executing get_elements_attached_to_issue tool on port {port}")
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
     if target_port not in multi_conn.active:
@@ -299,6 +297,15 @@ def get_elements_attached_to_issue(port: int, params: GetElementsAttachedToIssue
         raise e
 
 
+register_tool_for_dispatch(
+    get_elements_attached_to_issue,
+    name="issues_get_elements_attached_to_issue",
+    title="GetElementsAttachedToIssue",
+    description="Retrieves attached elements of the specified issue, filtered by attachment type.",
+    params_model=GetElementsAttachedToIssueParameters,
+    result_model=GetElementsAttachedToIssueResult
+)
+
 
 class PaginatedGetIssuesResult(GetIssuesResult):
     """A paginated version of the GetIssuesResult."""
@@ -306,21 +313,12 @@ class PaginatedGetIssuesResult(GetIssuesResult):
     next_page_token: str | None = None
 
 
-
-@mcp.tool(
-    name="issues_get_issues",
-    title="GetIssues",
-    description="Retrieves information about existing issues."
-)
 def get_issues(port: int, page_token: str | None = None) -> PaginatedGetIssuesResult:
     """
     Retrieves information about existing issues.
-    This response is paginated. If 'next_page_token' is returned, call this function
-    again with that token to get the next page of results.
-
-    To find a valid 'port' number, use the 'tapir_discovery_list_active_archicads' tool.
+        This response is paginated. If 'next_page_token' is returned, call this function
+        again with that token to get the next page of results.
     """
-    log.info(f"Executing get_issues tool on port {port}")
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
     if target_port not in multi_conn.active:
@@ -363,19 +361,20 @@ def get_issues(port: int, page_token: str | None = None) -> PaginatedGetIssuesRe
         raise e
 
 
-
-@mcp.tool(
-    name="issues_import_issues_from_bcf",
-    title="ImportIssuesFromBCF",
-    description="Imports issues from the specified BCF file."
+register_tool_for_dispatch(
+    get_issues,
+    name="issues_get_issues",
+    title="GetIssues",
+    description="Retrieves information about existing issues.",
+    params_model=None,
+    result_model=PaginatedGetIssuesResult
 )
+
+
 def import_issues_from_bcf(port: int, params: ImportIssuesFromBCFParameters) -> None:
     """
     Imports issues from the specified BCF file.
-
-    To find a valid 'port' number, use the 'tapir_discovery_list_active_archicads' tool.
     """
-    log.info(f"Executing import_issues_from_bcf tool on port {port}")
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
     if target_port not in multi_conn.active:
@@ -395,3 +394,13 @@ def import_issues_from_bcf(port: int, params: ImportIssuesFromBCFParameters) -> 
     except Exception as e:
         log.error(f"Error executing ImportIssuesFromBCF on port {port}: {e}")
         raise e
+
+
+register_tool_for_dispatch(
+    import_issues_from_bcf,
+    name="issues_import_issues_from_bcf",
+    title="ImportIssuesFromBCF",
+    description="Imports issues from the specified BCF file.",
+    params_model=ImportIssuesFromBCFParameters,
+    result_model=None
+)

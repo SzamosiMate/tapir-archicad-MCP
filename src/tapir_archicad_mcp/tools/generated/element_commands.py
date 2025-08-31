@@ -2,8 +2,8 @@
 import logging
 from pydantic import ValidationError
 from multiconn_archicad.basic_types import Port
-from tapir_archicad_mcp.app import mcp
 from tapir_archicad_mcp.context import multi_conn_instance
+from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
 import time
 from typing import Any
 from tapir_archicad_mcp.pagination import handle_paginated_request, PAGINATION_CACHE, CACHE_LIFETIME_SECONDS
@@ -57,19 +57,10 @@ SetGDLParametersOfElementsResult
 
 log = logging.getLogger()
 
-
-@mcp.tool(
-    name="elements_change_selection_of_elements",
-    title="ChangeSelectionOfElements",
-    description="Adds/removes a number of elements to/from the current selection."
-)
 def change_selection_of_elements(port: int, params: ChangeSelectionOfElementsParameters) -> ChangeSelectionOfElementsResult:
     """
     Adds/removes a number of elements to/from the current selection.
-
-    To find a valid 'port' number, use the 'tapir_discovery_list_active_archicads' tool.
     """
-    log.info(f"Executing change_selection_of_elements tool on port {port}")
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
     if target_port not in multi_conn.active:
@@ -91,19 +82,20 @@ def change_selection_of_elements(port: int, params: ChangeSelectionOfElementsPar
         raise e
 
 
-
-@mcp.tool(
-    name="elements_create_columns",
-    title="CreateColumns",
-    description="Creates Column elements based on the given parameters."
+register_tool_for_dispatch(
+    change_selection_of_elements,
+    name="elements_change_selection_of_elements",
+    title="ChangeSelectionOfElements",
+    description="Adds/removes a number of elements to/from the current selection.",
+    params_model=ChangeSelectionOfElementsParameters,
+    result_model=ChangeSelectionOfElementsResult
 )
+
+
 def create_columns(port: int, params: CreateColumnsParameters) -> CreateColumnsResult:
     """
     Creates Column elements based on the given parameters.
-
-    To find a valid 'port' number, use the 'tapir_discovery_list_active_archicads' tool.
     """
-    log.info(f"Executing create_columns tool on port {port}")
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
     if target_port not in multi_conn.active:
@@ -125,19 +117,20 @@ def create_columns(port: int, params: CreateColumnsParameters) -> CreateColumnsR
         raise e
 
 
-
-@mcp.tool(
-    name="elements_create_meshes",
-    title="CreateMeshes",
-    description="Creates Mesh elements based on the given parameters."
+register_tool_for_dispatch(
+    create_columns,
+    name="elements_create_columns",
+    title="CreateColumns",
+    description="Creates Column elements based on the given parameters.",
+    params_model=CreateColumnsParameters,
+    result_model=CreateColumnsResult
 )
+
+
 def create_meshes(port: int, params: CreateMeshesParameters) -> CreateMeshesResult:
     """
     Creates Mesh elements based on the given parameters.
-
-    To find a valid 'port' number, use the 'tapir_discovery_list_active_archicads' tool.
     """
-    log.info(f"Executing create_meshes tool on port {port}")
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
     if target_port not in multi_conn.active:
@@ -159,19 +152,20 @@ def create_meshes(port: int, params: CreateMeshesParameters) -> CreateMeshesResu
         raise e
 
 
-
-@mcp.tool(
-    name="elements_create_objects",
-    title="CreateObjects",
-    description="Creates Object elements based on the given parameters."
+register_tool_for_dispatch(
+    create_meshes,
+    name="elements_create_meshes",
+    title="CreateMeshes",
+    description="Creates Mesh elements based on the given parameters.",
+    params_model=CreateMeshesParameters,
+    result_model=CreateMeshesResult
 )
+
+
 def create_objects(port: int, params: CreateObjectsParameters) -> CreateObjectsResult:
     """
     Creates Object elements based on the given parameters.
-
-    To find a valid 'port' number, use the 'tapir_discovery_list_active_archicads' tool.
     """
-    log.info(f"Executing create_objects tool on port {port}")
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
     if target_port not in multi_conn.active:
@@ -193,19 +187,20 @@ def create_objects(port: int, params: CreateObjectsParameters) -> CreateObjectsR
         raise e
 
 
-
-@mcp.tool(
-    name="elements_create_polylines",
-    title="CreatePolylines",
-    description="Creates Polyline elements based on the given parameters."
+register_tool_for_dispatch(
+    create_objects,
+    name="elements_create_objects",
+    title="CreateObjects",
+    description="Creates Object elements based on the given parameters.",
+    params_model=CreateObjectsParameters,
+    result_model=CreateObjectsResult
 )
+
+
 def create_polylines(port: int, params: CreatePolylinesParameters) -> CreatePolylinesResult:
     """
     Creates Polyline elements based on the given parameters.
-
-    To find a valid 'port' number, use the 'tapir_discovery_list_active_archicads' tool.
     """
-    log.info(f"Executing create_polylines tool on port {port}")
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
     if target_port not in multi_conn.active:
@@ -227,19 +222,20 @@ def create_polylines(port: int, params: CreatePolylinesParameters) -> CreatePoly
         raise e
 
 
-
-@mcp.tool(
-    name="elements_create_slabs",
-    title="CreateSlabs",
-    description="Creates Slab elements based on the given parameters."
+register_tool_for_dispatch(
+    create_polylines,
+    name="elements_create_polylines",
+    title="CreatePolylines",
+    description="Creates Polyline elements based on the given parameters.",
+    params_model=CreatePolylinesParameters,
+    result_model=CreatePolylinesResult
 )
+
+
 def create_slabs(port: int, params: CreateSlabsParameters) -> CreateSlabsResult:
     """
     Creates Slab elements based on the given parameters.
-
-    To find a valid 'port' number, use the 'tapir_discovery_list_active_archicads' tool.
     """
-    log.info(f"Executing create_slabs tool on port {port}")
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
     if target_port not in multi_conn.active:
@@ -261,19 +257,20 @@ def create_slabs(port: int, params: CreateSlabsParameters) -> CreateSlabsResult:
         raise e
 
 
-
-@mcp.tool(
-    name="elements_create_zones",
-    title="CreateZones",
-    description="Creates Zone elements based on the given parameters."
+register_tool_for_dispatch(
+    create_slabs,
+    name="elements_create_slabs",
+    title="CreateSlabs",
+    description="Creates Slab elements based on the given parameters.",
+    params_model=CreateSlabsParameters,
+    result_model=CreateSlabsResult
 )
+
+
 def create_zones(port: int, params: CreateZonesParameters) -> CreateZonesResult:
     """
     Creates Zone elements based on the given parameters.
-
-    To find a valid 'port' number, use the 'tapir_discovery_list_active_archicads' tool.
     """
-    log.info(f"Executing create_zones tool on port {port}")
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
     if target_port not in multi_conn.active:
@@ -295,19 +292,20 @@ def create_zones(port: int, params: CreateZonesParameters) -> CreateZonesResult:
         raise e
 
 
-
-@mcp.tool(
-    name="elements_delete_elements",
-    title="DeleteElements",
-    description="Deletes elements."
+register_tool_for_dispatch(
+    create_zones,
+    name="elements_create_zones",
+    title="CreateZones",
+    description="Creates Zone elements based on the given parameters.",
+    params_model=CreateZonesParameters,
+    result_model=CreateZonesResult
 )
+
+
 def delete_elements(port: int, params: DeleteElementsParameters) -> None:
     """
     Deletes elements.
-
-    To find a valid 'port' number, use the 'tapir_discovery_list_active_archicads' tool.
     """
-    log.info(f"Executing delete_elements tool on port {port}")
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
     if target_port not in multi_conn.active:
@@ -329,19 +327,20 @@ def delete_elements(port: int, params: DeleteElementsParameters) -> None:
         raise e
 
 
-
-@mcp.tool(
-    name="elements_filter_elements",
-    title="FilterElements",
-    description="Tests an elements by the given criterias."
+register_tool_for_dispatch(
+    delete_elements,
+    name="elements_delete_elements",
+    title="DeleteElements",
+    description="Deletes elements.",
+    params_model=DeleteElementsParameters,
+    result_model=None
 )
+
+
 def filter_elements(port: int, params: FilterElementsParameters) -> FilterElementsResult:
     """
     Tests an elements by the given criterias.
-
-    To find a valid 'port' number, use the 'tapir_discovery_list_active_archicads' tool.
     """
-    log.info(f"Executing filter_elements tool on port {port}")
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
     if target_port not in multi_conn.active:
@@ -363,19 +362,20 @@ def filter_elements(port: int, params: FilterElementsParameters) -> FilterElemen
         raise e
 
 
-
-@mcp.tool(
-    name="elements_get3_d_bounding_boxes",
-    title="Get3DBoundingBoxes",
-    description="Get the 3D bounding box of elements. The bounding box is calculated from the global origin in the 3D view. The output is the array of the bounding boxes respective to the input array of elements."
+register_tool_for_dispatch(
+    filter_elements,
+    name="elements_filter_elements",
+    title="FilterElements",
+    description="Tests an elements by the given criterias.",
+    params_model=FilterElementsParameters,
+    result_model=FilterElementsResult
 )
+
+
 def get3_d_bounding_boxes(port: int, params: Get3DBoundingBoxesParameters) -> Get3DBoundingBoxesResult:
     """
     Get the 3D bounding box of elements. The bounding box is calculated from the global origin in the 3D view. The output is the array of the bounding boxes respective to the input array of elements.
-
-    To find a valid 'port' number, use the 'tapir_discovery_list_active_archicads' tool.
     """
-    log.info(f"Executing get3_d_bounding_boxes tool on port {port}")
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
     if target_port not in multi_conn.active:
@@ -397,6 +397,15 @@ def get3_d_bounding_boxes(port: int, params: Get3DBoundingBoxesParameters) -> Ge
         raise e
 
 
+register_tool_for_dispatch(
+    get3_d_bounding_boxes,
+    name="elements_get3_d_bounding_boxes",
+    title="Get3DBoundingBoxes",
+    description="Get the 3D bounding box of elements. The bounding box is calculated from the global origin in the 3D view. The output is the array of the bounding boxes respective to the input array of elements.",
+    params_model=Get3DBoundingBoxesParameters,
+    result_model=Get3DBoundingBoxesResult
+)
+
 
 class PaginatedGetAllElementsResult(GetAllElementsResult):
     """A paginated version of the GetAllElementsResult."""
@@ -404,21 +413,12 @@ class PaginatedGetAllElementsResult(GetAllElementsResult):
     next_page_token: str | None = None
 
 
-
-@mcp.tool(
-    name="elements_get_all_elements",
-    title="GetAllElements",
-    description="Returns the identifier of all elements on the plan. Use the optional filter parameter for filtering."
-)
 def get_all_elements(port: int, params: GetAllElementsParameters, page_token: str | None = None) -> PaginatedGetAllElementsResult:
     """
     Returns the identifier of all elements on the plan. Use the optional filter parameter for filtering.
-    This response is paginated. If 'next_page_token' is returned, call this function
-    again with that token to get the next page of results.
-
-    To find a valid 'port' number, use the 'tapir_discovery_list_active_archicads' tool.
+        This response is paginated. If 'next_page_token' is returned, call this function
+        again with that token to get the next page of results.
     """
-    log.info(f"Executing get_all_elements tool on port {port}")
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
     if target_port not in multi_conn.active:
@@ -461,19 +461,20 @@ def get_all_elements(port: int, params: GetAllElementsParameters, page_token: st
         raise e
 
 
-
-@mcp.tool(
-    name="elements_get_classifications_of_elements",
-    title="GetClassificationsOfElements",
-    description="Returns the classification of the given elements in the given classification systems. It works for subelements of hierarchal elements also."
+register_tool_for_dispatch(
+    get_all_elements,
+    name="elements_get_all_elements",
+    title="GetAllElements",
+    description="Returns the identifier of all elements on the plan. Use the optional filter parameter for filtering.",
+    params_model=GetAllElementsParameters,
+    result_model=PaginatedGetAllElementsResult
 )
+
+
 def get_classifications_of_elements(port: int, params: GetClassificationsOfElementsParameters) -> GetClassificationsOfElementsResult:
     """
     Returns the classification of the given elements in the given classification systems. It works for subelements of hierarchal elements also.
-
-    To find a valid 'port' number, use the 'tapir_discovery_list_active_archicads' tool.
     """
-    log.info(f"Executing get_classifications_of_elements tool on port {port}")
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
     if target_port not in multi_conn.active:
@@ -495,19 +496,20 @@ def get_classifications_of_elements(port: int, params: GetClassificationsOfEleme
         raise e
 
 
-
-@mcp.tool(
-    name="elements_get_connected_elements",
-    title="GetConnectedElements",
-    description="Gets connected elements of the given elements."
+register_tool_for_dispatch(
+    get_classifications_of_elements,
+    name="elements_get_classifications_of_elements",
+    title="GetClassificationsOfElements",
+    description="Returns the classification of the given elements in the given classification systems. It works for subelements of hierarchal elements also.",
+    params_model=GetClassificationsOfElementsParameters,
+    result_model=GetClassificationsOfElementsResult
 )
+
+
 def get_connected_elements(port: int, params: GetConnectedElementsParameters) -> GetConnectedElementsResult:
     """
     Gets connected elements of the given elements.
-
-    To find a valid 'port' number, use the 'tapir_discovery_list_active_archicads' tool.
     """
-    log.info(f"Executing get_connected_elements tool on port {port}")
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
     if target_port not in multi_conn.active:
@@ -529,19 +531,20 @@ def get_connected_elements(port: int, params: GetConnectedElementsParameters) ->
         raise e
 
 
-
-@mcp.tool(
-    name="elements_get_details_of_elements",
-    title="GetDetailsOfElements",
-    description="Gets the details of the given elements (geometry parameters etc)."
+register_tool_for_dispatch(
+    get_connected_elements,
+    name="elements_get_connected_elements",
+    title="GetConnectedElements",
+    description="Gets connected elements of the given elements.",
+    params_model=GetConnectedElementsParameters,
+    result_model=GetConnectedElementsResult
 )
+
+
 def get_details_of_elements(port: int, params: GetDetailsOfElementsParameters) -> GetDetailsOfElementsResult:
     """
     Gets the details of the given elements (geometry parameters etc).
-
-    To find a valid 'port' number, use the 'tapir_discovery_list_active_archicads' tool.
     """
-    log.info(f"Executing get_details_of_elements tool on port {port}")
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
     if target_port not in multi_conn.active:
@@ -563,6 +566,15 @@ def get_details_of_elements(port: int, params: GetDetailsOfElementsParameters) -
         raise e
 
 
+register_tool_for_dispatch(
+    get_details_of_elements,
+    name="elements_get_details_of_elements",
+    title="GetDetailsOfElements",
+    description="Gets the details of the given elements (geometry parameters etc).",
+    params_model=GetDetailsOfElementsParameters,
+    result_model=GetDetailsOfElementsResult
+)
+
 
 class PaginatedGetElementsByTypeResult(GetElementsByTypeResult):
     """A paginated version of the GetElementsByTypeResult."""
@@ -570,21 +582,12 @@ class PaginatedGetElementsByTypeResult(GetElementsByTypeResult):
     next_page_token: str | None = None
 
 
-
-@mcp.tool(
-    name="elements_get_elements_by_type",
-    title="GetElementsByType",
-    description="Returns the identifier of every element of the given type on the plan. It works for any type. Use the optional filter parameter for filtering."
-)
 def get_elements_by_type(port: int, params: GetElementsByTypeParameters, page_token: str | None = None) -> PaginatedGetElementsByTypeResult:
     """
     Returns the identifier of every element of the given type on the plan. It works for any type. Use the optional filter parameter for filtering.
-    This response is paginated. If 'next_page_token' is returned, call this function
-    again with that token to get the next page of results.
-
-    To find a valid 'port' number, use the 'tapir_discovery_list_active_archicads' tool.
+        This response is paginated. If 'next_page_token' is returned, call this function
+        again with that token to get the next page of results.
     """
-    log.info(f"Executing get_elements_by_type tool on port {port}")
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
     if target_port not in multi_conn.active:
@@ -627,19 +630,20 @@ def get_elements_by_type(port: int, params: GetElementsByTypeParameters, page_to
         raise e
 
 
-
-@mcp.tool(
-    name="elements_get_gdl_parameters_of_elements",
-    title="GetGDLParametersOfElements",
-    description="Gets all the GDL parameters (name, type, value) of the given elements."
+register_tool_for_dispatch(
+    get_elements_by_type,
+    name="elements_get_elements_by_type",
+    title="GetElementsByType",
+    description="Returns the identifier of every element of the given type on the plan. It works for any type. Use the optional filter parameter for filtering.",
+    params_model=GetElementsByTypeParameters,
+    result_model=PaginatedGetElementsByTypeResult
 )
+
+
 def get_gdl_parameters_of_elements(port: int, params: GetGDLParametersOfElementsParameters) -> GetGDLParametersOfElementsResult:
     """
     Gets all the GDL parameters (name, type, value) of the given elements.
-
-    To find a valid 'port' number, use the 'tapir_discovery_list_active_archicads' tool.
     """
-    log.info(f"Executing get_gdl_parameters_of_elements tool on port {port}")
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
     if target_port not in multi_conn.active:
@@ -661,6 +665,15 @@ def get_gdl_parameters_of_elements(port: int, params: GetGDLParametersOfElements
         raise e
 
 
+register_tool_for_dispatch(
+    get_gdl_parameters_of_elements,
+    name="elements_get_gdl_parameters_of_elements",
+    title="GetGDLParametersOfElements",
+    description="Gets all the GDL parameters (name, type, value) of the given elements.",
+    params_model=GetGDLParametersOfElementsParameters,
+    result_model=GetGDLParametersOfElementsResult
+)
+
 
 class PaginatedGetSelectedElementsResult(GetSelectedElementsResult):
     """A paginated version of the GetSelectedElementsResult."""
@@ -668,21 +681,12 @@ class PaginatedGetSelectedElementsResult(GetSelectedElementsResult):
     next_page_token: str | None = None
 
 
-
-@mcp.tool(
-    name="elements_get_selected_elements",
-    title="GetSelectedElements",
-    description="Gets the list of the currently selected elements."
-)
 def get_selected_elements(port: int, page_token: str | None = None) -> PaginatedGetSelectedElementsResult:
     """
     Gets the list of the currently selected elements.
-    This response is paginated. If 'next_page_token' is returned, call this function
-    again with that token to get the next page of results.
-
-    To find a valid 'port' number, use the 'tapir_discovery_list_active_archicads' tool.
+        This response is paginated. If 'next_page_token' is returned, call this function
+        again with that token to get the next page of results.
     """
-    log.info(f"Executing get_selected_elements tool on port {port}")
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
     if target_port not in multi_conn.active:
@@ -725,19 +729,20 @@ def get_selected_elements(port: int, page_token: str | None = None) -> Paginated
         raise e
 
 
-
-@mcp.tool(
-    name="elements_get_subelements_of_hierarchical_elements",
-    title="GetSubelementsOfHierarchicalElements",
-    description="Gets the subelements of the given hierarchical elements."
+register_tool_for_dispatch(
+    get_selected_elements,
+    name="elements_get_selected_elements",
+    title="GetSelectedElements",
+    description="Gets the list of the currently selected elements.",
+    params_model=None,
+    result_model=PaginatedGetSelectedElementsResult
 )
+
+
 def get_subelements_of_hierarchical_elements(port: int, params: GetSubelementsOfHierarchicalElementsParameters) -> GetSubelementsOfHierarchicalElementsResult:
     """
     Gets the subelements of the given hierarchical elements.
-
-    To find a valid 'port' number, use the 'tapir_discovery_list_active_archicads' tool.
     """
-    log.info(f"Executing get_subelements_of_hierarchical_elements tool on port {port}")
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
     if target_port not in multi_conn.active:
@@ -759,19 +764,20 @@ def get_subelements_of_hierarchical_elements(port: int, params: GetSubelementsOf
         raise e
 
 
-
-@mcp.tool(
-    name="elements_highlight_elements",
-    title="HighlightElements",
-    description="Highlights the elements given in the elements array. In case of empty elements array removes all previously set highlights."
+register_tool_for_dispatch(
+    get_subelements_of_hierarchical_elements,
+    name="elements_get_subelements_of_hierarchical_elements",
+    title="GetSubelementsOfHierarchicalElements",
+    description="Gets the subelements of the given hierarchical elements.",
+    params_model=GetSubelementsOfHierarchicalElementsParameters,
+    result_model=GetSubelementsOfHierarchicalElementsResult
 )
+
+
 def highlight_elements(port: int, params: HighlightElementsParameters) -> None:
     """
     Highlights the elements given in the elements array. In case of empty elements array removes all previously set highlights.
-
-    To find a valid 'port' number, use the 'tapir_discovery_list_active_archicads' tool.
     """
-    log.info(f"Executing highlight_elements tool on port {port}")
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
     if target_port not in multi_conn.active:
@@ -793,19 +799,20 @@ def highlight_elements(port: int, params: HighlightElementsParameters) -> None:
         raise e
 
 
-
-@mcp.tool(
-    name="elements_move_elements",
-    title="MoveElements",
-    description="Moves elements with a given vector."
+register_tool_for_dispatch(
+    highlight_elements,
+    name="elements_highlight_elements",
+    title="HighlightElements",
+    description="Highlights the elements given in the elements array. In case of empty elements array removes all previously set highlights.",
+    params_model=HighlightElementsParameters,
+    result_model=None
 )
+
+
 def move_elements(port: int, params: MoveElementsParameters) -> MoveElementsResult:
     """
     Moves elements with a given vector.
-
-    To find a valid 'port' number, use the 'tapir_discovery_list_active_archicads' tool.
     """
-    log.info(f"Executing move_elements tool on port {port}")
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
     if target_port not in multi_conn.active:
@@ -827,19 +834,20 @@ def move_elements(port: int, params: MoveElementsParameters) -> MoveElementsResu
         raise e
 
 
-
-@mcp.tool(
-    name="elements_set_classifications_of_elements",
-    title="SetClassificationsOfElements",
-    description="Sets the classifications of elements. In order to set the classification of an element to unclassified, omit the classificationItemId field. It works for subelements of hierarchal elements also."
+register_tool_for_dispatch(
+    move_elements,
+    name="elements_move_elements",
+    title="MoveElements",
+    description="Moves elements with a given vector.",
+    params_model=MoveElementsParameters,
+    result_model=MoveElementsResult
 )
+
+
 def set_classifications_of_elements(port: int, params: SetClassificationsOfElementsParameters) -> SetClassificationsOfElementsResult:
     """
     Sets the classifications of elements. In order to set the classification of an element to unclassified, omit the classificationItemId field. It works for subelements of hierarchal elements also.
-
-    To find a valid 'port' number, use the 'tapir_discovery_list_active_archicads' tool.
     """
-    log.info(f"Executing set_classifications_of_elements tool on port {port}")
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
     if target_port not in multi_conn.active:
@@ -861,19 +869,20 @@ def set_classifications_of_elements(port: int, params: SetClassificationsOfEleme
         raise e
 
 
-
-@mcp.tool(
-    name="elements_set_details_of_elements",
-    title="SetDetailsOfElements",
-    description="Sets the details of the given elements (floor, layer, order etc)."
+register_tool_for_dispatch(
+    set_classifications_of_elements,
+    name="elements_set_classifications_of_elements",
+    title="SetClassificationsOfElements",
+    description="Sets the classifications of elements. In order to set the classification of an element to unclassified, omit the classificationItemId field. It works for subelements of hierarchal elements also.",
+    params_model=SetClassificationsOfElementsParameters,
+    result_model=SetClassificationsOfElementsResult
 )
+
+
 def set_details_of_elements(port: int, params: SetDetailsOfElementsParameters) -> SetDetailsOfElementsResult:
     """
     Sets the details of the given elements (floor, layer, order etc).
-
-    To find a valid 'port' number, use the 'tapir_discovery_list_active_archicads' tool.
     """
-    log.info(f"Executing set_details_of_elements tool on port {port}")
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
     if target_port not in multi_conn.active:
@@ -895,19 +904,20 @@ def set_details_of_elements(port: int, params: SetDetailsOfElementsParameters) -
         raise e
 
 
-
-@mcp.tool(
-    name="elements_set_gdl_parameters_of_elements",
-    title="SetGDLParametersOfElements",
-    description="Sets the given GDL parameters of the given elements."
+register_tool_for_dispatch(
+    set_details_of_elements,
+    name="elements_set_details_of_elements",
+    title="SetDetailsOfElements",
+    description="Sets the details of the given elements (floor, layer, order etc).",
+    params_model=SetDetailsOfElementsParameters,
+    result_model=SetDetailsOfElementsResult
 )
+
+
 def set_gdl_parameters_of_elements(port: int, params: SetGDLParametersOfElementsParameters) -> SetGDLParametersOfElementsResult:
     """
     Sets the given GDL parameters of the given elements.
-
-    To find a valid 'port' number, use the 'tapir_discovery_list_active_archicads' tool.
     """
-    log.info(f"Executing set_gdl_parameters_of_elements tool on port {port}")
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
     if target_port not in multi_conn.active:
@@ -927,3 +937,13 @@ def set_gdl_parameters_of_elements(port: int, params: SetGDLParametersOfElements
     except Exception as e:
         log.error(f"Error executing SetGDLParametersOfElements on port {port}: {e}")
         raise e
+
+
+register_tool_for_dispatch(
+    set_gdl_parameters_of_elements,
+    name="elements_set_gdl_parameters_of_elements",
+    title="SetGDLParametersOfElements",
+    description="Sets the given GDL parameters of the given elements.",
+    params_model=SetGDLParametersOfElementsParameters,
+    result_model=SetGDLParametersOfElementsResult
+)

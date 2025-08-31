@@ -46,15 +46,15 @@ The initial proposed solution, detailed in a previous version of this brief, was
 Given the limitations of the multi-server approach, the project will pivot to a more sophisticated and user-friendly **`discover`/`call` architecture**. This pattern keeps the server as a single, easy-to-install entity while intelligently managing the toolset exposed to the AI.
 
 The server will only expose two primary, handwritten tools for interacting with the Archicad APIs:
-*   `tapir_discover_tools(query: str) -> list[ToolInfo]`: This tool will perform a semantic search over all available API commands.
-*   `tapir_call_tool(name: str, arguments: dict) -> dict`: This tool will act as a dispatcher, executing the specific tool function identified by the `name` parameter.
+*   `archicad_discover_tools(query: str) -> list[ToolInfo]`: This tool will perform a semantic search over all available API commands.
+*   `archicad_call_tool(name: str, arguments: dict) -> dict`: This tool will act as a dispatcher, executing the specific tool function identified by the `name` parameter.
 
 ---
 
 **5. Detailed Action Plan for the Next Version**
 
 1.  **Implement the Intelligent Discovery & Execution Pattern:**
-    *   Create the handwritten `tapir_discover_tools` and `tapir_call_tool` functions.
+    *   Create the handwritten `archicad_discover_tools` and `archicad_call_tool` functions.
     *   Build a tool registry (a simple Python dictionary) at server startup that maps tool names as strings to their callable Python function objects. The `call_tool` function will use this registry for dispatching.
 
 2.  **Build the Local Semantic Search Index:**
