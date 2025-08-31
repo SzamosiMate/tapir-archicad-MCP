@@ -5,7 +5,8 @@ from pydantic import BaseModel, ValidationError
 from tapir_archicad_mcp.app import mcp
 from tapir_archicad_mcp.context import multi_conn_instance
 from tapir_archicad_mcp.tools.custom.models import ArchicadInstanceInfo, ProjectType, ToolInfo
-from tapir_archicad_mcp.tools.tool_registry import TOOL_DISCOVERY_CATALOG, get_tool_entry
+from tapir_archicad_mcp.tools.tool_registry import get_tool_entry
+from tapir_archicad_mcp.tools.search_index import search_tools
 
 from multiconn_archicad.conn_header import is_header_fully_initialized, ConnHeader
 from multiconn_archicad.basic_types import TeamworkProjectID, SoloProjectID
@@ -68,26 +69,19 @@ def list_active_archicads() -> list[ArchicadInstanceInfo]:
 @mcp.tool(
     name="archicad_discover_tools",
     title="Discover Archicad API Tools",
-    description="Performs a search over the available Archicad commands (Tapir/JSON API) and returns relevant tool metadata. Use this before calling archicad_call_tool."
-)
+    description=(
+            "Performs a semantic search over all available Archicad commands to find the most relevant tools for a task. "
+            "For the best results, be specific and use action-oriented phrases. "
+            "Good queries include: 'create a wall', 'get properties of selected elements', 'find all doors on a story', 'modify the height of a beam'. "
+            "Use this to find the correct tool name before using 'archicad_call_tool'."
+    ))
 def archicad_discover_tools(query: str) -> list[ToolInfo]:
     """
-    Searches the tool catalog based on the query.
-
-    NOTE: Currently performs a basic keyword search. This will be replaced by a vector/semantic search index later.
+    Performs a semantic vector search on the tool catalog to find tools
+    that are most relevant to the natural language query.
     """
-    log.info(f"Executing archicad_discover_tools with query: '{query}'")
-    query_lower = query.lower()
-
-    results = []
-    for tool_data in TOOL_DISCOVERY_CATALOG:
-        desc = tool_data["description"].lower()
-        name = tool_data["name"].lower()
-        if query_lower in name or query_lower in desc:
-            results.append(ToolInfo(**tool_data))
-
-    # Limit results to keep context window clean
-    return results[:10]
+    log.info(f"Executing semantic tool discovery with query: '{query}'")
+    return search_tools(query)
 
 
 @mcp.tool(
