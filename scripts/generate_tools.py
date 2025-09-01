@@ -211,7 +211,6 @@ def _generate_tool_function_code(command: dict, valid_model_names: set[str]) -> 
         )
         ''')
 
-    # --- FIX: Replaced dedent with a clean f-string for correct indentation ---
     function_code = f'''{decorator}def {command_name_snake}(port: int{param_signature}) -> {return_annotation}:
 {indent(docstring, "    ")}
     multi_conn = multi_conn_instance.get()

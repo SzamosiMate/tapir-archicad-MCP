@@ -17,7 +17,10 @@ log = logging.getLogger()
 @mcp.tool(
     name="discovery_list_active_archicads",
     title="List Active Archicad Instances",
-    description="Refreshes connections and lists all actively running and connected Archicad instances."
+    description=(
+        "Scans for and lists all running Archicad instances that the server can connect to. "
+        "Each instance is identified by a unique 'port' number. This 'port' is required to target any other command."
+    )
 )
 def list_active_archicads() -> list[ArchicadInstanceInfo]:
     log.info("Executing list_active_archicads tool...")
@@ -70,16 +73,12 @@ def list_active_archicads() -> list[ArchicadInstanceInfo]:
     name="archicad_discover_tools",
     title="Discover Archicad API Tools",
     description=(
-            "Performs a semantic search over all available Archicad commands to find the most relevant tools for a task. "
-            "For the best results, be specific and use action-oriented phrases. "
-            "Good queries include: 'create a wall', 'get properties of selected elements', 'find all doors on a story', 'modify the height of a beam'. "
-            "Use this to find the correct tool name before using 'archicad_call_tool'."
+        "Performs a semantic search over all available Archicad commands to find the most relevant tools for a task. "
+        "The search is more effective with detailed, descriptive queries. For example, instead of a short query like 'selection', "
+        "try a more complete, action-oriented query like 'get the currently selected elements' or 'add elements to the current selection'. "
+        "Use this to find the correct tool 'name' before using 'archicad_call_tool'."
     ))
 def archicad_discover_tools(query: str) -> list[ToolInfo]:
-    """
-    Performs a semantic vector search on the tool catalog to find tools
-    that are most relevant to the natural language query.
-    """
     log.info(f"Executing semantic tool discovery with query: '{query}'")
     return search_tools(query)
 
@@ -87,15 +86,14 @@ def archicad_discover_tools(query: str) -> list[ToolInfo]:
 @mcp.tool(
     name="archicad_call_tool",
     title="Execute Archicad API Command",
-    description="Dispatches a call to a specific Archicad API command, using the tool name and arguments discovered via archicad_discover_tools."
-)
+    description=(
+        "Executes a specific Archicad API command by its 'name'. This is the primary tool for interacting with Archicad. "
+        "The 'arguments' dictionary MUST contain a 'port' number to target a specific Archicad instance. "
+        "To get a valid 'port' number, you MUST first call the 'discovery_list_active_archicads' tool. "
+        "If a tool's response includes a 'next_page_token', it means the results are paginated. "
+        "To get the next page, call this same tool again with the same 'name' and 'arguments', but also add a 'page_token' key to the 'arguments' dictionary with the received token."
+    ))
 def archicad_call_tool(name: str, arguments: dict) -> dict:
-    """
-    Executes a registered tool function.
-
-    The 'arguments' dictionary must contain 'port' (int) and optionally 'params' (dict)
-    or 'page_token' (str).
-    """
     log.info(f"Executing archicad_call_tool for tool: {name}")
 
     if 'port' not in arguments:
@@ -108,40 +106,32 @@ def archicad_call_tool(name: str, arguments: dict) -> dict:
 
     call_args: Dict[str, Any] = {'port': port}
 
-    # 1. Handle Parameters
     if params_model:
         # Check if the agent wrapped the params in a 'params' key or flattened them
         raw_params = arguments.get('params', arguments)
 
         try:
-            # Instantiate the required Pydantic model
             params_instance = params_model.model_validate(raw_params)
             call_args['params'] = params_instance
 
         except ValidationError as e:
             log.error(f"Validation error for parameters of {name}: {e}")
-            # Re-raise as ValueError for cleaner MCP error handling
             raise ValueError(f"Invalid parameters provided for tool '{name}'. Validation details: {e}")
 
-    # 2. Handle Pagination Token
     if 'page_token' in arguments:
         call_args['page_token'] = arguments['page_token']
 
     try:
-        # Execute the underlying generated function
         result = target_func(**call_args)
 
-        # Convert result (which might be a Pydantic model or None) to dictionary for MCP output
         if result is None:
             return {}
 
         if isinstance(result, BaseModel):
-            # Use model_dump to convert the model back to a dictionary suitable for JSON transport
             return result.model_dump(mode='json', by_alias=True, exclude_none=True)
 
         return {"result": result}  # Should only happen for primitives, but safe fallback
 
     except Exception as e:
         log.error(f"Error executing dispatched tool {name}: {e}")
-        # Re-raise the exception for the MCP server to handle
         raise e
