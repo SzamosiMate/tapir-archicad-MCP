@@ -17,6 +17,49 @@ TOOL_CALLABLE_REGISTRY: Dict[str, ToolRegistryEntry] = {}
 TOOL_DISCOVERY_CATALOG: List[Dict[str, Any]] = []
 
 
+def _get_schema_keywords(pydantic_model: Type[BaseModel]) -> str:
+    """
+    Parses a Pydantic model's JSON schema to extract meaningful keywords
+    (parameter names and enum values) for better embedding.
+    """
+    if not pydantic_model:
+        return ""
+
+    try:
+        schema = pydantic_model.model_json_schema()
+        keywords = set()
+
+        # Recursive function to traverse the schema
+        def traverse(sub_schema):
+            if not isinstance(sub_schema, dict):
+                return
+
+            if "properties" in sub_schema:
+                for prop_name, prop_details in sub_schema["properties"].items():
+                    keywords.add(prop_name)
+                    traverse(prop_details)
+
+            if "items" in sub_schema:
+                traverse(sub_schema["items"])
+
+            if "enum" in sub_schema:
+                for enum_val in sub_schema["enum"]:
+                    if isinstance(enum_val, str):
+                        keywords.add(enum_val)
+
+        # Also look in definitions
+        if "$defs" in schema:
+            for def_details in schema["$defs"].values():
+                traverse(def_details)
+
+        traverse(schema)
+
+        return " ".join(sorted(list(keywords)))
+    except Exception as e:
+        log.warning(f"Could not generate schema keywords for {pydantic_model.__name__}: {e}")
+        return ""
+
+
 def register_tool_for_dispatch(
         func: Callable,
         name: str,
@@ -65,11 +108,14 @@ def register_tool_for_dispatch(
             "description": "Token for the next page of results (for paginated responses)."
         }
 
+    schema_keywords = _get_schema_keywords(params_model)
+
     TOOL_DISCOVERY_CATALOG.append({
         "name": name,
         "title": title,
         "description": description,
         "input_schema": input_schema,
+        "schema_keywords": schema_keywords,
     })
     log.debug(f"Registered tool: {name}")
 
