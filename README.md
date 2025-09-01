@@ -61,15 +61,13 @@ Finally, tell Claude how to run your server. Open your `claude_desktop_config.js
 ```json
 {
   "mcpServers": {
-    "ArchicadTapir": {
+    "Tapir_Archicad": {
       "command": "uv",
       "args": [
         "run",
         "--directory",
         "/path/to/your/archicad-mcp-server",
-        "python",
-        "-m",
-        "tapir_archicad_mcp.server"
+        "server.py"
       ]
     }
   }
@@ -105,3 +103,4 @@ Contributions are welcome! Please feel free to submit an issue or open a pull re
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](./LICENSE) file for details.
+
