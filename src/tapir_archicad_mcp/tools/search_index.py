@@ -114,8 +114,8 @@ def _calculate_top_score_relative_threshold(scores: List[float]) -> float:
 
     final_threshold = max(relative_threshold, MIN_ABSOLUTE_THRESHOLD)
 
-    log.debug(f"Search scores: {[f'{s:.2f}' for s in scores]}")
-    log.debug(
+    log.info(f"Search scores: {[f'{s:.2f}' for s in scores]}")
+    log.info(
         f"Best score: {best_score:.2f}, RelativeThreshold: {relative_threshold:.2f}, FinalThreshold: {final_threshold:.2f}")
     return final_threshold
 
