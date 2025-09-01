@@ -1,8 +1,9 @@
 import logging
 
 from tapir_archicad_mcp.app import mcp
+from tapir_archicad_mcp.logging_config import setup_logging
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+setup_logging()
 
 
 def main():
