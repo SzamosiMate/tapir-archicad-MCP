@@ -2,109 +2,53 @@
 
 **1. High-Level Goal & Vision**
 
-The primary objective of this project is to create a robust, scalable, and user-friendly Python-based Model Context Protocol (MCP) server. This server will act as a comprehensive wrapper for Archicad's automation APIs, including both the community-driven Tapir API and the official Archicad JSON API.
+The primary objective of this project is to create a robust, scalable, and user-friendly Python-based Model Context Protocol (MCP) server. This server will act as a comprehensive wrapper for Archicad's automation APIs.
 
 The ultimate vision is to provide AI agents with a complete and intelligent toolkit to automate complex architectural workflows within Archicad, effectively bridging the gap between natural language commands and procedural architectural design tasks.
 
 ---
 
-**2. Current Architecture and Implemented Features**
+**2. Implemented Architecture**
 
-The project is built on a solid foundation that already addresses several key challenges in API wrapping and multi-instance management.
+The project is built on a sophisticated architecture designed to be both powerful for automation and simple for end-users to install and operate. To solve the critical challenge of managing an infeasibly large number of API commands (160+), the server implements an intelligent **`discover`/`call`** pattern. This keeps the server as a single entity while intelligently managing the toolset exposed to the AI.
 
-*   **Foundation:** The server is built using the `mcp-sdk`'s `FastMCP` class, providing a high-level, decorator-based approach for defining MCP tools. It leverages an `async` lifespan manager to handle the initialization and shutdown of core services.
+The server only exposes three primary, handwritten tools to the AI client:
+*   `discovery_list_active_archicads()`: Finds and identifies all running Archicad instances.
+*   `archicad_discover_tools(query: str)`: Performs a semantic search over all available API commands.
+*   `archicad_call_tool(name: str, arguments: dict)`: Acts as a dispatcher to execute the specific tool function identified by the `name` parameter.
 
-*   **Multi-Instance Connection Management:** The server uses the powerful `multiconn_archicad` library to discover, connect to, and manage multiple running instances of Archicad simultaneously. A `MultiConn` instance is managed via a context variable, making it accessible to all tool functions.
+This architecture is supported by the following implemented features:
 
-*   **Generator-Centric Workflow (`scripts/generate_tools.py`):** The cornerstone of the current architecture is a sophisticated code generation script. Instead of manual implementation, this script automates the creation of MCP tools by:
-    1.  **Fetching Metadata:** It programmatically fetches the latest command schemas and details directly from the `multiconn_archicad` repository.
-    2.  **Logical Grouping:** It intelligently groups the 80+ Tapir commands into logical categories (e.g., "elements", "attributes", "project") and creates separate, organized Python files for each group.
-    3.  **Strongly-Typed Tool Generation:** It generates the Python code for each MCP tool, complete with `@mcp.tool()` decorators, correct function signatures, and strong type hints using the pre-generated Pydantic models from the library. This ensures that the tools are robust and self-documenting.
+*   **Foundation:** The server is built using the `mcp-sdk`'s `FastMCP` class and the `multiconn-archicad` library to manage connections to multiple Archicad instances simultaneously.
 
-*   **Handwritten Core Tools:** The architecture supports a mix of generated and handwritten tools. A crucial custom tool, `discovery_list_active_archicads`, has been implemented to allow the AI agent to find and identify active Archicad instances.
+*   **Generator-Centric Workflow:** A code generation script (`scripts/generate_tools.py`) automatically creates the internal toolset. It fetches the latest command schemas, generates plain Python functions for each command, and populates an in-memory catalog that is used for both discovery and dispatching.
 
-*   **Instance Targeting:** Every generated tool function is designed to accept a `port: int` parameter. This allows the AI agent to explicitly target which Archicad instance a command should be sent to, a critical feature for multi-project workflows.
+*   **Intelligent Semantic Search:** A powerful, 100% local search engine has been implemented using `sentence-transformers` and `faiss-cpu`.
+    *   **Enhanced Context:** Search accuracy is maximized by generating vector embeddings from a rich combination of the tool's name, its description, and meaningful keywords (parameter names, enum values) automatically extracted from its Pydantic schema.
+    *   **Adaptive Filtering:** Search results are filtered using a sophisticated "Top-Score Relative Threshold." This dynamic method adapts to the query's quality and only returns tools that are highly relevant to the top match, dramatically reducing noise.
+    *   **Automatic Index Versioning:** The search index is cached locally and versioned with a SHA256 hash of the tool catalog, ensuring it is automatically and transparently rebuilt if the underlying tools change.
 
-*   **Robust Server-Side Pagination:** For API commands that can return thousands of results (e.g., `GetAllElements`), the generator already implements a complete, cursor-based pagination system. It automatically creates paginated Pydantic response models and injects the necessary logic and docstrings to guide the AI on how to iterate through large datasets.
+*   **Robust Packaging and Distribution:** The project is structured as a proper Python package with a `pyproject.toml` file. This enables a dramatically simplified user experience, where the server can be run with a universal command (`uvx tapir-archicad-mcp`) that works for every user without requiring them to edit local file paths in their AI client's configuration.
 
----
-
-**3. The Architectural Challenge: The Context Window Problem**
-
-With the addition of the official Archicad JSON API, the total number of tools will exceed 160. Exposing this many tools directly to an LLM is infeasible—it would consume an enormous portion of the context window, drastically increase token costs, and confuse the model, leading to poor performance and unreliable tool selection.
-
-The initial proposed solution, detailed in a previous version of this brief, was a **Multi-Server Dispatcher Architecture**. The idea was to launch a separate server process for each tool group. However, upon further review, this approach was rejected due to significant user experience and architectural drawbacks:
-*   **Installation & Management Burden:** Requiring a non-technical user to configure and manage up to 20 separate server processes is impractical.
-*   **Workflow Fragmentation:** Most useful workflows require tools from multiple groups (e.g., "elements" and "properties"), forcing the user to know which combination of servers to run.
-*   **Lack of Agent Awareness:** The agent, connected to one server, would have no knowledge of tools in other inactive servers and couldn't prompt the user to enable them.
-*   **Inconsistent Server Sizes:** The tool groups are imbalanced, ranging from a few tools to over 40, with some schemas being thousands of tokens long on their own.
+*   **Professional-Grade Logging:** A dual-channel logging system sends diagnostic messages to `stderr` and the MCP data stream to `stdout`, preventing log messages from corrupting communication. Logs are also written to a persistent, rotating file, ensuring they are always available for debugging.
 
 ---
 
-**4. The New Architectural Direction: Intelligent Tool Discovery**
+**3. Next Steps and Future Vision**
 
-Given the limitations of the multi-server approach, the project will pivot to a more sophisticated and user-friendly **`discover`/`call` architecture**. This pattern keeps the server as a single, easy-to-install entity while intelligently managing the toolset exposed to the AI.
+#### **Immediate Roadmap**
 
-The server will only expose two primary, handwritten tools for interacting with the Archicad APIs:
-*   `archicad_discover_tools(query: str) -> list[ToolInfo]`: This tool will perform a semantic search over all available API commands.
-*   `archicad_call_tool(name: str, arguments: dict) -> dict`: This tool will act as a dispatcher, executing the specific tool function identified by the `name` parameter.
+The following tasks are the immediate priority to finalize the core feature set and prepare for a public release:
 
----
+1.  **Publish Package to PyPI:** Finalize the packaging and publish the `tapir-archicad-mcp` package to PyPI. This is the last step to enable the simple `uvx` installation for all users. *(Note: This is contingent on the `multiconn-archicad` dependency being published to PyPI first.)*
 
-**5. Detailed Action Plan for the Next Version**
+2.  **Expand Generator for Official JSON API:** Modify the code generator to process commands from both the community Tapir API and the official Archicad JSON API, bringing the total number of available tools to over 160.
 
-1.  **Implement the Intelligent Discovery & Execution Pattern:**
-    *   Create the handwritten `archicad_discover_tools` and `archicad_call_tool` functions.
-    *   Build a tool registry (a simple Python dictionary) at server startup that maps tool names as strings to their callable Python function objects. The `call_tool` function will use this registry for dispatching.
+3.  **Statically Enhance Source Descriptions:** Review the original descriptions for all API commands in the source metadata. Where necessary, augment them to be more descriptive and rich with keywords to further improve the accuracy of the semantic search.
 
-2.  **Build the Local Semantic Search Index:**
-    *   Implement the hybrid caching mechanism for embeddings:
-        *   On the server's *first-ever* run, it will use a library like `sentence-transformers` to generate embeddings for all tool descriptions from the `tool_catalog.json`.
-        *   This vector index will be saved to a local file (e.g., `tool_index.faiss`).
-        *   On all subsequent startups, the server will load the pre-computed index directly into memory for fast startup and search performance.
+#### **Advanced Architectural Goals**
 
-3.  **Expand and Adapt the Code Generator (`scripts/generate_tools.py`):**
-    *   Modify the generator to process commands from both the Tapir API and the official Archicad JSON API.
-    *   The generator's primary output will now be a `tool_catalog.json` file. This file will be the comprehensive, searchable database of all tool metadata (name, description, input/output schemas).
-    *   The generator will still create the grouped Python tool files, which will be imported by the server to populate the tool registry for the `call_tool` dispatcher.
+Once the core functionality is complete, the following long-term features can be explored:
 
-4.  **Package for Distribution:**
-    *   Structure the project for packaging and create a `pyproject.toml` file.
-    *   Publish the server as a package on PyPI to dramatically simplify the installation process for end-users (`pip install tapir-archicad-mcp`).
-
-5.  **Statically Enhance Tool Descriptions:**
-    *   Review the descriptions for all tools in the source metadata. Where necessary, augment them to be more descriptive and rich with keywords to improve the accuracy of the semantic search.
-
----
-
-**6. Future Areas for Improvement**
-
-Once the core discovery architecture is implemented and stable, the following advanced features can be explored:
-
-**Advanced State and Data Management for Large-Scale Operations**
-
-While the `discover/call` architecture solves the problem of managing a large number of *tool definitions*, a second, equally critical challenge arises when tool calls return large data payloads (e.g., thousands of Archicad elements). Directly returning this data to the LLM would flood the context window, leading to high costs, slow performance, and potential loss of context.
-
-To address this, the server can be evolved to implement a **"Stateful Handle" architecture**, a pattern analogous to how powerful systems like OpenAI's Code Interpreter operate. Instead of returning raw data, tools will return a lightweight reference, or "handle," to data that is stored and managed within the server's session.
-
-This would involve the following key components:
-
-1.  **Server-Side Session State Cache:** An in-memory cache (e.g., using `cachetools.TTLCache` for automatic memory management) will be implemented. This cache will not store raw lists, but will instead use **Pandas DataFrames** as its core in-memory data structure. This unlocks powerful, standardized, and highly efficient data manipulation capabilities.
-
-2.  **The Handle (`ResultSetInfo` Model):** "Fetch-type" tools (like `GetAllElements`) will be modified to no longer return the full dataset. Instead, they will:
-    *   Convert the API response into a Pandas DataFrame.
-    *   Store the DataFrame in the session cache with a unique `handle_id`.
-    *   Return a compact `ResultSetInfo` Pydantic model to the agent. This object will contain the `handle_id`, item count, a preview of the first few rows, and a data schema description, giving the agent just enough context to plan its next steps.
-
-3.  **A Hybrid Tool Architecture:** The server's toolset will be divided into two categories:
-    *   **Auto-Generated "Fetch & Execute" Tools:** The existing generator will be adapted. "Fetch" tools will be wrapped to return handles, and "Execute" tools (like `SetPropertyValuesOfElements`) will be modified to accept a `handle_id` as their payload argument.
-    *   **Handwritten Generic "Data Manipulation" Tools:** A new, powerful suite of generic tools will be created to allow the agent to operate on the data in the cache. These tools will be thin, safe wrappers around standard Pandas operations, such as:
-        *   `data_filter(handle_id, query_string)`: Uses `DataFrame.query()` to create filtered subsets.
-        *   `data_transform(handle_id, expression)`: Uses `DataFrame.eval()` to modify or create new data columns.
-        *   `data_merge(left_handle, right_handle, on_field)`: Uses `pandas.merge()` to combine datasets.
-        *   `data_assemble_payload(...)`: A generic tool for restructuring data from multiple handles into the complex Pydantic models required by "Execute" tools.
-
-This architecture enables the agent to perform complex, multi-step data processing workflows (e.g., fetch all elements, filter for walls, get their properties, transform the property values, and then execute an update) entirely on the server-side. This keeps the context window clean, handles massive datasets with ease, and provides the agent with an incredibly powerful and scalable toolkit for real-world automation.
-
-*   **Graph-Based Discovery:** Model the relationships and dependencies between tools as a weighted graph. For example, `GetElementsByType` has a strong relationship with `GetPropertiesOfElements`. This graph could be used to bias the search results, allowing `discover_tools` to not only return tools that match the query but also to suggest logical next steps in a workflow.
-*   **Dynamic, Context-Aware Tool Descriptions:** Investigate techniques to modify tool descriptions at runtime. Based on the user's prompt or the session's tool call history, the description could be augmented with contextual examples or details, providing the LLM with even more relevant information to improve its tool selection accuracy.
+*   **Stateful Handle Architecture:** To manage large data payloads (e.g., thousands of elements) without flooding the LLM's context window, the server can be evolved to return lightweight "handles" to data stored server-side in Pandas DataFrames. This would unlock powerful, server-side data manipulation capabilities for the AI.
+*   **Graph-Based Discovery:** Model the relationships between tools as a graph to allow `discover_tools` to not only find matching tools but also suggest logical next steps in a workflow.

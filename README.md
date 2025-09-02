@@ -11,11 +11,12 @@ The server dynamically generates a comprehensive set of over 80 MCP tools from t
 
 ## Key Features
 
+-   **Intelligent Tool Discovery:** The server exposes a simple `discover_tools` function that uses a powerful local semantic search engine to find the most relevant Archicad command from a user's natural language query.
+-   **Massive Toolset, Minimal Footprint:** Provides access to the entire Tapir API (80+ commands, expanding to 160+) without overwhelming the AI's context window.
+-   **100% Local & Private Search:** The semantic search index is built and runs entirely on your machine using `sentence-transformers` and `faiss-cpu`. No data ever leaves your computer, and no API keys are required.
+-   **Adaptive & Relevant Results:** Search uses a sophisticated "Top-Score Relative Threshold" to filter out noise and return only the most relevant tools for a given query.
 -   **Multi-Instance Control:** Connect to and manage multiple running Archicad instances simultaneously.
--   **Comprehensive Toolset:** Auto-generates over 80 distinct MCP tools, providing access to the full functionality of the Tapir API.
--   **Dynamic Discovery:** Includes a core tool to discover active Archicad instances, their ports, and open projects.
--   **Strongly-Typed:** Uses Pydantic models for all API commands and results, ensuring data integrity and providing a clear schema for AI interaction.
--   **Extensible Structure:** Designed with a clean separation between auto-generated and custom tools, making it easy to add your own functionality.
+-   **Robust & Packaged:** Designed as a proper Python package with a `pyproject.toml`, enabling simple and reliable installation.
 
 ## Installation & Setup
 
@@ -23,7 +24,7 @@ Follow these steps to get the server running and connected to an MCP client like
 
 ### 1. Prerequisites
 
--   **Python 3.10+** and **`uv`**: Ensure you have a modern version of Python and the `uv` package manager installed. You can install `uv` with `pip install uv`.
+-   **Python 3.12+** and **`uv`**: Ensure you have a modern version of Python and the `uv` package manager installed. You can install `uv` with `pip install uv`.
 -   **Archicad & Tapir Add-On**: You must have Archicad running with the [Tapir Archicad Add-On](https://github.com/ENZYME-APD/tapir-archicad-automation) installed. The server cannot function without it.
 -   **MCP Client**: An application that can host MCP servers, such as [Claude for Desktop](https://www.claude.ai/download).
 
@@ -79,12 +80,20 @@ Finally, tell Claude how to run your server. Open your `claude_desktop_config.js
 
 1.  **Restart Claude for Desktop** to apply the configuration changes.
 2.  Ensure at least one instance of Archicad (with Tapir) is running.
-3.  The "Tools & Resources" icon should appear in Claude. Click it to see the list of available Archicad tools.
-4.  Start interacting! Ask a question like:
+3.  The client will now have access to a small set of core tools. Start by asking it to find the running Archicad instances:
 
     > "Can you check what Archicad projects I have running?"
 
-Claude will ask for your permission to run the `tapir_discovery_list_active_archicads` tool and will then report the active instances it found. From there, you can use the port number to target specific commands.
+    The AI will run `discovery_list_active_archicads` and report the active instances and their `port` numbers.
+
+4.  Now, state your main goal. For example:
+
+    > "Okay, using port 12345, get all the Wall elements from the project."
+
+5.  The AI will now perform the two-step `discover`/`call` workflow:
+    *   **First, it will call `archicad_discover_tools`** with a query like `"get all wall elements"`. The server's semantic search will find that the best match is the `elements_get_elements_by_type` tool.
+    *   **Second, it will call `archicad_call_tool`**, using the `name="elements_get_elements_by_type"` it just discovered and constructing the necessary `arguments` (including the `port` and `params` with `elementType="Wall"`).
+    *   The final result is returned to you.
 
 ## How It Works
 
@@ -92,7 +101,7 @@ The server operates through a layered architecture:
 
 -   **AI Agent (e.g., Claude):** Interacts with the user and decides which tools to call.
 -   **MCP Client (e.g., Claude for Desktop):** Manages the server process and communication.
--   **Archicad Tapir MCP Server (This Project):** Exposes the Tapir API as a set of standardized MCP tools.
+-   **Archicad Tapir MCP Server (This Project):** Provides an intelligent abstraction layer over the Tapir API, exposing a simple `discover`/`call` interface.
 -   **`multiconn_archicad` Library:** The underlying Python library that handles the low-level communication with Archicad instances.
 -   **Archicad & Tapir Add-On:** The final destination that executes the commands.
 
