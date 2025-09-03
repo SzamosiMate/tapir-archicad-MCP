@@ -28,8 +28,6 @@ async def app_lifespan(server: FastMCP) -> AsyncIterator[None]:
 
 
 mcp = FastMCP(
-    "ArchicadTapir",
-    title="Archicad Tapir MCP Server",
-    description="A server to control multiple Archicad instances via the Tapir API.",
+    "Archicad Tapir MCP Server",
     lifespan=app_lifespan
 )

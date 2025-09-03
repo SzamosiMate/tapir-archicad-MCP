@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "tapir-archicad-mcp"
-version = "0.2.0"
+version = "0.2.5"
 description = "An MCP server that enables AI agents to automate Archicad using natural language via intelligent, semantic tool discovery."
 readme = "README.md"
 authors = [
@@ -30,7 +30,7 @@ classifiers = [
 dependencies = [
     "faiss-cpu>=1.12.0",
     "fastmcp>=2.10.5",
-    "multiconn-archicad",
+    "multiconn-archicad>=0.4.1",
     "sentence-transformers>=5.1.0",
 ]
 
@@ -39,8 +39,4 @@ Homepage = "https://github.com/SzamosiMate/tapir-archicad-MCP"
 "Bug Tracker" = "https://github.com/SzamosiMate/tapir-archicad-MCP/issues"
 
 [project.scripts]
-tapir-archicad-mcp = "tapir_archicad_mcp:main"
-
-
-[tool.uv.sources]
-multiconn-archicad = { url = "https://github.com/SzamosiMate/multiconn_archicad/releases/download/v0.4.1/multiconn_archicad-0.4.1-py3-none-any.whl" }
+archicad-server = "tapir_archicad_mcp.server:main"

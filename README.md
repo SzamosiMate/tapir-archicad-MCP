@@ -26,55 +26,35 @@ Follow these steps to get the server running and connected to an MCP client like
 
 -   **Python 3.12+** and **`uv`**: Ensure you have a modern version of Python and the `uv` package manager installed. You can install `uv` with `pip install uv`.
 -   **Archicad & Tapir Add-On**: You must have Archicad running with the [Tapir Archicad Add-On](https://github.com/ENZYME-APD/tapir-archicad-automation) installed. The server cannot function without it.
--   **MCP Client**: An application that can host MCP servers, such as [Claude for Desktop](https://www.claude.ai/download).
+-   **MCP Client**: An application that can host MCP servers, such as [Claude for Desktop](https://www.claude.ai/download) or [Gemini CLI ](https://github.com/google-gemini/gemini-cli)
 
-### 2. Clone the Repository
+### 2. Configure Your AI Client
 
-Get the project code on your local machine:
-```bash
-git clone https://github.com/your-username/archicad-mcp-server.git
-cd archicad-mcp-server
-```
-
-### 3. Install Dependencies
-
-Create a virtual environment and install the required Python packages using `uv`.
-```bash
-# Create and activate the virtual environment
-uv venv
-
-# On macOS/Linux
-source .venv/bin/activate
-# On Windows
-.venv\Scripts\activate
-
-# Install dependencies from pyproject.toml
-uv sync
-```
-
-### 4. Configure Claude for Desktop
-
-Finally, tell Claude how to run your server. Open your `claude_desktop_config.json` file and add the following configuration.
+This is now the **only step required**. Open your client's `config.json` file and add the following configuration. This command is universal and works on any operating system without modification.
 
 -   **macOS:** `~/Library/Application Support/Claude/claude_desktop_config.json`
--   **Windows:** `%APPDATA%\Claude\claude_desktop_config.json`
+-   **Windows:** `%APDATA%\Claude\claude_desktop_config.json`
 
 ```json
 {
   "mcpServers": {
-    "Tapir_Archicad": {
-      "command": "uv",
-      "args": [
-        "run",
-        "--directory",
-        "/path/to/your/archicad-mcp-server",
-        "server.py"
-      ]
+    "ArchicadTapir": {
+      "command": "uvx",
+        "args": [
+          "--from",
+          "tapir-archicad-mcp",
+          "archicad-server"
+        ]
     }
   }
 }
 ```
-**Important:** You **must** replace `"/path/to/your/archicad-mcp-server"` with the **full, absolute path** to the directory where you cloned the project.
+
+**How This Works:**
+The `uvx` command (part of the `uv` toolchain) is a powerful utility that automatically handles the entire process for you:
+1.  The first time the AI client needs the tool, `uvx` will download the latest version of `tapir-archicad-mcp` from PyPI.
+2.  It will install it into a temporary, isolated environment.
+3.  It will run the server.
 
 ## Usage
 
