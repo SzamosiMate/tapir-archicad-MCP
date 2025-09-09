@@ -1,8 +1,8 @@
 # Archicad Tapir MCP Server
 
-This project provides a Model Context Protocol (MCP) server for Archicad. It acts as a bridge, allowing AI agents and applications (like Claude for Desktop) to interact with running Archicad instances by wrapping the powerful [Tapir JSON API](https://github.com/ENZYME-APD/tapir-archicad-automation).
+This project provides a Model Context Protocol (MCP) server for Archicad. It acts as a bridge, allowing AI agents and applications (like Claude for Desktop) to interact with running Archicad instances by wrapping both the community-driven **Tapir API** and the **official Archicad JSON API**.
 
-The server dynamically generates a comprehensive set of over 80 MCP tools from the Tapir API schema, enabling fine-grained control over Archicad projects.
+The server dynamically generates a comprehensive set of **137** MCP tools from the combined API schemas, enabling fine-grained control over Archicad projects.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Status](https://img.shields.io/badge/status-alpha-orange.svg)]()
@@ -12,7 +12,7 @@ The server dynamically generates a comprehensive set of over 80 MCP tools from t
 ## Key Features
 
 -   **Intelligent Tool Discovery:** The server exposes a simple `discover_tools` function that uses a powerful local semantic search engine to find the most relevant Archicad command from a user's natural language query.
--   **Massive Toolset, Minimal Footprint:** Provides access to the entire Tapir API (80+ commands, expanding to 160+) without overwhelming the AI's context window.
+-   **Massive Toolset, Minimal Footprint:** Provides access to a unified toolset of **137 commands** (and growing) by intelligently merging the community Tapir API and the official Archicad JSON API, without overwhelming the AI's context window.
 -   **100% Local & Private Search:** The semantic search index is built and runs entirely on your machine using `sentence-transformers` and `faiss-cpu`. No data ever leaves your computer, and no API keys are required.
 -   **Adaptive & Relevant Results:** Search uses a sophisticated "Top-Score Relative Threshold" to filter out noise and return only the most relevant tools for a given query.
 -   **Multi-Instance Control:** Connect to and manage multiple running Archicad instances simultaneously.
@@ -25,7 +25,7 @@ Follow these steps to get the server running and connected to an MCP client like
 ### 1. Prerequisites
 
 -   **Python 3.12+** and **`uv`**: Ensure you have a modern version of Python and the `uv` package manager installed. You can install `uv` with `pip install uv`.
--   **Archicad & Tapir Add-On**: You must have Archicad running with the [Tapir Archicad Add-On](https://github.com/ENZYME-APD/tapir-archicad-automation) installed. The server cannot function without it.
+-   **Archicad & Tapir Add-On**: You must have Archicad running (which includes the official JSON API). To access the full set of community-developed tools, the [Tapir Archicad Add-On](https://github.com/ENZYME-APD/tapir-archicad-automation) must also be installed.
 -   **MCP Client**: An application that can host MCP servers, such as [Claude for Desktop](https://www.claude.ai/download) or [Gemini CLI ](https://github.com/google-gemini/gemini-cli)
 
 ### 2. Configure Your AI Client
@@ -81,9 +81,9 @@ The server operates through a layered architecture:
 
 -   **AI Agent (e.g., Claude):** Interacts with the user and decides which tools to call.
 -   **MCP Client (e.g., Claude for Desktop):** Manages the server process and communication.
--   **Archicad Tapir MCP Server (This Project):** Provides an intelligent abstraction layer over the Tapir API, exposing a simple `discover`/`call` interface.
+-   **MCP Server (This Project):** Provides an intelligent abstraction layer over Archicad's automation APIs, exposing a simple `discover`/`call` interface.
 -   **`multiconn_archicad` Library:** The underlying Python library that handles the low-level communication with Archicad instances.
--   **Archicad & Tapir Add-On:** The final destination that executes the commands.
+-   **Archicad & Tapir Add-On:** Archicad's built-in JSON API and the Tapir Add-on execute the commands.
 
 ## Contributing
 
@@ -92,4 +92,3 @@ Contributions are welcome! Please feel free to submit an issue or open a pull re
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](./LICENSE) file for details.
-
