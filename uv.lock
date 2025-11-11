@@ -797,16 +797,18 @@ wheels = [
 
 [[package]]
 name = "multiconn-archicad"
-version = "0.4.2"
+version = "0.5.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aiohttp" },
     { name = "archicad" },
     { name = "psutil" },
+    { name = "pydantic" },
+    { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/4c/73/2f0fa6a6ec2366a62e2ec1b10e12b144429b03997acaa76926201ca6ac81/multiconn_archicad-0.4.2.tar.gz", hash = "sha256:d4fcc9675dfaa390435f64b22bea21ba006bc9d3a549a90a3576ed558697e558", size = 62092, upload-time = "2025-09-02T19:55:40.335Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/39/16/8b1a5862f92cd09c843c68ea418e289ac0188944de414fde0f402fa3baf0/multiconn_archicad-0.5.1.tar.gz", hash = "sha256:2c2fb252ab40412cdd5869e806ebddb464f8d8aeef7380f6a0e6cdf1faf391b6", size = 84029, upload-time = "2025-11-03T20:21:08.128Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/91/04/afa23877e5492f9e38346b217bccdcb88bcc37fba2fbc068d946ef8bf1ad/multiconn_archicad-0.4.2-py3-none-any.whl", hash = "sha256:adb60bbe78a23812bea4765e0510f271949480de3dca57496bf40cc7c7389b70", size = 75543, upload-time = "2025-09-02T19:55:38.917Z" },
+    { url = "https://files.pythonhosted.org/packages/af/24/0fcc89b003605afecd9303737841513b52742a88b351f6b2cba904a7e270/multiconn_archicad-0.5.1-py3-none-any.whl", hash = "sha256:a79c1472a6fcec73344ff6407769aa54c5d427e2d59b432b7f139aec28e2b5ad", size = 115911, upload-time = "2025-11-03T20:21:06.937Z" },
 ]
 
 [[package]]
@@ -1851,7 +1853,7 @@ wheels = [
 
 [[package]]
 name = "tapir-archicad-mcp"
-version = "0.2.5"
+version = "0.3.0"
 source = { editable = "." }
 dependencies = [
     { name = "faiss-cpu" },
@@ -1864,7 +1866,7 @@ dependencies = [
 requires-dist = [
     { name = "faiss-cpu", specifier = ">=1.12.0" },
     { name = "fastmcp", specifier = ">=2.10.5" },
-    { name = "multiconn-archicad", specifier = ">=0.4.1" },
+    { name = "multiconn-archicad", specifier = ">=0.5.1" },
     { name = "sentence-transformers", specifier = ">=5.1.0" },
 ]
 

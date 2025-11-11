@@ -13,12 +13,18 @@ from multiconn_archicad.models.tapir.commands import (
 CreateBuildingMaterialsResult,
 CreateCompositesParameters,
 CreateCompositesResult,
+CreateLayerCombinationsParameters,
+CreateLayerCombinationsResult,
 CreateLayersParameters,
 CreateLayersResult,
+CreateSurfacesParameters,
+CreateSurfacesResult,
 GetAttributesByTypeParameters,
 GetAttributesByTypeResult,
 GetBuildingMaterialPhysicalPropertiesParameters,
-GetBuildingMaterialPhysicalPropertiesResult
+GetBuildingMaterialPhysicalPropertiesResult,
+GetLayerCombinationsParameters,
+GetLayerCombinationsResult
 )
 
 
@@ -26,7 +32,7 @@ log = logging.getLogger()
 
 def create_building_materials(port: int, params: CreateBuildingMaterialsParameters) -> CreateBuildingMaterialsResult:
     """
-    Creates Building Material attributes based on the given parameters.
+    Creates or overwrites Building Material attributes based on the given parameters.
     """
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
@@ -53,7 +59,7 @@ register_tool_for_dispatch(
     create_building_materials,
     name="attributes_create_building_materials",
     title="CreateBuildingMaterials",
-    description="Creates Building Material attributes based on the given parameters.",
+    description="Creates or overwrites Building Material attributes based on the given parameters.",
     params_model=CreateBuildingMaterialsParameters,
     result_model=CreateBuildingMaterialsResult
 )
@@ -61,7 +67,7 @@ register_tool_for_dispatch(
 
 def create_composites(port: int, params: CreateCompositesParameters) -> CreateCompositesResult:
     """
-    Creates Composite attributes based on the given parameters.
+    Creates or overwrites Composite attributes based on the given parameters.
     """
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
@@ -88,15 +94,50 @@ register_tool_for_dispatch(
     create_composites,
     name="attributes_create_composites",
     title="CreateComposites",
-    description="Creates Composite attributes based on the given parameters.",
+    description="Creates or overwrites Composite attributes based on the given parameters.",
     params_model=CreateCompositesParameters,
     result_model=CreateCompositesResult
 )
 
 
+def create_layer_combinations(port: int, params: CreateLayerCombinationsParameters) -> CreateLayerCombinationsResult:
+    """
+    Creates or overwrites Layer Combination attributes based on the given parameters.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="CreateLayerCombinations",
+            parameters=params.model_dump(mode='json')
+        )
+        return CreateLayerCombinationsResult.model_validate(result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for CreateLayerCombinations result: {e}")
+        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+    except Exception as e:
+        log.error(f"Error executing CreateLayerCombinations on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    create_layer_combinations,
+    name="attributes_create_layer_combinations",
+    title="CreateLayerCombinations",
+    description="Creates or overwrites Layer Combination attributes based on the given parameters.",
+    params_model=CreateLayerCombinationsParameters,
+    result_model=CreateLayerCombinationsResult
+)
+
+
 def create_layers(port: int, params: CreateLayersParameters) -> CreateLayersResult:
     """
-    Creates Layer attributes based on the given parameters.
+    Creates or overwrites Layer attributes based on the given parameters.
     """
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
@@ -123,9 +164,44 @@ register_tool_for_dispatch(
     create_layers,
     name="attributes_create_layers",
     title="CreateLayers",
-    description="Creates Layer attributes based on the given parameters.",
+    description="Creates or overwrites Layer attributes based on the given parameters.",
     params_model=CreateLayersParameters,
     result_model=CreateLayersResult
+)
+
+
+def create_surfaces(port: int, params: CreateSurfacesParameters) -> CreateSurfacesResult:
+    """
+    Creates or overwrites Surface attributes based on the given parameters.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="CreateSurfaces",
+            parameters=params.model_dump(mode='json')
+        )
+        return CreateSurfacesResult.model_validate(result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for CreateSurfaces result: {e}")
+        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+    except Exception as e:
+        log.error(f"Error executing CreateSurfaces on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    create_surfaces,
+    name="attributes_create_surfaces",
+    title="CreateSurfaces",
+    description="Creates or overwrites Surface attributes based on the given parameters.",
+    params_model=CreateSurfacesParameters,
+    result_model=CreateSurfacesResult
 )
 
 
@@ -225,4 +301,39 @@ register_tool_for_dispatch(
     description="Retrieves the physical properties of the given Building Materials.",
     params_model=GetBuildingMaterialPhysicalPropertiesParameters,
     result_model=GetBuildingMaterialPhysicalPropertiesResult
+)
+
+
+def get_layer_combinations(port: int, params: GetLayerCombinationsParameters) -> GetLayerCombinationsResult:
+    """
+    Returns the details of layer combination attributes.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="GetLayerCombinations",
+            parameters=params.model_dump(mode='json')
+        )
+        return GetLayerCombinationsResult.model_validate(result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for GetLayerCombinations result: {e}")
+        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+    except Exception as e:
+        log.error(f"Error executing GetLayerCombinations on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    get_layer_combinations,
+    name="attributes_get_layer_combinations",
+    title="GetLayerCombinations",
+    description="Returns the details of layer combination attributes.",
+    params_model=GetLayerCombinationsParameters,
+    result_model=GetLayerCombinationsResult
 )

@@ -6,11 +6,48 @@ from tapir_archicad_mcp.context import multi_conn_instance
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
 
 from multiconn_archicad.models.tapir.commands import (
-    GetLibrariesResult
+    AddFilesToEmbeddedLibraryParameters,
+AddFilesToEmbeddedLibraryResult,
+GetLibrariesResult
 )
 
 
 log = logging.getLogger()
+
+def add_files_to_embedded_library(port: int, params: AddFilesToEmbeddedLibraryParameters) -> AddFilesToEmbeddedLibraryResult:
+    """
+    Adds the given files into the embedded library.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="AddFilesToEmbeddedLibrary",
+            parameters=params.model_dump(mode='json')
+        )
+        return AddFilesToEmbeddedLibraryResult.model_validate(result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for AddFilesToEmbeddedLibrary result: {e}")
+        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+    except Exception as e:
+        log.error(f"Error executing AddFilesToEmbeddedLibrary on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    add_files_to_embedded_library,
+    name="library_add_files_to_embedded_library",
+    title="AddFilesToEmbeddedLibrary",
+    description="Adds the given files into the embedded library.",
+    params_model=AddFilesToEmbeddedLibraryParameters,
+    result_model=AddFilesToEmbeddedLibraryResult
+)
+
 
 def get_libraries(port: int) -> GetLibrariesResult:
     """
