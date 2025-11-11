@@ -1,6 +1,6 @@
 version = 1
 revision = 2
-updated requires-python = ">=3.12"
+requires-python = ">=3.12"
 
 [[package]]
 name = "aiohappyeyeballs"
@@ -707,16 +707,18 @@ wheels = [
 
 [[package]]
 name = "multiconn-archicad"
-version = "0.4.1"
+version = "0.5.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aiohttp" },
     { name = "archicad" },
     { name = "psutil" },
+    { name = "pydantic" },
+    { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/dd/12/87cc53bedefc0df7bec87848623a9c929db7e5a7581de9eedee5598c0bc5/multiconn_archicad-0.4.1.tar.gz", hash = "sha256:dd6975043ed8873bdd34d0bfed1119a1b7a6ad6ed928edcd672caafd3e1ae16a", size = 61698, upload-time = "2025-09-02T19:55:37.764Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/39/16/8b1a5862f92cd09c843c68ea418e289ac0188944de414fde0f402fa3baf0/multiconn_archicad-0.5.1.tar.gz", hash = "sha256:2c2fb252ab40412cdd5869e806ebddb464f8d8aeef7380f6a0e6cdf1faf391b6", size = 84029, upload-time = "2025-11-03T20:21:08.128Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/2e/39/f118136709cbbcaafb62695cd6da2cbaab61581e44dab43b848c5ed052c0/multiconn_archicad-0.4.1-py3-none-any.whl", hash = "sha256:36064a3cc6a9991788c6849fc168426ecbc710a45746e7be19d6a12fdf5d4eac", size = 74670, upload-time = "2025-09-02T19:55:36.722Z" },
+    { url = "https://files.pythonhosted.org/packages/af/24/0fcc89b003605afecd9303737841513b52742a88b351f6b2cba904a7e270/multiconn_archicad-0.5.1-py3-none-any.whl", hash = "sha256:a79c1472a6fcec73344ff6407769aa54c5d427e2d59b432b7f139aec28e2b5ad", size = 115911, upload-time = "2025-11-03T20:21:06.937Z" },
 ]
 
 [[package]]
@@ -1660,7 +1662,7 @@ wheels = [
 
 [[package]]
 name = "tapir-archicad-mcp"
-version = "0.2.0"
+version = "0.2.5"
 source = { editable = "." }
 dependencies = [
     { name = "faiss-cpu" },
@@ -1673,7 +1675,7 @@ dependencies = [
 requires-dist = [
     { name = "faiss-cpu", specifier = ">=1.12.0" },
     { name = "fastmcp", specifier = ">=2.10.5" },
-    { name = "multiconn-archicad", specifier = ">=0.4.1" },
+    { name = "multiconn-archicad", specifier = ">=0.5.1" },
     { name = "sentence-transformers", specifier = ">=5.1.0" },
 ]
 
