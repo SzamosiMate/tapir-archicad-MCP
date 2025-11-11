@@ -9,7 +9,9 @@ from multiconn_archicad.models.tapir.commands import (
     ApplyFavoritesToElementDefaultsParameters,
 ApplyFavoritesToElementDefaultsResult,
 CreateFavoritesFromElementsParameters,
-CreateFavoritesFromElementsResult
+CreateFavoritesFromElementsResult,
+GetFavoritesByTypeParameters,
+GetFavoritesByTypeResult
 )
 
 
@@ -82,4 +84,39 @@ register_tool_for_dispatch(
     description="Create favorites from the given elements.",
     params_model=CreateFavoritesFromElementsParameters,
     result_model=CreateFavoritesFromElementsResult
+)
+
+
+def get_favorites_by_type(port: int, params: GetFavoritesByTypeParameters) -> GetFavoritesByTypeResult:
+    """
+    Returns a list of the names of all favorites with the given element type
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="GetFavoritesByType",
+            parameters=params.model_dump(mode='json')
+        )
+        return GetFavoritesByTypeResult.model_validate(result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for GetFavoritesByType result: {e}")
+        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+    except Exception as e:
+        log.error(f"Error executing GetFavoritesByType on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    get_favorites_by_type,
+    name="favorites_get_favorites_by_type",
+    title="GetFavoritesByType",
+    description="Returns a list of the names of all favorites with the given element type",
+    params_model=GetFavoritesByTypeParameters,
+    result_model=GetFavoritesByTypeResult
 )

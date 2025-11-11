@@ -32,6 +32,8 @@ GetAllElementsParameters,
 GetAllElementsResult,
 GetClassificationsOfElementsParameters,
 GetClassificationsOfElementsResult,
+GetCollisionsParameters,
+GetCollisionsResult,
 GetConnectedElementsParameters,
 GetConnectedElementsResult,
 GetDetailsOfElementsParameters,
@@ -43,6 +45,8 @@ GetGDLParametersOfElementsResult,
 GetSelectedElementsResult,
 GetSubelementsOfHierarchicalElementsParameters,
 GetSubelementsOfHierarchicalElementsResult,
+GetZoneBoundariesParameters,
+GetZoneBoundariesResult,
 HighlightElementsParameters,
 MoveElementsParameters,
 MoveElementsResult,
@@ -506,6 +510,41 @@ register_tool_for_dispatch(
 )
 
 
+def get_collisions(port: int, params: GetCollisionsParameters) -> GetCollisionsResult:
+    """
+    Detect collisions between the given two groups of elements.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="GetCollisions",
+            parameters=params.model_dump(mode='json')
+        )
+        return GetCollisionsResult.model_validate(result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for GetCollisions result: {e}")
+        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+    except Exception as e:
+        log.error(f"Error executing GetCollisions on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    get_collisions,
+    name="elements_get_collisions",
+    title="GetCollisions",
+    description="Detect collisions between the given two groups of elements.",
+    params_model=GetCollisionsParameters,
+    result_model=GetCollisionsResult
+)
+
+
 def get_connected_elements(port: int, params: GetConnectedElementsParameters) -> GetConnectedElementsResult:
     """
     Gets connected elements of the given elements.
@@ -771,6 +810,41 @@ register_tool_for_dispatch(
     description="Gets the subelements of the given hierarchical elements.",
     params_model=GetSubelementsOfHierarchicalElementsParameters,
     result_model=GetSubelementsOfHierarchicalElementsResult
+)
+
+
+def get_zone_boundaries(port: int, params: GetZoneBoundariesParameters) -> GetZoneBoundariesResult:
+    """
+    Gets the boundaries of the given Zone (connected elements, neighbour zones, etc.).
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="GetZoneBoundaries",
+            parameters=params.model_dump(mode='json')
+        )
+        return GetZoneBoundariesResult.model_validate(result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for GetZoneBoundaries result: {e}")
+        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+    except Exception as e:
+        log.error(f"Error executing GetZoneBoundaries on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    get_zone_boundaries,
+    name="elements_get_zone_boundaries",
+    title="GetZoneBoundaries",
+    description="Gets the boundaries of the given Zone (connected elements, neighbour zones, etc.).",
+    params_model=GetZoneBoundariesParameters,
+    result_model=GetZoneBoundariesResult
 )
 
 
