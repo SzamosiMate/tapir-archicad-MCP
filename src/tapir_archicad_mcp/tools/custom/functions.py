@@ -61,7 +61,17 @@ def list_active_archicads() -> list[ArchicadInstanceInfo]:
             )
             active_instances.append(instance_info)
         else:
-            log.warning(f"Port {port} is active but its header is not fully initialized. Skipping.")
+            log.error(
+                "Port %s is reachable but the Tapir Add-On did not respond. "
+                "Please install the Tapir Additional JSON Commands Add-On: "
+                "https://github.com/ENZYME-APD/tapir-archicad-automation",
+                port,
+            )
+            raise RuntimeError(
+                f"Archicad on port {port} is running but the Tapir Add-On is not installed or not responding. "
+                f"This MCP server requires the Tapir Add-On to function. "
+                f"Please install it from https://github.com/ENZYME-APD/tapir-archicad-automation and restart Archicad."
+            )
 
     if not active_instances:
         log.info("No active and fully initialized Archicad instances found.")
