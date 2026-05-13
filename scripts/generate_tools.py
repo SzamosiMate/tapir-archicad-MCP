@@ -195,7 +195,7 @@ def _generate_tool_function_code(command: dict, valid_model_names: set[str], con
 {indent(call_block, "        ")}
     except ValidationError as e:
         log.error(f"Validation error for {command_name_camel} result: {{e}}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {{e}}")
+        raise ValueError(_extract_archicad_errors(e, "{command_name_camel}"))
     except Exception as e:
         log.error(f"Error executing {command_name_camel} on port {{port}}: {{e}}")
         raise e
@@ -241,6 +241,28 @@ def generate_tool_files(grouped_commands: dict[str, list[dict]], config: ApiSour
             common_imports.append(imports_block)
 
         common_imports.append("\nlog = logging.getLogger()")
+
+        common_imports.append(dedent('''
+            def _extract_archicad_errors(validation_error, command_name: str) -> str:
+                """Extract actionable Archicad error messages from a ValidationError.
+
+                When Archicad returns per-element errors (e.g. {"error": {"code": ..., "message": ...}})
+                instead of the expected success schema, Pydantic rejects them. This helper pulls out
+                the original Archicad messages so the caller gets useful feedback.
+                """
+                archicad_messages = []
+                for err in validation_error.errors():
+                    inp = err.get("input")
+                    if isinstance(inp, dict):
+                        ac_err = inp.get("error") or inp
+                        if isinstance(ac_err, dict) and "message" in ac_err:
+                            archicad_messages.append(ac_err["message"])
+                if archicad_messages:
+                    unique = list(dict.fromkeys(archicad_messages))
+                    joined = "; ".join(unique)
+                    return f"Archicad rejected {command_name}: {joined}"
+                return f"Received an invalid response from the Archicad API for {command_name}: {validation_error}"
+        ''').rstrip())
 
         file_content = ["\n".join(common_imports)]
         for cmd in sorted(commands, key=lambda x: x["name_camel"]):
