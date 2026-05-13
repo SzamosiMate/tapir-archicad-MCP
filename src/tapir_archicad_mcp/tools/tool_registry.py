@@ -1,16 +1,18 @@
 import logging
 import inspect
 from typing import Dict, Callable, Any, List, Type, Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 log = logging.getLogger(__name__)
 
 
 class ToolRegistryEntry(BaseModel):
     """Internal metadata for tool dispatch."""
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
     callable: Callable
     params_model: Optional[Type[BaseModel]] = None
-    result_model: Optional[Type[BaseModel]] = None
+    result_model: Optional[Any] = None  # Any to support TypeAlias unions
 
 
 TOOL_CALLABLE_REGISTRY: Dict[str, ToolRegistryEntry] = {}
@@ -90,7 +92,7 @@ def register_tool_for_dispatch(
         title: str,
         description: str,
         params_model: Optional[Type[BaseModel]] = None,
-        result_model: Optional[Type[BaseModel]] = None
+        result_model: Optional[Any] = None
 ):
     """
     Orchestrates the registration of a tool, populating both the internal
