@@ -1,9 +1,13 @@
 import logging
 import inspect
-from typing import Dict, Callable, Any, List, Type, Optional
-from pydantic import BaseModel, ConfigDict
+from types import UnionType
+from typing import Dict, Callable, Any, List, Type, Optional, Union
+from pydantic import BaseModel, ConfigDict, TypeAdapter
 
 log = logging.getLogger(__name__)
+
+
+ModelOrUnion = Optional[type | UnionType | type(Union)]
 
 
 class ToolRegistryEntry(BaseModel):
@@ -12,11 +16,22 @@ class ToolRegistryEntry(BaseModel):
 
     callable: Callable
     params_model: Optional[Type[BaseModel]] = None
-    result_model: Optional[Any] = None  # Any to support TypeAlias unions
+    result_model: ModelOrUnion = None
 
 
 TOOL_CALLABLE_REGISTRY: Dict[str, ToolRegistryEntry] = {}
 TOOL_DISCOVERY_CATALOG: List[Dict[str, Any]] = []
+
+
+def _get_schema_dict(model_type: ModelOrUnion) -> dict:
+    """Helper to safely get the JSON schema dictionary."""
+    if not model_type:
+        return {}
+
+    if isinstance(model_type, type) and issubclass(model_type, BaseModel):
+        return model_type.model_json_schema()
+    else:
+        return TypeAdapter(model_type).json_schema()
 
 
 def _get_schema_keywords(pydantic_model: Optional[Type[BaseModel]]) -> str:
@@ -27,7 +42,7 @@ def _get_schema_keywords(pydantic_model: Optional[Type[BaseModel]]) -> str:
     if not pydantic_model:
         return ""
     try:
-        schema = pydantic_model.model_json_schema()
+        schema = _get_schema_dict(pydantic_model)
         keywords = set()
 
         def traverse(sub_schema):
@@ -92,7 +107,7 @@ def register_tool_for_dispatch(
         title: str,
         description: str,
         params_model: Optional[Type[BaseModel]] = None,
-        result_model: Optional[Any] = None
+        result_model: ModelOrUnion = None
 ):
     """
     Orchestrates the registration of a tool, populating both the internal
