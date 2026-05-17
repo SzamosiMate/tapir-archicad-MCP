@@ -81,7 +81,6 @@ def _generate_paginated_model_code(original_result_model: str, paginated_result_
     return dedent(f'''
 class {paginated_result_model}(BaseModel):
     """A paginated version of the {original_result_model}."""
-    model_config = ConfigDict(extra="allow")
     {list_attribute_name}: list[Any]
     next_page_token: str | None = None
 ''')
@@ -96,7 +95,7 @@ def _generate_call_block(cmd: dict, result_model: str, has_params: bool, has_res
                 command="{cmd["name_for_api"]}",
                 parameters={params_for_api_call}
             )
-            return _validate_result({result_model}, result_dict)
+            return validate_result({result_model}, result_dict)
         ''')
     else:
         return dedent(f'''
@@ -121,7 +120,7 @@ def _generate_paginated_call_block(cmd: dict, original_result_model: str, pagina
                 command="{cmd["name_for_api"]}",
                 parameters={params_for_api_call}
             )
-            full_response_model = _validate_result({original_result_model}, full_response_dict)
+            full_response_model = validate_result({original_result_model}, full_response_dict)
             PAGINATION_CACHE[cache_key] = (full_response_model, time.time())
 
         if cache_key not in PAGINATION_CACHE:
@@ -222,10 +221,6 @@ def generate_tool_files(grouped_commands: dict[str, list[dict]], config: ApiSour
         is_any_paginated = any(cmd["name_camel"] in config.paginated_commands for cmd in commands)
         imports_block = _generate_imports_for_group(commands, valid_model_names, config)
 
-        has_any_result = any(
-            f"{cmd['name_camel']}Result" in valid_model_names for cmd in commands
-        )
-
         common_imports = [
             FILE_HEADER,
             "import logging",
@@ -233,14 +228,12 @@ def generate_tool_files(grouped_commands: dict[str, list[dict]], config: ApiSour
             "from multiconn_archicad.basic_types import Port",
             "from tapir_archicad_mcp.context import multi_conn_instance",
             "from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch",
+            "from tapir_archicad_mcp.tools.validation import validate_result"
         ]
-        if has_any_result:
-            common_imports.append("from pydantic import TypeAdapter")
         if is_any_paginated:
             common_imports.extend([
                 "import time",
                 "from typing import Any",
-                "from pydantic import BaseModel, ConfigDict",
                 "from tapir_archicad_mcp.pagination import handle_paginated_request, PAGINATION_CACHE, CACHE_LIFETIME_SECONDS",
             ])
         if REGISTER_AS_MCP_TOOLS:
@@ -249,17 +242,6 @@ def generate_tool_files(grouped_commands: dict[str, list[dict]], config: ApiSour
             common_imports.append(imports_block)
 
         common_imports.append("\nlog = logging.getLogger()")
-
-        if has_any_result:
-            common_imports.append(dedent('''
-            _type_adapters: dict = {}
-
-            def _validate_result(tp, data):
-                """Validate using TypeAdapter — works for both BaseModel classes and TypeAlias unions."""
-                if tp not in _type_adapters:
-                    _type_adapters[tp] = TypeAdapter(tp)
-                return _type_adapters[tp].validate_python(data)
-            ''').rstrip())
 
         file_content = ["\n".join(common_imports)]
         for cmd in sorted(commands, key=lambda x: x["name_camel"]):
