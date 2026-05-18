@@ -234,6 +234,7 @@ def generate_tool_files(grouped_commands: dict[str, list[dict]], config: ApiSour
             common_imports.extend([
                 "import time",
                 "from typing import Any",
+                "from pydantic import BaseModel",
                 "from tapir_archicad_mcp.pagination import handle_paginated_request, PAGINATION_CACHE, CACHE_LIFETIME_SECONDS",
             ])
         if REGISTER_AS_MCP_TOOLS:
