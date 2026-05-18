@@ -4,17 +4,21 @@ from pydantic import ValidationError
 from multiconn_archicad.basic_types import Port
 from tapir_archicad_mcp.context import multi_conn_instance
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
+from tapir_archicad_mcp.tools.validation import validate_result
 
 from multiconn_archicad.models.tapir.commands import (
     ReleaseElementsParameters,
+ReleaseElementsResult,
 ReserveElementsParameters,
-ReserveElementsResult
+ReserveElementsResult,
+TeamworkReceiveResult,
+TeamworkSendResult
 )
 
 
 log = logging.getLogger()
 
-def release_elements(port: int, params: ReleaseElementsParameters) -> None:
+def release_elements(port: int, params: ReleaseElementsParameters) -> ReleaseElementsResult:
     """
     Releases elements in Teamwork mode.
     """
@@ -25,11 +29,11 @@ def release_elements(port: int, params: ReleaseElementsParameters) -> None:
     conn_header = multi_conn.active[target_port]
     try:
 
-        conn_header.core.post_tapir_command(
+        result_dict = conn_header.core.post_tapir_command(
             command="ReleaseElements",
             parameters=params.model_dump(mode='json')
         )
-        return None
+        return validate_result(ReleaseElementsResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for ReleaseElements result: {e}")
@@ -45,7 +49,7 @@ register_tool_for_dispatch(
     title="ReleaseElements",
     description="Releases elements in Teamwork mode.",
     params_model=ReleaseElementsParameters,
-    result_model=None
+    result_model=ReleaseElementsResult
 )
 
 
@@ -64,7 +68,7 @@ def reserve_elements(port: int, params: ReserveElementsParameters) -> ReserveEle
             command="ReserveElements",
             parameters=params.model_dump(mode='json')
         )
-        return ReserveElementsResult.model_validate(result_dict)
+        return validate_result(ReserveElementsResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for ReserveElements result: {e}")
@@ -84,7 +88,7 @@ register_tool_for_dispatch(
 )
 
 
-def teamwork_receive(port: int) -> None:
+def teamwork_receive(port: int) -> TeamworkReceiveResult:
     """
     Performs a receive operation on the currently opened Teamwork project.
     """
@@ -95,11 +99,11 @@ def teamwork_receive(port: int) -> None:
     conn_header = multi_conn.active[target_port]
     try:
 
-        conn_header.core.post_tapir_command(
+        result_dict = conn_header.core.post_tapir_command(
             command="TeamworkReceive",
             parameters={}
         )
-        return None
+        return validate_result(TeamworkReceiveResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for TeamworkReceive result: {e}")
@@ -115,11 +119,11 @@ register_tool_for_dispatch(
     title="TeamworkReceive",
     description="Performs a receive operation on the currently opened Teamwork project.",
     params_model=None,
-    result_model=None
+    result_model=TeamworkReceiveResult
 )
 
 
-def teamwork_send(port: int) -> None:
+def teamwork_send(port: int) -> TeamworkSendResult:
     """
     Performs a send operation on the currently opened Teamwork project.
     """
@@ -130,11 +134,11 @@ def teamwork_send(port: int) -> None:
     conn_header = multi_conn.active[target_port]
     try:
 
-        conn_header.core.post_tapir_command(
+        result_dict = conn_header.core.post_tapir_command(
             command="TeamworkSend",
             parameters={}
         )
-        return None
+        return validate_result(TeamworkSendResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for TeamworkSend result: {e}")
@@ -150,5 +154,5 @@ register_tool_for_dispatch(
     title="TeamworkSend",
     description="Performs a send operation on the currently opened Teamwork project.",
     params_model=None,
-    result_model=None
+    result_model=TeamworkSendResult
 )

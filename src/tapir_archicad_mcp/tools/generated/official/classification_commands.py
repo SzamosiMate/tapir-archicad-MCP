@@ -4,6 +4,7 @@ from pydantic import ValidationError
 from multiconn_archicad.basic_types import Port
 from tapir_archicad_mcp.context import multi_conn_instance
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
+from tapir_archicad_mcp.tools.validation import validate_result
 
 from multiconn_archicad.models.official.commands import (
     GetAllClassificationSystemsResult,
@@ -36,7 +37,7 @@ def get_all_classification_systems(port: int) -> GetAllClassificationSystemsResu
             command="API.GetAllClassificationSystems",
             parameters={}
         )
-        return GetAllClassificationSystemsResult.model_validate(result_dict)
+        return validate_result(GetAllClassificationSystemsResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for GetAllClassificationSystems result: {e}")
@@ -71,7 +72,7 @@ def get_all_classifications_in_system(port: int, params: GetAllClassificationsIn
             command="API.GetAllClassificationsInSystem",
             parameters=params.model_dump(mode='json')
         )
-        return GetAllClassificationsInSystemResult.model_validate(result_dict)
+        return validate_result(GetAllClassificationsInSystemResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for GetAllClassificationsInSystem result: {e}")
@@ -106,7 +107,7 @@ def get_classification_item_availability(port: int, params: GetClassificationIte
             command="API.GetClassificationItemAvailability",
             parameters=params.model_dump(mode='json')
         )
-        return GetClassificationItemAvailabilityResult.model_validate(result_dict)
+        return validate_result(GetClassificationItemAvailabilityResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for GetClassificationItemAvailability result: {e}")
@@ -141,7 +142,7 @@ def get_classification_system_ids(port: int) -> GetClassificationSystemIdsResult
             command="API.GetClassificationSystemIds",
             parameters={}
         )
-        return GetClassificationSystemIdsResult.model_validate(result_dict)
+        return validate_result(GetClassificationSystemIdsResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for GetClassificationSystemIds result: {e}")
@@ -176,7 +177,7 @@ def get_classification_systems(port: int, params: GetClassificationSystemsParame
             command="API.GetClassificationSystems",
             parameters=params.model_dump(mode='json')
         )
-        return GetClassificationSystemsResult.model_validate(result_dict)
+        return validate_result(GetClassificationSystemsResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for GetClassificationSystems result: {e}")
@@ -211,7 +212,7 @@ def get_details_of_classification_items(port: int, params: GetDetailsOfClassific
             command="API.GetDetailsOfClassificationItems",
             parameters=params.model_dump(mode='json')
         )
-        return GetDetailsOfClassificationItemsResult.model_validate(result_dict)
+        return validate_result(GetDetailsOfClassificationItemsResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for GetDetailsOfClassificationItems result: {e}")

@@ -4,6 +4,7 @@ from pydantic import ValidationError
 from multiconn_archicad.basic_types import Port
 from tapir_archicad_mcp.context import multi_conn_instance
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
+from tapir_archicad_mcp.tools.validation import validate_result
 
 from multiconn_archicad.models.official.commands import (
     CreateLayoutParameters,
@@ -33,7 +34,7 @@ def create_layout(port: int, params: CreateLayoutParameters) -> CreateLayoutResu
             command="API.CreateLayout",
             parameters=params.model_dump(mode='json')
         )
-        return CreateLayoutResult.model_validate(result_dict)
+        return validate_result(CreateLayoutResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for CreateLayout result: {e}")
@@ -68,7 +69,7 @@ def create_layout_subset(port: int, params: CreateLayoutSubsetParameters) -> Cre
             command="API.CreateLayoutSubset",
             parameters=params.model_dump(mode='json')
         )
-        return CreateLayoutSubsetResult.model_validate(result_dict)
+        return validate_result(CreateLayoutSubsetResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for CreateLayoutSubset result: {e}")
@@ -103,7 +104,7 @@ def get_layout_settings(port: int, params: GetLayoutSettingsParameters) -> GetLa
             command="API.GetLayoutSettings",
             parameters=params.model_dump(mode='json')
         )
-        return GetLayoutSettingsResult.model_validate(result_dict)
+        return validate_result(GetLayoutSettingsResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for GetLayoutSettings result: {e}")
