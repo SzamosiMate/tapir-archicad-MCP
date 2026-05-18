@@ -4,11 +4,13 @@ from pydantic import ValidationError
 from multiconn_archicad.basic_types import Port
 from tapir_archicad_mcp.context import multi_conn_instance
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
+from tapir_archicad_mcp.tools.validation import validate_result
 
 from multiconn_archicad.models.tapir.commands import (
     AddFilesToEmbeddedLibraryParameters,
 AddFilesToEmbeddedLibraryResult,
-GetLibrariesResult
+GetLibrariesResult,
+ReloadLibrariesResult
 )
 
 
@@ -29,7 +31,7 @@ def add_files_to_embedded_library(port: int, params: AddFilesToEmbeddedLibraryPa
             command="AddFilesToEmbeddedLibrary",
             parameters=params.model_dump(mode='json')
         )
-        return AddFilesToEmbeddedLibraryResult.model_validate(result_dict)
+        return validate_result(AddFilesToEmbeddedLibraryResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for AddFilesToEmbeddedLibrary result: {e}")
@@ -64,7 +66,7 @@ def get_libraries(port: int) -> GetLibrariesResult:
             command="GetLibraries",
             parameters={}
         )
-        return GetLibrariesResult.model_validate(result_dict)
+        return validate_result(GetLibrariesResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for GetLibraries result: {e}")
@@ -84,7 +86,7 @@ register_tool_for_dispatch(
 )
 
 
-def reload_libraries(port: int) -> None:
+def reload_libraries(port: int) -> ReloadLibrariesResult:
     """
     Executes the reload libraries command.
     """
@@ -95,11 +97,11 @@ def reload_libraries(port: int) -> None:
     conn_header = multi_conn.active[target_port]
     try:
 
-        conn_header.core.post_tapir_command(
+        result_dict = conn_header.core.post_tapir_command(
             command="ReloadLibraries",
             parameters={}
         )
-        return None
+        return validate_result(ReloadLibrariesResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for ReloadLibraries result: {e}")
@@ -115,5 +117,5 @@ register_tool_for_dispatch(
     title="ReloadLibraries",
     description="Executes the reload libraries command.",
     params_model=None,
-    result_model=None
+    result_model=ReloadLibrariesResult
 )

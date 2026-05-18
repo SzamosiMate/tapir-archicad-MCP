@@ -2,7 +2,9 @@
 
 from tapir_archicad_mcp.tools.generated.tapir.application_commands import *
 from tapir_archicad_mcp.tools.generated.tapir.attribute_commands import *
+from tapir_archicad_mcp.tools.generated.tapir.design_options_commands import *
 from tapir_archicad_mcp.tools.generated.tapir.element_commands import *
+from tapir_archicad_mcp.tools.generated.tapir.element_grouping_commands import *
 from tapir_archicad_mcp.tools.generated.tapir.favorites_commands import *
 from tapir_archicad_mcp.tools.generated.tapir.issue_management_commands import *
 from tapir_archicad_mcp.tools.generated.tapir.library_commands import *

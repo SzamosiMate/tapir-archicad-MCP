@@ -6,17 +6,17 @@ from tapir_archicad_mcp.context import multi_conn_instance
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
 from tapir_archicad_mcp.tools.validation import validate_result
 
-from multiconn_archicad.models.official.commands import (
-    IsAddOnCommandAvailableParameters,
-IsAddOnCommandAvailableResult
+from multiconn_archicad.models.tapir.commands import (
+    CreateGroupsParameters,
+CreateGroupsResult
 )
 
 
 log = logging.getLogger()
 
-def is_add_on_command_available(port: int, params: IsAddOnCommandAvailableParameters) -> IsAddOnCommandAvailableResult:
+def create_groups(port: int, params: CreateGroupsParameters) -> CreateGroupsResult:
     """
-    Checks if the command is available or not.
+    Creates groups of the passed elements
     """
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
@@ -25,25 +25,25 @@ def is_add_on_command_available(port: int, params: IsAddOnCommandAvailableParame
     conn_header = multi_conn.active[target_port]
     try:
 
-        result_dict = conn_header.core.post_command(
-            command="API.IsAddOnCommandAvailable",
+        result_dict = conn_header.core.post_tapir_command(
+            command="CreateGroups",
             parameters=params.model_dump(mode='json')
         )
-        return validate_result(IsAddOnCommandAvailableResult, result_dict)
+        return validate_result(CreateGroupsResult, result_dict)
 
     except ValidationError as e:
-        log.error(f"Validation error for IsAddOnCommandAvailable result: {e}")
+        log.error(f"Validation error for CreateGroups result: {e}")
         raise ValueError(f"Received an invalid response from the Archicad API: {e}")
     except Exception as e:
-        log.error(f"Error executing IsAddOnCommandAvailable on port {port}: {e}")
+        log.error(f"Error executing CreateGroups on port {port}: {e}")
         raise e
 
 
 register_tool_for_dispatch(
-    is_add_on_command_available,
-    name="dev_is_add_on_command_available",
-    title="IsAddOnCommandAvailable",
-    description="Checks if the command is available or not.",
-    params_model=IsAddOnCommandAvailableParameters,
-    result_model=IsAddOnCommandAvailableResult
+    create_groups,
+    name="dev_create_groups",
+    title="CreateGroups",
+    description="Creates groups of the passed elements",
+    params_model=CreateGroupsParameters,
+    result_model=CreateGroupsResult
 )

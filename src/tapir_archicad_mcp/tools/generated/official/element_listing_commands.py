@@ -4,8 +4,10 @@ from pydantic import ValidationError
 from multiconn_archicad.basic_types import Port
 from tapir_archicad_mcp.context import multi_conn_instance
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
+from tapir_archicad_mcp.tools.validation import validate_result
 import time
 from typing import Any
+from pydantic import BaseModel
 from tapir_archicad_mcp.pagination import handle_paginated_request, PAGINATION_CACHE, CACHE_LIFETIME_SECONDS
 
 from multiconn_archicad.models.official.commands import (
@@ -18,7 +20,7 @@ GetTypesOfElementsResult
 
 log = logging.getLogger()
 
-class PaginatedGetElementsByClassificationResult(GetElementsByClassificationResult):
+class PaginatedGetElementsByClassificationResult(BaseModel):
     """A paginated version of the GetElementsByClassificationResult."""
     elements: list[Any]
     next_page_token: str | None = None
@@ -44,7 +46,7 @@ def get_elements_by_classification(port: int, params: GetElementsByClassificatio
                 command="API.GetElementsByClassification",
                 parameters=params.model_dump(mode='json')
             )
-            full_response_model = GetElementsByClassificationResult.model_validate(full_response_dict)
+            full_response_model = validate_result(GetElementsByClassificationResult, full_response_dict)
             PAGINATION_CACHE[cache_key] = (full_response_model, time.time())
 
         if cache_key not in PAGINATION_CACHE:
@@ -97,7 +99,7 @@ def get_types_of_elements(port: int, params: GetTypesOfElementsParameters) -> Ge
             command="API.GetTypesOfElements",
             parameters=params.model_dump(mode='json')
         )
-        return GetTypesOfElementsResult.model_validate(result_dict)
+        return validate_result(GetTypesOfElementsResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for GetTypesOfElements result: {e}")

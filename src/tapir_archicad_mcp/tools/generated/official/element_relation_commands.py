@@ -4,6 +4,7 @@ from pydantic import ValidationError
 from multiconn_archicad.basic_types import Port
 from tapir_archicad_mcp.context import multi_conn_instance
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
+from tapir_archicad_mcp.tools.validation import validate_result
 
 from multiconn_archicad.models.official.commands import (
     GetElementsRelatedToZonesParameters,
@@ -28,7 +29,7 @@ def get_elements_related_to_zones(port: int, params: GetElementsRelatedToZonesPa
             command="API.GetElementsRelatedToZones",
             parameters=params.model_dump(mode='json')
         )
-        return GetElementsRelatedToZonesResult.model_validate(result_dict)
+        return validate_result(GetElementsRelatedToZonesResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for GetElementsRelatedToZones result: {e}")

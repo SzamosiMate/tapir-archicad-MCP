@@ -4,12 +4,15 @@ from pydantic import ValidationError
 from multiconn_archicad.basic_types import Port
 from tapir_archicad_mcp.context import multi_conn_instance
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
+from tapir_archicad_mcp.tools.validation import validate_result
 
 from multiconn_archicad.models.tapir.commands import (
     ApplyFavoritesToElementDefaultsParameters,
 ApplyFavoritesToElementDefaultsResult,
 CreateFavoritesFromElementsParameters,
 CreateFavoritesFromElementsResult,
+GetFavoritePreviewImageParameters,
+GetFavoritePreviewImageResult,
 GetFavoritesByTypeParameters,
 GetFavoritesByTypeResult
 )
@@ -32,7 +35,7 @@ def apply_favorites_to_element_defaults(port: int, params: ApplyFavoritesToEleme
             command="ApplyFavoritesToElementDefaults",
             parameters=params.model_dump(mode='json')
         )
-        return ApplyFavoritesToElementDefaultsResult.model_validate(result_dict)
+        return validate_result(ApplyFavoritesToElementDefaultsResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for ApplyFavoritesToElementDefaults result: {e}")
@@ -67,7 +70,7 @@ def create_favorites_from_elements(port: int, params: CreateFavoritesFromElement
             command="CreateFavoritesFromElements",
             parameters=params.model_dump(mode='json')
         )
-        return CreateFavoritesFromElementsResult.model_validate(result_dict)
+        return validate_result(CreateFavoritesFromElementsResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for CreateFavoritesFromElements result: {e}")
@@ -87,6 +90,41 @@ register_tool_for_dispatch(
 )
 
 
+def get_favorite_preview_image(port: int, params: GetFavoritePreviewImageParameters) -> GetFavoritePreviewImageResult:
+    """
+    Returns the preview image of the given favorite.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="GetFavoritePreviewImage",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(GetFavoritePreviewImageResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for GetFavoritePreviewImage result: {e}")
+        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+    except Exception as e:
+        log.error(f"Error executing GetFavoritePreviewImage on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    get_favorite_preview_image,
+    name="favorites_get_favorite_preview_image",
+    title="GetFavoritePreviewImage",
+    description="Returns the preview image of the given favorite.",
+    params_model=GetFavoritePreviewImageParameters,
+    result_model=GetFavoritePreviewImageResult
+)
+
+
 def get_favorites_by_type(port: int, params: GetFavoritesByTypeParameters) -> GetFavoritesByTypeResult:
     """
     Returns a list of the names of all favorites with the given element type
@@ -102,7 +140,7 @@ def get_favorites_by_type(port: int, params: GetFavoritesByTypeParameters) -> Ge
             command="GetFavoritesByType",
             parameters=params.model_dump(mode='json')
         )
-        return GetFavoritesByTypeResult.model_validate(result_dict)
+        return validate_result(GetFavoritesByTypeResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for GetFavoritesByType result: {e}")

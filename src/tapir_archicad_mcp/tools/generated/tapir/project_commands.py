@@ -4,19 +4,101 @@ from pydantic import ValidationError
 from multiconn_archicad.basic_types import Port
 from tapir_archicad_mcp.context import multi_conn_instance
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
+from tapir_archicad_mcp.tools.validation import validate_result
 
 from multiconn_archicad.models.tapir.commands import (
-    GetGeoLocationResult,
+    CloseProjectResult,
+GetCalculationUnitsResult,
+GetGeoLocationResult,
 GetHotlinksResult,
 GetProjectInfoFieldsResult,
 GetStoriesResult,
+IFCFileOperationParameters,
+IFCFileOperationResult,
 OpenProjectParameters,
+OpenProjectResult,
+PrintViewParameters,
+PrintViewResult,
+SaveProjectResult,
+SetGeoLocationParameters,
+SetGeoLocationResult,
 SetProjectInfoFieldParameters,
-SetStoriesParameters
+SetStoriesParameters,
+SetStoriesResult
 )
 
 
 log = logging.getLogger()
+
+def close_project(port: int) -> CloseProjectResult:
+    """
+    Closes the currently opened project.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="CloseProject",
+            parameters={}
+        )
+        return validate_result(CloseProjectResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for CloseProject result: {e}")
+        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+    except Exception as e:
+        log.error(f"Error executing CloseProject on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    close_project,
+    name="project_close_project",
+    title="CloseProject",
+    description="Closes the currently opened project.",
+    params_model=None,
+    result_model=CloseProjectResult
+)
+
+
+def get_calculation_units(port: int) -> GetCalculationUnitsResult:
+    """
+    Gets the project calculation units.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="GetCalculationUnits",
+            parameters={}
+        )
+        return validate_result(GetCalculationUnitsResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for GetCalculationUnits result: {e}")
+        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+    except Exception as e:
+        log.error(f"Error executing GetCalculationUnits on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    get_calculation_units,
+    name="project_get_calculation_units",
+    title="GetCalculationUnits",
+    description="Gets the project calculation units.",
+    params_model=None,
+    result_model=GetCalculationUnitsResult
+)
+
 
 def get_geo_location(port: int) -> GetGeoLocationResult:
     """
@@ -33,7 +115,7 @@ def get_geo_location(port: int) -> GetGeoLocationResult:
             command="GetGeoLocation",
             parameters={}
         )
-        return GetGeoLocationResult.model_validate(result_dict)
+        return validate_result(GetGeoLocationResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for GetGeoLocation result: {e}")
@@ -68,7 +150,7 @@ def get_hotlinks(port: int) -> GetHotlinksResult:
             command="GetHotlinks",
             parameters={}
         )
-        return GetHotlinksResult.model_validate(result_dict)
+        return validate_result(GetHotlinksResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for GetHotlinks result: {e}")
@@ -103,7 +185,7 @@ def get_project_info_fields(port: int) -> GetProjectInfoFieldsResult:
             command="GetProjectInfoFields",
             parameters={}
         )
-        return GetProjectInfoFieldsResult.model_validate(result_dict)
+        return validate_result(GetProjectInfoFieldsResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for GetProjectInfoFields result: {e}")
@@ -138,7 +220,7 @@ def get_stories(port: int) -> GetStoriesResult:
             command="GetStories",
             parameters={}
         )
-        return GetStoriesResult.model_validate(result_dict)
+        return validate_result(GetStoriesResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for GetStories result: {e}")
@@ -158,7 +240,42 @@ register_tool_for_dispatch(
 )
 
 
-def open_project(port: int, params: OpenProjectParameters) -> None:
+def ifc_file_operation(port: int, params: IFCFileOperationParameters) -> IFCFileOperationResult:
+    """
+    Executes an IFC file operation.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="IFCFileOperation",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(IFCFileOperationResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for IFCFileOperation result: {e}")
+        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+    except Exception as e:
+        log.error(f"Error executing IFCFileOperation on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    ifc_file_operation,
+    name="project_ifc_file_operation",
+    title="IFCFileOperation",
+    description="Executes an IFC file operation.",
+    params_model=IFCFileOperationParameters,
+    result_model=IFCFileOperationResult
+)
+
+
+def open_project(port: int, params: OpenProjectParameters) -> OpenProjectResult:
     """
     Opens the given project.
     """
@@ -169,11 +286,11 @@ def open_project(port: int, params: OpenProjectParameters) -> None:
     conn_header = multi_conn.active[target_port]
     try:
 
-        conn_header.core.post_tapir_command(
+        result_dict = conn_header.core.post_tapir_command(
             command="OpenProject",
             parameters=params.model_dump(mode='json')
         )
-        return None
+        return validate_result(OpenProjectResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for OpenProject result: {e}")
@@ -189,7 +306,112 @@ register_tool_for_dispatch(
     title="OpenProject",
     description="Opens the given project.",
     params_model=OpenProjectParameters,
-    result_model=None
+    result_model=OpenProjectResult
+)
+
+
+def print_view(port: int, params: PrintViewParameters) -> PrintViewResult:
+    """
+    Prints from the current view.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="PrintView",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(PrintViewResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for PrintView result: {e}")
+        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+    except Exception as e:
+        log.error(f"Error executing PrintView on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    print_view,
+    name="project_print_view",
+    title="PrintView",
+    description="Prints from the current view.",
+    params_model=PrintViewParameters,
+    result_model=PrintViewResult
+)
+
+
+def save_project(port: int) -> SaveProjectResult:
+    """
+    Saves the currently opened project.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="SaveProject",
+            parameters={}
+        )
+        return validate_result(SaveProjectResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for SaveProject result: {e}")
+        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+    except Exception as e:
+        log.error(f"Error executing SaveProject on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    save_project,
+    name="project_save_project",
+    title="SaveProject",
+    description="Saves the currently opened project.",
+    params_model=None,
+    result_model=SaveProjectResult
+)
+
+
+def set_geo_location(port: int, params: SetGeoLocationParameters) -> SetGeoLocationResult:
+    """
+    Sets the project location details.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="SetGeoLocation",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(SetGeoLocationResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for SetGeoLocation result: {e}")
+        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+    except Exception as e:
+        log.error(f"Error executing SetGeoLocation on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    set_geo_location,
+    name="project_set_geo_location",
+    title="SetGeoLocation",
+    description="Sets the project location details.",
+    params_model=SetGeoLocationParameters,
+    result_model=SetGeoLocationResult
 )
 
 
@@ -228,7 +450,7 @@ register_tool_for_dispatch(
 )
 
 
-def set_stories(port: int, params: SetStoriesParameters) -> None:
+def set_stories(port: int, params: SetStoriesParameters) -> SetStoriesResult:
     """
     Sets the story sructure of the currently loaded project.
     """
@@ -239,11 +461,11 @@ def set_stories(port: int, params: SetStoriesParameters) -> None:
     conn_header = multi_conn.active[target_port]
     try:
 
-        conn_header.core.post_tapir_command(
+        result_dict = conn_header.core.post_tapir_command(
             command="SetStories",
             parameters=params.model_dump(mode='json')
         )
-        return None
+        return validate_result(SetStoriesResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for SetStories result: {e}")
@@ -259,5 +481,5 @@ register_tool_for_dispatch(
     title="SetStories",
     description="Sets the story sructure of the currently loaded project.",
     params_model=SetStoriesParameters,
-    result_model=None
+    result_model=SetStoriesResult
 )

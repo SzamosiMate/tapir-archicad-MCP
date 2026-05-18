@@ -4,6 +4,7 @@ from pydantic import ValidationError
 from multiconn_archicad.basic_types import Port
 from tapir_archicad_mcp.context import multi_conn_instance
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
+from tapir_archicad_mcp.tools.validation import validate_result
 
 from multiconn_archicad.models.tapir.commands import (
     GetCurrentRevisionChangesOfLayoutsParameters,
@@ -33,7 +34,7 @@ def get_current_revision_changes_of_layouts(port: int, params: GetCurrentRevisio
             command="GetCurrentRevisionChangesOfLayouts",
             parameters=params.model_dump(mode='json')
         )
-        return GetCurrentRevisionChangesOfLayoutsResult.model_validate(result_dict)
+        return validate_result(GetCurrentRevisionChangesOfLayoutsResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for GetCurrentRevisionChangesOfLayouts result: {e}")
@@ -68,7 +69,7 @@ def get_document_revisions(port: int) -> GetDocumentRevisionsResult:
             command="GetDocumentRevisions",
             parameters={}
         )
-        return GetDocumentRevisionsResult.model_validate(result_dict)
+        return validate_result(GetDocumentRevisionsResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for GetDocumentRevisions result: {e}")
@@ -103,7 +104,7 @@ def get_revision_changes(port: int) -> GetRevisionChangesResult:
             command="GetRevisionChanges",
             parameters={}
         )
-        return GetRevisionChangesResult.model_validate(result_dict)
+        return validate_result(GetRevisionChangesResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for GetRevisionChanges result: {e}")
@@ -138,7 +139,7 @@ def get_revision_changes_of_elements(port: int, params: GetRevisionChangesOfElem
             command="GetRevisionChangesOfElements",
             parameters=params.model_dump(mode='json')
         )
-        return GetRevisionChangesOfElementsResult.model_validate(result_dict)
+        return validate_result(GetRevisionChangesOfElementsResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for GetRevisionChangesOfElements result: {e}")
@@ -173,7 +174,7 @@ def get_revision_issues(port: int) -> GetRevisionIssuesResult:
             command="GetRevisionIssues",
             parameters={}
         )
-        return GetRevisionIssuesResult.model_validate(result_dict)
+        return validate_result(GetRevisionIssuesResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for GetRevisionIssues result: {e}")

@@ -4,9 +4,22 @@ from pydantic import ValidationError
 from multiconn_archicad.basic_types import Port
 from tapir_archicad_mcp.context import multi_conn_instance
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
+from tapir_archicad_mcp.tools.validation import validate_result
 
 from multiconn_archicad.models.tapir.commands import (
-    GetDatabaseIdFromNavigatorItemIdParameters,
+    CreateDetailsParameters,
+CreateDetailsResult,
+CreateDrawingsParameters,
+CreateDrawingsResult,
+CreateLayoutsParameters,
+CreateLayoutsResult,
+CreateSubsetsParameters,
+CreateSubsetsResult,
+CreateWorksheetsParameters,
+CreateWorksheetsResult,
+FitInWindowParameters,
+FitInWindowResult,
+GetDatabaseIdFromNavigatorItemIdParameters,
 GetDatabaseIdFromNavigatorItemIdResult,
 GetModelViewOptionsResult,
 GetView2DTransformationsParameters,
@@ -14,13 +27,226 @@ GetView2DTransformationsResult,
 GetViewSettingsParameters,
 GetViewSettingsResult,
 PublishPublisherSetParameters,
+Set3DCutPlanesParameters,
+Set3DCutPlanesResult,
 SetViewSettingsParameters,
 SetViewSettingsResult,
-UpdateDrawingsParameters
+UpdateDrawingsParameters,
+UpdateDrawingsResult
 )
 
 
 log = logging.getLogger()
+
+def create_details(port: int, params: CreateDetailsParameters) -> CreateDetailsResult:
+    """
+    Creates independent Detail databases.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="CreateDetails",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(CreateDetailsResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for CreateDetails result: {e}")
+        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+    except Exception as e:
+        log.error(f"Error executing CreateDetails on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    create_details,
+    name="navigator_create_details",
+    title="CreateDetails",
+    description="Creates independent Detail databases.",
+    params_model=CreateDetailsParameters,
+    result_model=CreateDetailsResult
+)
+
+
+def create_drawings(port: int, params: CreateDrawingsParameters) -> CreateDrawingsResult:
+    """
+    Creates Drawing elements on the specified or active layout from navigator items.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="CreateDrawings",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(CreateDrawingsResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for CreateDrawings result: {e}")
+        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+    except Exception as e:
+        log.error(f"Error executing CreateDrawings on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    create_drawings,
+    name="navigator_create_drawings",
+    title="CreateDrawings",
+    description="Creates Drawing elements on the specified or active layout from navigator items.",
+    params_model=CreateDrawingsParameters,
+    result_model=CreateDrawingsResult
+)
+
+
+def create_layouts(port: int, params: CreateLayoutsParameters) -> CreateLayoutsResult:
+    """
+    Creates Layouts and their backing master layouts.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="CreateLayouts",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(CreateLayoutsResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for CreateLayouts result: {e}")
+        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+    except Exception as e:
+        log.error(f"Error executing CreateLayouts on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    create_layouts,
+    name="navigator_create_layouts",
+    title="CreateLayouts",
+    description="Creates Layouts and their backing master layouts.",
+    params_model=CreateLayoutsParameters,
+    result_model=CreateLayoutsResult
+)
+
+
+def create_subsets(port: int, params: CreateSubsetsParameters) -> CreateSubsetsResult:
+    """
+    Creates Layout Book subsets.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="CreateSubsets",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(CreateSubsetsResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for CreateSubsets result: {e}")
+        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+    except Exception as e:
+        log.error(f"Error executing CreateSubsets on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    create_subsets,
+    name="navigator_create_subsets",
+    title="CreateSubsets",
+    description="Creates Layout Book subsets.",
+    params_model=CreateSubsetsParameters,
+    result_model=CreateSubsetsResult
+)
+
+
+def create_worksheets(port: int, params: CreateWorksheetsParameters) -> CreateWorksheetsResult:
+    """
+    Creates independent Worksheet databases.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="CreateWorksheets",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(CreateWorksheetsResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for CreateWorksheets result: {e}")
+        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+    except Exception as e:
+        log.error(f"Error executing CreateWorksheets on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    create_worksheets,
+    name="navigator_create_worksheets",
+    title="CreateWorksheets",
+    description="Creates independent Worksheet databases.",
+    params_model=CreateWorksheetsParameters,
+    result_model=CreateWorksheetsResult
+)
+
+
+def fit_in_window(port: int, params: FitInWindowParameters) -> FitInWindowResult:
+    """
+    Zooms to the given elements or fits everything in the window.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="FitInWindow",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(FitInWindowResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for FitInWindow result: {e}")
+        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+    except Exception as e:
+        log.error(f"Error executing FitInWindow on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    fit_in_window,
+    name="navigator_fit_in_window",
+    title="FitInWindow",
+    description="Zooms to the given elements or fits everything in the window.",
+    params_model=FitInWindowParameters,
+    result_model=FitInWindowResult
+)
+
 
 def get_database_id_from_navigator_item_id(port: int, params: GetDatabaseIdFromNavigatorItemIdParameters) -> GetDatabaseIdFromNavigatorItemIdResult:
     """
@@ -37,7 +263,7 @@ def get_database_id_from_navigator_item_id(port: int, params: GetDatabaseIdFromN
             command="GetDatabaseIdFromNavigatorItemId",
             parameters=params.model_dump(mode='json')
         )
-        return GetDatabaseIdFromNavigatorItemIdResult.model_validate(result_dict)
+        return validate_result(GetDatabaseIdFromNavigatorItemIdResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for GetDatabaseIdFromNavigatorItemId result: {e}")
@@ -72,7 +298,7 @@ def get_model_view_options(port: int) -> GetModelViewOptionsResult:
             command="GetModelViewOptions",
             parameters={}
         )
-        return GetModelViewOptionsResult.model_validate(result_dict)
+        return validate_result(GetModelViewOptionsResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for GetModelViewOptions result: {e}")
@@ -107,7 +333,7 @@ def get_view2_d_transformations(port: int, params: GetView2DTransformationsParam
             command="GetView2DTransformations",
             parameters=params.model_dump(mode='json')
         )
-        return GetView2DTransformationsResult.model_validate(result_dict)
+        return validate_result(GetView2DTransformationsResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for GetView2DTransformations result: {e}")
@@ -142,7 +368,7 @@ def get_view_settings(port: int, params: GetViewSettingsParameters) -> GetViewSe
             command="GetViewSettings",
             parameters=params.model_dump(mode='json')
         )
-        return GetViewSettingsResult.model_validate(result_dict)
+        return validate_result(GetViewSettingsResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for GetViewSettings result: {e}")
@@ -197,6 +423,41 @@ register_tool_for_dispatch(
 )
 
 
+def set3_d_cut_planes(port: int, params: Set3DCutPlanesParameters) -> Set3DCutPlanesResult:
+    """
+    Sets the 3D cut planes.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="Set3DCutPlanes",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(Set3DCutPlanesResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for Set3DCutPlanes result: {e}")
+        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+    except Exception as e:
+        log.error(f"Error executing Set3DCutPlanes on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    set3_d_cut_planes,
+    name="navigator_set3_d_cut_planes",
+    title="Set3DCutPlanes",
+    description="Sets the 3D cut planes.",
+    params_model=Set3DCutPlanesParameters,
+    result_model=Set3DCutPlanesResult
+)
+
+
 def set_view_settings(port: int, params: SetViewSettingsParameters) -> SetViewSettingsResult:
     """
     Sets the view settings of navigator items
@@ -212,7 +473,7 @@ def set_view_settings(port: int, params: SetViewSettingsParameters) -> SetViewSe
             command="SetViewSettings",
             parameters=params.model_dump(mode='json')
         )
-        return SetViewSettingsResult.model_validate(result_dict)
+        return validate_result(SetViewSettingsResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for SetViewSettings result: {e}")
@@ -232,7 +493,7 @@ register_tool_for_dispatch(
 )
 
 
-def update_drawings(port: int, params: UpdateDrawingsParameters) -> None:
+def update_drawings(port: int, params: UpdateDrawingsParameters) -> UpdateDrawingsResult:
     """
     Performs a drawing update on the given elements.
     """
@@ -243,11 +504,11 @@ def update_drawings(port: int, params: UpdateDrawingsParameters) -> None:
     conn_header = multi_conn.active[target_port]
     try:
 
-        conn_header.core.post_tapir_command(
+        result_dict = conn_header.core.post_tapir_command(
             command="UpdateDrawings",
             parameters=params.model_dump(mode='json')
         )
-        return None
+        return validate_result(UpdateDrawingsResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for UpdateDrawings result: {e}")
@@ -263,5 +524,5 @@ register_tool_for_dispatch(
     title="UpdateDrawings",
     description="Performs a drawing update on the given elements.",
     params_model=UpdateDrawingsParameters,
-    result_model=None
+    result_model=UpdateDrawingsResult
 )

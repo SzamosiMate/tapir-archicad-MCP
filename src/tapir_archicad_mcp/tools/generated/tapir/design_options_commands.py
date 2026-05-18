@@ -7,18 +7,17 @@ from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
 from tapir_archicad_mcp.tools.validation import validate_result
 
 from multiconn_archicad.models.tapir.commands import (
-    ChangeWindowParameters,
-ChangeWindowResult,
-GetAddOnVersionResult,
-GetCurrentWindowTypeResult
+    GetDesignOptionCombinationsResult,
+GetDesignOptionSetsResult,
+GetDesignOptionsResult
 )
 
 
 log = logging.getLogger()
 
-def change_window(port: int, params: ChangeWindowParameters) -> ChangeWindowResult:
+def get_design_option_combinations(port: int) -> GetDesignOptionCombinationsResult:
     """
-    Changes the current (active) window to the given window.
+    Retrieves information about existing design option combinations.
     """
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
@@ -28,32 +27,32 @@ def change_window(port: int, params: ChangeWindowParameters) -> ChangeWindowResu
     try:
 
         result_dict = conn_header.core.post_tapir_command(
-            command="ChangeWindow",
-            parameters=params.model_dump(mode='json')
+            command="GetDesignOptionCombinations",
+            parameters={}
         )
-        return validate_result(ChangeWindowResult, result_dict)
+        return validate_result(GetDesignOptionCombinationsResult, result_dict)
 
     except ValidationError as e:
-        log.error(f"Validation error for ChangeWindow result: {e}")
+        log.error(f"Validation error for GetDesignOptionCombinations result: {e}")
         raise ValueError(f"Received an invalid response from the Archicad API: {e}")
     except Exception as e:
-        log.error(f"Error executing ChangeWindow on port {port}: {e}")
+        log.error(f"Error executing GetDesignOptionCombinations on port {port}: {e}")
         raise e
 
 
 register_tool_for_dispatch(
-    change_window,
-    name="app_change_window",
-    title="ChangeWindow",
-    description="Changes the current (active) window to the given window.",
-    params_model=ChangeWindowParameters,
-    result_model=ChangeWindowResult
+    get_design_option_combinations,
+    name="dev_get_design_option_combinations",
+    title="GetDesignOptionCombinations",
+    description="Retrieves information about existing design option combinations.",
+    params_model=None,
+    result_model=GetDesignOptionCombinationsResult
 )
 
 
-def get_add_on_version(port: int) -> GetAddOnVersionResult:
+def get_design_option_sets(port: int) -> GetDesignOptionSetsResult:
     """
-    Retrieves the version of the Tapir Additional JSON Commands Add-On.
+    Retrieves information about existing design option sets. Available from Archicad 29.
     """
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
@@ -63,32 +62,32 @@ def get_add_on_version(port: int) -> GetAddOnVersionResult:
     try:
 
         result_dict = conn_header.core.post_tapir_command(
-            command="GetAddOnVersion",
+            command="GetDesignOptionSets",
             parameters={}
         )
-        return validate_result(GetAddOnVersionResult, result_dict)
+        return validate_result(GetDesignOptionSetsResult, result_dict)
 
     except ValidationError as e:
-        log.error(f"Validation error for GetAddOnVersion result: {e}")
+        log.error(f"Validation error for GetDesignOptionSets result: {e}")
         raise ValueError(f"Received an invalid response from the Archicad API: {e}")
     except Exception as e:
-        log.error(f"Error executing GetAddOnVersion on port {port}: {e}")
+        log.error(f"Error executing GetDesignOptionSets on port {port}: {e}")
         raise e
 
 
 register_tool_for_dispatch(
-    get_add_on_version,
-    name="app_get_add_on_version",
-    title="GetAddOnVersion",
-    description="Retrieves the version of the Tapir Additional JSON Commands Add-On.",
+    get_design_option_sets,
+    name="dev_get_design_option_sets",
+    title="GetDesignOptionSets",
+    description="Retrieves information about existing design option sets. Available from Archicad 29.",
     params_model=None,
-    result_model=GetAddOnVersionResult
+    result_model=GetDesignOptionSetsResult
 )
 
 
-def get_current_window_type(port: int) -> GetCurrentWindowTypeResult:
+def get_design_options(port: int) -> GetDesignOptionsResult:
     """
-    Returns the type of the current (active) window.
+    Retrieves information about existing design options. Available from Archicad 29.
     """
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
@@ -98,24 +97,24 @@ def get_current_window_type(port: int) -> GetCurrentWindowTypeResult:
     try:
 
         result_dict = conn_header.core.post_tapir_command(
-            command="GetCurrentWindowType",
+            command="GetDesignOptions",
             parameters={}
         )
-        return validate_result(GetCurrentWindowTypeResult, result_dict)
+        return validate_result(GetDesignOptionsResult, result_dict)
 
     except ValidationError as e:
-        log.error(f"Validation error for GetCurrentWindowType result: {e}")
+        log.error(f"Validation error for GetDesignOptions result: {e}")
         raise ValueError(f"Received an invalid response from the Archicad API: {e}")
     except Exception as e:
-        log.error(f"Error executing GetCurrentWindowType on port {port}: {e}")
+        log.error(f"Error executing GetDesignOptions on port {port}: {e}")
         raise e
 
 
 register_tool_for_dispatch(
-    get_current_window_type,
-    name="app_get_current_window_type",
-    title="GetCurrentWindowType",
-    description="Returns the type of the current (active) window.",
+    get_design_options,
+    name="dev_get_design_options",
+    title="GetDesignOptions",
+    description="Retrieves information about existing design options. Available from Archicad 29.",
     params_model=None,
-    result_model=GetCurrentWindowTypeResult
+    result_model=GetDesignOptionsResult
 )

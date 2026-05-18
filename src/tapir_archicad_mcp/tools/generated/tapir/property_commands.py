@@ -4,8 +4,10 @@ from pydantic import ValidationError
 from multiconn_archicad.basic_types import Port
 from tapir_archicad_mcp.context import multi_conn_instance
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
+from tapir_archicad_mcp.tools.validation import validate_result
 import time
 from typing import Any
+from pydantic import BaseModel
 from tapir_archicad_mcp.pagination import handle_paginated_request, PAGINATION_CACHE, CACHE_LIFETIME_SECONDS
 
 from multiconn_archicad.models.tapir.commands import (
@@ -46,7 +48,7 @@ def create_property_definitions(port: int, params: CreatePropertyDefinitionsPara
             command="CreatePropertyDefinitions",
             parameters=params.model_dump(mode='json')
         )
-        return CreatePropertyDefinitionsResult.model_validate(result_dict)
+        return validate_result(CreatePropertyDefinitionsResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for CreatePropertyDefinitions result: {e}")
@@ -81,7 +83,7 @@ def create_property_groups(port: int, params: CreatePropertyGroupsParameters) ->
             command="CreatePropertyGroups",
             parameters=params.model_dump(mode='json')
         )
-        return CreatePropertyGroupsResult.model_validate(result_dict)
+        return validate_result(CreatePropertyGroupsResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for CreatePropertyGroups result: {e}")
@@ -116,7 +118,7 @@ def delete_property_definitions(port: int, params: DeletePropertyDefinitionsPara
             command="DeletePropertyDefinitions",
             parameters=params.model_dump(mode='json')
         )
-        return DeletePropertyDefinitionsResult.model_validate(result_dict)
+        return validate_result(DeletePropertyDefinitionsResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for DeletePropertyDefinitions result: {e}")
@@ -151,7 +153,7 @@ def delete_property_groups(port: int, params: DeletePropertyGroupsParameters) ->
             command="DeletePropertyGroups",
             parameters=params.model_dump(mode='json')
         )
-        return DeletePropertyGroupsResult.model_validate(result_dict)
+        return validate_result(DeletePropertyGroupsResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for DeletePropertyGroups result: {e}")
@@ -171,7 +173,7 @@ register_tool_for_dispatch(
 )
 
 
-class PaginatedGetAllPropertiesResult(GetAllPropertiesResult):
+class PaginatedGetAllPropertiesResult(BaseModel):
     """A paginated version of the GetAllPropertiesResult."""
     properties: list[Any]
     next_page_token: str | None = None
@@ -197,7 +199,7 @@ def get_all_properties(port: int, page_token: str | None = None) -> PaginatedGet
                 command="GetAllProperties",
                 parameters={}
             )
-            full_response_model = GetAllPropertiesResult.model_validate(full_response_dict)
+            full_response_model = validate_result(GetAllPropertiesResult, full_response_dict)
             PAGINATION_CACHE[cache_key] = (full_response_model, time.time())
 
         if cache_key not in PAGINATION_CACHE:
@@ -250,7 +252,7 @@ def get_property_values_of_attributes(port: int, params: GetPropertyValuesOfAttr
             command="GetPropertyValuesOfAttributes",
             parameters=params.model_dump(mode='json')
         )
-        return GetPropertyValuesOfAttributesResult.model_validate(result_dict)
+        return validate_result(GetPropertyValuesOfAttributesResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for GetPropertyValuesOfAttributes result: {e}")
@@ -285,7 +287,7 @@ def get_property_values_of_elements(port: int, params: GetPropertyValuesOfElemen
             command="GetPropertyValuesOfElements",
             parameters=params.model_dump(mode='json')
         )
-        return GetPropertyValuesOfElementsResult.model_validate(result_dict)
+        return validate_result(GetPropertyValuesOfElementsResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for GetPropertyValuesOfElements result: {e}")
@@ -320,7 +322,7 @@ def set_property_values_of_attributes(port: int, params: SetPropertyValuesOfAttr
             command="SetPropertyValuesOfAttributes",
             parameters=params.model_dump(mode='json')
         )
-        return SetPropertyValuesOfAttributesResult.model_validate(result_dict)
+        return validate_result(SetPropertyValuesOfAttributesResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for SetPropertyValuesOfAttributes result: {e}")
@@ -355,7 +357,7 @@ def set_property_values_of_elements(port: int, params: SetPropertyValuesOfElemen
             command="SetPropertyValuesOfElements",
             parameters=params.model_dump(mode='json')
         )
-        return SetPropertyValuesOfElementsResult.model_validate(result_dict)
+        return validate_result(SetPropertyValuesOfElementsResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for SetPropertyValuesOfElements result: {e}")

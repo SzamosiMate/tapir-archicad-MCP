@@ -4,30 +4,38 @@ from pydantic import ValidationError
 from multiconn_archicad.basic_types import Port
 from tapir_archicad_mcp.context import multi_conn_instance
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
+from tapir_archicad_mcp.tools.validation import validate_result
 import time
 from typing import Any
+from pydantic import BaseModel
 from tapir_archicad_mcp.pagination import handle_paginated_request, PAGINATION_CACHE, CACHE_LIFETIME_SECONDS
 
 from multiconn_archicad.models.tapir.commands import (
     AddCommentToIssueParameters,
+AddCommentToIssueResult,
 AttachElementsToIssueParameters,
+AttachElementsToIssueResult,
 CreateIssueParameters,
 CreateIssueResult,
 DeleteIssueParameters,
+DeleteIssueResult,
 DetachElementsFromIssueParameters,
+DetachElementsFromIssueResult,
 ExportIssuesToBCFParameters,
+ExportIssuesToBCFResult,
 GetCommentsFromIssueParameters,
 GetCommentsFromIssueResult,
 GetElementsAttachedToIssueParameters,
 GetElementsAttachedToIssueResult,
 GetIssuesResult,
-ImportIssuesFromBCFParameters
+ImportIssuesFromBCFParameters,
+ImportIssuesFromBCFResult
 )
 
 
 log = logging.getLogger()
 
-def add_comment_to_issue(port: int, params: AddCommentToIssueParameters) -> None:
+def add_comment_to_issue(port: int, params: AddCommentToIssueParameters) -> AddCommentToIssueResult:
     """
     Adds a new comment to the specified issue.
     """
@@ -38,11 +46,11 @@ def add_comment_to_issue(port: int, params: AddCommentToIssueParameters) -> None
     conn_header = multi_conn.active[target_port]
     try:
 
-        conn_header.core.post_tapir_command(
+        result_dict = conn_header.core.post_tapir_command(
             command="AddCommentToIssue",
             parameters=params.model_dump(mode='json')
         )
-        return None
+        return validate_result(AddCommentToIssueResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for AddCommentToIssue result: {e}")
@@ -58,11 +66,11 @@ register_tool_for_dispatch(
     title="AddCommentToIssue",
     description="Adds a new comment to the specified issue.",
     params_model=AddCommentToIssueParameters,
-    result_model=None
+    result_model=AddCommentToIssueResult
 )
 
 
-def attach_elements_to_issue(port: int, params: AttachElementsToIssueParameters) -> None:
+def attach_elements_to_issue(port: int, params: AttachElementsToIssueParameters) -> AttachElementsToIssueResult:
     """
     Attaches elements to the specified issue.
     """
@@ -73,11 +81,11 @@ def attach_elements_to_issue(port: int, params: AttachElementsToIssueParameters)
     conn_header = multi_conn.active[target_port]
     try:
 
-        conn_header.core.post_tapir_command(
+        result_dict = conn_header.core.post_tapir_command(
             command="AttachElementsToIssue",
             parameters=params.model_dump(mode='json')
         )
-        return None
+        return validate_result(AttachElementsToIssueResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for AttachElementsToIssue result: {e}")
@@ -93,7 +101,7 @@ register_tool_for_dispatch(
     title="AttachElementsToIssue",
     description="Attaches elements to the specified issue.",
     params_model=AttachElementsToIssueParameters,
-    result_model=None
+    result_model=AttachElementsToIssueResult
 )
 
 
@@ -112,7 +120,7 @@ def create_issue(port: int, params: CreateIssueParameters) -> CreateIssueResult:
             command="CreateIssue",
             parameters=params.model_dump(mode='json')
         )
-        return CreateIssueResult.model_validate(result_dict)
+        return validate_result(CreateIssueResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for CreateIssue result: {e}")
@@ -132,7 +140,7 @@ register_tool_for_dispatch(
 )
 
 
-def delete_issue(port: int, params: DeleteIssueParameters) -> None:
+def delete_issue(port: int, params: DeleteIssueParameters) -> DeleteIssueResult:
     """
     Deletes the specified issue.
     """
@@ -143,11 +151,11 @@ def delete_issue(port: int, params: DeleteIssueParameters) -> None:
     conn_header = multi_conn.active[target_port]
     try:
 
-        conn_header.core.post_tapir_command(
+        result_dict = conn_header.core.post_tapir_command(
             command="DeleteIssue",
             parameters=params.model_dump(mode='json')
         )
-        return None
+        return validate_result(DeleteIssueResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for DeleteIssue result: {e}")
@@ -163,11 +171,11 @@ register_tool_for_dispatch(
     title="DeleteIssue",
     description="Deletes the specified issue.",
     params_model=DeleteIssueParameters,
-    result_model=None
+    result_model=DeleteIssueResult
 )
 
 
-def detach_elements_from_issue(port: int, params: DetachElementsFromIssueParameters) -> None:
+def detach_elements_from_issue(port: int, params: DetachElementsFromIssueParameters) -> DetachElementsFromIssueResult:
     """
     Detaches elements from the specified issue.
     """
@@ -178,11 +186,11 @@ def detach_elements_from_issue(port: int, params: DetachElementsFromIssueParamet
     conn_header = multi_conn.active[target_port]
     try:
 
-        conn_header.core.post_tapir_command(
+        result_dict = conn_header.core.post_tapir_command(
             command="DetachElementsFromIssue",
             parameters=params.model_dump(mode='json')
         )
-        return None
+        return validate_result(DetachElementsFromIssueResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for DetachElementsFromIssue result: {e}")
@@ -198,11 +206,11 @@ register_tool_for_dispatch(
     title="DetachElementsFromIssue",
     description="Detaches elements from the specified issue.",
     params_model=DetachElementsFromIssueParameters,
-    result_model=None
+    result_model=DetachElementsFromIssueResult
 )
 
 
-def export_issues_to_bcf(port: int, params: ExportIssuesToBCFParameters) -> None:
+def export_issues_to_bcf(port: int, params: ExportIssuesToBCFParameters) -> ExportIssuesToBCFResult:
     """
     Exports specified issues to a BCF file.
     """
@@ -213,11 +221,11 @@ def export_issues_to_bcf(port: int, params: ExportIssuesToBCFParameters) -> None
     conn_header = multi_conn.active[target_port]
     try:
 
-        conn_header.core.post_tapir_command(
+        result_dict = conn_header.core.post_tapir_command(
             command="ExportIssuesToBCF",
             parameters=params.model_dump(mode='json')
         )
-        return None
+        return validate_result(ExportIssuesToBCFResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for ExportIssuesToBCF result: {e}")
@@ -233,7 +241,7 @@ register_tool_for_dispatch(
     title="ExportIssuesToBCF",
     description="Exports specified issues to a BCF file.",
     params_model=ExportIssuesToBCFParameters,
-    result_model=None
+    result_model=ExportIssuesToBCFResult
 )
 
 
@@ -252,7 +260,7 @@ def get_comments_from_issue(port: int, params: GetCommentsFromIssueParameters) -
             command="GetCommentsFromIssue",
             parameters=params.model_dump(mode='json')
         )
-        return GetCommentsFromIssueResult.model_validate(result_dict)
+        return validate_result(GetCommentsFromIssueResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for GetCommentsFromIssue result: {e}")
@@ -287,7 +295,7 @@ def get_elements_attached_to_issue(port: int, params: GetElementsAttachedToIssue
             command="GetElementsAttachedToIssue",
             parameters=params.model_dump(mode='json')
         )
-        return GetElementsAttachedToIssueResult.model_validate(result_dict)
+        return validate_result(GetElementsAttachedToIssueResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for GetElementsAttachedToIssue result: {e}")
@@ -307,7 +315,7 @@ register_tool_for_dispatch(
 )
 
 
-class PaginatedGetIssuesResult(GetIssuesResult):
+class PaginatedGetIssuesResult(BaseModel):
     """A paginated version of the GetIssuesResult."""
     issues: list[Any]
     next_page_token: str | None = None
@@ -333,7 +341,7 @@ def get_issues(port: int, page_token: str | None = None) -> PaginatedGetIssuesRe
                 command="GetIssues",
                 parameters={}
             )
-            full_response_model = GetIssuesResult.model_validate(full_response_dict)
+            full_response_model = validate_result(GetIssuesResult, full_response_dict)
             PAGINATION_CACHE[cache_key] = (full_response_model, time.time())
 
         if cache_key not in PAGINATION_CACHE:
@@ -371,7 +379,7 @@ register_tool_for_dispatch(
 )
 
 
-def import_issues_from_bcf(port: int, params: ImportIssuesFromBCFParameters) -> None:
+def import_issues_from_bcf(port: int, params: ImportIssuesFromBCFParameters) -> ImportIssuesFromBCFResult:
     """
     Imports issues from the specified BCF file.
     """
@@ -382,11 +390,11 @@ def import_issues_from_bcf(port: int, params: ImportIssuesFromBCFParameters) -> 
     conn_header = multi_conn.active[target_port]
     try:
 
-        conn_header.core.post_tapir_command(
+        result_dict = conn_header.core.post_tapir_command(
             command="ImportIssuesFromBCF",
             parameters=params.model_dump(mode='json')
         )
-        return None
+        return validate_result(ImportIssuesFromBCFResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for ImportIssuesFromBCF result: {e}")
@@ -402,5 +410,5 @@ register_tool_for_dispatch(
     title="ImportIssuesFromBCF",
     description="Imports issues from the specified BCF file.",
     params_model=ImportIssuesFromBCFParameters,
-    result_model=None
+    result_model=ImportIssuesFromBCFResult
 )
