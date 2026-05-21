@@ -1,5 +1,6 @@
 import pytest
 import asyncio
+import json
 import socket
 import httpx
 import uvicorn
@@ -45,7 +46,7 @@ async def test_tool_execution_in_memory():
 
         # Execute a tool (hits our mock_heavy_dependencies fixture)
         result = await client.call_tool("discovery_list_active_archicads")
-        assert result.structured_content["result"] == []
+        assert result.structured_content == {"active": [], "unavailable": []}
 
 
 @pytest.mark.asyncio
@@ -84,8 +85,9 @@ async def test_live_tool_call_over_sse():
                 result = await session.call_tool("discovery_list_active_archicads", arguments={})
 
                 # Verify that we successfully received a response matching our mocked state
-                assert result.content == []  # Empty list of content blocks
                 assert result.isError is False
+                payload = json.loads(result.content[0].text)
+                assert payload == {"active": [], "unavailable": []}
     finally:
         # Cleanly signal the Uvicorn server to shutdown and wait for the task to exit
         server.should_exit = True
