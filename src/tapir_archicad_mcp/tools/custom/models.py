@@ -3,6 +3,13 @@ from pydantic import BaseModel, Field
 
 ProjectType = Literal["teamwork", "solo", "untitled"]
 
+ConnectionIssue = Literal[
+    "archicad_unresponsive",  # official API did not respond
+    "tapir_unavailable",      # official API OK, but Tapir commands failed
+    "unknown"
+]
+
+
 class ArchicadInstanceInfo(BaseModel):
     """A curated model to hold key information about a running Archicad instance."""
     port: int = Field(description="The communication port of the Archicad instance. Use this to target commands.")
@@ -10,9 +17,27 @@ class ArchicadInstanceInfo(BaseModel):
     project_type: ProjectType = Field(alias="projectType", description="The type of the project: 'teamwork', 'solo', or 'untitled'.")
     archicad_version: str = Field(alias="archicadVersion", description="The major version of the Archicad application (e.g., '27').")
     project_path: Optional[str] = Field(None, alias="projectPath", description="The full file path of the project, if it is a saved solo or teamwork project.")
+    tapir_version: Optional[str] = Field(None, alias="tapirVersion", description="Version of the Tapir Add-On (e.g., '1.3.2').")
 
     class Config:
         validate_by_name = True
+
+
+class UnavailableArchicadInstance(BaseModel):
+    """An Archicad instance that was detected but cannot receive commands."""
+    port: int = Field(description="The communication port.")
+    archicad_version: Optional[str] = Field(None, alias="archicadVersion", description="Archicad version if detectable (via official API).")
+    issue: ConnectionIssue = Field(description="Why this instance is unavailable.")
+    message: str = Field(description="Human-readable explanation for the AI to relay to the user.")
+
+    class Config:
+        validate_by_name = True
+
+
+class DiscoveryResult(BaseModel):
+    """Result of scanning for Archicad instances."""
+    active: list[ArchicadInstanceInfo] = Field(description="Instances ready to receive commands.")
+    unavailable: list[UnavailableArchicadInstance] = Field(default_factory=list, description="Instances detected but not usable, with reason.")
 
 
 class ToolInfo(BaseModel):
