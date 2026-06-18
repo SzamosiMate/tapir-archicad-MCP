@@ -7,6 +7,7 @@ from tapir_archicad_mcp.context import multi_conn_instance
 from tapir_archicad_mcp.tools.custom.models import ArchicadInstanceInfo, ProjectType, ToolInfo
 from tapir_archicad_mcp.tools.tool_registry import get_tool_entry
 from tapir_archicad_mcp.tools.search_index import search_tools
+from tapir_archicad_mcp.tools.validation import validate_result
 
 from multiconn_archicad.conn_header import is_header_fully_initialized, ConnHeader
 from multiconn_archicad.basic_types import TeamworkProjectID, SoloProjectID
@@ -111,7 +112,7 @@ def archicad_call_tool(name: str, arguments: dict) -> dict:
         raw_params = arguments.get('params', arguments)
 
         try:
-            params_instance = params_model.model_validate(raw_params)
+            params_instance = validate_result(params_model, raw_params)
             call_args['params'] = params_instance
 
         except ValidationError as e:
