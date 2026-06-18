@@ -4,11 +4,13 @@ from pydantic import ValidationError
 from multiconn_archicad.basic_types import Port
 from tapir_archicad_mcp.context import multi_conn_instance
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
-from tapir_archicad_mcp.tools.validation import validate_result
+from tapir_archicad_mcp.tools.validation import validate_result, extract_archicad_errors
 
 from multiconn_archicad.models.tapir.commands import (
     AddFilesToEmbeddedLibraryParameters,
 AddFilesToEmbeddedLibraryResult,
+GetAvailableLibraryPartsParameters,
+GetAvailableLibraryPartsResult,
 GetLibrariesResult,
 ReloadLibrariesResult
 )
@@ -35,7 +37,7 @@ def add_files_to_embedded_library(port: int, params: AddFilesToEmbeddedLibraryPa
 
     except ValidationError as e:
         log.error(f"Validation error for AddFilesToEmbeddedLibrary result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "AddFilesToEmbeddedLibrary"))
     except Exception as e:
         log.error(f"Error executing AddFilesToEmbeddedLibrary on port {port}: {e}")
         raise e
@@ -48,6 +50,41 @@ register_tool_for_dispatch(
     description="Adds the given files into the embedded library.",
     params_model=AddFilesToEmbeddedLibraryParameters,
     result_model=AddFilesToEmbeddedLibraryResult
+)
+
+
+def get_available_library_parts(port: int, params: GetAvailableLibraryPartsParameters) -> GetAvailableLibraryPartsResult:
+    """
+    Lists library parts currently available to the project. Filter by typeId (e.g. 'Door', 'Window', 'Object', 'Lamp').
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="GetAvailableLibraryParts",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(GetAvailableLibraryPartsResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for GetAvailableLibraryParts result: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetAvailableLibraryParts"))
+    except Exception as e:
+        log.error(f"Error executing GetAvailableLibraryParts on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    get_available_library_parts,
+    name="library_get_available_library_parts",
+    title="GetAvailableLibraryParts",
+    description="Lists library parts currently available to the project. Filter by typeId (e.g. 'Door', 'Window', 'Object', 'Lamp').",
+    params_model=GetAvailableLibraryPartsParameters,
+    result_model=GetAvailableLibraryPartsResult
 )
 
 
@@ -70,7 +107,7 @@ def get_libraries(port: int) -> GetLibrariesResult:
 
     except ValidationError as e:
         log.error(f"Validation error for GetLibraries result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetLibraries"))
     except Exception as e:
         log.error(f"Error executing GetLibraries on port {port}: {e}")
         raise e
@@ -105,7 +142,7 @@ def reload_libraries(port: int) -> ReloadLibrariesResult:
 
     except ValidationError as e:
         log.error(f"Validation error for ReloadLibraries result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "ReloadLibraries"))
     except Exception as e:
         log.error(f"Error executing ReloadLibraries on port {port}: {e}")
         raise e

@@ -4,7 +4,7 @@ from pydantic import ValidationError
 from multiconn_archicad.basic_types import Port
 from tapir_archicad_mcp.context import multi_conn_instance
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
-from tapir_archicad_mcp.tools.validation import validate_result
+from tapir_archicad_mcp.tools.validation import validate_result, extract_archicad_errors
 import time
 from typing import Any
 from pydantic import BaseModel
@@ -54,7 +54,7 @@ def add_comment_to_issue(port: int, params: AddCommentToIssueParameters) -> AddC
 
     except ValidationError as e:
         log.error(f"Validation error for AddCommentToIssue result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "AddCommentToIssue"))
     except Exception as e:
         log.error(f"Error executing AddCommentToIssue on port {port}: {e}")
         raise e
@@ -89,7 +89,7 @@ def attach_elements_to_issue(port: int, params: AttachElementsToIssueParameters)
 
     except ValidationError as e:
         log.error(f"Validation error for AttachElementsToIssue result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "AttachElementsToIssue"))
     except Exception as e:
         log.error(f"Error executing AttachElementsToIssue on port {port}: {e}")
         raise e
@@ -124,7 +124,7 @@ def create_issue(port: int, params: CreateIssueParameters) -> CreateIssueResult:
 
     except ValidationError as e:
         log.error(f"Validation error for CreateIssue result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "CreateIssue"))
     except Exception as e:
         log.error(f"Error executing CreateIssue on port {port}: {e}")
         raise e
@@ -159,7 +159,7 @@ def delete_issue(port: int, params: DeleteIssueParameters) -> DeleteIssueResult:
 
     except ValidationError as e:
         log.error(f"Validation error for DeleteIssue result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "DeleteIssue"))
     except Exception as e:
         log.error(f"Error executing DeleteIssue on port {port}: {e}")
         raise e
@@ -194,7 +194,7 @@ def detach_elements_from_issue(port: int, params: DetachElementsFromIssueParamet
 
     except ValidationError as e:
         log.error(f"Validation error for DetachElementsFromIssue result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "DetachElementsFromIssue"))
     except Exception as e:
         log.error(f"Error executing DetachElementsFromIssue on port {port}: {e}")
         raise e
@@ -229,7 +229,7 @@ def export_issues_to_bcf(port: int, params: ExportIssuesToBCFParameters) -> Expo
 
     except ValidationError as e:
         log.error(f"Validation error for ExportIssuesToBCF result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "ExportIssuesToBCF"))
     except Exception as e:
         log.error(f"Error executing ExportIssuesToBCF on port {port}: {e}")
         raise e
@@ -264,7 +264,7 @@ def get_comments_from_issue(port: int, params: GetCommentsFromIssueParameters) -
 
     except ValidationError as e:
         log.error(f"Validation error for GetCommentsFromIssue result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetCommentsFromIssue"))
     except Exception as e:
         log.error(f"Error executing GetCommentsFromIssue on port {port}: {e}")
         raise e
@@ -299,7 +299,7 @@ def get_elements_attached_to_issue(port: int, params: GetElementsAttachedToIssue
 
     except ValidationError as e:
         log.error(f"Validation error for GetElementsAttachedToIssue result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetElementsAttachedToIssue"))
     except Exception as e:
         log.error(f"Error executing GetElementsAttachedToIssue on port {port}: {e}")
         raise e
@@ -363,7 +363,7 @@ def get_issues(port: int, page_token: str | None = None) -> PaginatedGetIssuesRe
 
     except ValidationError as e:
         log.error(f"Validation error for GetIssues result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetIssues"))
     except Exception as e:
         log.error(f"Error executing GetIssues on port {port}: {e}")
         raise e
@@ -398,7 +398,7 @@ def import_issues_from_bcf(port: int, params: ImportIssuesFromBCFParameters) -> 
 
     except ValidationError as e:
         log.error(f"Validation error for ImportIssuesFromBCF result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "ImportIssuesFromBCF"))
     except Exception as e:
         log.error(f"Error executing ImportIssuesFromBCF on port {port}: {e}")
         raise e

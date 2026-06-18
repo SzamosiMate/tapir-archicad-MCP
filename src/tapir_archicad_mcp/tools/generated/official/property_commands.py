@@ -4,7 +4,7 @@ from pydantic import ValidationError
 from multiconn_archicad.basic_types import Port
 from tapir_archicad_mcp.context import multi_conn_instance
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
-from tapir_archicad_mcp.tools.validation import validate_result
+from tapir_archicad_mcp.tools.validation import validate_result, extract_archicad_errors
 import time
 from typing import Any
 from pydantic import BaseModel
@@ -50,7 +50,7 @@ def get_all_property_group_ids(port: int, params: GetAllPropertyGroupIdsParamete
 
     except ValidationError as e:
         log.error(f"Validation error for GetAllPropertyGroupIds result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetAllPropertyGroupIds"))
     except Exception as e:
         log.error(f"Error executing GetAllPropertyGroupIds on port {port}: {e}")
         raise e
@@ -114,7 +114,7 @@ def get_all_property_ids(port: int, params: GetAllPropertyIdsParameters, page_to
 
     except ValidationError as e:
         log.error(f"Validation error for GetAllPropertyIds result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetAllPropertyIds"))
     except Exception as e:
         log.error(f"Error executing GetAllPropertyIds on port {port}: {e}")
         raise e
@@ -149,7 +149,7 @@ def get_all_property_ids_of_elements(port: int, params: GetAllPropertyIdsOfEleme
 
     except ValidationError as e:
         log.error(f"Validation error for GetAllPropertyIdsOfElements result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetAllPropertyIdsOfElements"))
     except Exception as e:
         log.error(f"Error executing GetAllPropertyIdsOfElements on port {port}: {e}")
         raise e
@@ -213,7 +213,7 @@ def get_all_property_names(port: int, page_token: str | None = None) -> Paginate
 
     except ValidationError as e:
         log.error(f"Validation error for GetAllPropertyNames result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetAllPropertyNames"))
     except Exception as e:
         log.error(f"Error executing GetAllPropertyNames on port {port}: {e}")
         raise e
@@ -248,7 +248,7 @@ def get_details_of_properties(port: int, params: GetDetailsOfPropertiesParameter
 
     except ValidationError as e:
         log.error(f"Validation error for GetDetailsOfProperties result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetDetailsOfProperties"))
     except Exception as e:
         log.error(f"Error executing GetDetailsOfProperties on port {port}: {e}")
         raise e
@@ -283,7 +283,7 @@ def get_property_definition_availability(port: int, params: GetPropertyDefinitio
 
     except ValidationError as e:
         log.error(f"Validation error for GetPropertyDefinitionAvailability result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetPropertyDefinitionAvailability"))
     except Exception as e:
         log.error(f"Error executing GetPropertyDefinitionAvailability on port {port}: {e}")
         raise e
@@ -318,7 +318,7 @@ def get_property_groups(port: int, params: GetPropertyGroupsParameters) -> GetPr
 
     except ValidationError as e:
         log.error(f"Validation error for GetPropertyGroups result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetPropertyGroups"))
     except Exception as e:
         log.error(f"Error executing GetPropertyGroups on port {port}: {e}")
         raise e
@@ -353,7 +353,7 @@ def get_property_ids(port: int, params: GetPropertyIdsParameters) -> GetProperty
 
     except ValidationError as e:
         log.error(f"Validation error for GetPropertyIds result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetPropertyIds"))
     except Exception as e:
         log.error(f"Error executing GetPropertyIds on port {port}: {e}")
         raise e

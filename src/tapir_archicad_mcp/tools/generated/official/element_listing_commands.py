@@ -4,7 +4,7 @@ from pydantic import ValidationError
 from multiconn_archicad.basic_types import Port
 from tapir_archicad_mcp.context import multi_conn_instance
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
-from tapir_archicad_mcp.tools.validation import validate_result
+from tapir_archicad_mcp.tools.validation import validate_result, extract_archicad_errors
 import time
 from typing import Any
 from pydantic import BaseModel
@@ -68,7 +68,7 @@ def get_elements_by_classification(port: int, params: GetElementsByClassificatio
 
     except ValidationError as e:
         log.error(f"Validation error for GetElementsByClassification result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetElementsByClassification"))
     except Exception as e:
         log.error(f"Error executing GetElementsByClassification on port {port}: {e}")
         raise e
@@ -103,7 +103,7 @@ def get_types_of_elements(port: int, params: GetTypesOfElementsParameters) -> Ge
 
     except ValidationError as e:
         log.error(f"Validation error for GetTypesOfElements result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetTypesOfElements"))
     except Exception as e:
         log.error(f"Error executing GetTypesOfElements on port {port}: {e}")
         raise e

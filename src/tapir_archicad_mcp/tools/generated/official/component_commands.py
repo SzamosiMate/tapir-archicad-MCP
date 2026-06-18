@@ -4,7 +4,7 @@ from pydantic import ValidationError
 from multiconn_archicad.basic_types import Port
 from tapir_archicad_mcp.context import multi_conn_instance
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
-from tapir_archicad_mcp.tools.validation import validate_result
+from tapir_archicad_mcp.tools.validation import validate_result, extract_archicad_errors
 
 from multiconn_archicad.models.official.commands import (
     GetComponentsOfElementsParameters,
@@ -35,7 +35,7 @@ def get_components_of_elements(port: int, params: GetComponentsOfElementsParamet
 
     except ValidationError as e:
         log.error(f"Validation error for GetComponentsOfElements result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetComponentsOfElements"))
     except Exception as e:
         log.error(f"Error executing GetComponentsOfElements on port {port}: {e}")
         raise e
@@ -70,7 +70,7 @@ def get_property_values_of_element_components(port: int, params: GetPropertyValu
 
     except ValidationError as e:
         log.error(f"Validation error for GetPropertyValuesOfElementComponents result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetPropertyValuesOfElementComponents"))
     except Exception as e:
         log.error(f"Error executing GetPropertyValuesOfElementComponents on port {port}: {e}")
         raise e

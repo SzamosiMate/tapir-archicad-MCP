@@ -4,7 +4,7 @@ from pydantic import ValidationError
 from multiconn_archicad.basic_types import Port
 from tapir_archicad_mcp.context import multi_conn_instance
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
-from tapir_archicad_mcp.tools.validation import validate_result
+from tapir_archicad_mcp.tools.validation import validate_result, extract_archicad_errors
 import time
 from typing import Any
 from pydantic import BaseModel
@@ -52,7 +52,7 @@ def create_property_definitions(port: int, params: CreatePropertyDefinitionsPara
 
     except ValidationError as e:
         log.error(f"Validation error for CreatePropertyDefinitions result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "CreatePropertyDefinitions"))
     except Exception as e:
         log.error(f"Error executing CreatePropertyDefinitions on port {port}: {e}")
         raise e
@@ -87,7 +87,7 @@ def create_property_groups(port: int, params: CreatePropertyGroupsParameters) ->
 
     except ValidationError as e:
         log.error(f"Validation error for CreatePropertyGroups result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "CreatePropertyGroups"))
     except Exception as e:
         log.error(f"Error executing CreatePropertyGroups on port {port}: {e}")
         raise e
@@ -122,7 +122,7 @@ def delete_property_definitions(port: int, params: DeletePropertyDefinitionsPara
 
     except ValidationError as e:
         log.error(f"Validation error for DeletePropertyDefinitions result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "DeletePropertyDefinitions"))
     except Exception as e:
         log.error(f"Error executing DeletePropertyDefinitions on port {port}: {e}")
         raise e
@@ -157,7 +157,7 @@ def delete_property_groups(port: int, params: DeletePropertyGroupsParameters) ->
 
     except ValidationError as e:
         log.error(f"Validation error for DeletePropertyGroups result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "DeletePropertyGroups"))
     except Exception as e:
         log.error(f"Error executing DeletePropertyGroups on port {port}: {e}")
         raise e
@@ -221,7 +221,7 @@ def get_all_properties(port: int, page_token: str | None = None) -> PaginatedGet
 
     except ValidationError as e:
         log.error(f"Validation error for GetAllProperties result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetAllProperties"))
     except Exception as e:
         log.error(f"Error executing GetAllProperties on port {port}: {e}")
         raise e
@@ -256,7 +256,7 @@ def get_property_values_of_attributes(port: int, params: GetPropertyValuesOfAttr
 
     except ValidationError as e:
         log.error(f"Validation error for GetPropertyValuesOfAttributes result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetPropertyValuesOfAttributes"))
     except Exception as e:
         log.error(f"Error executing GetPropertyValuesOfAttributes on port {port}: {e}")
         raise e
@@ -291,7 +291,7 @@ def get_property_values_of_elements(port: int, params: GetPropertyValuesOfElemen
 
     except ValidationError as e:
         log.error(f"Validation error for GetPropertyValuesOfElements result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetPropertyValuesOfElements"))
     except Exception as e:
         log.error(f"Error executing GetPropertyValuesOfElements on port {port}: {e}")
         raise e
@@ -326,7 +326,7 @@ def set_property_values_of_attributes(port: int, params: SetPropertyValuesOfAttr
 
     except ValidationError as e:
         log.error(f"Validation error for SetPropertyValuesOfAttributes result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "SetPropertyValuesOfAttributes"))
     except Exception as e:
         log.error(f"Error executing SetPropertyValuesOfAttributes on port {port}: {e}")
         raise e
@@ -361,7 +361,7 @@ def set_property_values_of_elements(port: int, params: SetPropertyValuesOfElemen
 
     except ValidationError as e:
         log.error(f"Validation error for SetPropertyValuesOfElements result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "SetPropertyValuesOfElements"))
     except Exception as e:
         log.error(f"Error executing SetPropertyValuesOfElements on port {port}: {e}")
         raise e

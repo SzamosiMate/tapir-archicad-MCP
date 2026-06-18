@@ -4,16 +4,141 @@ from pydantic import ValidationError
 from multiconn_archicad.basic_types import Port
 from tapir_archicad_mcp.context import multi_conn_instance
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
-from tapir_archicad_mcp.tools.validation import validate_result
+from tapir_archicad_mcp.tools.validation import validate_result, extract_archicad_errors
+import time
+from typing import Any
+from pydantic import BaseModel
+from tapir_archicad_mcp.pagination import handle_paginated_request, PAGINATION_CACHE, CACHE_LIFETIME_SECONDS
 
 from multiconn_archicad.models.tapir.commands import (
-    GetDesignOptionCombinationsResult,
+    CreateDesignOptionCombinationsParameters,
+CreateDesignOptionCombinationsResult,
+CreateDesignOptionSetsParameters,
+CreateDesignOptionSetsResult,
+CreateDesignOptionsParameters,
+CreateDesignOptionsResult,
+GetDesignOptionCombinationsResult,
+GetDesignOptionForElementsParameters,
+GetDesignOptionForElementsResult,
 GetDesignOptionSetsResult,
-GetDesignOptionsResult
+GetDesignOptionsResult,
+GetElementsOfDesignOptionsParameters,
+GetElementsOfDesignOptionsResult,
+MoveDesignOptionsToAnotherSetParameters,
+MoveDesignOptionsToAnotherSetResult,
+MoveElementsToDesignOptionsParameters,
+MoveElementsToDesignOptionsResult,
+SetActiveDesignOptionsInCombinationsParameters,
+SetActiveDesignOptionsInCombinationsResult
 )
 
 
 log = logging.getLogger()
+
+def create_design_option_combinations(port: int, params: CreateDesignOptionCombinationsParameters) -> CreateDesignOptionCombinationsResult:
+    """
+    Creates new design option combinations with the given parameters. Available from Archicad 29.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="CreateDesignOptionCombinations",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(CreateDesignOptionCombinationsResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for CreateDesignOptionCombinations result: {e}")
+        raise ValueError(extract_archicad_errors(e, "CreateDesignOptionCombinations"))
+    except Exception as e:
+        log.error(f"Error executing CreateDesignOptionCombinations on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    create_design_option_combinations,
+    name="dev_create_design_option_combinations",
+    title="CreateDesignOptionCombinations",
+    description="Creates new design option combinations with the given parameters. Available from Archicad 29.",
+    params_model=CreateDesignOptionCombinationsParameters,
+    result_model=CreateDesignOptionCombinationsResult
+)
+
+
+def create_design_option_sets(port: int, params: CreateDesignOptionSetsParameters) -> CreateDesignOptionSetsResult:
+    """
+    Creates new design option sets with the given names. Available from Archicad 29.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="CreateDesignOptionSets",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(CreateDesignOptionSetsResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for CreateDesignOptionSets result: {e}")
+        raise ValueError(extract_archicad_errors(e, "CreateDesignOptionSets"))
+    except Exception as e:
+        log.error(f"Error executing CreateDesignOptionSets on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    create_design_option_sets,
+    name="dev_create_design_option_sets",
+    title="CreateDesignOptionSets",
+    description="Creates new design option sets with the given names. Available from Archicad 29.",
+    params_model=CreateDesignOptionSetsParameters,
+    result_model=CreateDesignOptionSetsResult
+)
+
+
+def create_design_options(port: int, params: CreateDesignOptionsParameters) -> CreateDesignOptionsResult:
+    """
+    Creates new design options with the given parameters. Available from Archicad 29.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="CreateDesignOptions",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(CreateDesignOptionsResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for CreateDesignOptions result: {e}")
+        raise ValueError(extract_archicad_errors(e, "CreateDesignOptions"))
+    except Exception as e:
+        log.error(f"Error executing CreateDesignOptions on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    create_design_options,
+    name="dev_create_design_options",
+    title="CreateDesignOptions",
+    description="Creates new design options with the given parameters. Available from Archicad 29.",
+    params_model=CreateDesignOptionsParameters,
+    result_model=CreateDesignOptionsResult
+)
+
 
 def get_design_option_combinations(port: int) -> GetDesignOptionCombinationsResult:
     """
@@ -34,7 +159,7 @@ def get_design_option_combinations(port: int) -> GetDesignOptionCombinationsResu
 
     except ValidationError as e:
         log.error(f"Validation error for GetDesignOptionCombinations result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetDesignOptionCombinations"))
     except Exception as e:
         log.error(f"Error executing GetDesignOptionCombinations on port {port}: {e}")
         raise e
@@ -47,6 +172,41 @@ register_tool_for_dispatch(
     description="Retrieves information about existing design option combinations.",
     params_model=None,
     result_model=GetDesignOptionCombinationsResult
+)
+
+
+def get_design_option_for_elements(port: int, params: GetDesignOptionForElementsParameters) -> GetDesignOptionForElementsResult:
+    """
+    Retrieves the design option association for the specified elements. Available from Archicad 29.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="GetDesignOptionForElements",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(GetDesignOptionForElementsResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for GetDesignOptionForElements result: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetDesignOptionForElements"))
+    except Exception as e:
+        log.error(f"Error executing GetDesignOptionForElements on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    get_design_option_for_elements,
+    name="dev_get_design_option_for_elements",
+    title="GetDesignOptionForElements",
+    description="Retrieves the design option association for the specified elements. Available from Archicad 29.",
+    params_model=GetDesignOptionForElementsParameters,
+    result_model=GetDesignOptionForElementsResult
 )
 
 
@@ -69,7 +229,7 @@ def get_design_option_sets(port: int) -> GetDesignOptionSetsResult:
 
     except ValidationError as e:
         log.error(f"Validation error for GetDesignOptionSets result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetDesignOptionSets"))
     except Exception as e:
         log.error(f"Error executing GetDesignOptionSets on port {port}: {e}")
         raise e
@@ -104,7 +264,7 @@ def get_design_options(port: int) -> GetDesignOptionsResult:
 
     except ValidationError as e:
         log.error(f"Validation error for GetDesignOptions result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetDesignOptions"))
     except Exception as e:
         log.error(f"Error executing GetDesignOptions on port {port}: {e}")
         raise e
@@ -117,4 +277,173 @@ register_tool_for_dispatch(
     description="Retrieves information about existing design options. Available from Archicad 29.",
     params_model=None,
     result_model=GetDesignOptionsResult
+)
+
+
+class PaginatedGetElementsOfDesignOptionsResult(BaseModel):
+    """A paginated version of the GetElementsOfDesignOptionsResult."""
+    elementsOfDesignOptions: list[Any]
+    next_page_token: str | None = None
+
+
+def get_elements_of_design_options(port: int, params: GetElementsOfDesignOptionsParameters, page_token: str | None = None) -> PaginatedGetElementsOfDesignOptionsResult:
+    """
+    Retrieves the elements associated with the given design options. Available from Archicad 29.
+        This response is paginated. If 'next_page_token' is returned, call this function
+        again with that token to get the next page of results.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        cache_key = f"{port}:GetElementsOfDesignOptions:{params.model_dump_json()}"
+
+        if not page_token:
+            full_response_dict = conn_header.core.post_tapir_command(
+                command="GetElementsOfDesignOptions",
+                parameters=params.model_dump(mode='json')
+            )
+            full_response_model = validate_result(GetElementsOfDesignOptionsResult, full_response_dict)
+            PAGINATION_CACHE[cache_key] = (full_response_model, time.time())
+
+        if cache_key not in PAGINATION_CACHE:
+            raise ValueError("Pagination session expired or invalid. Please start a new request.")
+
+        full_response_model, timestamp = PAGINATION_CACHE[cache_key]
+        if time.time() - timestamp > CACHE_LIFETIME_SECONDS:
+            del PAGINATION_CACHE[cache_key]
+            raise ValueError("Pagination session expired. Please start a new request.")
+
+        list_to_paginate = getattr(full_response_model, "elementsOfDesignOptions")
+        paginated_result = handle_paginated_request(list_to_paginate, page_token)
+
+        response_data = full_response_model.model_dump()
+        response_data["elementsOfDesignOptions"] = paginated_result.items
+        response_data["next_page_token"] = paginated_result.next_page_token
+
+        return PaginatedGetElementsOfDesignOptionsResult.model_validate(response_data)
+
+    except ValidationError as e:
+        log.error(f"Validation error for GetElementsOfDesignOptions result: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetElementsOfDesignOptions"))
+    except Exception as e:
+        log.error(f"Error executing GetElementsOfDesignOptions on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    get_elements_of_design_options,
+    name="dev_get_elements_of_design_options",
+    title="GetElementsOfDesignOptions",
+    description="Retrieves the elements associated with the given design options. Available from Archicad 29.",
+    params_model=GetElementsOfDesignOptionsParameters,
+    result_model=PaginatedGetElementsOfDesignOptionsResult
+)
+
+
+def move_design_options_to_another_set(port: int, params: MoveDesignOptionsToAnotherSetParameters) -> MoveDesignOptionsToAnotherSetResult:
+    """
+    Moves the given design options to another sets. Available from Archicad 29.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="MoveDesignOptionsToAnotherSet",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(MoveDesignOptionsToAnotherSetResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for MoveDesignOptionsToAnotherSet result: {e}")
+        raise ValueError(extract_archicad_errors(e, "MoveDesignOptionsToAnotherSet"))
+    except Exception as e:
+        log.error(f"Error executing MoveDesignOptionsToAnotherSet on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    move_design_options_to_another_set,
+    name="dev_move_design_options_to_another_set",
+    title="MoveDesignOptionsToAnotherSet",
+    description="Moves the given design options to another sets. Available from Archicad 29.",
+    params_model=MoveDesignOptionsToAnotherSetParameters,
+    result_model=MoveDesignOptionsToAnotherSetResult
+)
+
+
+def move_elements_to_design_options(port: int, params: MoveElementsToDesignOptionsParameters) -> MoveElementsToDesignOptionsResult:
+    """
+    Moves the given elements into the given design options. Use NULLGuid for design option to remove the element from any design options and move it to the main model. Available from Archicad 29.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="MoveElementsToDesignOptions",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(MoveElementsToDesignOptionsResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for MoveElementsToDesignOptions result: {e}")
+        raise ValueError(extract_archicad_errors(e, "MoveElementsToDesignOptions"))
+    except Exception as e:
+        log.error(f"Error executing MoveElementsToDesignOptions on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    move_elements_to_design_options,
+    name="dev_move_elements_to_design_options",
+    title="MoveElementsToDesignOptions",
+    description="Moves the given elements into the given design options. Use NULLGuid for design option to remove the element from any design options and move it to the main model. Available from Archicad 29.",
+    params_model=MoveElementsToDesignOptionsParameters,
+    result_model=MoveElementsToDesignOptionsResult
+)
+
+
+def set_active_design_options_in_combinations(port: int, params: SetActiveDesignOptionsInCombinationsParameters) -> SetActiveDesignOptionsInCombinationsResult:
+    """
+    Sets active design options in the given combinations. Available from Archicad 29.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="SetActiveDesignOptionsInCombinations",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(SetActiveDesignOptionsInCombinationsResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for SetActiveDesignOptionsInCombinations result: {e}")
+        raise ValueError(extract_archicad_errors(e, "SetActiveDesignOptionsInCombinations"))
+    except Exception as e:
+        log.error(f"Error executing SetActiveDesignOptionsInCombinations on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    set_active_design_options_in_combinations,
+    name="dev_set_active_design_options_in_combinations",
+    title="SetActiveDesignOptionsInCombinations",
+    description="Sets active design options in the given combinations. Available from Archicad 29.",
+    params_model=SetActiveDesignOptionsInCombinationsParameters,
+    result_model=SetActiveDesignOptionsInCombinationsResult
 )

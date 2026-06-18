@@ -4,7 +4,7 @@ from pydantic import ValidationError
 from multiconn_archicad.basic_types import Port
 from tapir_archicad_mcp.context import multi_conn_instance
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
-from tapir_archicad_mcp.tools.validation import validate_result
+from tapir_archicad_mcp.tools.validation import validate_result, extract_archicad_errors
 
 from multiconn_archicad.models.official.commands import (
     Get2DBoundingBoxesParameters,
@@ -33,7 +33,7 @@ def get2_d_bounding_boxes(port: int, params: Get2DBoundingBoxesParameters) -> Ge
 
     except ValidationError as e:
         log.error(f"Validation error for Get2DBoundingBoxes result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "Get2DBoundingBoxes"))
     except Exception as e:
         log.error(f"Error executing Get2DBoundingBoxes on port {port}: {e}")
         raise e

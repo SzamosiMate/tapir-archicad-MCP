@@ -4,7 +4,7 @@ from pydantic import ValidationError
 from multiconn_archicad.basic_types import Port
 from tapir_archicad_mcp.context import multi_conn_instance
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
-from tapir_archicad_mcp.tools.validation import validate_result
+from tapir_archicad_mcp.tools.validation import validate_result, extract_archicad_errors
 
 from multiconn_archicad.models.tapir.commands import (
     ReleaseElementsParameters,
@@ -37,7 +37,7 @@ def release_elements(port: int, params: ReleaseElementsParameters) -> ReleaseEle
 
     except ValidationError as e:
         log.error(f"Validation error for ReleaseElements result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "ReleaseElements"))
     except Exception as e:
         log.error(f"Error executing ReleaseElements on port {port}: {e}")
         raise e
@@ -72,7 +72,7 @@ def reserve_elements(port: int, params: ReserveElementsParameters) -> ReserveEle
 
     except ValidationError as e:
         log.error(f"Validation error for ReserveElements result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "ReserveElements"))
     except Exception as e:
         log.error(f"Error executing ReserveElements on port {port}: {e}")
         raise e
@@ -107,7 +107,7 @@ def teamwork_receive(port: int) -> TeamworkReceiveResult:
 
     except ValidationError as e:
         log.error(f"Validation error for TeamworkReceive result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "TeamworkReceive"))
     except Exception as e:
         log.error(f"Error executing TeamworkReceive on port {port}: {e}")
         raise e
@@ -142,7 +142,7 @@ def teamwork_send(port: int) -> TeamworkSendResult:
 
     except ValidationError as e:
         log.error(f"Validation error for TeamworkSend result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "TeamworkSend"))
     except Exception as e:
         log.error(f"Error executing TeamworkSend on port {port}: {e}")
         raise e

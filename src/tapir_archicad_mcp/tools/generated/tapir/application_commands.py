@@ -4,7 +4,7 @@ from pydantic import ValidationError
 from multiconn_archicad.basic_types import Port
 from tapir_archicad_mcp.context import multi_conn_instance
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
-from tapir_archicad_mcp.tools.validation import validate_result
+from tapir_archicad_mcp.tools.validation import validate_result, extract_archicad_errors
 
 from multiconn_archicad.models.tapir.commands import (
     ChangeWindowParameters,
@@ -35,7 +35,7 @@ def change_window(port: int, params: ChangeWindowParameters) -> ChangeWindowResu
 
     except ValidationError as e:
         log.error(f"Validation error for ChangeWindow result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "ChangeWindow"))
     except Exception as e:
         log.error(f"Error executing ChangeWindow on port {port}: {e}")
         raise e
@@ -70,7 +70,7 @@ def get_add_on_version(port: int) -> GetAddOnVersionResult:
 
     except ValidationError as e:
         log.error(f"Validation error for GetAddOnVersion result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetAddOnVersion"))
     except Exception as e:
         log.error(f"Error executing GetAddOnVersion on port {port}: {e}")
         raise e
@@ -105,7 +105,7 @@ def get_current_window_type(port: int) -> GetCurrentWindowTypeResult:
 
     except ValidationError as e:
         log.error(f"Validation error for GetCurrentWindowType result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetCurrentWindowType"))
     except Exception as e:
         log.error(f"Error executing GetCurrentWindowType on port {port}: {e}")
         raise e

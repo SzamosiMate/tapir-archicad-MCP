@@ -4,7 +4,7 @@ from pydantic import ValidationError
 from multiconn_archicad.basic_types import Port
 from tapir_archicad_mcp.context import multi_conn_instance
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
-from tapir_archicad_mcp.tools.validation import validate_result
+from tapir_archicad_mcp.tools.validation import validate_result, extract_archicad_errors
 import time
 from typing import Any
 from pydantic import BaseModel
@@ -51,7 +51,7 @@ def create_building_materials(port: int, params: CreateBuildingMaterialsParamete
 
     except ValidationError as e:
         log.error(f"Validation error for CreateBuildingMaterials result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "CreateBuildingMaterials"))
     except Exception as e:
         log.error(f"Error executing CreateBuildingMaterials on port {port}: {e}")
         raise e
@@ -86,7 +86,7 @@ def create_composites(port: int, params: CreateCompositesParameters) -> CreateCo
 
     except ValidationError as e:
         log.error(f"Validation error for CreateComposites result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "CreateComposites"))
     except Exception as e:
         log.error(f"Error executing CreateComposites on port {port}: {e}")
         raise e
@@ -121,7 +121,7 @@ def create_layer_combinations(port: int, params: CreateLayerCombinationsParamete
 
     except ValidationError as e:
         log.error(f"Validation error for CreateLayerCombinations result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "CreateLayerCombinations"))
     except Exception as e:
         log.error(f"Error executing CreateLayerCombinations on port {port}: {e}")
         raise e
@@ -156,7 +156,7 @@ def create_layers(port: int, params: CreateLayersParameters) -> CreateLayersResu
 
     except ValidationError as e:
         log.error(f"Validation error for CreateLayers result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "CreateLayers"))
     except Exception as e:
         log.error(f"Error executing CreateLayers on port {port}: {e}")
         raise e
@@ -191,7 +191,7 @@ def create_surfaces(port: int, params: CreateSurfacesParameters) -> CreateSurfac
 
     except ValidationError as e:
         log.error(f"Validation error for CreateSurfaces result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "CreateSurfaces"))
     except Exception as e:
         log.error(f"Error executing CreateSurfaces on port {port}: {e}")
         raise e
@@ -255,7 +255,7 @@ def get_attributes_by_type(port: int, params: GetAttributesByTypeParameters, pag
 
     except ValidationError as e:
         log.error(f"Validation error for GetAttributesByType result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetAttributesByType"))
     except Exception as e:
         log.error(f"Error executing GetAttributesByType on port {port}: {e}")
         raise e
@@ -290,7 +290,7 @@ def get_building_material_physical_properties(port: int, params: GetBuildingMate
 
     except ValidationError as e:
         log.error(f"Validation error for GetBuildingMaterialPhysicalProperties result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetBuildingMaterialPhysicalProperties"))
     except Exception as e:
         log.error(f"Error executing GetBuildingMaterialPhysicalProperties on port {port}: {e}")
         raise e
@@ -325,7 +325,7 @@ def get_layer_combinations(port: int, params: GetLayerCombinationsParameters) ->
 
     except ValidationError as e:
         log.error(f"Validation error for GetLayerCombinations result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetLayerCombinations"))
     except Exception as e:
         log.error(f"Error executing GetLayerCombinations on port {port}: {e}")
         raise e

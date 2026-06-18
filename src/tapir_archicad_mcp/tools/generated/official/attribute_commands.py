@@ -4,7 +4,7 @@ from pydantic import ValidationError
 from multiconn_archicad.basic_types import Port
 from tapir_archicad_mcp.context import multi_conn_instance
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
-from tapir_archicad_mcp.tools.validation import validate_result
+from tapir_archicad_mcp.tools.validation import validate_result, extract_archicad_errors
 
 from multiconn_archicad.models.official.commands import (
     CreateAttributeFoldersParameters,
@@ -69,7 +69,7 @@ def create_attribute_folders(port: int, params: CreateAttributeFoldersParameters
 
     except ValidationError as e:
         log.error(f"Validation error for CreateAttributeFolders result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "CreateAttributeFolders"))
     except Exception as e:
         log.error(f"Error executing CreateAttributeFolders on port {port}: {e}")
         raise e
@@ -104,7 +104,7 @@ def delete_attribute_folders(port: int, params: DeleteAttributeFoldersParameters
 
     except ValidationError as e:
         log.error(f"Validation error for DeleteAttributeFolders result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "DeleteAttributeFolders"))
     except Exception as e:
         log.error(f"Error executing DeleteAttributeFolders on port {port}: {e}")
         raise e
@@ -139,7 +139,7 @@ def delete_attributes(port: int, params: DeleteAttributesParameters) -> DeleteAt
 
     except ValidationError as e:
         log.error(f"Validation error for DeleteAttributes result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "DeleteAttributes"))
     except Exception as e:
         log.error(f"Error executing DeleteAttributes on port {port}: {e}")
         raise e
@@ -174,7 +174,7 @@ def get_active_pen_tables(port: int) -> GetActivePenTablesResult:
 
     except ValidationError as e:
         log.error(f"Validation error for GetActivePenTables result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetActivePenTables"))
     except Exception as e:
         log.error(f"Error executing GetActivePenTables on port {port}: {e}")
         raise e
@@ -209,7 +209,7 @@ def get_attribute_folder_structure(port: int, params: GetAttributeFolderStructur
 
     except ValidationError as e:
         log.error(f"Validation error for GetAttributeFolderStructure result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetAttributeFolderStructure"))
     except Exception as e:
         log.error(f"Error executing GetAttributeFolderStructure on port {port}: {e}")
         raise e
@@ -244,7 +244,7 @@ def get_attribute_folders(port: int, params: GetAttributeFoldersParameters) -> G
 
     except ValidationError as e:
         log.error(f"Validation error for GetAttributeFolders result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetAttributeFolders"))
     except Exception as e:
         log.error(f"Error executing GetAttributeFolders on port {port}: {e}")
         raise e
@@ -279,7 +279,7 @@ def get_attributes_indices(port: int, params: GetAttributesIndicesParameters) ->
 
     except ValidationError as e:
         log.error(f"Validation error for GetAttributesIndices result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetAttributesIndices"))
     except Exception as e:
         log.error(f"Error executing GetAttributesIndices on port {port}: {e}")
         raise e
@@ -314,7 +314,7 @@ def get_building_material_attributes(port: int, params: GetBuildingMaterialAttri
 
     except ValidationError as e:
         log.error(f"Validation error for GetBuildingMaterialAttributes result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetBuildingMaterialAttributes"))
     except Exception as e:
         log.error(f"Error executing GetBuildingMaterialAttributes on port {port}: {e}")
         raise e
@@ -349,7 +349,7 @@ def get_composite_attributes(port: int, params: GetCompositeAttributesParameters
 
     except ValidationError as e:
         log.error(f"Validation error for GetCompositeAttributes result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetCompositeAttributes"))
     except Exception as e:
         log.error(f"Error executing GetCompositeAttributes on port {port}: {e}")
         raise e
@@ -384,7 +384,7 @@ def get_fill_attributes(port: int, params: GetFillAttributesParameters) -> GetFi
 
     except ValidationError as e:
         log.error(f"Validation error for GetFillAttributes result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetFillAttributes"))
     except Exception as e:
         log.error(f"Error executing GetFillAttributes on port {port}: {e}")
         raise e
@@ -419,7 +419,7 @@ def get_layer_attributes(port: int, params: GetLayerAttributesParameters) -> Get
 
     except ValidationError as e:
         log.error(f"Validation error for GetLayerAttributes result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetLayerAttributes"))
     except Exception as e:
         log.error(f"Error executing GetLayerAttributes on port {port}: {e}")
         raise e
@@ -454,7 +454,7 @@ def get_layer_combination_attributes(port: int, params: GetLayerCombinationAttri
 
     except ValidationError as e:
         log.error(f"Validation error for GetLayerCombinationAttributes result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetLayerCombinationAttributes"))
     except Exception as e:
         log.error(f"Error executing GetLayerCombinationAttributes on port {port}: {e}")
         raise e
@@ -489,7 +489,7 @@ def get_line_attributes(port: int, params: GetLineAttributesParameters) -> GetLi
 
     except ValidationError as e:
         log.error(f"Validation error for GetLineAttributes result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetLineAttributes"))
     except Exception as e:
         log.error(f"Error executing GetLineAttributes on port {port}: {e}")
         raise e
@@ -524,7 +524,7 @@ def get_pen_table_attributes(port: int, params: GetPenTableAttributesParameters)
 
     except ValidationError as e:
         log.error(f"Validation error for GetPenTableAttributes result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetPenTableAttributes"))
     except Exception as e:
         log.error(f"Error executing GetPenTableAttributes on port {port}: {e}")
         raise e
@@ -559,7 +559,7 @@ def get_profile_attribute_preview(port: int, params: GetProfileAttributePreviewP
 
     except ValidationError as e:
         log.error(f"Validation error for GetProfileAttributePreview result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetProfileAttributePreview"))
     except Exception as e:
         log.error(f"Error executing GetProfileAttributePreview on port {port}: {e}")
         raise e
@@ -594,7 +594,7 @@ def get_profile_attributes(port: int, params: GetProfileAttributesParameters) ->
 
     except ValidationError as e:
         log.error(f"Validation error for GetProfileAttributes result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetProfileAttributes"))
     except Exception as e:
         log.error(f"Error executing GetProfileAttributes on port {port}: {e}")
         raise e
@@ -629,7 +629,7 @@ def get_surface_attributes(port: int, params: GetSurfaceAttributesParameters) ->
 
     except ValidationError as e:
         log.error(f"Validation error for GetSurfaceAttributes result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetSurfaceAttributes"))
     except Exception as e:
         log.error(f"Error executing GetSurfaceAttributes on port {port}: {e}")
         raise e
@@ -664,7 +664,7 @@ def get_zone_category_attributes(port: int, params: GetZoneCategoryAttributesPar
 
     except ValidationError as e:
         log.error(f"Validation error for GetZoneCategoryAttributes result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetZoneCategoryAttributes"))
     except Exception as e:
         log.error(f"Error executing GetZoneCategoryAttributes on port {port}: {e}")
         raise e
@@ -699,7 +699,7 @@ def move_attributes_and_folders(port: int, params: MoveAttributesAndFoldersParam
 
     except ValidationError as e:
         log.error(f"Validation error for MoveAttributesAndFolders result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "MoveAttributesAndFolders"))
     except Exception as e:
         log.error(f"Error executing MoveAttributesAndFolders on port {port}: {e}")
         raise e
@@ -734,7 +734,7 @@ def rename_attribute_folders(port: int, params: RenameAttributeFoldersParameters
 
     except ValidationError as e:
         log.error(f"Validation error for RenameAttributeFolders result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "RenameAttributeFolders"))
     except Exception as e:
         log.error(f"Error executing RenameAttributeFolders on port {port}: {e}")
         raise e

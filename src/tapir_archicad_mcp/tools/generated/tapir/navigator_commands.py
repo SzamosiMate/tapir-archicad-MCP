@@ -4,7 +4,7 @@ from pydantic import ValidationError
 from multiconn_archicad.basic_types import Port
 from tapir_archicad_mcp.context import multi_conn_instance
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
-from tapir_archicad_mcp.tools.validation import validate_result
+from tapir_archicad_mcp.tools.validation import validate_result, extract_archicad_errors
 
 from multiconn_archicad.models.tapir.commands import (
     CreateDetailsParameters,
@@ -13,6 +13,8 @@ CreateDrawingsParameters,
 CreateDrawingsResult,
 CreateLayoutsParameters,
 CreateLayoutsResult,
+CreateSectionsParameters,
+CreateSectionsResult,
 CreateSubsetsParameters,
 CreateSubsetsResult,
 CreateWorksheetsParameters,
@@ -57,7 +59,7 @@ def create_details(port: int, params: CreateDetailsParameters) -> CreateDetailsR
 
     except ValidationError as e:
         log.error(f"Validation error for CreateDetails result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "CreateDetails"))
     except Exception as e:
         log.error(f"Error executing CreateDetails on port {port}: {e}")
         raise e
@@ -92,7 +94,7 @@ def create_drawings(port: int, params: CreateDrawingsParameters) -> CreateDrawin
 
     except ValidationError as e:
         log.error(f"Validation error for CreateDrawings result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "CreateDrawings"))
     except Exception as e:
         log.error(f"Error executing CreateDrawings on port {port}: {e}")
         raise e
@@ -127,7 +129,7 @@ def create_layouts(port: int, params: CreateLayoutsParameters) -> CreateLayoutsR
 
     except ValidationError as e:
         log.error(f"Validation error for CreateLayouts result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "CreateLayouts"))
     except Exception as e:
         log.error(f"Error executing CreateLayouts on port {port}: {e}")
         raise e
@@ -140,6 +142,41 @@ register_tool_for_dispatch(
     description="Creates Layouts and their backing master layouts.",
     params_model=CreateLayoutsParameters,
     result_model=CreateLayoutsResult
+)
+
+
+def create_sections(port: int, params: CreateSectionsParameters) -> CreateSectionsResult:
+    """
+    Creates Section elements on the floor plan.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="CreateSections",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(CreateSectionsResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for CreateSections result: {e}")
+        raise ValueError(extract_archicad_errors(e, "CreateSections"))
+    except Exception as e:
+        log.error(f"Error executing CreateSections on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    create_sections,
+    name="navigator_create_sections",
+    title="CreateSections",
+    description="Creates Section elements on the floor plan.",
+    params_model=CreateSectionsParameters,
+    result_model=CreateSectionsResult
 )
 
 
@@ -162,7 +199,7 @@ def create_subsets(port: int, params: CreateSubsetsParameters) -> CreateSubsetsR
 
     except ValidationError as e:
         log.error(f"Validation error for CreateSubsets result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "CreateSubsets"))
     except Exception as e:
         log.error(f"Error executing CreateSubsets on port {port}: {e}")
         raise e
@@ -197,7 +234,7 @@ def create_worksheets(port: int, params: CreateWorksheetsParameters) -> CreateWo
 
     except ValidationError as e:
         log.error(f"Validation error for CreateWorksheets result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "CreateWorksheets"))
     except Exception as e:
         log.error(f"Error executing CreateWorksheets on port {port}: {e}")
         raise e
@@ -232,7 +269,7 @@ def fit_in_window(port: int, params: FitInWindowParameters) -> FitInWindowResult
 
     except ValidationError as e:
         log.error(f"Validation error for FitInWindow result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "FitInWindow"))
     except Exception as e:
         log.error(f"Error executing FitInWindow on port {port}: {e}")
         raise e
@@ -267,7 +304,7 @@ def get_database_id_from_navigator_item_id(port: int, params: GetDatabaseIdFromN
 
     except ValidationError as e:
         log.error(f"Validation error for GetDatabaseIdFromNavigatorItemId result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetDatabaseIdFromNavigatorItemId"))
     except Exception as e:
         log.error(f"Error executing GetDatabaseIdFromNavigatorItemId on port {port}: {e}")
         raise e
@@ -302,7 +339,7 @@ def get_model_view_options(port: int) -> GetModelViewOptionsResult:
 
     except ValidationError as e:
         log.error(f"Validation error for GetModelViewOptions result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetModelViewOptions"))
     except Exception as e:
         log.error(f"Error executing GetModelViewOptions on port {port}: {e}")
         raise e
@@ -337,7 +374,7 @@ def get_view2_d_transformations(port: int, params: GetView2DTransformationsParam
 
     except ValidationError as e:
         log.error(f"Validation error for GetView2DTransformations result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetView2DTransformations"))
     except Exception as e:
         log.error(f"Error executing GetView2DTransformations on port {port}: {e}")
         raise e
@@ -372,7 +409,7 @@ def get_view_settings(port: int, params: GetViewSettingsParameters) -> GetViewSe
 
     except ValidationError as e:
         log.error(f"Validation error for GetViewSettings result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetViewSettings"))
     except Exception as e:
         log.error(f"Error executing GetViewSettings on port {port}: {e}")
         raise e
@@ -407,7 +444,7 @@ def publish_publisher_set(port: int, params: PublishPublisherSetParameters) -> N
 
     except ValidationError as e:
         log.error(f"Validation error for PublishPublisherSet result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "PublishPublisherSet"))
     except Exception as e:
         log.error(f"Error executing PublishPublisherSet on port {port}: {e}")
         raise e
@@ -442,7 +479,7 @@ def set3_d_cut_planes(port: int, params: Set3DCutPlanesParameters) -> Set3DCutPl
 
     except ValidationError as e:
         log.error(f"Validation error for Set3DCutPlanes result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "Set3DCutPlanes"))
     except Exception as e:
         log.error(f"Error executing Set3DCutPlanes on port {port}: {e}")
         raise e
@@ -477,7 +514,7 @@ def set_view_settings(port: int, params: SetViewSettingsParameters) -> SetViewSe
 
     except ValidationError as e:
         log.error(f"Validation error for SetViewSettings result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "SetViewSettings"))
     except Exception as e:
         log.error(f"Error executing SetViewSettings on port {port}: {e}")
         raise e
@@ -512,7 +549,7 @@ def update_drawings(port: int, params: UpdateDrawingsParameters) -> UpdateDrawin
 
     except ValidationError as e:
         log.error(f"Validation error for UpdateDrawings result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "UpdateDrawings"))
     except Exception as e:
         log.error(f"Error executing UpdateDrawings on port {port}: {e}")
         raise e

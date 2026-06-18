@@ -4,7 +4,7 @@ from pydantic import ValidationError
 from multiconn_archicad.basic_types import Port
 from tapir_archicad_mcp.context import multi_conn_instance
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
-from tapir_archicad_mcp.tools.validation import validate_result
+from tapir_archicad_mcp.tools.validation import validate_result, extract_archicad_errors
 
 from multiconn_archicad.models.tapir.commands import (
     GetCurrentRevisionChangesOfLayoutsParameters,
@@ -38,7 +38,7 @@ def get_current_revision_changes_of_layouts(port: int, params: GetCurrentRevisio
 
     except ValidationError as e:
         log.error(f"Validation error for GetCurrentRevisionChangesOfLayouts result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetCurrentRevisionChangesOfLayouts"))
     except Exception as e:
         log.error(f"Error executing GetCurrentRevisionChangesOfLayouts on port {port}: {e}")
         raise e
@@ -73,7 +73,7 @@ def get_document_revisions(port: int) -> GetDocumentRevisionsResult:
 
     except ValidationError as e:
         log.error(f"Validation error for GetDocumentRevisions result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetDocumentRevisions"))
     except Exception as e:
         log.error(f"Error executing GetDocumentRevisions on port {port}: {e}")
         raise e
@@ -108,7 +108,7 @@ def get_revision_changes(port: int) -> GetRevisionChangesResult:
 
     except ValidationError as e:
         log.error(f"Validation error for GetRevisionChanges result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetRevisionChanges"))
     except Exception as e:
         log.error(f"Error executing GetRevisionChanges on port {port}: {e}")
         raise e
@@ -143,7 +143,7 @@ def get_revision_changes_of_elements(port: int, params: GetRevisionChangesOfElem
 
     except ValidationError as e:
         log.error(f"Validation error for GetRevisionChangesOfElements result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetRevisionChangesOfElements"))
     except Exception as e:
         log.error(f"Error executing GetRevisionChangesOfElements on port {port}: {e}")
         raise e
@@ -178,7 +178,7 @@ def get_revision_issues(port: int) -> GetRevisionIssuesResult:
 
     except ValidationError as e:
         log.error(f"Validation error for GetRevisionIssues result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetRevisionIssues"))
     except Exception as e:
         log.error(f"Error executing GetRevisionIssues on port {port}: {e}")
         raise e
