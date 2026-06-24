@@ -106,6 +106,8 @@ MoveElementsParameters,
 MoveElementsResult,
 RemoveElementNotificationClientParameters,
 RemoveElementNotificationClientResult,
+RotateElementsParameters,
+RotateElementsResult,
 SetDetailsOfElementsParameters,
 SetDetailsOfElementsResult,
 SetElementNotificationClientParameters,
@@ -1883,6 +1885,41 @@ register_tool_for_dispatch(
     description="Removes an element notification client.",
     params_model=RemoveElementNotificationClientParameters,
     result_model=RemoveElementNotificationClientResult
+)
+
+
+def rotate_elements(port: int, params: RotateElementsParameters) -> RotateElementsResult:
+    """
+    Rotates elements around a reference point.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="RotateElements",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(RotateElementsResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for RotateElements result: {e}")
+        raise ValueError(extract_archicad_errors(e, "RotateElements"))
+    except Exception as e:
+        log.error(f"Error executing RotateElements on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    rotate_elements,
+    name="elements_rotate_elements",
+    title="RotateElements",
+    description="Rotates elements around a reference point.",
+    params_model=RotateElementsParameters,
+    result_model=RotateElementsResult
 )
 
 

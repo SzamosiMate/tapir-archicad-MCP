@@ -664,7 +664,7 @@ wheels = [
 
 [[package]]
 name = "multiconn-archicad"
-version = "0.6.3"
+version = "0.6.5"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "archicad" },
@@ -673,9 +673,9 @@ dependencies = [
     { name = "pydantic" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/da/04/86c5e36a700c2d70c19e355f53c84b61a587ea7c84b560317fe2bd76f129/multiconn_archicad-0.6.3.tar.gz", hash = "sha256:beabd6ef050719d16c8354855d4092c02c6cfc551d6058f2f5ac76bb1b079774", size = 106847, upload-time = "2026-06-18T18:19:14.993Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/90/35/10159dfa283ec8d941b1176056018ec9bfeb0231c289d06f148fd5de019b/multiconn_archicad-0.6.5.tar.gz", hash = "sha256:b4feb3dce7ac6dd0eb4fe093c0074270c0ede5791cb438307b3c914f69d3b2d9", size = 116402, upload-time = "2026-06-24T19:41:03.916Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/b8/01/31338045240858569cb9aec14073812b2bf4af791cb717dc07bbb9541c0c/multiconn_archicad-0.6.3-py3-none-any.whl", hash = "sha256:65cdc505c13cd9a7aef4be9f70ed82a6169d4242aa24b7067a7dce65ddcc8305", size = 144570, upload-time = "2026-06-18T18:19:13.275Z" },
+    { url = "https://files.pythonhosted.org/packages/a5/c3/eb5ce12f0ab83a3f419199b8e48c14b684917dde2577cc25965018eb594c/multiconn_archicad-0.6.5-py3-none-any.whl", hash = "sha256:3981f336b2542572438e99bb5b0f9e0ec9d6257d2d976208531e30c45ac625b8", size = 153614, upload-time = "2026-06-24T19:41:05.122Z" },
 ]
 
 [[package]]
@@ -1600,7 +1600,7 @@ wheels = [
 
 [[package]]
 name = "tapir-archicad-mcp"
-version = "0.4.0"
+version = "0.4.2"
 source = { editable = "." }
 dependencies = [
     { name = "faiss-cpu" },
@@ -1613,7 +1613,7 @@ dependencies = [
 requires-dist = [
     { name = "faiss-cpu", specifier = ">=1.12.0" },
     { name = "fastmcp", specifier = ">=2.10.5" },
-    { name = "multiconn-archicad", specifier = "==0.6.3" },
+    { name = "multiconn-archicad", specifier = "==0.6.5" },
     { name = "sentence-transformers", specifier = ">=5.1.0" },
 ]
 
