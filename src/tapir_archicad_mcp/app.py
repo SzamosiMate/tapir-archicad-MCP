@@ -14,7 +14,7 @@ async def app_lifespan(server: FastMCP) -> AsyncIterator[None]:
 
     logging.info("MCP Server Lifespan: Initializing...")
     multi_conn = MultiConn()
-    mcp_instance.set(mcp)
+    mcp_instance.set(server)
     multi_conn_instance.set(multi_conn)
 
     register_all_tools()
@@ -25,7 +25,6 @@ async def app_lifespan(server: FastMCP) -> AsyncIterator[None]:
         yield
     finally:
         logging.info("MCP Server Lifespan: Shutting down...")
-
 
 mcp = FastMCP(
     "Archicad Tapir MCP Server",

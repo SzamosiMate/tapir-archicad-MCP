@@ -40,3 +40,10 @@ Homepage = "https://github.com/SzamosiMate/tapir-archicad-MCP"
 
 [project.scripts]
 archicad-server = "tapir_archicad_mcp.server:main"
+
+[dependency-groups]
+dev = [
+    "httpx>=0.28.1",
+    "pytest>=9.1.1",
+    "pytest-asyncio>=1.4.0",
+]
