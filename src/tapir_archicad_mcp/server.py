@@ -2,16 +2,11 @@ import logging
 import argparse
 import os
 import sys
-from pathlib import Path
 
-PACKAGE_SRC = Path(__file__).resolve().parents[1]
-if str(PACKAGE_SRC) not in sys.path:
-    sys.path.insert(0, str(PACKAGE_SRC))
-
+from tapir_archicad_mcp.app import mcp
 from tapir_archicad_mcp.logging_config import setup_logging
 
 setup_logging()
-
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run the Archicad Tapir MCP server.")
@@ -39,30 +34,32 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--mount-path",
-        default=None,
+        default=os.getenv("TAPIR_MCP_MOUNT_PATH", None),
         help="Optional mount path for SSE transport.",
     )
     return parser.parse_args()
 
-
 def main():
     args = parse_args()
-
-    os.environ["TAPIR_MCP_HOST"] = args.host
-    os.environ["TAPIR_MCP_PORT"] = str(args.port)
-    os.environ["TAPIR_MCP_STREAMABLE_HTTP_PATH"] = args.streamable_http_path
     sys.argv = [sys.argv[0]]
 
-    from tapir_archicad_mcp.app import mcp
-
     logging.info(
-        "Starting Archicad Tapir MCP Server with transport=%s host=%s port=%s path=%s",
+        "Starting Archicad Tapir MCP Server with transport=%s host=%s port=%s streamable_path=%s mount_path=%s",
         args.transport,
         args.host,
         args.port,
         args.streamable_http_path,
+        args.mount_path
     )
-    mcp.run(transport=args.transport, mount_path=args.mount_path)
+
+    mcp.settings.host = args.host
+    mcp.settings.port = args.port
+    if args.streamable_http_path:
+        mcp.settings.streamable_http_path = args.streamable_http_path
+    if args.mount_path:
+        mcp.settings.mount_path = args.mount_path
+
+    mcp.run(transport=args.transport)
 
 if __name__ == "__main__":
     main()
