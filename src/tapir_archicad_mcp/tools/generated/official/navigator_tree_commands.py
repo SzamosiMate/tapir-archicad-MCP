@@ -4,6 +4,7 @@ from pydantic import ValidationError
 from multiconn_archicad.basic_types import Port
 from tapir_archicad_mcp.context import multi_conn_instance
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
+from tapir_archicad_mcp.tools.validation import validate_result, extract_archicad_errors
 
 from multiconn_archicad.models.official.commands import (
     DeleteNavigatorItemsParameters,
@@ -51,11 +52,11 @@ def delete_navigator_items(port: int, params: DeleteNavigatorItemsParameters) ->
             command="API.DeleteNavigatorItems",
             parameters=params.model_dump(mode='json')
         )
-        return DeleteNavigatorItemsResult.model_validate(result_dict)
+        return validate_result(DeleteNavigatorItemsResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for DeleteNavigatorItems result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "DeleteNavigatorItems"))
     except Exception as e:
         log.error(f"Error executing DeleteNavigatorItems on port {port}: {e}")
         raise e
@@ -86,11 +87,11 @@ def get_built_in_container_navigator_items(port: int, params: GetBuiltInContaine
             command="API.GetBuiltInContainerNavigatorItems",
             parameters=params.model_dump(mode='json')
         )
-        return GetBuiltInContainerNavigatorItemsResult.model_validate(result_dict)
+        return validate_result(GetBuiltInContainerNavigatorItemsResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for GetBuiltInContainerNavigatorItems result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetBuiltInContainerNavigatorItems"))
     except Exception as e:
         log.error(f"Error executing GetBuiltInContainerNavigatorItems on port {port}: {e}")
         raise e
@@ -121,11 +122,11 @@ def get_detail_navigator_items(port: int, params: GetDetailNavigatorItemsParamet
             command="API.GetDetailNavigatorItems",
             parameters=params.model_dump(mode='json')
         )
-        return GetDetailNavigatorItemsResult.model_validate(result_dict)
+        return validate_result(GetDetailNavigatorItemsResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for GetDetailNavigatorItems result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetDetailNavigatorItems"))
     except Exception as e:
         log.error(f"Error executing GetDetailNavigatorItems on port {port}: {e}")
         raise e
@@ -156,11 +157,11 @@ def get_document3_d_navigator_items(port: int, params: GetDocument3DNavigatorIte
             command="API.GetDocument3DNavigatorItems",
             parameters=params.model_dump(mode='json')
         )
-        return GetDocument3DNavigatorItemsResult.model_validate(result_dict)
+        return validate_result(GetDocument3DNavigatorItemsResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for GetDocument3DNavigatorItems result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetDocument3DNavigatorItems"))
     except Exception as e:
         log.error(f"Error executing GetDocument3DNavigatorItems on port {port}: {e}")
         raise e
@@ -191,11 +192,11 @@ def get_elevation_navigator_items(port: int, params: GetElevationNavigatorItemsP
             command="API.GetElevationNavigatorItems",
             parameters=params.model_dump(mode='json')
         )
-        return GetElevationNavigatorItemsResult.model_validate(result_dict)
+        return validate_result(GetElevationNavigatorItemsResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for GetElevationNavigatorItems result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetElevationNavigatorItems"))
     except Exception as e:
         log.error(f"Error executing GetElevationNavigatorItems on port {port}: {e}")
         raise e
@@ -226,11 +227,11 @@ def get_interior_elevation_navigator_items(port: int, params: GetInteriorElevati
             command="API.GetInteriorElevationNavigatorItems",
             parameters=params.model_dump(mode='json')
         )
-        return GetInteriorElevationNavigatorItemsResult.model_validate(result_dict)
+        return validate_result(GetInteriorElevationNavigatorItemsResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for GetInteriorElevationNavigatorItems result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetInteriorElevationNavigatorItems"))
     except Exception as e:
         log.error(f"Error executing GetInteriorElevationNavigatorItems on port {port}: {e}")
         raise e
@@ -261,11 +262,11 @@ def get_navigator_item_tree(port: int, params: GetNavigatorItemTreeParameters) -
             command="API.GetNavigatorItemTree",
             parameters=params.model_dump(mode='json')
         )
-        return GetNavigatorItemTreeResult.model_validate(result_dict)
+        return validate_result(GetNavigatorItemTreeResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for GetNavigatorItemTree result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetNavigatorItemTree"))
     except Exception as e:
         log.error(f"Error executing GetNavigatorItemTree on port {port}: {e}")
         raise e
@@ -296,11 +297,11 @@ def get_navigator_items_type(port: int, params: GetNavigatorItemsTypeParameters)
             command="API.GetNavigatorItemsType",
             parameters=params.model_dump(mode='json')
         )
-        return GetNavigatorItemsTypeResult.model_validate(result_dict)
+        return validate_result(GetNavigatorItemsTypeResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for GetNavigatorItemsType result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetNavigatorItemsType"))
     except Exception as e:
         log.error(f"Error executing GetNavigatorItemsType on port {port}: {e}")
         raise e
@@ -331,11 +332,11 @@ def get_publisher_set_names(port: int) -> GetPublisherSetNamesResult:
             command="API.GetPublisherSetNames",
             parameters={}
         )
-        return GetPublisherSetNamesResult.model_validate(result_dict)
+        return validate_result(GetPublisherSetNamesResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for GetPublisherSetNames result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetPublisherSetNames"))
     except Exception as e:
         log.error(f"Error executing GetPublisherSetNames on port {port}: {e}")
         raise e
@@ -366,11 +367,11 @@ def get_section_navigator_items(port: int, params: GetSectionNavigatorItemsParam
             command="API.GetSectionNavigatorItems",
             parameters=params.model_dump(mode='json')
         )
-        return GetSectionNavigatorItemsResult.model_validate(result_dict)
+        return validate_result(GetSectionNavigatorItemsResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for GetSectionNavigatorItems result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetSectionNavigatorItems"))
     except Exception as e:
         log.error(f"Error executing GetSectionNavigatorItems on port {port}: {e}")
         raise e
@@ -401,11 +402,11 @@ def get_story_navigator_items(port: int, params: GetStoryNavigatorItemsParameter
             command="API.GetStoryNavigatorItems",
             parameters=params.model_dump(mode='json')
         )
-        return GetStoryNavigatorItemsResult.model_validate(result_dict)
+        return validate_result(GetStoryNavigatorItemsResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for GetStoryNavigatorItems result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetStoryNavigatorItems"))
     except Exception as e:
         log.error(f"Error executing GetStoryNavigatorItems on port {port}: {e}")
         raise e
@@ -436,11 +437,11 @@ def get_worksheet_navigator_items(port: int, params: GetWorksheetNavigatorItemsP
             command="API.GetWorksheetNavigatorItems",
             parameters=params.model_dump(mode='json')
         )
-        return GetWorksheetNavigatorItemsResult.model_validate(result_dict)
+        return validate_result(GetWorksheetNavigatorItemsResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for GetWorksheetNavigatorItems result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetWorksheetNavigatorItems"))
     except Exception as e:
         log.error(f"Error executing GetWorksheetNavigatorItems on port {port}: {e}")
         raise e
@@ -475,7 +476,7 @@ def move_navigator_item(port: int, params: MoveNavigatorItemParameters) -> None:
 
     except ValidationError as e:
         log.error(f"Validation error for MoveNavigatorItem result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "MoveNavigatorItem"))
     except Exception as e:
         log.error(f"Error executing MoveNavigatorItem on port {port}: {e}")
         raise e
@@ -510,7 +511,7 @@ def rename_navigator_item(port: int, params: RenameNavigatorItemParameters) -> N
 
     except ValidationError as e:
         log.error(f"Validation error for RenameNavigatorItem result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "RenameNavigatorItem"))
     except Exception as e:
         log.error(f"Error executing RenameNavigatorItem on port {port}: {e}")
         raise e

@@ -4,6 +4,7 @@ from pydantic import ValidationError
 from multiconn_archicad.basic_types import Port
 from tapir_archicad_mcp.context import multi_conn_instance
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
+from tapir_archicad_mcp.tools.validation import validate_result, extract_archicad_errors
 
 from multiconn_archicad.models.official.commands import (
     CreateAttributeFoldersParameters,
@@ -64,11 +65,11 @@ def create_attribute_folders(port: int, params: CreateAttributeFoldersParameters
             command="API.CreateAttributeFolders",
             parameters=params.model_dump(mode='json')
         )
-        return CreateAttributeFoldersResult.model_validate(result_dict)
+        return validate_result(CreateAttributeFoldersResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for CreateAttributeFolders result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "CreateAttributeFolders"))
     except Exception as e:
         log.error(f"Error executing CreateAttributeFolders on port {port}: {e}")
         raise e
@@ -99,11 +100,11 @@ def delete_attribute_folders(port: int, params: DeleteAttributeFoldersParameters
             command="API.DeleteAttributeFolders",
             parameters=params.model_dump(mode='json')
         )
-        return DeleteAttributeFoldersResult.model_validate(result_dict)
+        return validate_result(DeleteAttributeFoldersResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for DeleteAttributeFolders result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "DeleteAttributeFolders"))
     except Exception as e:
         log.error(f"Error executing DeleteAttributeFolders on port {port}: {e}")
         raise e
@@ -134,11 +135,11 @@ def delete_attributes(port: int, params: DeleteAttributesParameters) -> DeleteAt
             command="API.DeleteAttributes",
             parameters=params.model_dump(mode='json')
         )
-        return DeleteAttributesResult.model_validate(result_dict)
+        return validate_result(DeleteAttributesResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for DeleteAttributes result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "DeleteAttributes"))
     except Exception as e:
         log.error(f"Error executing DeleteAttributes on port {port}: {e}")
         raise e
@@ -169,11 +170,11 @@ def get_active_pen_tables(port: int) -> GetActivePenTablesResult:
             command="API.GetActivePenTables",
             parameters={}
         )
-        return GetActivePenTablesResult.model_validate(result_dict)
+        return validate_result(GetActivePenTablesResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for GetActivePenTables result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetActivePenTables"))
     except Exception as e:
         log.error(f"Error executing GetActivePenTables on port {port}: {e}")
         raise e
@@ -204,11 +205,11 @@ def get_attribute_folder_structure(port: int, params: GetAttributeFolderStructur
             command="API.GetAttributeFolderStructure",
             parameters=params.model_dump(mode='json')
         )
-        return GetAttributeFolderStructureResult.model_validate(result_dict)
+        return validate_result(GetAttributeFolderStructureResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for GetAttributeFolderStructure result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetAttributeFolderStructure"))
     except Exception as e:
         log.error(f"Error executing GetAttributeFolderStructure on port {port}: {e}")
         raise e
@@ -239,11 +240,11 @@ def get_attribute_folders(port: int, params: GetAttributeFoldersParameters) -> G
             command="API.GetAttributeFolders",
             parameters=params.model_dump(mode='json')
         )
-        return GetAttributeFoldersResult.model_validate(result_dict)
+        return validate_result(GetAttributeFoldersResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for GetAttributeFolders result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetAttributeFolders"))
     except Exception as e:
         log.error(f"Error executing GetAttributeFolders on port {port}: {e}")
         raise e
@@ -274,11 +275,11 @@ def get_attributes_indices(port: int, params: GetAttributesIndicesParameters) ->
             command="API.GetAttributesIndices",
             parameters=params.model_dump(mode='json')
         )
-        return GetAttributesIndicesResult.model_validate(result_dict)
+        return validate_result(GetAttributesIndicesResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for GetAttributesIndices result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetAttributesIndices"))
     except Exception as e:
         log.error(f"Error executing GetAttributesIndices on port {port}: {e}")
         raise e
@@ -309,11 +310,11 @@ def get_building_material_attributes(port: int, params: GetBuildingMaterialAttri
             command="API.GetBuildingMaterialAttributes",
             parameters=params.model_dump(mode='json')
         )
-        return GetBuildingMaterialAttributesResult.model_validate(result_dict)
+        return validate_result(GetBuildingMaterialAttributesResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for GetBuildingMaterialAttributes result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetBuildingMaterialAttributes"))
     except Exception as e:
         log.error(f"Error executing GetBuildingMaterialAttributes on port {port}: {e}")
         raise e
@@ -344,11 +345,11 @@ def get_composite_attributes(port: int, params: GetCompositeAttributesParameters
             command="API.GetCompositeAttributes",
             parameters=params.model_dump(mode='json')
         )
-        return GetCompositeAttributesResult.model_validate(result_dict)
+        return validate_result(GetCompositeAttributesResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for GetCompositeAttributes result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetCompositeAttributes"))
     except Exception as e:
         log.error(f"Error executing GetCompositeAttributes on port {port}: {e}")
         raise e
@@ -379,11 +380,11 @@ def get_fill_attributes(port: int, params: GetFillAttributesParameters) -> GetFi
             command="API.GetFillAttributes",
             parameters=params.model_dump(mode='json')
         )
-        return GetFillAttributesResult.model_validate(result_dict)
+        return validate_result(GetFillAttributesResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for GetFillAttributes result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetFillAttributes"))
     except Exception as e:
         log.error(f"Error executing GetFillAttributes on port {port}: {e}")
         raise e
@@ -414,11 +415,11 @@ def get_layer_attributes(port: int, params: GetLayerAttributesParameters) -> Get
             command="API.GetLayerAttributes",
             parameters=params.model_dump(mode='json')
         )
-        return GetLayerAttributesResult.model_validate(result_dict)
+        return validate_result(GetLayerAttributesResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for GetLayerAttributes result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetLayerAttributes"))
     except Exception as e:
         log.error(f"Error executing GetLayerAttributes on port {port}: {e}")
         raise e
@@ -449,11 +450,11 @@ def get_layer_combination_attributes(port: int, params: GetLayerCombinationAttri
             command="API.GetLayerCombinationAttributes",
             parameters=params.model_dump(mode='json')
         )
-        return GetLayerCombinationAttributesResult.model_validate(result_dict)
+        return validate_result(GetLayerCombinationAttributesResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for GetLayerCombinationAttributes result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetLayerCombinationAttributes"))
     except Exception as e:
         log.error(f"Error executing GetLayerCombinationAttributes on port {port}: {e}")
         raise e
@@ -484,11 +485,11 @@ def get_line_attributes(port: int, params: GetLineAttributesParameters) -> GetLi
             command="API.GetLineAttributes",
             parameters=params.model_dump(mode='json')
         )
-        return GetLineAttributesResult.model_validate(result_dict)
+        return validate_result(GetLineAttributesResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for GetLineAttributes result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetLineAttributes"))
     except Exception as e:
         log.error(f"Error executing GetLineAttributes on port {port}: {e}")
         raise e
@@ -519,11 +520,11 @@ def get_pen_table_attributes(port: int, params: GetPenTableAttributesParameters)
             command="API.GetPenTableAttributes",
             parameters=params.model_dump(mode='json')
         )
-        return GetPenTableAttributesResult.model_validate(result_dict)
+        return validate_result(GetPenTableAttributesResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for GetPenTableAttributes result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetPenTableAttributes"))
     except Exception as e:
         log.error(f"Error executing GetPenTableAttributes on port {port}: {e}")
         raise e
@@ -554,11 +555,11 @@ def get_profile_attribute_preview(port: int, params: GetProfileAttributePreviewP
             command="API.GetProfileAttributePreview",
             parameters=params.model_dump(mode='json')
         )
-        return GetProfileAttributePreviewResult.model_validate(result_dict)
+        return validate_result(GetProfileAttributePreviewResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for GetProfileAttributePreview result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetProfileAttributePreview"))
     except Exception as e:
         log.error(f"Error executing GetProfileAttributePreview on port {port}: {e}")
         raise e
@@ -589,11 +590,11 @@ def get_profile_attributes(port: int, params: GetProfileAttributesParameters) ->
             command="API.GetProfileAttributes",
             parameters=params.model_dump(mode='json')
         )
-        return GetProfileAttributesResult.model_validate(result_dict)
+        return validate_result(GetProfileAttributesResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for GetProfileAttributes result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetProfileAttributes"))
     except Exception as e:
         log.error(f"Error executing GetProfileAttributes on port {port}: {e}")
         raise e
@@ -624,11 +625,11 @@ def get_surface_attributes(port: int, params: GetSurfaceAttributesParameters) ->
             command="API.GetSurfaceAttributes",
             parameters=params.model_dump(mode='json')
         )
-        return GetSurfaceAttributesResult.model_validate(result_dict)
+        return validate_result(GetSurfaceAttributesResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for GetSurfaceAttributes result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetSurfaceAttributes"))
     except Exception as e:
         log.error(f"Error executing GetSurfaceAttributes on port {port}: {e}")
         raise e
@@ -659,11 +660,11 @@ def get_zone_category_attributes(port: int, params: GetZoneCategoryAttributesPar
             command="API.GetZoneCategoryAttributes",
             parameters=params.model_dump(mode='json')
         )
-        return GetZoneCategoryAttributesResult.model_validate(result_dict)
+        return validate_result(GetZoneCategoryAttributesResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for GetZoneCategoryAttributes result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetZoneCategoryAttributes"))
     except Exception as e:
         log.error(f"Error executing GetZoneCategoryAttributes on port {port}: {e}")
         raise e
@@ -698,7 +699,7 @@ def move_attributes_and_folders(port: int, params: MoveAttributesAndFoldersParam
 
     except ValidationError as e:
         log.error(f"Validation error for MoveAttributesAndFolders result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "MoveAttributesAndFolders"))
     except Exception as e:
         log.error(f"Error executing MoveAttributesAndFolders on port {port}: {e}")
         raise e
@@ -729,11 +730,11 @@ def rename_attribute_folders(port: int, params: RenameAttributeFoldersParameters
             command="API.RenameAttributeFolders",
             parameters=params.model_dump(mode='json')
         )
-        return RenameAttributeFoldersResult.model_validate(result_dict)
+        return validate_result(RenameAttributeFoldersResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for RenameAttributeFolders result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "RenameAttributeFolders"))
     except Exception as e:
         log.error(f"Error executing RenameAttributeFolders on port {port}: {e}")
         raise e

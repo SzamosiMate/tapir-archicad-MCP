@@ -15,7 +15,7 @@ class ToolRegistryEntry(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     callable: Callable
-    params_model: Optional[Type[BaseModel]] = None
+    params_model: ModelOrUnion = None
     result_model: ModelOrUnion = None
 
 
@@ -34,7 +34,7 @@ def _get_schema_dict(model_type: ModelOrUnion) -> dict:
         return TypeAdapter(model_type).json_schema()
 
 
-def _get_schema_keywords(pydantic_model: Optional[Type[BaseModel]]) -> str:
+def _get_schema_keywords(pydantic_model: ModelOrUnion) -> str:
     """
     Parses a Pydantic model's JSON schema to extract meaningful keywords
     (parameter names and enum values) for better embedding.
@@ -70,7 +70,7 @@ def _get_schema_keywords(pydantic_model: Optional[Type[BaseModel]]) -> str:
         return ""
 
 
-def _build_tool_input_schema(func: Callable, params_model: Optional[Type[BaseModel]]) -> dict:
+def _build_tool_input_schema(func: Callable, params_model: ModelOrUnion) -> dict:
     """
     Builds the complete JSON schema for the 'arguments' parameter of the
     archicad_call_tool, specific to the tool being registered.
@@ -87,7 +87,7 @@ def _build_tool_input_schema(func: Callable, params_model: Optional[Type[BaseMod
     }
 
     if params_model:
-        params_schema = params_model.model_json_schema()
+        params_schema = _get_schema_dict(params_model)
         input_schema["properties"]["params"] = params_schema
         input_schema["required"].append("params")
 
@@ -106,7 +106,7 @@ def register_tool_for_dispatch(
         name: str,
         title: str,
         description: str,
-        params_model: Optional[Type[BaseModel]] = None,
+        params_model: ModelOrUnion = None,
         result_model: ModelOrUnion = None
 ):
     """

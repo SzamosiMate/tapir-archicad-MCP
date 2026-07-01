@@ -4,58 +4,118 @@ from pydantic import ValidationError
 from multiconn_archicad.basic_types import Port
 from tapir_archicad_mcp.context import multi_conn_instance
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
+from tapir_archicad_mcp.tools.validation import validate_result, extract_archicad_errors
 import time
 from typing import Any
+from pydantic import BaseModel
 from tapir_archicad_mcp.pagination import handle_paginated_request, PAGINATION_CACHE, CACHE_LIFETIME_SECONDS
 
 from multiconn_archicad.models.tapir.commands import (
     ChangeSelectionOfElementsParameters,
 ChangeSelectionOfElementsResult,
+CreateAssociativeDimensionsOnSectionParameters,
+CreateAssociativeDimensionsOnSectionResult,
+CreateAssociativeDimensionsParameters,
+CreateAssociativeDimensionsResult,
+CreateBeamsParameters,
+CreateBeamsResult,
 CreateColumnsParameters,
 CreateColumnsResult,
+CreateDoorsParameters,
+CreateDoorsResult,
+CreateLabelsParameters,
+CreateLabelsResult,
+CreateLampsParameters,
+CreateLampsResult,
 CreateMeshesParameters,
 CreateMeshesResult,
+CreateMorphsParameters,
+CreateMorphsResult,
 CreateObjectsParameters,
 CreateObjectsResult,
+CreateOpeningsParameters,
+CreateOpeningsResult,
 CreatePolylinesParameters,
 CreatePolylinesResult,
+CreateRoofsParameters,
+CreateRoofsResult,
 CreateSlabsParameters,
 CreateSlabsResult,
+CreateStairsParameters,
+CreateStairsResult,
+CreateTextsParameters,
+CreateTextsResult,
+CreateWallThicknessDimensionsParameters,
+CreateWallThicknessDimensionsResult,
+CreateWallsParameters,
+CreateWallsResult,
+CreateWindowsParameters,
+CreateWindowsResult,
 CreateZonesParameters,
 CreateZonesResult,
 DeleteElementsParameters,
+DeleteElementsResult,
 FilterElementsParameters,
 FilterElementsResult,
 Get3DBoundingBoxesParameters,
 Get3DBoundingBoxesResult,
 GetAllElementsParameters,
 GetAllElementsResult,
-GetClassificationsOfElementsParameters,
-GetClassificationsOfElementsResult,
 GetCollisionsParameters,
 GetCollisionsResult,
 GetConnectedElementsParameters,
 GetConnectedElementsResult,
 GetDetailsOfElementsParameters,
 GetDetailsOfElementsResult,
+GetDimensionDataParameters,
+GetDimensionDataResult,
+GetElementPreviewImageParameters,
+GetElementPreviewImageResult,
 GetElementsByTypeParameters,
 GetElementsByTypeResult,
 GetGDLParametersOfElementsParameters,
 GetGDLParametersOfElementsResult,
+GetRoomImageParameters,
+GetRoomImageResult,
 GetSelectedElementsResult,
 GetSubelementsOfHierarchicalElementsParameters,
 GetSubelementsOfHierarchicalElementsResult,
 GetZoneBoundariesParameters,
 GetZoneBoundariesResult,
 HighlightElementsParameters,
+HighlightElementsResult,
+LockElementsParameters,
+LockElementsResult,
+ModifyBeamsParameters,
+ModifyBeamsResult,
+ModifyColumnsParameters,
+ModifyColumnsResult,
+ModifyDoorsParameters,
+ModifyDoorsResult,
+ModifyMorphsParameters,
+ModifyMorphsResult,
+ModifyRoofsParameters,
+ModifyRoofsResult,
+ModifySlabsParameters,
+ModifySlabsResult,
+ModifyWallsParameters,
+ModifyWallsResult,
+ModifyWindowsParameters,
+ModifyWindowsResult,
 MoveElementsParameters,
 MoveElementsResult,
-SetClassificationsOfElementsParameters,
-SetClassificationsOfElementsResult,
+RemoveElementNotificationClientParameters,
+RemoveElementNotificationClientResult,
+RotateElementsParameters,
+RotateElementsResult,
 SetDetailsOfElementsParameters,
 SetDetailsOfElementsResult,
+SetElementNotificationClientParameters,
+SetElementNotificationClientResult,
 SetGDLParametersOfElementsParameters,
-SetGDLParametersOfElementsResult
+SetGDLParametersOfElementsResult,
+UnlockElementsParameters,
+UnlockElementsResult
 )
 
 
@@ -76,11 +136,11 @@ def change_selection_of_elements(port: int, params: ChangeSelectionOfElementsPar
             command="ChangeSelectionOfElements",
             parameters=params.model_dump(mode='json')
         )
-        return ChangeSelectionOfElementsResult.model_validate(result_dict)
+        return validate_result(ChangeSelectionOfElementsResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for ChangeSelectionOfElements result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "ChangeSelectionOfElements"))
     except Exception as e:
         log.error(f"Error executing ChangeSelectionOfElements on port {port}: {e}")
         raise e
@@ -93,6 +153,111 @@ register_tool_for_dispatch(
     description="Adds/removes a number of elements to/from the current selection.",
     params_model=ChangeSelectionOfElementsParameters,
     result_model=ChangeSelectionOfElementsResult
+)
+
+
+def create_associative_dimensions(port: int, params: CreateAssociativeDimensionsParameters) -> CreateAssociativeDimensionsResult:
+    """
+    Creates associative linear dimensions from explicit witness point references.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="CreateAssociativeDimensions",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(CreateAssociativeDimensionsResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for CreateAssociativeDimensions result: {e}")
+        raise ValueError(extract_archicad_errors(e, "CreateAssociativeDimensions"))
+    except Exception as e:
+        log.error(f"Error executing CreateAssociativeDimensions on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    create_associative_dimensions,
+    name="elements_create_associative_dimensions",
+    title="CreateAssociativeDimensions",
+    description="Creates associative linear dimensions from explicit witness point references.",
+    params_model=CreateAssociativeDimensionsParameters,
+    result_model=CreateAssociativeDimensionsResult
+)
+
+
+def create_associative_dimensions_on_section(port: int, params: CreateAssociativeDimensionsOnSectionParameters) -> CreateAssociativeDimensionsOnSectionResult:
+    """
+    Creates associative linear dimensions on section elements using common wall, slab, beam, column and opening presets.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="CreateAssociativeDimensionsOnSection",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(CreateAssociativeDimensionsOnSectionResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for CreateAssociativeDimensionsOnSection result: {e}")
+        raise ValueError(extract_archicad_errors(e, "CreateAssociativeDimensionsOnSection"))
+    except Exception as e:
+        log.error(f"Error executing CreateAssociativeDimensionsOnSection on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    create_associative_dimensions_on_section,
+    name="elements_create_associative_dimensions_on_section",
+    title="CreateAssociativeDimensionsOnSection",
+    description="Creates associative linear dimensions on section elements using common wall, slab, beam, column and opening presets.",
+    params_model=CreateAssociativeDimensionsOnSectionParameters,
+    result_model=CreateAssociativeDimensionsOnSectionResult
+)
+
+
+def create_beams(port: int, params: CreateBeamsParameters) -> CreateBeamsResult:
+    """
+    Creates Beam elements based on the given parameters.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="CreateBeams",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(CreateBeamsResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for CreateBeams result: {e}")
+        raise ValueError(extract_archicad_errors(e, "CreateBeams"))
+    except Exception as e:
+        log.error(f"Error executing CreateBeams on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    create_beams,
+    name="elements_create_beams",
+    title="CreateBeams",
+    description="Creates Beam elements based on the given parameters.",
+    params_model=CreateBeamsParameters,
+    result_model=CreateBeamsResult
 )
 
 
@@ -111,11 +276,11 @@ def create_columns(port: int, params: CreateColumnsParameters) -> CreateColumnsR
             command="CreateColumns",
             parameters=params.model_dump(mode='json')
         )
-        return CreateColumnsResult.model_validate(result_dict)
+        return validate_result(CreateColumnsResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for CreateColumns result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "CreateColumns"))
     except Exception as e:
         log.error(f"Error executing CreateColumns on port {port}: {e}")
         raise e
@@ -128,6 +293,111 @@ register_tool_for_dispatch(
     description="Creates Column elements based on the given parameters.",
     params_model=CreateColumnsParameters,
     result_model=CreateColumnsResult
+)
+
+
+def create_doors(port: int, params: CreateDoorsParameters) -> CreateDoorsResult:
+    """
+    Creates Door elements in host walls based on the given parameters.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="CreateDoors",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(CreateDoorsResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for CreateDoors result: {e}")
+        raise ValueError(extract_archicad_errors(e, "CreateDoors"))
+    except Exception as e:
+        log.error(f"Error executing CreateDoors on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    create_doors,
+    name="elements_create_doors",
+    title="CreateDoors",
+    description="Creates Door elements in host walls based on the given parameters.",
+    params_model=CreateDoorsParameters,
+    result_model=CreateDoorsResult
+)
+
+
+def create_labels(port: int, params: CreateLabelsParameters) -> CreateLabelsResult:
+    """
+    Creates Label elements based on the given parameters.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="CreateLabels",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(CreateLabelsResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for CreateLabels result: {e}")
+        raise ValueError(extract_archicad_errors(e, "CreateLabels"))
+    except Exception as e:
+        log.error(f"Error executing CreateLabels on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    create_labels,
+    name="elements_create_labels",
+    title="CreateLabels",
+    description="Creates Label elements based on the given parameters.",
+    params_model=CreateLabelsParameters,
+    result_model=CreateLabelsResult
+)
+
+
+def create_lamps(port: int, params: CreateLampsParameters) -> CreateLampsResult:
+    """
+    Creates Lamp elements based on the given parameters.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="CreateLamps",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(CreateLampsResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for CreateLamps result: {e}")
+        raise ValueError(extract_archicad_errors(e, "CreateLamps"))
+    except Exception as e:
+        log.error(f"Error executing CreateLamps on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    create_lamps,
+    name="elements_create_lamps",
+    title="CreateLamps",
+    description="Creates Lamp elements based on the given parameters.",
+    params_model=CreateLampsParameters,
+    result_model=CreateLampsResult
 )
 
 
@@ -146,11 +416,11 @@ def create_meshes(port: int, params: CreateMeshesParameters) -> CreateMeshesResu
             command="CreateMeshes",
             parameters=params.model_dump(mode='json')
         )
-        return CreateMeshesResult.model_validate(result_dict)
+        return validate_result(CreateMeshesResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for CreateMeshes result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "CreateMeshes"))
     except Exception as e:
         log.error(f"Error executing CreateMeshes on port {port}: {e}")
         raise e
@@ -163,6 +433,41 @@ register_tool_for_dispatch(
     description="Creates Mesh elements based on the given parameters.",
     params_model=CreateMeshesParameters,
     result_model=CreateMeshesResult
+)
+
+
+def create_morphs(port: int, params: CreateMorphsParameters) -> CreateMorphsResult:
+    """
+    Creates Morph elements from simple box definitions.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="CreateMorphs",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(CreateMorphsResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for CreateMorphs result: {e}")
+        raise ValueError(extract_archicad_errors(e, "CreateMorphs"))
+    except Exception as e:
+        log.error(f"Error executing CreateMorphs on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    create_morphs,
+    name="elements_create_morphs",
+    title="CreateMorphs",
+    description="Creates Morph elements from simple box definitions.",
+    params_model=CreateMorphsParameters,
+    result_model=CreateMorphsResult
 )
 
 
@@ -181,11 +486,11 @@ def create_objects(port: int, params: CreateObjectsParameters) -> CreateObjectsR
             command="CreateObjects",
             parameters=params.model_dump(mode='json')
         )
-        return CreateObjectsResult.model_validate(result_dict)
+        return validate_result(CreateObjectsResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for CreateObjects result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "CreateObjects"))
     except Exception as e:
         log.error(f"Error executing CreateObjects on port {port}: {e}")
         raise e
@@ -198,6 +503,41 @@ register_tool_for_dispatch(
     description="Creates Object elements based on the given parameters.",
     params_model=CreateObjectsParameters,
     result_model=CreateObjectsResult
+)
+
+
+def create_openings(port: int, params: CreateOpeningsParameters) -> CreateOpeningsResult:
+    """
+    Creates Opening elements in the given host elements.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="CreateOpenings",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(CreateOpeningsResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for CreateOpenings result: {e}")
+        raise ValueError(extract_archicad_errors(e, "CreateOpenings"))
+    except Exception as e:
+        log.error(f"Error executing CreateOpenings on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    create_openings,
+    name="elements_create_openings",
+    title="CreateOpenings",
+    description="Creates Opening elements in the given host elements.",
+    params_model=CreateOpeningsParameters,
+    result_model=CreateOpeningsResult
 )
 
 
@@ -216,11 +556,11 @@ def create_polylines(port: int, params: CreatePolylinesParameters) -> CreatePoly
             command="CreatePolylines",
             parameters=params.model_dump(mode='json')
         )
-        return CreatePolylinesResult.model_validate(result_dict)
+        return validate_result(CreatePolylinesResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for CreatePolylines result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "CreatePolylines"))
     except Exception as e:
         log.error(f"Error executing CreatePolylines on port {port}: {e}")
         raise e
@@ -233,6 +573,41 @@ register_tool_for_dispatch(
     description="Creates Polyline elements based on the given parameters.",
     params_model=CreatePolylinesParameters,
     result_model=CreatePolylinesResult
+)
+
+
+def create_roofs(port: int, params: CreateRoofsParameters) -> CreateRoofsResult:
+    """
+    Creates multi-plane Roof elements based on footprint, level and roof profile data.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="CreateRoofs",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(CreateRoofsResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for CreateRoofs result: {e}")
+        raise ValueError(extract_archicad_errors(e, "CreateRoofs"))
+    except Exception as e:
+        log.error(f"Error executing CreateRoofs on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    create_roofs,
+    name="elements_create_roofs",
+    title="CreateRoofs",
+    description="Creates multi-plane Roof elements based on footprint, level and roof profile data.",
+    params_model=CreateRoofsParameters,
+    result_model=CreateRoofsResult
 )
 
 
@@ -251,11 +626,11 @@ def create_slabs(port: int, params: CreateSlabsParameters) -> CreateSlabsResult:
             command="CreateSlabs",
             parameters=params.model_dump(mode='json')
         )
-        return CreateSlabsResult.model_validate(result_dict)
+        return validate_result(CreateSlabsResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for CreateSlabs result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "CreateSlabs"))
     except Exception as e:
         log.error(f"Error executing CreateSlabs on port {port}: {e}")
         raise e
@@ -268,6 +643,181 @@ register_tool_for_dispatch(
     description="Creates Slab elements based on the given parameters.",
     params_model=CreateSlabsParameters,
     result_model=CreateSlabsResult
+)
+
+
+def create_stairs(port: int, params: CreateStairsParameters) -> CreateStairsResult:
+    """
+    Creates Stair elements based on the given baseline and parameters.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="CreateStairs",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(CreateStairsResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for CreateStairs result: {e}")
+        raise ValueError(extract_archicad_errors(e, "CreateStairs"))
+    except Exception as e:
+        log.error(f"Error executing CreateStairs on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    create_stairs,
+    name="elements_create_stairs",
+    title="CreateStairs",
+    description="Creates Stair elements based on the given baseline and parameters.",
+    params_model=CreateStairsParameters,
+    result_model=CreateStairsResult
+)
+
+
+def create_texts(port: int, params: CreateTextsParameters) -> CreateTextsResult:
+    """
+    Creates standalone Text elements based on the given parameters.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="CreateTexts",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(CreateTextsResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for CreateTexts result: {e}")
+        raise ValueError(extract_archicad_errors(e, "CreateTexts"))
+    except Exception as e:
+        log.error(f"Error executing CreateTexts on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    create_texts,
+    name="elements_create_texts",
+    title="CreateTexts",
+    description="Creates standalone Text elements based on the given parameters.",
+    params_model=CreateTextsParameters,
+    result_model=CreateTextsResult
+)
+
+
+def create_wall_thickness_dimensions(port: int, params: CreateWallThicknessDimensionsParameters) -> CreateWallThicknessDimensionsResult:
+    """
+    Creates associative wall thickness dimensions for the given walls.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="CreateWallThicknessDimensions",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(CreateWallThicknessDimensionsResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for CreateWallThicknessDimensions result: {e}")
+        raise ValueError(extract_archicad_errors(e, "CreateWallThicknessDimensions"))
+    except Exception as e:
+        log.error(f"Error executing CreateWallThicknessDimensions on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    create_wall_thickness_dimensions,
+    name="elements_create_wall_thickness_dimensions",
+    title="CreateWallThicknessDimensions",
+    description="Creates associative wall thickness dimensions for the given walls.",
+    params_model=CreateWallThicknessDimensionsParameters,
+    result_model=CreateWallThicknessDimensionsResult
+)
+
+
+def create_walls(port: int, params: CreateWallsParameters) -> CreateWallsResult:
+    """
+    Creates Wall elements based on the given parameters.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="CreateWalls",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(CreateWallsResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for CreateWalls result: {e}")
+        raise ValueError(extract_archicad_errors(e, "CreateWalls"))
+    except Exception as e:
+        log.error(f"Error executing CreateWalls on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    create_walls,
+    name="elements_create_walls",
+    title="CreateWalls",
+    description="Creates Wall elements based on the given parameters.",
+    params_model=CreateWallsParameters,
+    result_model=CreateWallsResult
+)
+
+
+def create_windows(port: int, params: CreateWindowsParameters) -> CreateWindowsResult:
+    """
+    Creates Window elements in host walls based on the given parameters.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="CreateWindows",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(CreateWindowsResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for CreateWindows result: {e}")
+        raise ValueError(extract_archicad_errors(e, "CreateWindows"))
+    except Exception as e:
+        log.error(f"Error executing CreateWindows on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    create_windows,
+    name="elements_create_windows",
+    title="CreateWindows",
+    description="Creates Window elements in host walls based on the given parameters.",
+    params_model=CreateWindowsParameters,
+    result_model=CreateWindowsResult
 )
 
 
@@ -286,11 +836,11 @@ def create_zones(port: int, params: CreateZonesParameters) -> CreateZonesResult:
             command="CreateZones",
             parameters=params.model_dump(mode='json')
         )
-        return CreateZonesResult.model_validate(result_dict)
+        return validate_result(CreateZonesResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for CreateZones result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "CreateZones"))
     except Exception as e:
         log.error(f"Error executing CreateZones on port {port}: {e}")
         raise e
@@ -306,7 +856,7 @@ register_tool_for_dispatch(
 )
 
 
-def delete_elements(port: int, params: DeleteElementsParameters) -> None:
+def delete_elements(port: int, params: DeleteElementsParameters) -> DeleteElementsResult:
     """
     Deletes elements.
     """
@@ -317,15 +867,15 @@ def delete_elements(port: int, params: DeleteElementsParameters) -> None:
     conn_header = multi_conn.active[target_port]
     try:
 
-        conn_header.core.post_tapir_command(
+        result_dict = conn_header.core.post_tapir_command(
             command="DeleteElements",
             parameters=params.model_dump(mode='json')
         )
-        return None
+        return validate_result(DeleteElementsResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for DeleteElements result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "DeleteElements"))
     except Exception as e:
         log.error(f"Error executing DeleteElements on port {port}: {e}")
         raise e
@@ -337,7 +887,7 @@ register_tool_for_dispatch(
     title="DeleteElements",
     description="Deletes elements.",
     params_model=DeleteElementsParameters,
-    result_model=None
+    result_model=DeleteElementsResult
 )
 
 
@@ -356,11 +906,11 @@ def filter_elements(port: int, params: FilterElementsParameters) -> FilterElemen
             command="FilterElements",
             parameters=params.model_dump(mode='json')
         )
-        return FilterElementsResult.model_validate(result_dict)
+        return validate_result(FilterElementsResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for FilterElements result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "FilterElements"))
     except Exception as e:
         log.error(f"Error executing FilterElements on port {port}: {e}")
         raise e
@@ -391,11 +941,11 @@ def get3_d_bounding_boxes(port: int, params: Get3DBoundingBoxesParameters) -> Ge
             command="Get3DBoundingBoxes",
             parameters=params.model_dump(mode='json')
         )
-        return Get3DBoundingBoxesResult.model_validate(result_dict)
+        return validate_result(Get3DBoundingBoxesResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for Get3DBoundingBoxes result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "Get3DBoundingBoxes"))
     except Exception as e:
         log.error(f"Error executing Get3DBoundingBoxes on port {port}: {e}")
         raise e
@@ -411,7 +961,7 @@ register_tool_for_dispatch(
 )
 
 
-class PaginatedGetAllElementsResult(GetAllElementsResult):
+class PaginatedGetAllElementsResult(BaseModel):
     """A paginated version of the GetAllElementsResult."""
     elements: list[Any]
     next_page_token: str | None = None
@@ -437,7 +987,7 @@ def get_all_elements(port: int, params: GetAllElementsParameters, page_token: st
                 command="GetAllElements",
                 parameters=params.model_dump(mode='json')
             )
-            full_response_model = GetAllElementsResult.model_validate(full_response_dict)
+            full_response_model = validate_result(GetAllElementsResult, full_response_dict)
             PAGINATION_CACHE[cache_key] = (full_response_model, time.time())
 
         if cache_key not in PAGINATION_CACHE:
@@ -459,7 +1009,7 @@ def get_all_elements(port: int, params: GetAllElementsParameters, page_token: st
 
     except ValidationError as e:
         log.error(f"Validation error for GetAllElements result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetAllElements"))
     except Exception as e:
         log.error(f"Error executing GetAllElements on port {port}: {e}")
         raise e
@@ -472,41 +1022,6 @@ register_tool_for_dispatch(
     description="Returns the identifier of all elements on the plan. Use the optional filter parameter for filtering.",
     params_model=GetAllElementsParameters,
     result_model=PaginatedGetAllElementsResult
-)
-
-
-def get_classifications_of_elements(port: int, params: GetClassificationsOfElementsParameters) -> GetClassificationsOfElementsResult:
-    """
-    Returns the classification of the given elements in the given classification systems. It works for subelements of hierarchal elements also.
-    """
-    multi_conn = multi_conn_instance.get()
-    target_port = Port(port)
-    if target_port not in multi_conn.active:
-        raise ValueError(f"Port {port} is not an active Archicad connection.")
-    conn_header = multi_conn.active[target_port]
-    try:
-
-        result_dict = conn_header.core.post_tapir_command(
-            command="GetClassificationsOfElements",
-            parameters=params.model_dump(mode='json')
-        )
-        return GetClassificationsOfElementsResult.model_validate(result_dict)
-
-    except ValidationError as e:
-        log.error(f"Validation error for GetClassificationsOfElements result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
-    except Exception as e:
-        log.error(f"Error executing GetClassificationsOfElements on port {port}: {e}")
-        raise e
-
-
-register_tool_for_dispatch(
-    get_classifications_of_elements,
-    name="elements_get_classifications_of_elements",
-    title="GetClassificationsOfElements",
-    description="Returns the classification of the given elements in the given classification systems. It works for subelements of hierarchal elements also.",
-    params_model=GetClassificationsOfElementsParameters,
-    result_model=GetClassificationsOfElementsResult
 )
 
 
@@ -525,11 +1040,11 @@ def get_collisions(port: int, params: GetCollisionsParameters) -> GetCollisionsR
             command="GetCollisions",
             parameters=params.model_dump(mode='json')
         )
-        return GetCollisionsResult.model_validate(result_dict)
+        return validate_result(GetCollisionsResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for GetCollisions result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetCollisions"))
     except Exception as e:
         log.error(f"Error executing GetCollisions on port {port}: {e}")
         raise e
@@ -560,11 +1075,11 @@ def get_connected_elements(port: int, params: GetConnectedElementsParameters) ->
             command="GetConnectedElements",
             parameters=params.model_dump(mode='json')
         )
-        return GetConnectedElementsResult.model_validate(result_dict)
+        return validate_result(GetConnectedElementsResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for GetConnectedElements result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetConnectedElements"))
     except Exception as e:
         log.error(f"Error executing GetConnectedElements on port {port}: {e}")
         raise e
@@ -595,11 +1110,11 @@ def get_details_of_elements(port: int, params: GetDetailsOfElementsParameters) -
             command="GetDetailsOfElements",
             parameters=params.model_dump(mode='json')
         )
-        return GetDetailsOfElementsResult.model_validate(result_dict)
+        return validate_result(GetDetailsOfElementsResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for GetDetailsOfElements result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetDetailsOfElements"))
     except Exception as e:
         log.error(f"Error executing GetDetailsOfElements on port {port}: {e}")
         raise e
@@ -615,7 +1130,77 @@ register_tool_for_dispatch(
 )
 
 
-class PaginatedGetElementsByTypeResult(GetElementsByTypeResult):
+def get_dimension_data(port: int, params: GetDimensionDataParameters) -> GetDimensionDataResult:
+    """
+    Gets witness point data (coordinates, measured values) from existing dimension chains.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="GetDimensionData",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(GetDimensionDataResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for GetDimensionData result: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetDimensionData"))
+    except Exception as e:
+        log.error(f"Error executing GetDimensionData on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    get_dimension_data,
+    name="elements_get_dimension_data",
+    title="GetDimensionData",
+    description="Gets witness point data (coordinates, measured values) from existing dimension chains.",
+    params_model=GetDimensionDataParameters,
+    result_model=GetDimensionDataResult
+)
+
+
+def get_element_preview_image(port: int, params: GetElementPreviewImageParameters) -> GetElementPreviewImageResult:
+    """
+    Returns the preview image of the given element.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="GetElementPreviewImage",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(GetElementPreviewImageResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for GetElementPreviewImage result: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetElementPreviewImage"))
+    except Exception as e:
+        log.error(f"Error executing GetElementPreviewImage on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    get_element_preview_image,
+    name="elements_get_element_preview_image",
+    title="GetElementPreviewImage",
+    description="Returns the preview image of the given element.",
+    params_model=GetElementPreviewImageParameters,
+    result_model=GetElementPreviewImageResult
+)
+
+
+class PaginatedGetElementsByTypeResult(BaseModel):
     """A paginated version of the GetElementsByTypeResult."""
     elements: list[Any]
     next_page_token: str | None = None
@@ -641,7 +1226,7 @@ def get_elements_by_type(port: int, params: GetElementsByTypeParameters, page_to
                 command="GetElementsByType",
                 parameters=params.model_dump(mode='json')
             )
-            full_response_model = GetElementsByTypeResult.model_validate(full_response_dict)
+            full_response_model = validate_result(GetElementsByTypeResult, full_response_dict)
             PAGINATION_CACHE[cache_key] = (full_response_model, time.time())
 
         if cache_key not in PAGINATION_CACHE:
@@ -663,7 +1248,7 @@ def get_elements_by_type(port: int, params: GetElementsByTypeParameters, page_to
 
     except ValidationError as e:
         log.error(f"Validation error for GetElementsByType result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetElementsByType"))
     except Exception as e:
         log.error(f"Error executing GetElementsByType on port {port}: {e}")
         raise e
@@ -694,11 +1279,11 @@ def get_gdl_parameters_of_elements(port: int, params: GetGDLParametersOfElements
             command="GetGDLParametersOfElements",
             parameters=params.model_dump(mode='json')
         )
-        return GetGDLParametersOfElementsResult.model_validate(result_dict)
+        return validate_result(GetGDLParametersOfElementsResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for GetGDLParametersOfElements result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetGDLParametersOfElements"))
     except Exception as e:
         log.error(f"Error executing GetGDLParametersOfElements on port {port}: {e}")
         raise e
@@ -714,7 +1299,42 @@ register_tool_for_dispatch(
 )
 
 
-class PaginatedGetSelectedElementsResult(GetSelectedElementsResult):
+def get_room_image(port: int, params: GetRoomImageParameters) -> GetRoomImageResult:
+    """
+    Returns the room image of the given zone.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="GetRoomImage",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(GetRoomImageResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for GetRoomImage result: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetRoomImage"))
+    except Exception as e:
+        log.error(f"Error executing GetRoomImage on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    get_room_image,
+    name="elements_get_room_image",
+    title="GetRoomImage",
+    description="Returns the room image of the given zone.",
+    params_model=GetRoomImageParameters,
+    result_model=GetRoomImageResult
+)
+
+
+class PaginatedGetSelectedElementsResult(BaseModel):
     """A paginated version of the GetSelectedElementsResult."""
     elements: list[Any]
     next_page_token: str | None = None
@@ -740,7 +1360,7 @@ def get_selected_elements(port: int, page_token: str | None = None) -> Paginated
                 command="GetSelectedElements",
                 parameters={}
             )
-            full_response_model = GetSelectedElementsResult.model_validate(full_response_dict)
+            full_response_model = validate_result(GetSelectedElementsResult, full_response_dict)
             PAGINATION_CACHE[cache_key] = (full_response_model, time.time())
 
         if cache_key not in PAGINATION_CACHE:
@@ -762,7 +1382,7 @@ def get_selected_elements(port: int, page_token: str | None = None) -> Paginated
 
     except ValidationError as e:
         log.error(f"Validation error for GetSelectedElements result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetSelectedElements"))
     except Exception as e:
         log.error(f"Error executing GetSelectedElements on port {port}: {e}")
         raise e
@@ -793,11 +1413,11 @@ def get_subelements_of_hierarchical_elements(port: int, params: GetSubelementsOf
             command="GetSubelementsOfHierarchicalElements",
             parameters=params.model_dump(mode='json')
         )
-        return GetSubelementsOfHierarchicalElementsResult.model_validate(result_dict)
+        return validate_result(GetSubelementsOfHierarchicalElementsResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for GetSubelementsOfHierarchicalElements result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetSubelementsOfHierarchicalElements"))
     except Exception as e:
         log.error(f"Error executing GetSubelementsOfHierarchicalElements on port {port}: {e}")
         raise e
@@ -828,11 +1448,11 @@ def get_zone_boundaries(port: int, params: GetZoneBoundariesParameters) -> GetZo
             command="GetZoneBoundaries",
             parameters=params.model_dump(mode='json')
         )
-        return GetZoneBoundariesResult.model_validate(result_dict)
+        return validate_result(GetZoneBoundariesResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for GetZoneBoundaries result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetZoneBoundaries"))
     except Exception as e:
         log.error(f"Error executing GetZoneBoundaries on port {port}: {e}")
         raise e
@@ -848,7 +1468,7 @@ register_tool_for_dispatch(
 )
 
 
-def highlight_elements(port: int, params: HighlightElementsParameters) -> None:
+def highlight_elements(port: int, params: HighlightElementsParameters) -> HighlightElementsResult:
     """
     Highlights the elements given in the elements array. In case of empty elements array removes all previously set highlights.
     """
@@ -859,15 +1479,15 @@ def highlight_elements(port: int, params: HighlightElementsParameters) -> None:
     conn_header = multi_conn.active[target_port]
     try:
 
-        conn_header.core.post_tapir_command(
+        result_dict = conn_header.core.post_tapir_command(
             command="HighlightElements",
             parameters=params.model_dump(mode='json')
         )
-        return None
+        return validate_result(HighlightElementsResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for HighlightElements result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "HighlightElements"))
     except Exception as e:
         log.error(f"Error executing HighlightElements on port {port}: {e}")
         raise e
@@ -879,7 +1499,322 @@ register_tool_for_dispatch(
     title="HighlightElements",
     description="Highlights the elements given in the elements array. In case of empty elements array removes all previously set highlights.",
     params_model=HighlightElementsParameters,
-    result_model=None
+    result_model=HighlightElementsResult
+)
+
+
+def lock_elements(port: int, params: LockElementsParameters) -> LockElementsResult:
+    """
+    Locks the given elements. Manual lock, not teamwork!
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="LockElements",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(LockElementsResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for LockElements result: {e}")
+        raise ValueError(extract_archicad_errors(e, "LockElements"))
+    except Exception as e:
+        log.error(f"Error executing LockElements on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    lock_elements,
+    name="elements_lock_elements",
+    title="LockElements",
+    description="Locks the given elements. Manual lock, not teamwork!",
+    params_model=LockElementsParameters,
+    result_model=LockElementsResult
+)
+
+
+def modify_beams(port: int, params: ModifyBeamsParameters) -> ModifyBeamsResult:
+    """
+    Modifies Beam elements based on the given parameters.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="ModifyBeams",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(ModifyBeamsResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for ModifyBeams result: {e}")
+        raise ValueError(extract_archicad_errors(e, "ModifyBeams"))
+    except Exception as e:
+        log.error(f"Error executing ModifyBeams on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    modify_beams,
+    name="elements_modify_beams",
+    title="ModifyBeams",
+    description="Modifies Beam elements based on the given parameters.",
+    params_model=ModifyBeamsParameters,
+    result_model=ModifyBeamsResult
+)
+
+
+def modify_columns(port: int, params: ModifyColumnsParameters) -> ModifyColumnsResult:
+    """
+    Modifies Column elements based on the given parameters.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="ModifyColumns",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(ModifyColumnsResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for ModifyColumns result: {e}")
+        raise ValueError(extract_archicad_errors(e, "ModifyColumns"))
+    except Exception as e:
+        log.error(f"Error executing ModifyColumns on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    modify_columns,
+    name="elements_modify_columns",
+    title="ModifyColumns",
+    description="Modifies Column elements based on the given parameters.",
+    params_model=ModifyColumnsParameters,
+    result_model=ModifyColumnsResult
+)
+
+
+def modify_doors(port: int, params: ModifyDoorsParameters) -> ModifyDoorsResult:
+    """
+    Modifies Door elements based on the given parameters.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="ModifyDoors",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(ModifyDoorsResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for ModifyDoors result: {e}")
+        raise ValueError(extract_archicad_errors(e, "ModifyDoors"))
+    except Exception as e:
+        log.error(f"Error executing ModifyDoors on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    modify_doors,
+    name="elements_modify_doors",
+    title="ModifyDoors",
+    description="Modifies Door elements based on the given parameters.",
+    params_model=ModifyDoorsParameters,
+    result_model=ModifyDoorsResult
+)
+
+
+def modify_morphs(port: int, params: ModifyMorphsParameters) -> ModifyMorphsResult:
+    """
+    Modifies Morph elements based on the given parameters.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="ModifyMorphs",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(ModifyMorphsResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for ModifyMorphs result: {e}")
+        raise ValueError(extract_archicad_errors(e, "ModifyMorphs"))
+    except Exception as e:
+        log.error(f"Error executing ModifyMorphs on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    modify_morphs,
+    name="elements_modify_morphs",
+    title="ModifyMorphs",
+    description="Modifies Morph elements based on the given parameters.",
+    params_model=ModifyMorphsParameters,
+    result_model=ModifyMorphsResult
+)
+
+
+def modify_roofs(port: int, params: ModifyRoofsParameters) -> ModifyRoofsResult:
+    """
+    Modifies multi-plane Roof elements based on the given parameters.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="ModifyRoofs",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(ModifyRoofsResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for ModifyRoofs result: {e}")
+        raise ValueError(extract_archicad_errors(e, "ModifyRoofs"))
+    except Exception as e:
+        log.error(f"Error executing ModifyRoofs on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    modify_roofs,
+    name="elements_modify_roofs",
+    title="ModifyRoofs",
+    description="Modifies multi-plane Roof elements based on the given parameters.",
+    params_model=ModifyRoofsParameters,
+    result_model=ModifyRoofsResult
+)
+
+
+def modify_slabs(port: int, params: ModifySlabsParameters) -> ModifySlabsResult:
+    """
+    Modifies Slab elements based on the given parameters.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="ModifySlabs",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(ModifySlabsResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for ModifySlabs result: {e}")
+        raise ValueError(extract_archicad_errors(e, "ModifySlabs"))
+    except Exception as e:
+        log.error(f"Error executing ModifySlabs on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    modify_slabs,
+    name="elements_modify_slabs",
+    title="ModifySlabs",
+    description="Modifies Slab elements based on the given parameters.",
+    params_model=ModifySlabsParameters,
+    result_model=ModifySlabsResult
+)
+
+
+def modify_walls(port: int, params: ModifyWallsParameters) -> ModifyWallsResult:
+    """
+    Modifies Wall elements based on the given parameters.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="ModifyWalls",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(ModifyWallsResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for ModifyWalls result: {e}")
+        raise ValueError(extract_archicad_errors(e, "ModifyWalls"))
+    except Exception as e:
+        log.error(f"Error executing ModifyWalls on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    modify_walls,
+    name="elements_modify_walls",
+    title="ModifyWalls",
+    description="Modifies Wall elements based on the given parameters.",
+    params_model=ModifyWallsParameters,
+    result_model=ModifyWallsResult
+)
+
+
+def modify_windows(port: int, params: ModifyWindowsParameters) -> ModifyWindowsResult:
+    """
+    Modifies Window elements based on the given parameters.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="ModifyWindows",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(ModifyWindowsResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for ModifyWindows result: {e}")
+        raise ValueError(extract_archicad_errors(e, "ModifyWindows"))
+    except Exception as e:
+        log.error(f"Error executing ModifyWindows on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    modify_windows,
+    name="elements_modify_windows",
+    title="ModifyWindows",
+    description="Modifies Window elements based on the given parameters.",
+    params_model=ModifyWindowsParameters,
+    result_model=ModifyWindowsResult
 )
 
 
@@ -898,11 +1833,11 @@ def move_elements(port: int, params: MoveElementsParameters) -> MoveElementsResu
             command="MoveElements",
             parameters=params.model_dump(mode='json')
         )
-        return MoveElementsResult.model_validate(result_dict)
+        return validate_result(MoveElementsResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for MoveElements result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "MoveElements"))
     except Exception as e:
         log.error(f"Error executing MoveElements on port {port}: {e}")
         raise e
@@ -918,9 +1853,9 @@ register_tool_for_dispatch(
 )
 
 
-def set_classifications_of_elements(port: int, params: SetClassificationsOfElementsParameters) -> SetClassificationsOfElementsResult:
+def remove_element_notification_client(port: int, params: RemoveElementNotificationClientParameters) -> RemoveElementNotificationClientResult:
     """
-    Sets the classifications of elements. In order to set the classification of an element to unclassified, omit the classificationItemId field. It works for subelements of hierarchal elements also.
+    Removes an element notification client.
     """
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
@@ -930,26 +1865,61 @@ def set_classifications_of_elements(port: int, params: SetClassificationsOfEleme
     try:
 
         result_dict = conn_header.core.post_tapir_command(
-            command="SetClassificationsOfElements",
+            command="RemoveElementNotificationClient",
             parameters=params.model_dump(mode='json')
         )
-        return SetClassificationsOfElementsResult.model_validate(result_dict)
+        return validate_result(RemoveElementNotificationClientResult, result_dict)
 
     except ValidationError as e:
-        log.error(f"Validation error for SetClassificationsOfElements result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        log.error(f"Validation error for RemoveElementNotificationClient result: {e}")
+        raise ValueError(extract_archicad_errors(e, "RemoveElementNotificationClient"))
     except Exception as e:
-        log.error(f"Error executing SetClassificationsOfElements on port {port}: {e}")
+        log.error(f"Error executing RemoveElementNotificationClient on port {port}: {e}")
         raise e
 
 
 register_tool_for_dispatch(
-    set_classifications_of_elements,
-    name="elements_set_classifications_of_elements",
-    title="SetClassificationsOfElements",
-    description="Sets the classifications of elements. In order to set the classification of an element to unclassified, omit the classificationItemId field. It works for subelements of hierarchal elements also.",
-    params_model=SetClassificationsOfElementsParameters,
-    result_model=SetClassificationsOfElementsResult
+    remove_element_notification_client,
+    name="elements_remove_element_notification_client",
+    title="RemoveElementNotificationClient",
+    description="Removes an element notification client.",
+    params_model=RemoveElementNotificationClientParameters,
+    result_model=RemoveElementNotificationClientResult
+)
+
+
+def rotate_elements(port: int, params: RotateElementsParameters) -> RotateElementsResult:
+    """
+    Rotates elements around a reference point.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="RotateElements",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(RotateElementsResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for RotateElements result: {e}")
+        raise ValueError(extract_archicad_errors(e, "RotateElements"))
+    except Exception as e:
+        log.error(f"Error executing RotateElements on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    rotate_elements,
+    name="elements_rotate_elements",
+    title="RotateElements",
+    description="Rotates elements around a reference point.",
+    params_model=RotateElementsParameters,
+    result_model=RotateElementsResult
 )
 
 
@@ -968,11 +1938,11 @@ def set_details_of_elements(port: int, params: SetDetailsOfElementsParameters) -
             command="SetDetailsOfElements",
             parameters=params.model_dump(mode='json')
         )
-        return SetDetailsOfElementsResult.model_validate(result_dict)
+        return validate_result(SetDetailsOfElementsResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for SetDetailsOfElements result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "SetDetailsOfElements"))
     except Exception as e:
         log.error(f"Error executing SetDetailsOfElements on port {port}: {e}")
         raise e
@@ -985,6 +1955,41 @@ register_tool_for_dispatch(
     description="Sets the details of the given elements (floor, layer, order etc).",
     params_model=SetDetailsOfElementsParameters,
     result_model=SetDetailsOfElementsResult
+)
+
+
+def set_element_notification_client(port: int, params: SetElementNotificationClientParameters) -> SetElementNotificationClientResult:
+    """
+    Sets up a new notification client to receive element events.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="SetElementNotificationClient",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(SetElementNotificationClientResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for SetElementNotificationClient result: {e}")
+        raise ValueError(extract_archicad_errors(e, "SetElementNotificationClient"))
+    except Exception as e:
+        log.error(f"Error executing SetElementNotificationClient on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    set_element_notification_client,
+    name="elements_set_element_notification_client",
+    title="SetElementNotificationClient",
+    description="Sets up a new notification client to receive element events.",
+    params_model=SetElementNotificationClientParameters,
+    result_model=SetElementNotificationClientResult
 )
 
 
@@ -1003,11 +2008,11 @@ def set_gdl_parameters_of_elements(port: int, params: SetGDLParametersOfElements
             command="SetGDLParametersOfElements",
             parameters=params.model_dump(mode='json')
         )
-        return SetGDLParametersOfElementsResult.model_validate(result_dict)
+        return validate_result(SetGDLParametersOfElementsResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for SetGDLParametersOfElements result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "SetGDLParametersOfElements"))
     except Exception as e:
         log.error(f"Error executing SetGDLParametersOfElements on port {port}: {e}")
         raise e
@@ -1020,4 +2025,39 @@ register_tool_for_dispatch(
     description="Sets the given GDL parameters of the given elements.",
     params_model=SetGDLParametersOfElementsParameters,
     result_model=SetGDLParametersOfElementsResult
+)
+
+
+def unlock_elements(port: int, params: UnlockElementsParameters) -> UnlockElementsResult:
+    """
+    Unlocks the given elements. Manual lock, not teamwork!
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="UnlockElements",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(UnlockElementsResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for UnlockElements result: {e}")
+        raise ValueError(extract_archicad_errors(e, "UnlockElements"))
+    except Exception as e:
+        log.error(f"Error executing UnlockElements on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    unlock_elements,
+    name="elements_unlock_elements",
+    title="UnlockElements",
+    description="Unlocks the given elements. Manual lock, not teamwork!",
+    params_model=UnlockElementsParameters,
+    result_model=UnlockElementsResult
 )

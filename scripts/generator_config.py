@@ -45,6 +45,8 @@ TAPIR_CONFIG = ApiSourceConfig(
         "GetAllProperties": "properties",
         "GetAttributesByType": "attributes",
         "GetIssues": "issues",
+        "GetElementsByIFCIds": "elementsByIFCIds",
+        "GetElementsOfDesignOptions": "elementsOfDesignOptions"
     }
 )
 

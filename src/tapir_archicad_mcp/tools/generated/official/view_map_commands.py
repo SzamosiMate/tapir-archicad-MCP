@@ -4,6 +4,7 @@ from pydantic import ValidationError
 from multiconn_archicad.basic_types import Port
 from tapir_archicad_mcp.context import multi_conn_instance
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
+from tapir_archicad_mcp.tools.validation import validate_result, extract_archicad_errors
 
 from multiconn_archicad.models.official.commands import (
     CloneProjectMapItemToViewMapParameters,
@@ -30,11 +31,11 @@ def clone_project_map_item_to_view_map(port: int, params: CloneProjectMapItemToV
             command="API.CloneProjectMapItemToViewMap",
             parameters=params.model_dump(mode='json')
         )
-        return CloneProjectMapItemToViewMapResult.model_validate(result_dict)
+        return validate_result(CloneProjectMapItemToViewMapResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for CloneProjectMapItemToViewMap result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "CloneProjectMapItemToViewMap"))
     except Exception as e:
         log.error(f"Error executing CloneProjectMapItemToViewMap on port {port}: {e}")
         raise e
@@ -65,11 +66,11 @@ def create_view_map_folder(port: int, params: CreateViewMapFolderParameters) -> 
             command="API.CreateViewMapFolder",
             parameters=params.model_dump(mode='json')
         )
-        return CreateViewMapFolderResult.model_validate(result_dict)
+        return validate_result(CreateViewMapFolderResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for CreateViewMapFolder result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "CreateViewMapFolder"))
     except Exception as e:
         log.error(f"Error executing CreateViewMapFolder on port {port}: {e}")
         raise e

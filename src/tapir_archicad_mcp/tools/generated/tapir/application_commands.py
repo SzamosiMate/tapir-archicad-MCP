@@ -4,14 +4,52 @@ from pydantic import ValidationError
 from multiconn_archicad.basic_types import Port
 from tapir_archicad_mcp.context import multi_conn_instance
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
+from tapir_archicad_mcp.tools.validation import validate_result, extract_archicad_errors
 
 from multiconn_archicad.models.tapir.commands import (
-    GetAddOnVersionResult,
+    ChangeWindowParameters,
+ChangeWindowResult,
+GetAddOnVersionResult,
 GetCurrentWindowTypeResult
 )
 
 
 log = logging.getLogger()
+
+def change_window(port: int, params: ChangeWindowParameters) -> ChangeWindowResult:
+    """
+    Changes the current (active) window to the given window.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="ChangeWindow",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(ChangeWindowResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for ChangeWindow result: {e}")
+        raise ValueError(extract_archicad_errors(e, "ChangeWindow"))
+    except Exception as e:
+        log.error(f"Error executing ChangeWindow on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    change_window,
+    name="app_change_window",
+    title="ChangeWindow",
+    description="Changes the current (active) window to the given window.",
+    params_model=ChangeWindowParameters,
+    result_model=ChangeWindowResult
+)
+
 
 def get_add_on_version(port: int) -> GetAddOnVersionResult:
     """
@@ -28,11 +66,11 @@ def get_add_on_version(port: int) -> GetAddOnVersionResult:
             command="GetAddOnVersion",
             parameters={}
         )
-        return GetAddOnVersionResult.model_validate(result_dict)
+        return validate_result(GetAddOnVersionResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for GetAddOnVersion result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetAddOnVersion"))
     except Exception as e:
         log.error(f"Error executing GetAddOnVersion on port {port}: {e}")
         raise e
@@ -63,11 +101,11 @@ def get_current_window_type(port: int) -> GetCurrentWindowTypeResult:
             command="GetCurrentWindowType",
             parameters={}
         )
-        return GetCurrentWindowTypeResult.model_validate(result_dict)
+        return validate_result(GetCurrentWindowTypeResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for GetCurrentWindowType result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetCurrentWindowType"))
     except Exception as e:
         log.error(f"Error executing GetCurrentWindowType on port {port}: {e}")
         raise e

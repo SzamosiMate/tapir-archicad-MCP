@@ -4,14 +4,20 @@ from pydantic import ValidationError
 from multiconn_archicad.basic_types import Port
 from tapir_archicad_mcp.context import multi_conn_instance
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
+from tapir_archicad_mcp.tools.validation import validate_result, extract_archicad_errors
 
 from multiconn_archicad.models.tapir.commands import (
     ApplyFavoritesToElementDefaultsParameters,
 ApplyFavoritesToElementDefaultsResult,
 CreateFavoritesFromElementsParameters,
 CreateFavoritesFromElementsResult,
+ExportFavoritesParameters,
+GetFavoritePreviewImageParameters,
+GetFavoritePreviewImageResult,
 GetFavoritesByTypeParameters,
-GetFavoritesByTypeResult
+GetFavoritesByTypeResult,
+ImportFavoritesParameters,
+ImportFavoritesResult
 )
 
 
@@ -32,11 +38,11 @@ def apply_favorites_to_element_defaults(port: int, params: ApplyFavoritesToEleme
             command="ApplyFavoritesToElementDefaults",
             parameters=params.model_dump(mode='json')
         )
-        return ApplyFavoritesToElementDefaultsResult.model_validate(result_dict)
+        return validate_result(ApplyFavoritesToElementDefaultsResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for ApplyFavoritesToElementDefaults result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "ApplyFavoritesToElementDefaults"))
     except Exception as e:
         log.error(f"Error executing ApplyFavoritesToElementDefaults on port {port}: {e}")
         raise e
@@ -67,11 +73,11 @@ def create_favorites_from_elements(port: int, params: CreateFavoritesFromElement
             command="CreateFavoritesFromElements",
             parameters=params.model_dump(mode='json')
         )
-        return CreateFavoritesFromElementsResult.model_validate(result_dict)
+        return validate_result(CreateFavoritesFromElementsResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for CreateFavoritesFromElements result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "CreateFavoritesFromElements"))
     except Exception as e:
         log.error(f"Error executing CreateFavoritesFromElements on port {port}: {e}")
         raise e
@@ -84,6 +90,76 @@ register_tool_for_dispatch(
     description="Create favorites from the given elements.",
     params_model=CreateFavoritesFromElementsParameters,
     result_model=CreateFavoritesFromElementsResult
+)
+
+
+def export_favorites(port: int, params: ExportFavoritesParameters) -> None:
+    """
+    Export the project's Favorites to a .prefs file or folder.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        conn_header.core.post_tapir_command(
+            command="ExportFavorites",
+            parameters=params.model_dump(mode='json')
+        )
+        return None
+
+    except ValidationError as e:
+        log.error(f"Validation error for ExportFavorites result: {e}")
+        raise ValueError(extract_archicad_errors(e, "ExportFavorites"))
+    except Exception as e:
+        log.error(f"Error executing ExportFavorites on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    export_favorites,
+    name="favorites_export_favorites",
+    title="ExportFavorites",
+    description="Export the project's Favorites to a .prefs file or folder.",
+    params_model=ExportFavoritesParameters,
+    result_model=None
+)
+
+
+def get_favorite_preview_image(port: int, params: GetFavoritePreviewImageParameters) -> GetFavoritePreviewImageResult:
+    """
+    Returns the preview image of the given favorite.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="GetFavoritePreviewImage",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(GetFavoritePreviewImageResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for GetFavoritePreviewImage result: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetFavoritePreviewImage"))
+    except Exception as e:
+        log.error(f"Error executing GetFavoritePreviewImage on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    get_favorite_preview_image,
+    name="favorites_get_favorite_preview_image",
+    title="GetFavoritePreviewImage",
+    description="Returns the preview image of the given favorite.",
+    params_model=GetFavoritePreviewImageParameters,
+    result_model=GetFavoritePreviewImageResult
 )
 
 
@@ -102,11 +178,11 @@ def get_favorites_by_type(port: int, params: GetFavoritesByTypeParameters) -> Ge
             command="GetFavoritesByType",
             parameters=params.model_dump(mode='json')
         )
-        return GetFavoritesByTypeResult.model_validate(result_dict)
+        return validate_result(GetFavoritesByTypeResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for GetFavoritesByType result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetFavoritesByType"))
     except Exception as e:
         log.error(f"Error executing GetFavoritesByType on port {port}: {e}")
         raise e
@@ -119,4 +195,39 @@ register_tool_for_dispatch(
     description="Returns a list of the names of all favorites with the given element type",
     params_model=GetFavoritesByTypeParameters,
     result_model=GetFavoritesByTypeResult
+)
+
+
+def import_favorites(port: int, params: ImportFavoritesParameters) -> ImportFavoritesResult:
+    """
+    Import Favorites from a .prefs file or folder into the current project.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="ImportFavorites",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(ImportFavoritesResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for ImportFavorites result: {e}")
+        raise ValueError(extract_archicad_errors(e, "ImportFavorites"))
+    except Exception as e:
+        log.error(f"Error executing ImportFavorites on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    import_favorites,
+    name="favorites_import_favorites",
+    title="ImportFavorites",
+    description="Import Favorites from a .prefs file or folder into the current project.",
+    params_model=ImportFavoritesParameters,
+    result_model=ImportFavoritesResult
 )

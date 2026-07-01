@@ -195,7 +195,7 @@ def _generate_tool_function_code(command: dict, valid_model_names: set[str], con
 {indent(call_block, "        ")}
     except ValidationError as e:
         log.error(f"Validation error for {command_name_camel} result: {{e}}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {{e}}")
+        raise ValueError(extract_archicad_errors(e, "{command_name_camel}"))
     except Exception as e:
         log.error(f"Error executing {command_name_camel} on port {{port}}: {{e}}")
         raise e
@@ -228,12 +228,13 @@ def generate_tool_files(grouped_commands: dict[str, list[dict]], config: ApiSour
             "from multiconn_archicad.basic_types import Port",
             "from tapir_archicad_mcp.context import multi_conn_instance",
             "from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch",
-            "from tapir_archicad_mcp.tools.validation import validate_result"
+            "from tapir_archicad_mcp.tools.validation import validate_result, extract_archicad_errors"
         ]
         if is_any_paginated:
             common_imports.extend([
                 "import time",
                 "from typing import Any",
+                "from pydantic import BaseModel",
                 "from tapir_archicad_mcp.pagination import handle_paginated_request, PAGINATION_CACHE, CACHE_LIFETIME_SECONDS",
             ])
         if REGISTER_AS_MCP_TOOLS:

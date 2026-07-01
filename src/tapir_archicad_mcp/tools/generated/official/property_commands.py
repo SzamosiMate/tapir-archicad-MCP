@@ -4,8 +4,10 @@ from pydantic import ValidationError
 from multiconn_archicad.basic_types import Port
 from tapir_archicad_mcp.context import multi_conn_instance
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
+from tapir_archicad_mcp.tools.validation import validate_result, extract_archicad_errors
 import time
 from typing import Any
+from pydantic import BaseModel
 from tapir_archicad_mcp.pagination import handle_paginated_request, PAGINATION_CACHE, CACHE_LIFETIME_SECONDS
 
 from multiconn_archicad.models.official.commands import (
@@ -44,11 +46,11 @@ def get_all_property_group_ids(port: int, params: GetAllPropertyGroupIdsParamete
             command="API.GetAllPropertyGroupIds",
             parameters=params.model_dump(mode='json')
         )
-        return GetAllPropertyGroupIdsResult.model_validate(result_dict)
+        return validate_result(GetAllPropertyGroupIdsResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for GetAllPropertyGroupIds result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetAllPropertyGroupIds"))
     except Exception as e:
         log.error(f"Error executing GetAllPropertyGroupIds on port {port}: {e}")
         raise e
@@ -64,7 +66,7 @@ register_tool_for_dispatch(
 )
 
 
-class PaginatedGetAllPropertyIdsResult(GetAllPropertyIdsResult):
+class PaginatedGetAllPropertyIdsResult(BaseModel):
     """A paginated version of the GetAllPropertyIdsResult."""
     properties: list[Any]
     next_page_token: str | None = None
@@ -90,7 +92,7 @@ def get_all_property_ids(port: int, params: GetAllPropertyIdsParameters, page_to
                 command="API.GetAllPropertyIds",
                 parameters=params.model_dump(mode='json')
             )
-            full_response_model = GetAllPropertyIdsResult.model_validate(full_response_dict)
+            full_response_model = validate_result(GetAllPropertyIdsResult, full_response_dict)
             PAGINATION_CACHE[cache_key] = (full_response_model, time.time())
 
         if cache_key not in PAGINATION_CACHE:
@@ -112,7 +114,7 @@ def get_all_property_ids(port: int, params: GetAllPropertyIdsParameters, page_to
 
     except ValidationError as e:
         log.error(f"Validation error for GetAllPropertyIds result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetAllPropertyIds"))
     except Exception as e:
         log.error(f"Error executing GetAllPropertyIds on port {port}: {e}")
         raise e
@@ -143,11 +145,11 @@ def get_all_property_ids_of_elements(port: int, params: GetAllPropertyIdsOfEleme
             command="API.GetAllPropertyIdsOfElements",
             parameters=params.model_dump(mode='json')
         )
-        return GetAllPropertyIdsOfElementsResult.model_validate(result_dict)
+        return validate_result(GetAllPropertyIdsOfElementsResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for GetAllPropertyIdsOfElements result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetAllPropertyIdsOfElements"))
     except Exception as e:
         log.error(f"Error executing GetAllPropertyIdsOfElements on port {port}: {e}")
         raise e
@@ -163,7 +165,7 @@ register_tool_for_dispatch(
 )
 
 
-class PaginatedGetAllPropertyNamesResult(GetAllPropertyNamesResult):
+class PaginatedGetAllPropertyNamesResult(BaseModel):
     """A paginated version of the GetAllPropertyNamesResult."""
     properties: list[Any]
     next_page_token: str | None = None
@@ -189,7 +191,7 @@ def get_all_property_names(port: int, page_token: str | None = None) -> Paginate
                 command="API.GetAllPropertyNames",
                 parameters={}
             )
-            full_response_model = GetAllPropertyNamesResult.model_validate(full_response_dict)
+            full_response_model = validate_result(GetAllPropertyNamesResult, full_response_dict)
             PAGINATION_CACHE[cache_key] = (full_response_model, time.time())
 
         if cache_key not in PAGINATION_CACHE:
@@ -211,7 +213,7 @@ def get_all_property_names(port: int, page_token: str | None = None) -> Paginate
 
     except ValidationError as e:
         log.error(f"Validation error for GetAllPropertyNames result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetAllPropertyNames"))
     except Exception as e:
         log.error(f"Error executing GetAllPropertyNames on port {port}: {e}")
         raise e
@@ -242,11 +244,11 @@ def get_details_of_properties(port: int, params: GetDetailsOfPropertiesParameter
             command="API.GetDetailsOfProperties",
             parameters=params.model_dump(mode='json')
         )
-        return GetDetailsOfPropertiesResult.model_validate(result_dict)
+        return validate_result(GetDetailsOfPropertiesResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for GetDetailsOfProperties result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetDetailsOfProperties"))
     except Exception as e:
         log.error(f"Error executing GetDetailsOfProperties on port {port}: {e}")
         raise e
@@ -277,11 +279,11 @@ def get_property_definition_availability(port: int, params: GetPropertyDefinitio
             command="API.GetPropertyDefinitionAvailability",
             parameters=params.model_dump(mode='json')
         )
-        return GetPropertyDefinitionAvailabilityResult.model_validate(result_dict)
+        return validate_result(GetPropertyDefinitionAvailabilityResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for GetPropertyDefinitionAvailability result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetPropertyDefinitionAvailability"))
     except Exception as e:
         log.error(f"Error executing GetPropertyDefinitionAvailability on port {port}: {e}")
         raise e
@@ -312,11 +314,11 @@ def get_property_groups(port: int, params: GetPropertyGroupsParameters) -> GetPr
             command="API.GetPropertyGroups",
             parameters=params.model_dump(mode='json')
         )
-        return GetPropertyGroupsResult.model_validate(result_dict)
+        return validate_result(GetPropertyGroupsResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for GetPropertyGroups result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetPropertyGroups"))
     except Exception as e:
         log.error(f"Error executing GetPropertyGroups on port {port}: {e}")
         raise e
@@ -347,11 +349,11 @@ def get_property_ids(port: int, params: GetPropertyIdsParameters) -> GetProperty
             command="API.GetPropertyIds",
             parameters=params.model_dump(mode='json')
         )
-        return GetPropertyIdsResult.model_validate(result_dict)
+        return validate_result(GetPropertyIdsResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for GetPropertyIds result: {e}")
-        raise ValueError(f"Received an invalid response from the Archicad API: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetPropertyIds"))
     except Exception as e:
         log.error(f"Error executing GetPropertyIds on port {port}: {e}")
         raise e
