@@ -4,26 +4,91 @@ from pydantic import BaseModel, ValidationError
 
 from tapir_archicad_mcp.app import mcp
 from tapir_archicad_mcp.context import multi_conn_instance
-from tapir_archicad_mcp.tools.custom.models import ArchicadInstanceInfo, ProjectType, ToolInfo
+from tapir_archicad_mcp.tools.custom.models import (
+    ArchicadInstanceInfo, UnavailableArchicadInstance, DiscoveryResult,
+    ProjectType, ToolInfo,
+)
 from tapir_archicad_mcp.tools.tool_registry import get_tool_entry
 from tapir_archicad_mcp.tools.search_index import search_tools
 from tapir_archicad_mcp.tools.validation import validate_result
 
 from multiconn_archicad.conn_header import is_header_fully_initialized, ConnHeader
-from multiconn_archicad.basic_types import TeamworkProjectID, SoloProjectID
+from multiconn_archicad.basic_types import TeamworkProjectID, SoloProjectID, APIResponseError, ProductInfo
 
 log = logging.getLogger()
+
+
+def _diagnose_connection_issue(header: ConnHeader, port: int) -> UnavailableArchicadInstance:
+    """Inspect a partially-initialized header to determine why it failed.
+
+    Uses structural diagnosis (official API vs Tapir) rather than
+    fragile string-matching on undocumented Graphisoft error messages.
+    The raw error message is passed through for the AI to interpret.
+    """
+    ac_version = None
+    if isinstance(header.product_info, ProductInfo):
+        ac_version = str(header.product_info.version)
+
+    # product_info (official API) failed → Archicad itself is unresponsive
+    if isinstance(header.product_info, APIResponseError):
+        return UnavailableArchicadInstance(
+            port=port, archicadVersion=None,
+            issue="archicad_unresponsive",
+            message=(
+                f"Archicad on port {port} did not respond to the official API. "
+                f"Possible causes: a modal dialog is open, no project loaded, or heavy computation. "
+                f"Raw error: {header.product_info.message}"
+            ),
+        )
+
+    # product_info OK but Tapir commands failed
+    tapir_error = None
+    if isinstance(header.archicad_id, APIResponseError):
+        tapir_error = header.archicad_id
+    elif isinstance(header.archicad_location, APIResponseError):
+        tapir_error = header.archicad_location
+
+    if tapir_error:
+        return UnavailableArchicadInstance(
+            port=port, archicadVersion=ac_version,
+            issue="tapir_unavailable",
+            message=(
+                f"Archicad {ac_version} on port {port} responds to the official API "
+                f"but Tapir commands failed. The Tapir Add-On may not be installed, "
+                f"or a dialog may be blocking Tapir responses. "
+                f"Raw error: {tapir_error.message}"
+            ),
+        )
+
+    return UnavailableArchicadInstance(
+        port=port, archicadVersion=ac_version,
+        issue="unknown",
+        message=f"Archicad on port {port} is reachable but not fully initialized.",
+    )
+
+
+def _try_get_tapir_version(header: ConnHeader) -> Optional[str]:
+    """Best-effort Tapir version query. Returns None on failure."""
+    try:
+        result = header.core.post_tapir_command(
+            command="GetAddOnVersion", parameters={}
+        )
+        return result.get("version", None)
+    except Exception:
+        return None
 
 
 @mcp.tool(
     name="discovery_list_active_archicads",
     title="List Active Archicad Instances",
     description=(
-        "Scans for and lists all running Archicad instances that the server can connect to. "
-        "Each instance is identified by a unique 'port' number. This 'port' is required to target any other command."
+        "Scans for and lists all running Archicad instances. "
+        "Returns two lists: 'active' instances ready for commands (identified by 'port'), "
+        "and 'unavailable' instances that were detected but have issues (with diagnostic info). "
+        "The 'port' from an active instance is required to target any other command."
     )
 )
-def list_active_archicads() -> list[ArchicadInstanceInfo]:
+def list_active_archicads() -> DiscoveryResult:
     log.info("Executing list_active_archicads tool...")
     try:
         multi_conn = multi_conn_instance.get()
@@ -34,7 +99,8 @@ def list_active_archicads() -> list[ArchicadInstanceInfo]:
     multi_conn.refresh.all_ports()
     multi_conn.connect.all()
 
-    active_instances: list[ArchicadInstanceInfo] = []
+    active: list[ArchicadInstanceInfo] = []
+    unavailable: list[UnavailableArchicadInstance] = []
     log.info(f"Found {len(multi_conn.active)} active connections.")
 
     header: ConnHeader
@@ -53,21 +119,26 @@ def list_active_archicads() -> list[ArchicadInstanceInfo]:
             else:
                 project_type = "untitled"
 
+            tapir_version = _try_get_tapir_version(header)
+
             instance_info = ArchicadInstanceInfo(
                 port=port,
                 projectName=project_id.projectName,
                 projectType=project_type,
                 archicadVersion=str(header.product_info.version),
-                projectPath=project_path
+                projectPath=project_path,
+                tapirVersion=tapir_version,
             )
-            active_instances.append(instance_info)
+            active.append(instance_info)
         else:
-            log.warning(f"Port {port} is active but its header is not fully initialized. Skipping.")
+            issue = _diagnose_connection_issue(header, port)
+            unavailable.append(issue)
+            log.warning("Port %s: %s — %s", port, issue.issue, issue.message)
 
-    if not active_instances:
+    if not active:
         log.info("No active and fully initialized Archicad instances found.")
 
-    return active_instances
+    return DiscoveryResult(active=active, unavailable=unavailable)
 
 
 @mcp.tool(
