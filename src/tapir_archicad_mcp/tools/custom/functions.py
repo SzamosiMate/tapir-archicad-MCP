@@ -1,4 +1,8 @@
+import contextvars
+import functools
 import logging
+import os
+from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeoutError
 from typing import Optional, Any, Dict
 from pydantic import BaseModel, ValidationError
 
@@ -13,6 +17,37 @@ from multiconn_archicad.conn_header import is_header_fully_initialized, ConnHead
 from multiconn_archicad.basic_types import TeamworkProjectID, SoloProjectID
 
 log = logging.getLogger()
+
+_tool_call_executor = ThreadPoolExecutor(max_workers=8, thread_name_prefix="tapir-tool-call")
+
+
+def _get_tool_timeout_s() -> float:
+    """Reads the per-call timeout from TAPIR_MCP_TOOL_TIMEOUT_S. 0 means disabled."""
+    raw = os.getenv("TAPIR_MCP_TOOL_TIMEOUT_S", "0")
+    try:
+        return float(raw)
+    except ValueError:
+        log.warning(f"Ignoring invalid TAPIR_MCP_TOOL_TIMEOUT_S value: {raw!r}")
+        return 0.0
+
+
+def _call_with_timeout(func, call_args: Dict[str, Any], timeout_s: float, name: str) -> Any:
+    """
+    Runs a tool callable in a worker thread and raises if it does not
+    finish within timeout_s. The context is copied so tools can still
+    read ContextVars like multi_conn_instance.
+    """
+    context = contextvars.copy_context()
+    future = _tool_call_executor.submit(context.run, functools.partial(func, **call_args))
+    try:
+        return future.result(timeout=timeout_s)
+    except FuturesTimeoutError:
+        future.cancel()
+        raise ValueError(
+            f"Tool '{name}' timed out after {timeout_s}s. Archicad may be blocked by a "
+            f"modal dialog or busy with a long-running operation. The command may still "
+            f"finish in Archicad - check before retrying, especially for element creation."
+        )
 
 
 @mcp.tool(
@@ -123,7 +158,11 @@ def archicad_call_tool(name: str, arguments: dict) -> dict:
         call_args['page_token'] = arguments['page_token']
 
     try:
-        result = target_func(**call_args)
+        timeout_s = _get_tool_timeout_s()
+        if timeout_s > 0:
+            result = _call_with_timeout(target_func, call_args, timeout_s, name)
+        else:
+            result = target_func(**call_args)
 
         if result is None:
             return {}
