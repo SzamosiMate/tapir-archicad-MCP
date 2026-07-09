@@ -32,6 +32,7 @@ dependencies = [
     "fastmcp>=2.10.5",
     "multiconn-archicad==0.6.5",
     "sentence-transformers>=5.1.0",
+    "uvicorn>=0.35.0",
 ]
 
 [project.urls]
