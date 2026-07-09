@@ -1654,6 +1654,7 @@ dependencies = [
     { name = "fastmcp" },
     { name = "multiconn-archicad" },
     { name = "sentence-transformers" },
+    { name = "uvicorn" },
 ]
 
 [package.dev-dependencies]
@@ -1669,6 +1670,7 @@ requires-dist = [
     { name = "fastmcp", specifier = ">=2.10.5" },
     { name = "multiconn-archicad", specifier = "==0.6.5" },
     { name = "sentence-transformers", specifier = ">=5.1.0" },
+    { name = "uvicorn", specifier = ">=0.35.0" },
 ]
 
 [package.metadata.requires-dev]

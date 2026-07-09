@@ -16,7 +16,7 @@ mock_search_index.search_tools = lambda query: []
 sys.modules["tapir_archicad_mcp.tools.search_index"] = mock_search_index
 
 from tapir_archicad_mcp.app import mcp
-from tapir_archicad_mcp.server import BearerTokenMiddleware
+from tapir_archicad_mcp.middleware import BearerTokenMiddleware
 
 
 def get_free_port() -> int:
@@ -24,6 +24,18 @@ def get_free_port() -> int:
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.bind(("", 0))
         return s.getsockname()[1]
+
+
+async def serve_until_started(server: uvicorn.Server) -> asyncio.Task:
+    """
+    Starts a Uvicorn server in the background and returns once it is
+    actually accepting connections, polling server.started instead of
+    sleeping a fixed interval (faster locally, no flaky CI timeouts).
+    """
+    task = asyncio.create_task(server.serve())
+    while not server.started:
+        await asyncio.sleep(0.01)
+    return task
 
 
 @pytest.fixture(autouse=True)
@@ -63,8 +75,7 @@ async def test_live_sse_server_enforces_token():
     )
     server = uvicorn.Server(config)
 
-    server_task = asyncio.create_task(server.serve())
-    await asyncio.sleep(0.5)
+    server_task = await serve_until_started(server)
 
     try:
         async with httpx.AsyncClient() as client:

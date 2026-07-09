@@ -12,7 +12,7 @@ mock_search_index.create_or_load_index = lambda: None
 mock_search_index.search_tools = lambda query: []
 sys.modules["tapir_archicad_mcp.tools.search_index"] = mock_search_index
 
-from tapir_archicad_mcp.server import BearerTokenMiddleware
+from tapir_archicad_mcp.middleware import BearerTokenMiddleware
 
 
 async def plain_app(scope, receive, send):
