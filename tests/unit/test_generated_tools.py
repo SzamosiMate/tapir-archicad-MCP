@@ -13,13 +13,17 @@ sys.modules["tapir_archicad_mcp.tools.search_index"] = mock_search_index
 
 from tapir_archicad_mcp.tools.custom.functions import archicad_call_tool
 
+# Smoke tests for the auto-generated tools: they drive real generated
+# functions end-to-end (dispatch -> Tapir command -> result validation)
+# against the FakeArchicad fixture instead of a live Archicad.
+
 GUID = "12345678-1234-1234-1234-123456789012"
 
 
-def test_generated_read_tool_runs_against_fake(fake_archicad):
+def test_generated_read_tool_dispatches_and_validates(fake_archicad):
     """
-    A real generated tool must be executable end-to-end (dispatch, Tapir
-    call, result validation) against the fake instead of a live Archicad.
+    A generated read command (GetSelectedElements) must dispatch to Tapir
+    and validate its result into the expected shape.
     """
     fake_archicad.on_tapir_command(
         "GetSelectedElements", {"elements": [{"elementId": {"guid": GUID}}]}
@@ -33,21 +37,28 @@ def test_generated_read_tool_runs_against_fake(fake_archicad):
     assert fake_archicad.calls[0][0] == "GetSelectedElements"
 
 
-def test_fake_rejects_unexpected_commands(fake_archicad):
+def test_generated_create_tool_dispatches_params_and_validates(fake_archicad):
     """
-    A command without a canned response must fail loudly so tests never
-    silently pass against missing expectations.
+    A generated mutating command (CreateSlabs) must validate its params
+    model, forward them to Tapir, and validate the result.
     """
-    with pytest.raises(Exception, match="GetSelectedElements"):
-        archicad_call_tool(
-            "elements_get_selected_elements", {"port": fake_archicad.port}
-        )
+    fake_archicad.on_tapir_command("CreateSlabs", {"elements": []})
+
+    result = archicad_call_tool(
+        "elements_create_slabs",
+        {"port": fake_archicad.port, "params": {"slabsData": []}},
+    )
+
+    assert result == {"elements": []}
+    command, parameters = fake_archicad.calls[0]
+    assert command == "CreateSlabs"
+    assert parameters == {"slabsData": []}
 
 
-def test_archicad_error_response_surfaces_message(fake_archicad):
+def test_archicad_error_is_surfaced_to_client(fake_archicad):
     """
-    When the fake answers with an Archicad error payload, the dispatcher
-    must surface the original Archicad message to the client.
+    When Archicad answers with an error payload, the dispatcher must
+    surface the original message instead of a raw validation traceback.
     """
     fake_archicad.on_tapir_command(
         "GetSelectedElements",
