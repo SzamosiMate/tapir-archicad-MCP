@@ -1,24 +1,12 @@
 import pytest
 import asyncio
 import socket
-import sys
 import httpx
 import uvicorn
 from unittest.mock import MagicMock
-
 from fastmcp import Client
 from mcp import ClientSession
 from mcp.client.sse import sse_client
-from fastmcp.server.http import create_sse_app
-
-# ==========================================
-# SPEED OPTIMIZATION: Mock search_index in sys.modules
-# before importing app or mcp to prevent heavy ML imports (PyTorch/Faiss) from slowing down test startup
-# ==========================================
-mock_search_index = MagicMock()
-mock_search_index.create_or_load_index = lambda: None
-mock_search_index.search_tools = lambda query: []
-sys.modules["tapir_archicad_mcp.tools.search_index"] = mock_search_index
 
 from tapir_archicad_mcp.app import mcp
 

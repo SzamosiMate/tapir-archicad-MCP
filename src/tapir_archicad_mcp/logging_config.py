@@ -11,8 +11,6 @@ def set_debug_lvl_for_modules() -> None:
     logging.getLogger("urllib3").setLevel(logging.WARNING)
     logging.getLogger("mcp").setLevel(logging.WARNING)
     logging.getLogger("multiconn_archicad").setLevel(logging.INFO)
-    logging.getLogger("faiss").setLevel(logging.INFO)
-    logging.getLogger("sentence_transformers").setLevel(logging.INFO)
 
 
 def setup_logging():

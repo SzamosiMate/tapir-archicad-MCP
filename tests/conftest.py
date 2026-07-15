@@ -1,21 +1,9 @@
-import sys
 from types import SimpleNamespace
-from unittest.mock import MagicMock, Mock
-
 import pytest
-
-# ==========================================
-# SPEED OPTIMIZATION: Mock search_index in sys.modules
-# before any test imports app or mcp, to prevent heavy ML imports
-# (PyTorch/Faiss) from slowing down test startup
-# ==========================================
-mock_search_index = MagicMock()
-mock_search_index.create_or_load_index = lambda: None
-mock_search_index.search_tools = lambda query: []
-sys.modules["tapir_archicad_mcp.tools.search_index"] = mock_search_index
+from unittest.mock import Mock
 
 from multiconn_archicad.basic_types import Port
-
+from multiconn_archicad.basic_types import ProductInfo, ArchicadLocation, SoloProjectID
 from tapir_archicad_mcp.context import multi_conn_instance
 
 
@@ -33,6 +21,10 @@ class FakeArchicad:
         self.calls: list[tuple[str, dict | None]] = []
         self._canned_responses: dict[str, dict] = {}
         self.core = SimpleNamespace(post_tapir_command=self._post_tapir_command)
+        self.product_info = ProductInfo(version=28, build=6003, lang="USA")
+        self.archicad_location = ArchicadLocation(archicadLocation="/Applications/GRAPHISOFT/Archicad 28/ARCHICAD")
+        self.archicad_id = SoloProjectID(projectName="FakeProject", projectPath="/path/to/fake_project.pln")
+
 
     def on_tapir_command(self, command: str, response: dict) -> None:
         """Registers the canned response returned for a Tapir command."""
