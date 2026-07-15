@@ -1,4 +1,4 @@
-from typing import Literal, Optional
+from typing import Literal, Optional, Any
 from pydantic import BaseModel, Field
 
 ProjectType = Literal["teamwork", "solo", "untitled"]
@@ -15,9 +15,13 @@ class ArchicadInstanceInfo(BaseModel):
         validate_by_name = True
 
 
-class ToolInfo(BaseModel):
-    """Metadata describing a discoverable Archicad API tool."""
-    name: str = Field(description="The unique, snake-cased name of the tool (e.g., 'elements_get_all_elements'). Use this name in 'archicad_call_tool'.")
-    title: str = Field(description="The original CamelCase API command name.")
+class CommandOverview(BaseModel):
+    """A brief overview of an available Archicad command."""
+    name: str = Field(description="The unique, snake-cased name of the tool (e.g., 'elements_get_all_elements'). Use this in archicad_get_command_schema.")
     description: str = Field(description="A brief explanation of the tool's function.")
-    input_schema: dict = Field(description="The JSON schema required for the 'arguments' parameter when calling 'archicad_call_tool'. Always includes 'port'.")
+
+
+class CommandSchema(BaseModel):
+    """The detailed JSON schema required to execute a specific Archicad command."""
+    name: str = Field(description="The name of the command.")
+    input_schema: dict[str, Any] = Field(description="The JSON schema outlining the required arguments for archicad_call_tool.")

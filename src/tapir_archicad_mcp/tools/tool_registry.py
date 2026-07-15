@@ -34,41 +34,6 @@ def _get_schema_dict(model_type: ModelOrUnion) -> dict:
         return TypeAdapter(model_type).json_schema()
 
 
-def _get_schema_keywords(pydantic_model: ModelOrUnion) -> str:
-    """
-    Parses a Pydantic model's JSON schema to extract meaningful keywords
-    (parameter names and enum values) for better embedding.
-    """
-    if not pydantic_model:
-        return ""
-    try:
-        schema = _get_schema_dict(pydantic_model)
-        keywords = set()
-
-        def traverse(sub_schema):
-            if not isinstance(sub_schema, dict):
-                return
-            if "properties" in sub_schema:
-                for prop_name, prop_details in sub_schema["properties"].items():
-                    keywords.add(prop_name)
-                    traverse(prop_details)
-            if "items" in sub_schema:
-                traverse(sub_schema["items"])
-            if "enum" in sub_schema:
-                for enum_val in sub_schema["enum"]:
-                    if isinstance(enum_val, str):
-                        keywords.add(enum_val)
-
-        if "$defs" in schema:
-            for def_details in schema["$defs"].values():
-                traverse(def_details)
-        traverse(schema)
-
-        return " ".join(sorted(list(keywords)))
-    except Exception as e:
-        log.warning(f"Could not generate schema keywords for {pydantic_model.__name__}: {e}")
-        return ""
-
 
 def _build_tool_input_schema(func: Callable, params_model: ModelOrUnion) -> dict:
     """
@@ -123,14 +88,12 @@ def register_tool_for_dispatch(
     )
 
     input_schema = _build_tool_input_schema(func, params_model)
-    schema_keywords = _get_schema_keywords(params_model)
 
     TOOL_DISCOVERY_CATALOG.append({
         "name": name,
         "title": title,
         "description": description,
         "input_schema": input_schema,
-        "schema_keywords": schema_keywords,
     })
     log.debug(f"Registered tool: {name}")
 

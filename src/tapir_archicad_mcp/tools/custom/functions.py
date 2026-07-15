@@ -4,9 +4,9 @@ from pydantic import BaseModel, ValidationError
 
 from tapir_archicad_mcp.app import mcp
 from tapir_archicad_mcp.context import multi_conn_instance
-from tapir_archicad_mcp.tools.custom.models import ArchicadInstanceInfo, ProjectType, ToolInfo
+from tapir_archicad_mcp.tools.custom.models import ArchicadInstanceInfo, ProjectType, CommandSchema, CommandOverview
 from tapir_archicad_mcp.tools.tool_registry import get_tool_entry
-from tapir_archicad_mcp.tools.search_index import search_tools
+from tapir_archicad_mcp.tools.tool_registry import TOOL_DISCOVERY_CATALOG
 from tapir_archicad_mcp.tools.validation import validate_result
 
 from multiconn_archicad.conn_header import is_header_fully_initialized, ConnHeader
@@ -71,28 +71,62 @@ def list_active_archicads() -> list[ArchicadInstanceInfo]:
 
 
 @mcp.tool(
-    name="archicad_discover_tools",
-    title="Discover Archicad API Tools",
+    name="archicad_list_commands",
+    title="List Available Archicad Commands",
     description=(
-        "Performs a semantic search over all available Archicad commands to find the most relevant tools for a task. "
-        "The search is more effective with detailed, descriptive queries. For example, instead of a short query like 'selection', "
-        "try a more complete, action-oriented query like 'get the currently selected elements' or 'add elements to the current selection'. "
-        "Use this to find the correct tool 'name' before using 'archicad_call_tool'."
-    ))
-def archicad_discover_tools(query: str) -> list[ToolInfo]:
-    log.info(f"Executing semantic tool discovery with query: '{query}'")
-    return search_tools(query)
+        "Returns a comprehensive list of all available Archicad API commands and brief descriptions. "
+        "STEP 1: Use this tool FIRST to search for the right command name for your task. "
+        "Do NOT guess or hallucinate command names. "
+        "STEP 2: Once you find the relevant command name, you MUST use the 'archicad_get_command_schema' "
+        "tool to learn its exact required arguments."
+    )
+)
+def archicad_list_commands() -> list[CommandOverview]:
+    log.info("Executing archicad_list_commands tool...")
+    return [
+        CommandOverview(
+            name=tool["name"],
+            description=tool["description"]
+        )
+        for tool in TOOL_DISCOVERY_CATALOG
+    ]
+
+
+@mcp.tool(
+    name="archicad_get_command_schema",
+    title="Get Archicad Command Schema",
+    description=(
+            "Retrieves the exact JSON schema (required arguments) for a specific Archicad command. "
+            "Provide the exact 'command_name' obtained from 'archicad_list_commands'. "
+            "CRITICAL: You MUST call this tool before executing 'archicad_call_tool' to ensure you provide "
+            "the correct parameters. Do NOT guess or hallucinate parameters based on the command name."
+    )
+)
+def archicad_get_command_schema(command_name: str) -> CommandSchema:
+    log.info(f"Executing archicad_get_command_schema for: {command_name}")
+    for tool in TOOL_DISCOVERY_CATALOG:
+        if tool["name"] == command_name:
+            return CommandSchema(
+                name=tool["name"],
+                input_schema=tool["input_schema"]
+            )
+
+    raise ValueError(
+        f"Command '{command_name}' not found. Please use 'archicad_list_commands' "
+        f"to verify the exact spelling of the command name."
+    )
 
 
 @mcp.tool(
     name="archicad_call_tool",
     title="Execute Archicad API Command",
     description=(
-        "Executes a specific Archicad API command by its 'name'. This is the primary tool for interacting with Archicad. "
-        "The 'arguments' dictionary MUST contain a 'port' number to target a specific Archicad instance. "
-        "To get a valid 'port' number, you MUST first call the 'discovery_list_active_archicads' tool. "
-        "If a tool's response includes a 'next_page_token', it means the results are paginated. "
-        "To get the next page, call this same tool again with the same 'name' and 'arguments', but also add a 'page_token' key to the 'arguments' dictionary with the received token."
+        "Executes a specific Archicad API command by its 'name'. "
+        "CRITICAL WORKFLOW: You MUST use 'archicad_get_command_schema' first to understand the exact "
+        "JSON structure required for the 'arguments' parameter. "
+        "The 'arguments' dictionary MUST contain a 'port' number (from 'discovery_list_active_archicads'). "
+        "If a tool's response includes a 'next_page_token', call this same tool again with the same parameters "
+        "and add a 'page_token' key to the 'arguments' dictionary."
     ))
 def archicad_call_tool(name: str, arguments: dict) -> dict:
     log.info(f"Executing archicad_call_tool for tool: {name}")

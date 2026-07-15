@@ -1,21 +1,6 @@
-import sys
 import pytest
-from unittest.mock import MagicMock
-
-# ==========================================
-# SPEED OPTIMIZATION: Mock search_index in sys.modules
-# to prevent heavy ML imports (PyTorch/Faiss) from slowing down test startup
-# ==========================================
-mock_search_index = MagicMock()
-mock_search_index.create_or_load_index = lambda: None
-mock_search_index.search_tools = lambda query: []
-sys.modules["tapir_archicad_mcp.tools.search_index"] = mock_search_index
-
 from tapir_archicad_mcp.tools.custom.functions import archicad_call_tool
 
-# Smoke tests for the auto-generated tools: they drive real generated
-# functions end-to-end (dispatch -> Tapir command -> result validation)
-# against the FakeArchicad fixture instead of a live Archicad.
 
 GUID = "12345678-1234-1234-1234-123456789012"
 

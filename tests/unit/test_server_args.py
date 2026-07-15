@@ -1,18 +1,6 @@
 import sys
-import os
 import pytest
 from unittest.mock import MagicMock
-
-# ==========================================
-# SPEED OPTIMIZATION: Mock search_index in sys.modules
-# to prevent heavy ML imports (PyTorch/Faiss) from slowing down test startup
-# ==========================================
-mock_search_index = MagicMock()
-mock_search_index.create_or_load_index = lambda: None
-mock_search_index.search_tools = lambda query: []
-sys.modules["tapir_archicad_mcp.tools.search_index"] = mock_search_index
-
-# Now safely import mcp and main
 from tapir_archicad_mcp.app import mcp
 
 
