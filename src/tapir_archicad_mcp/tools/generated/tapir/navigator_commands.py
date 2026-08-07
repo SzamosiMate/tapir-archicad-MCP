@@ -7,30 +7,50 @@ from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
 from tapir_archicad_mcp.tools.validation import validate_result, extract_archicad_errors
 
 from multiconn_archicad.models.tapir.commands import (
-    CreateDetailsParameters,
+    CloneProjectMapItemToViewMapParameters,
+CloneProjectMapItemToViewMapResult,
+CreateDetailsParameters,
 CreateDetailsResult,
 CreateDrawingsParameters,
 CreateDrawingsResult,
-CreateLayoutsParameters,
-CreateLayoutsResult,
+CreateLayoutParameters,
+CreateLayoutResult,
+CreateLayoutSubsetParameters,
+CreateLayoutSubsetResult,
 CreateSectionsParameters,
 CreateSectionsResult,
-CreateSubsetsParameters,
-CreateSubsetsResult,
+CreateViewMapFolderParameters,
+CreateViewMapFolderResult,
+CreateViewsInViewMapParameters,
+CreateViewsInViewMapResult,
 CreateWorksheetsParameters,
 CreateWorksheetsResult,
+DeleteNavigatorItemsParameters,
+DeleteNavigatorItemsResult,
 FitInWindowParameters,
 FitInWindowResult,
 GetDatabaseIdFromNavigatorItemIdParameters,
 GetDatabaseIdFromNavigatorItemIdResult,
+GetLayoutCustomSchemeResult,
+GetLayoutSettingsParameters,
+GetLayoutSettingsResult,
 GetModelViewOptionsResult,
+GetNavigatorItemTreeParameters,
 GetView2DTransformationsParameters,
 GetView2DTransformationsResult,
 GetViewSettingsParameters,
 GetViewSettingsResult,
+MoveNavigatorItemParameters,
+MoveNavigatorItemResult,
 PublishPublisherSetParameters,
+RenameNavigatorItemParameters,
+RenameNavigatorItemResult,
 Set3DCutPlanesParameters,
 Set3DCutPlanesResult,
+SetLayoutSettingsParameters,
+SetLayoutSettingsResult,
+SetViewRotationParameters,
+SetViewRotationResult,
 SetViewSettingsParameters,
 SetViewSettingsResult,
 UpdateDrawingsParameters,
@@ -39,6 +59,41 @@ UpdateDrawingsResult
 
 
 log = logging.getLogger()
+
+def clone_project_map_item_to_view_map(port: int, params: CloneProjectMapItemToViewMapParameters) -> CloneProjectMapItemToViewMapResult:
+    """
+    Clones Project Map viewpoints into the View Map, optionally into a specified folder.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="CloneProjectMapItemToViewMap",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(CloneProjectMapItemToViewMapResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for CloneProjectMapItemToViewMap result: {e}")
+        raise ValueError(extract_archicad_errors(e, "CloneProjectMapItemToViewMap"))
+    except Exception as e:
+        log.error(f"Error executing CloneProjectMapItemToViewMap on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    clone_project_map_item_to_view_map,
+    name="navigator_clone_project_map_item_to_view_map",
+    title="CloneProjectMapItemToViewMap",
+    description="Clones Project Map viewpoints into the View Map, optionally into a specified folder.",
+    params_model=CloneProjectMapItemToViewMapParameters,
+    result_model=CloneProjectMapItemToViewMapResult
+)
+
 
 def create_details(port: int, params: CreateDetailsParameters) -> CreateDetailsResult:
     """
@@ -110,7 +165,7 @@ register_tool_for_dispatch(
 )
 
 
-def create_layouts(port: int, params: CreateLayoutsParameters) -> CreateLayoutsResult:
+def create_layout(port: int, params: CreateLayoutParameters) -> CreateLayoutResult:
     """
     Creates Layouts and their backing master layouts.
     """
@@ -122,26 +177,61 @@ def create_layouts(port: int, params: CreateLayoutsParameters) -> CreateLayoutsR
     try:
 
         result_dict = conn_header.core.post_tapir_command(
-            command="CreateLayouts",
+            command="CreateLayout",
             parameters=params.model_dump(mode='json')
         )
-        return validate_result(CreateLayoutsResult, result_dict)
+        return validate_result(CreateLayoutResult, result_dict)
 
     except ValidationError as e:
-        log.error(f"Validation error for CreateLayouts result: {e}")
-        raise ValueError(extract_archicad_errors(e, "CreateLayouts"))
+        log.error(f"Validation error for CreateLayout result: {e}")
+        raise ValueError(extract_archicad_errors(e, "CreateLayout"))
     except Exception as e:
-        log.error(f"Error executing CreateLayouts on port {port}: {e}")
+        log.error(f"Error executing CreateLayout on port {port}: {e}")
         raise e
 
 
 register_tool_for_dispatch(
-    create_layouts,
-    name="navigator_create_layouts",
-    title="CreateLayouts",
+    create_layout,
+    name="navigator_create_layout",
+    title="CreateLayout",
     description="Creates Layouts and their backing master layouts.",
-    params_model=CreateLayoutsParameters,
-    result_model=CreateLayoutsResult
+    params_model=CreateLayoutParameters,
+    result_model=CreateLayoutResult
+)
+
+
+def create_layout_subset(port: int, params: CreateLayoutSubsetParameters) -> CreateLayoutSubsetResult:
+    """
+    Creates Layout Book subsets.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="CreateLayoutSubset",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(CreateLayoutSubsetResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for CreateLayoutSubset result: {e}")
+        raise ValueError(extract_archicad_errors(e, "CreateLayoutSubset"))
+    except Exception as e:
+        log.error(f"Error executing CreateLayoutSubset on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    create_layout_subset,
+    name="navigator_create_layout_subset",
+    title="CreateLayoutSubset",
+    description="Creates Layout Book subsets.",
+    params_model=CreateLayoutSubsetParameters,
+    result_model=CreateLayoutSubsetResult
 )
 
 
@@ -180,9 +270,9 @@ register_tool_for_dispatch(
 )
 
 
-def create_subsets(port: int, params: CreateSubsetsParameters) -> CreateSubsetsResult:
+def create_view_map_folder(port: int, params: CreateViewMapFolderParameters) -> CreateViewMapFolderResult:
     """
-    Creates Layout Book subsets.
+    Creates a new folder in the View Map.
     """
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
@@ -192,26 +282,61 @@ def create_subsets(port: int, params: CreateSubsetsParameters) -> CreateSubsetsR
     try:
 
         result_dict = conn_header.core.post_tapir_command(
-            command="CreateSubsets",
+            command="CreateViewMapFolder",
             parameters=params.model_dump(mode='json')
         )
-        return validate_result(CreateSubsetsResult, result_dict)
+        return validate_result(CreateViewMapFolderResult, result_dict)
 
     except ValidationError as e:
-        log.error(f"Validation error for CreateSubsets result: {e}")
-        raise ValueError(extract_archicad_errors(e, "CreateSubsets"))
+        log.error(f"Validation error for CreateViewMapFolder result: {e}")
+        raise ValueError(extract_archicad_errors(e, "CreateViewMapFolder"))
     except Exception as e:
-        log.error(f"Error executing CreateSubsets on port {port}: {e}")
+        log.error(f"Error executing CreateViewMapFolder on port {port}: {e}")
         raise e
 
 
 register_tool_for_dispatch(
-    create_subsets,
-    name="navigator_create_subsets",
-    title="CreateSubsets",
-    description="Creates Layout Book subsets.",
-    params_model=CreateSubsetsParameters,
-    result_model=CreateSubsetsResult
+    create_view_map_folder,
+    name="navigator_create_view_map_folder",
+    title="CreateViewMapFolder",
+    description="Creates a new folder in the View Map.",
+    params_model=CreateViewMapFolderParameters,
+    result_model=CreateViewMapFolderResult
+)
+
+
+def create_views_in_view_map(port: int, params: CreateViewsInViewMapParameters) -> CreateViewsInViewMapResult:
+    """
+    Creates independent (non-clone) navigator views in the View Map by copying database and settings from source items.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="CreateViewsInViewMap",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(CreateViewsInViewMapResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for CreateViewsInViewMap result: {e}")
+        raise ValueError(extract_archicad_errors(e, "CreateViewsInViewMap"))
+    except Exception as e:
+        log.error(f"Error executing CreateViewsInViewMap on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    create_views_in_view_map,
+    name="navigator_create_views_in_view_map",
+    title="CreateViewsInViewMap",
+    description="Creates independent (non-clone) navigator views in the View Map by copying database and settings from source items.",
+    params_model=CreateViewsInViewMapParameters,
+    result_model=CreateViewsInViewMapResult
 )
 
 
@@ -247,6 +372,41 @@ register_tool_for_dispatch(
     description="Creates independent Worksheet databases.",
     params_model=CreateWorksheetsParameters,
     result_model=CreateWorksheetsResult
+)
+
+
+def delete_navigator_items(port: int, params: DeleteNavigatorItemsParameters) -> DeleteNavigatorItemsResult:
+    """
+    Deletes navigator items from the navigator tree.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="DeleteNavigatorItems",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(DeleteNavigatorItemsResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for DeleteNavigatorItems result: {e}")
+        raise ValueError(extract_archicad_errors(e, "DeleteNavigatorItems"))
+    except Exception as e:
+        log.error(f"Error executing DeleteNavigatorItems on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    delete_navigator_items,
+    name="navigator_delete_navigator_items",
+    title="DeleteNavigatorItems",
+    description="Deletes navigator items from the navigator tree.",
+    params_model=DeleteNavigatorItemsParameters,
+    result_model=DeleteNavigatorItemsResult
 )
 
 
@@ -320,6 +480,76 @@ register_tool_for_dispatch(
 )
 
 
+def get_layout_custom_scheme(port: int) -> GetLayoutCustomSchemeResult:
+    """
+    Gets the Layout Info Panel custom field definitions (name and key) from Book Settings.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="GetLayoutCustomScheme",
+            parameters={}
+        )
+        return validate_result(GetLayoutCustomSchemeResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for GetLayoutCustomScheme result: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetLayoutCustomScheme"))
+    except Exception as e:
+        log.error(f"Error executing GetLayoutCustomScheme on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    get_layout_custom_scheme,
+    name="navigator_get_layout_custom_scheme",
+    title="GetLayoutCustomScheme",
+    description="Gets the Layout Info Panel custom field definitions (name and key) from Book Settings.",
+    params_model=None,
+    result_model=GetLayoutCustomSchemeResult
+)
+
+
+def get_layout_settings(port: int, params: GetLayoutSettingsParameters) -> GetLayoutSettingsResult:
+    """
+    Gets settings of layouts, including Layout Info Panel custom data fields.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="GetLayoutSettings",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(GetLayoutSettingsResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for GetLayoutSettings result: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetLayoutSettings"))
+    except Exception as e:
+        log.error(f"Error executing GetLayoutSettings on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    get_layout_settings,
+    name="navigator_get_layout_settings",
+    title="GetLayoutSettings",
+    description="Gets settings of layouts, including Layout Info Panel custom data fields.",
+    params_model=GetLayoutSettingsParameters,
+    result_model=GetLayoutSettingsResult
+)
+
+
 def get_model_view_options(port: int) -> GetModelViewOptionsResult:
     """
     Gets all model view options
@@ -352,6 +582,41 @@ register_tool_for_dispatch(
     description="Gets all model view options",
     params_model=None,
     result_model=GetModelViewOptionsResult
+)
+
+
+def get_navigator_item_tree(port: int, params: GetNavigatorItemTreeParameters) -> None:
+    """
+    Returns the full navigator item tree for the specified map.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        conn_header.core.post_tapir_command(
+            command="GetNavigatorItemTree",
+            parameters=params.model_dump(mode='json')
+        )
+        return None
+
+    except ValidationError as e:
+        log.error(f"Validation error for GetNavigatorItemTree result: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetNavigatorItemTree"))
+    except Exception as e:
+        log.error(f"Error executing GetNavigatorItemTree on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    get_navigator_item_tree,
+    name="navigator_get_navigator_item_tree",
+    title="GetNavigatorItemTree",
+    description="Returns the full navigator item tree for the specified map.",
+    params_model=GetNavigatorItemTreeParameters,
+    result_model=None
 )
 
 
@@ -425,6 +690,41 @@ register_tool_for_dispatch(
 )
 
 
+def move_navigator_item(port: int, params: MoveNavigatorItemParameters) -> MoveNavigatorItemResult:
+    """
+    Moves a navigator item to a new parent in the navigator tree.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="MoveNavigatorItem",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(MoveNavigatorItemResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for MoveNavigatorItem result: {e}")
+        raise ValueError(extract_archicad_errors(e, "MoveNavigatorItem"))
+    except Exception as e:
+        log.error(f"Error executing MoveNavigatorItem on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    move_navigator_item,
+    name="navigator_move_navigator_item",
+    title="MoveNavigatorItem",
+    description="Moves a navigator item to a new parent in the navigator tree.",
+    params_model=MoveNavigatorItemParameters,
+    result_model=MoveNavigatorItemResult
+)
+
+
 def publish_publisher_set(port: int, params: PublishPublisherSetParameters) -> None:
     """
     Performs a publish operation on the currently opened project. Only the given publisher set will be published.
@@ -460,6 +760,41 @@ register_tool_for_dispatch(
 )
 
 
+def rename_navigator_item(port: int, params: RenameNavigatorItemParameters) -> RenameNavigatorItemResult:
+    """
+    Renames a navigator item or changes its ID.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="RenameNavigatorItem",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(RenameNavigatorItemResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for RenameNavigatorItem result: {e}")
+        raise ValueError(extract_archicad_errors(e, "RenameNavigatorItem"))
+    except Exception as e:
+        log.error(f"Error executing RenameNavigatorItem on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    rename_navigator_item,
+    name="navigator_rename_navigator_item",
+    title="RenameNavigatorItem",
+    description="Renames a navigator item or changes its ID.",
+    params_model=RenameNavigatorItemParameters,
+    result_model=RenameNavigatorItemResult
+)
+
+
 def set3_d_cut_planes(port: int, params: Set3DCutPlanesParameters) -> Set3DCutPlanesResult:
     """
     Sets the 3D cut planes.
@@ -492,6 +827,76 @@ register_tool_for_dispatch(
     description="Sets the 3D cut planes.",
     params_model=Set3DCutPlanesParameters,
     result_model=Set3DCutPlanesResult
+)
+
+
+def set_layout_settings(port: int, params: SetLayoutSettingsParameters) -> SetLayoutSettingsResult:
+    """
+    Sets settings of layouts, including Layout Info Panel custom data fields.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="SetLayoutSettings",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(SetLayoutSettingsResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for SetLayoutSettings result: {e}")
+        raise ValueError(extract_archicad_errors(e, "SetLayoutSettings"))
+    except Exception as e:
+        log.error(f"Error executing SetLayoutSettings on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    set_layout_settings,
+    name="navigator_set_layout_settings",
+    title="SetLayoutSettings",
+    description="Sets settings of layouts, including Layout Info Panel custom data fields.",
+    params_model=SetLayoutSettingsParameters,
+    result_model=SetLayoutSettingsResult
+)
+
+
+def set_view_rotation(port: int, params: SetViewRotationParameters) -> SetViewRotationResult:
+    """
+    Set the rotation angle of 2D views via their floor plan database.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="SetViewRotation",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(SetViewRotationResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for SetViewRotation result: {e}")
+        raise ValueError(extract_archicad_errors(e, "SetViewRotation"))
+    except Exception as e:
+        log.error(f"Error executing SetViewRotation on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    set_view_rotation,
+    name="navigator_set_view_rotation",
+    title="SetViewRotation",
+    description="Set the rotation angle of 2D views via their floor plan database.",
+    params_model=SetViewRotationParameters,
+    result_model=SetViewRotationResult
 )
 
 

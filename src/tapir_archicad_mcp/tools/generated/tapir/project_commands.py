@@ -10,6 +10,8 @@ from multiconn_archicad.models.tapir.commands import (
     CloseProjectResult,
 CreateProjectInfoFieldsParameters,
 CreateProjectInfoFieldsResult,
+DeleteProjectInfoFieldsParameters,
+DeleteProjectInfoFieldsResult,
 GetCalculationUnitsResult,
 GetGeoLocationResult,
 GetHotlinksResult,
@@ -99,6 +101,41 @@ register_tool_for_dispatch(
     description="Creates one or more custom project info fields.",
     params_model=CreateProjectInfoFieldsParameters,
     result_model=CreateProjectInfoFieldsResult
+)
+
+
+def delete_project_info_fields(port: int, params: DeleteProjectInfoFieldsParameters) -> DeleteProjectInfoFieldsResult:
+    """
+    Deletes one or more custom project info fields. Hardcoded fields cannot be deleted.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="DeleteProjectInfoFields",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(DeleteProjectInfoFieldsResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for DeleteProjectInfoFields result: {e}")
+        raise ValueError(extract_archicad_errors(e, "DeleteProjectInfoFields"))
+    except Exception as e:
+        log.error(f"Error executing DeleteProjectInfoFields on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    delete_project_info_fields,
+    name="project_delete_project_info_fields",
+    title="DeleteProjectInfoFields",
+    description="Deletes one or more custom project info fields. Hardcoded fields cannot be deleted.",
+    params_model=DeleteProjectInfoFieldsParameters,
+    result_model=DeleteProjectInfoFieldsResult
 )
 
 

@@ -9,15 +9,23 @@ from tapir_archicad_mcp.tools.validation import validate_result, extract_archica
 from multiconn_archicad.models.tapir.commands import (
     ApplyFavoritesToElementDefaultsParameters,
 ApplyFavoritesToElementDefaultsResult,
+ApplyFavoritesToElementsParameters,
+ApplyFavoritesToElementsResult,
 CreateFavoritesFromElementsParameters,
 CreateFavoritesFromElementsResult,
+DeleteFavoritesParameters,
+DeleteFavoritesResult,
 ExportFavoritesParameters,
 GetFavoritePreviewImageParameters,
 GetFavoritePreviewImageResult,
 GetFavoritesByTypeParameters,
 GetFavoritesByTypeResult,
 ImportFavoritesParameters,
-ImportFavoritesResult
+ImportFavoritesResult,
+RenameFavoritesParameters,
+RenameFavoritesResult,
+UpdateFavoritesFromElementsParameters,
+UpdateFavoritesFromElementsResult
 )
 
 
@@ -58,6 +66,41 @@ register_tool_for_dispatch(
 )
 
 
+def apply_favorites_to_elements(port: int, params: ApplyFavoritesToElementsParameters) -> ApplyFavoritesToElementsResult:
+    """
+    Apply the given favorites to existing elements. Only settings-type parameters are changed - geometry (position, floor, and dimensions such as a Wall's height) is left untouched, so applying a Favorite never moves or resizes the target element. By default settings, classifications, categories and properties are all applied; each can be opted out of individually.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="ApplyFavoritesToElements",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(ApplyFavoritesToElementsResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for ApplyFavoritesToElements result: {e}")
+        raise ValueError(extract_archicad_errors(e, "ApplyFavoritesToElements"))
+    except Exception as e:
+        log.error(f"Error executing ApplyFavoritesToElements on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    apply_favorites_to_elements,
+    name="favorites_apply_favorites_to_elements",
+    title="ApplyFavoritesToElements",
+    description="Apply the given favorites to existing elements. Only settings-type parameters are changed - geometry (position, floor, and dimensions such as a Wall's height) is left untouched, so applying a Favorite never moves or resizes the target element. By default settings, classifications, categories and properties are all applied; each can be opted out of individually.",
+    params_model=ApplyFavoritesToElementsParameters,
+    result_model=ApplyFavoritesToElementsResult
+)
+
+
 def create_favorites_from_elements(port: int, params: CreateFavoritesFromElementsParameters) -> CreateFavoritesFromElementsResult:
     """
     Create favorites from the given elements.
@@ -90,6 +133,41 @@ register_tool_for_dispatch(
     description="Create favorites from the given elements.",
     params_model=CreateFavoritesFromElementsParameters,
     result_model=CreateFavoritesFromElementsResult
+)
+
+
+def delete_favorites(port: int, params: DeleteFavoritesParameters) -> DeleteFavoritesResult:
+    """
+    Delete existing favorites.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="DeleteFavorites",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(DeleteFavoritesResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for DeleteFavorites result: {e}")
+        raise ValueError(extract_archicad_errors(e, "DeleteFavorites"))
+    except Exception as e:
+        log.error(f"Error executing DeleteFavorites on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    delete_favorites,
+    name="favorites_delete_favorites",
+    title="DeleteFavorites",
+    description="Delete existing favorites.",
+    params_model=DeleteFavoritesParameters,
+    result_model=DeleteFavoritesResult
 )
 
 
@@ -230,4 +308,74 @@ register_tool_for_dispatch(
     description="Import Favorites from a .prefs file or folder into the current project.",
     params_model=ImportFavoritesParameters,
     result_model=ImportFavoritesResult
+)
+
+
+def rename_favorites(port: int, params: RenameFavoritesParameters) -> RenameFavoritesResult:
+    """
+    Rename existing favorites.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="RenameFavorites",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(RenameFavoritesResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for RenameFavorites result: {e}")
+        raise ValueError(extract_archicad_errors(e, "RenameFavorites"))
+    except Exception as e:
+        log.error(f"Error executing RenameFavorites on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    rename_favorites,
+    name="favorites_rename_favorites",
+    title="RenameFavorites",
+    description="Rename existing favorites.",
+    params_model=RenameFavoritesParameters,
+    result_model=RenameFavoritesResult
+)
+
+
+def update_favorites_from_elements(port: int, params: UpdateFavoritesFromElementsParameters) -> UpdateFavoritesFromElementsResult:
+    """
+    Update existing favorites from the given elements.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="UpdateFavoritesFromElements",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(UpdateFavoritesFromElementsResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for UpdateFavoritesFromElements result: {e}")
+        raise ValueError(extract_archicad_errors(e, "UpdateFavoritesFromElements"))
+    except Exception as e:
+        log.error(f"Error executing UpdateFavoritesFromElements on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    update_favorites_from_elements,
+    name="favorites_update_favorites_from_elements",
+    title="UpdateFavoritesFromElements",
+    description="Update existing favorites from the given elements.",
+    params_model=UpdateFavoritesFromElementsParameters,
+    result_model=UpdateFavoritesFromElementsResult
 )

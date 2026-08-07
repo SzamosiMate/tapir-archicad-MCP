@@ -92,6 +92,8 @@ ModifyColumnsParameters,
 ModifyColumnsResult,
 ModifyDoorsParameters,
 ModifyDoorsResult,
+ModifyMeshesParameters,
+ModifyMeshesResult,
 ModifyMorphsParameters,
 ModifyMorphsResult,
 ModifyRoofsParameters,
@@ -115,7 +117,9 @@ SetElementNotificationClientResult,
 SetGDLParametersOfElementsParameters,
 SetGDLParametersOfElementsResult,
 UnlockElementsParameters,
-UnlockElementsResult
+UnlockElementsResult,
+UpdateZonesParameters,
+UpdateZonesResult
 )
 
 
@@ -1643,6 +1647,41 @@ register_tool_for_dispatch(
 )
 
 
+def modify_meshes(port: int, params: ModifyMeshesParameters) -> ModifyMeshesResult:
+    """
+    Modifies the attributes of Mesh elements based on the given parameters.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="ModifyMeshes",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(ModifyMeshesResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for ModifyMeshes result: {e}")
+        raise ValueError(extract_archicad_errors(e, "ModifyMeshes"))
+    except Exception as e:
+        log.error(f"Error executing ModifyMeshes on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    modify_meshes,
+    name="elements_modify_meshes",
+    title="ModifyMeshes",
+    description="Modifies the attributes of Mesh elements based on the given parameters.",
+    params_model=ModifyMeshesParameters,
+    result_model=ModifyMeshesResult
+)
+
+
 def modify_morphs(port: int, params: ModifyMorphsParameters) -> ModifyMorphsResult:
     """
     Modifies Morph elements based on the given parameters.
@@ -2060,4 +2099,39 @@ register_tool_for_dispatch(
     description="Unlocks the given elements. Manual lock, not teamwork!",
     params_model=UnlockElementsParameters,
     result_model=UnlockElementsResult
+)
+
+
+def update_zones(port: int, params: UpdateZonesParameters) -> UpdateZonesResult:
+    """
+    Updates all Zones (recalculates their geometry, updates their Zone Stamps and the connected elements).
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="UpdateZones",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(UpdateZonesResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for UpdateZones result: {e}")
+        raise ValueError(extract_archicad_errors(e, "UpdateZones"))
+    except Exception as e:
+        log.error(f"Error executing UpdateZones on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    update_zones,
+    name="elements_update_zones",
+    title="UpdateZones",
+    description="Updates all Zones (recalculates their geometry, updates their Zone Stamps and the connected elements).",
+    params_model=UpdateZonesParameters,
+    result_model=UpdateZonesResult
 )

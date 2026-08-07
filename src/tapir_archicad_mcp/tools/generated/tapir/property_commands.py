@@ -27,7 +27,9 @@ GetPropertyValuesOfElementsResult,
 SetPropertyValuesOfAttributesParameters,
 SetPropertyValuesOfAttributesResult,
 SetPropertyValuesOfElementsParameters,
-SetPropertyValuesOfElementsResult
+SetPropertyValuesOfElementsResult,
+UpdatePropertyDefinitionsParameters,
+UpdatePropertyDefinitionsResult
 )
 
 
@@ -374,4 +376,39 @@ register_tool_for_dispatch(
     description="Sets the property values of elements. It works for subelements of hierarchal elements also.",
     params_model=SetPropertyValuesOfElementsParameters,
     result_model=SetPropertyValuesOfElementsResult
+)
+
+
+def update_property_definitions(port: int, params: UpdatePropertyDefinitionsParameters) -> UpdatePropertyDefinitionsResult:
+    """
+    Updates the expression(s) of existing expression-based Custom Property Definitions.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="UpdatePropertyDefinitions",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(UpdatePropertyDefinitionsResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for UpdatePropertyDefinitions result: {e}")
+        raise ValueError(extract_archicad_errors(e, "UpdatePropertyDefinitions"))
+    except Exception as e:
+        log.error(f"Error executing UpdatePropertyDefinitions on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    update_property_definitions,
+    name="properties_update_property_definitions",
+    title="UpdatePropertyDefinitions",
+    description="Updates the expression(s) of existing expression-based Custom Property Definitions.",
+    params_model=UpdatePropertyDefinitionsParameters,
+    result_model=UpdatePropertyDefinitionsResult
 )
