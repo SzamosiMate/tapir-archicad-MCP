@@ -15,18 +15,52 @@ from multiconn_archicad.models.tapir.commands import (
 CreateBuildingMaterialsResult,
 CreateCompositesParameters,
 CreateCompositesResult,
+CreateFillsParameters,
+CreateFillsResult,
 CreateLayerCombinationsParameters,
 CreateLayerCombinationsResult,
 CreateLayersParameters,
 CreateLayersResult,
+CreateLinesParameters,
+CreateLinesResult,
+CreateMEPSystemsParameters,
+CreateMEPSystemsResult,
+CreatePenTablesParameters,
+CreatePenTablesResult,
+CreateProfilesParameters,
+CreateProfilesResult,
 CreateSurfacesParameters,
 CreateSurfacesResult,
+CreateZoneCategoriesParameters,
+CreateZoneCategoriesResult,
+DeleteAttributesParameters,
+DeleteAttributesResult,
 GetAttributesByTypeParameters,
 GetAttributesByTypeResult,
 GetBuildingMaterialPhysicalPropertiesParameters,
 GetBuildingMaterialPhysicalPropertiesResult,
+GetBuildingMaterialsParameters,
+GetBuildingMaterialsResult,
+GetCompositesParameters,
+GetCompositesResult,
+GetFillsParameters,
+GetFillsResult,
 GetLayerCombinationsParameters,
-GetLayerCombinationsResult
+GetLayerCombinationsResult,
+GetLayersParameters,
+GetLayersResult,
+GetLinesParameters,
+GetLinesResult,
+GetMEPSystemsParameters,
+GetMEPSystemsResult,
+GetPenTablesParameters,
+GetPenTablesResult,
+GetProfilesParameters,
+GetProfilesResult,
+GetSurfacesParameters,
+GetSurfacesResult,
+GetZoneCategoriesParameters,
+GetZoneCategoriesResult
 )
 
 
@@ -102,6 +136,41 @@ register_tool_for_dispatch(
 )
 
 
+def create_fills(port: int, params: CreateFillsParameters) -> CreateFillsResult:
+    """
+    Creates or overwrites Fill attributes based on the given parameters.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="CreateFills",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(CreateFillsResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for CreateFills result: {e}")
+        raise ValueError(extract_archicad_errors(e, "CreateFills"))
+    except Exception as e:
+        log.error(f"Error executing CreateFills on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    create_fills,
+    name="attributes_create_fills",
+    title="CreateFills",
+    description="Creates or overwrites Fill attributes based on the given parameters.",
+    params_model=CreateFillsParameters,
+    result_model=CreateFillsResult
+)
+
+
 def create_layer_combinations(port: int, params: CreateLayerCombinationsParameters) -> CreateLayerCombinationsResult:
     """
     Creates or overwrites Layer Combination attributes based on the given parameters.
@@ -172,6 +241,146 @@ register_tool_for_dispatch(
 )
 
 
+def create_lines(port: int, params: CreateLinesParameters) -> CreateLinesResult:
+    """
+    Creates or overwrites Line attributes based on the given parameters.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="CreateLines",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(CreateLinesResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for CreateLines result: {e}")
+        raise ValueError(extract_archicad_errors(e, "CreateLines"))
+    except Exception as e:
+        log.error(f"Error executing CreateLines on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    create_lines,
+    name="attributes_create_lines",
+    title="CreateLines",
+    description="Creates or overwrites Line attributes based on the given parameters.",
+    params_model=CreateLinesParameters,
+    result_model=CreateLinesResult
+)
+
+
+def create_mep_systems(port: int, params: CreateMEPSystemsParameters) -> CreateMEPSystemsResult:
+    """
+    Creates or overwrites MEP System attributes based on the given parameters.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="CreateMEPSystems",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(CreateMEPSystemsResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for CreateMEPSystems result: {e}")
+        raise ValueError(extract_archicad_errors(e, "CreateMEPSystems"))
+    except Exception as e:
+        log.error(f"Error executing CreateMEPSystems on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    create_mep_systems,
+    name="attributes_create_mep_systems",
+    title="CreateMEPSystems",
+    description="Creates or overwrites MEP System attributes based on the given parameters.",
+    params_model=CreateMEPSystemsParameters,
+    result_model=CreateMEPSystemsResult
+)
+
+
+def create_pen_tables(port: int, params: CreatePenTablesParameters) -> CreatePenTablesResult:
+    """
+    Creates or overwrites Pen Table attributes based on the given parameters.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="CreatePenTables",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(CreatePenTablesResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for CreatePenTables result: {e}")
+        raise ValueError(extract_archicad_errors(e, "CreatePenTables"))
+    except Exception as e:
+        log.error(f"Error executing CreatePenTables on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    create_pen_tables,
+    name="attributes_create_pen_tables",
+    title="CreatePenTables",
+    description="Creates or overwrites Pen Table attributes based on the given parameters.",
+    params_model=CreatePenTablesParameters,
+    result_model=CreatePenTablesResult
+)
+
+
+def create_profiles(port: int, params: CreateProfilesParameters) -> CreateProfilesResult:
+    """
+    Creates or overwrites Profile attributes as a copy of an existing Profile's geometry, based on the given parameters.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="CreateProfiles",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(CreateProfilesResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for CreateProfiles result: {e}")
+        raise ValueError(extract_archicad_errors(e, "CreateProfiles"))
+    except Exception as e:
+        log.error(f"Error executing CreateProfiles on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    create_profiles,
+    name="attributes_create_profiles",
+    title="CreateProfiles",
+    description="Creates or overwrites Profile attributes as a copy of an existing Profile's geometry, based on the given parameters.",
+    params_model=CreateProfilesParameters,
+    result_model=CreateProfilesResult
+)
+
+
 def create_surfaces(port: int, params: CreateSurfacesParameters) -> CreateSurfacesResult:
     """
     Creates or overwrites Surface attributes based on the given parameters.
@@ -204,6 +413,76 @@ register_tool_for_dispatch(
     description="Creates or overwrites Surface attributes based on the given parameters.",
     params_model=CreateSurfacesParameters,
     result_model=CreateSurfacesResult
+)
+
+
+def create_zone_categories(port: int, params: CreateZoneCategoriesParameters) -> CreateZoneCategoriesResult:
+    """
+    Creates or overwrites Zone Category attributes based on the given parameters.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="CreateZoneCategories",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(CreateZoneCategoriesResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for CreateZoneCategories result: {e}")
+        raise ValueError(extract_archicad_errors(e, "CreateZoneCategories"))
+    except Exception as e:
+        log.error(f"Error executing CreateZoneCategories on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    create_zone_categories,
+    name="attributes_create_zone_categories",
+    title="CreateZoneCategories",
+    description="Creates or overwrites Zone Category attributes based on the given parameters.",
+    params_model=CreateZoneCategoriesParameters,
+    result_model=CreateZoneCategoriesResult
+)
+
+
+def delete_attributes(port: int, params: DeleteAttributesParameters) -> DeleteAttributesResult:
+    """
+    Deletes the given attributes.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="DeleteAttributes",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(DeleteAttributesResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for DeleteAttributes result: {e}")
+        raise ValueError(extract_archicad_errors(e, "DeleteAttributes"))
+    except Exception as e:
+        log.error(f"Error executing DeleteAttributes on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    delete_attributes,
+    name="attributes_delete_attributes",
+    title="DeleteAttributes",
+    description="Deletes the given attributes.",
+    params_model=DeleteAttributesParameters,
+    result_model=DeleteAttributesResult
 )
 
 
@@ -306,6 +585,111 @@ register_tool_for_dispatch(
 )
 
 
+def get_building_materials(port: int, params: GetBuildingMaterialsParameters) -> GetBuildingMaterialsResult:
+    """
+    Returns the details of the given Building Material attributes.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="GetBuildingMaterials",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(GetBuildingMaterialsResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for GetBuildingMaterials result: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetBuildingMaterials"))
+    except Exception as e:
+        log.error(f"Error executing GetBuildingMaterials on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    get_building_materials,
+    name="attributes_get_building_materials",
+    title="GetBuildingMaterials",
+    description="Returns the details of the given Building Material attributes.",
+    params_model=GetBuildingMaterialsParameters,
+    result_model=GetBuildingMaterialsResult
+)
+
+
+def get_composites(port: int, params: GetCompositesParameters) -> GetCompositesResult:
+    """
+    Returns the details of the given Composite attributes.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="GetComposites",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(GetCompositesResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for GetComposites result: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetComposites"))
+    except Exception as e:
+        log.error(f"Error executing GetComposites on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    get_composites,
+    name="attributes_get_composites",
+    title="GetComposites",
+    description="Returns the details of the given Composite attributes.",
+    params_model=GetCompositesParameters,
+    result_model=GetCompositesResult
+)
+
+
+def get_fills(port: int, params: GetFillsParameters) -> GetFillsResult:
+    """
+    Returns the details of the given Fill attributes.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="GetFills",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(GetFillsResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for GetFills result: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetFills"))
+    except Exception as e:
+        log.error(f"Error executing GetFills on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    get_fills,
+    name="attributes_get_fills",
+    title="GetFills",
+    description="Returns the details of the given Fill attributes.",
+    params_model=GetFillsParameters,
+    result_model=GetFillsResult
+)
+
+
 def get_layer_combinations(port: int, params: GetLayerCombinationsParameters) -> GetLayerCombinationsResult:
     """
     Returns the details of layer combination attributes.
@@ -338,4 +722,249 @@ register_tool_for_dispatch(
     description="Returns the details of layer combination attributes.",
     params_model=GetLayerCombinationsParameters,
     result_model=GetLayerCombinationsResult
+)
+
+
+def get_layers(port: int, params: GetLayersParameters) -> GetLayersResult:
+    """
+    Returns the details of the given Layer attributes.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="GetLayers",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(GetLayersResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for GetLayers result: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetLayers"))
+    except Exception as e:
+        log.error(f"Error executing GetLayers on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    get_layers,
+    name="attributes_get_layers",
+    title="GetLayers",
+    description="Returns the details of the given Layer attributes.",
+    params_model=GetLayersParameters,
+    result_model=GetLayersResult
+)
+
+
+def get_lines(port: int, params: GetLinesParameters) -> GetLinesResult:
+    """
+    Returns the details of the given Line attributes.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="GetLines",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(GetLinesResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for GetLines result: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetLines"))
+    except Exception as e:
+        log.error(f"Error executing GetLines on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    get_lines,
+    name="attributes_get_lines",
+    title="GetLines",
+    description="Returns the details of the given Line attributes.",
+    params_model=GetLinesParameters,
+    result_model=GetLinesResult
+)
+
+
+def get_mep_systems(port: int, params: GetMEPSystemsParameters) -> GetMEPSystemsResult:
+    """
+    Returns the details of the given MEP System attributes.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="GetMEPSystems",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(GetMEPSystemsResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for GetMEPSystems result: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetMEPSystems"))
+    except Exception as e:
+        log.error(f"Error executing GetMEPSystems on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    get_mep_systems,
+    name="attributes_get_mep_systems",
+    title="GetMEPSystems",
+    description="Returns the details of the given MEP System attributes.",
+    params_model=GetMEPSystemsParameters,
+    result_model=GetMEPSystemsResult
+)
+
+
+def get_pen_tables(port: int, params: GetPenTablesParameters) -> GetPenTablesResult:
+    """
+    Returns the details of the given Pen Table attributes.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="GetPenTables",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(GetPenTablesResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for GetPenTables result: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetPenTables"))
+    except Exception as e:
+        log.error(f"Error executing GetPenTables on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    get_pen_tables,
+    name="attributes_get_pen_tables",
+    title="GetPenTables",
+    description="Returns the details of the given Pen Table attributes.",
+    params_model=GetPenTablesParameters,
+    result_model=GetPenTablesResult
+)
+
+
+def get_profiles(port: int, params: GetProfilesParameters) -> GetProfilesResult:
+    """
+    Returns the details of the given Profile attributes.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="GetProfiles",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(GetProfilesResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for GetProfiles result: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetProfiles"))
+    except Exception as e:
+        log.error(f"Error executing GetProfiles on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    get_profiles,
+    name="attributes_get_profiles",
+    title="GetProfiles",
+    description="Returns the details of the given Profile attributes.",
+    params_model=GetProfilesParameters,
+    result_model=GetProfilesResult
+)
+
+
+def get_surfaces(port: int, params: GetSurfacesParameters) -> GetSurfacesResult:
+    """
+    Returns the details of the given Surface attributes.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="GetSurfaces",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(GetSurfacesResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for GetSurfaces result: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetSurfaces"))
+    except Exception as e:
+        log.error(f"Error executing GetSurfaces on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    get_surfaces,
+    name="attributes_get_surfaces",
+    title="GetSurfaces",
+    description="Returns the details of the given Surface attributes.",
+    params_model=GetSurfacesParameters,
+    result_model=GetSurfacesResult
+)
+
+
+def get_zone_categories(port: int, params: GetZoneCategoriesParameters) -> GetZoneCategoriesResult:
+    """
+    Returns the details of the given Zone Category attributes.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="GetZoneCategories",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(GetZoneCategoriesResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for GetZoneCategories result: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetZoneCategories"))
+    except Exception as e:
+        log.error(f"Error executing GetZoneCategories on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    get_zone_categories,
+    name="attributes_get_zone_categories",
+    title="GetZoneCategories",
+    description="Returns the details of the given Zone Category attributes.",
+    params_model=GetZoneCategoriesParameters,
+    result_model=GetZoneCategoriesResult
 )

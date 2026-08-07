@@ -37,6 +37,8 @@ TAPIR_CONFIG = ApiSourceConfig(
         "GetArchicadLocation", # discovery_list_active_archicads covers this
         "QuitArchicad", # AI probably shouldn't quit
         "GenerateDocumentation", # command only for internal use
+        "ShowScriptUI", # used in apps
+        "GetScriptUIResult", # used in apps
     },
     paginated_commands={
         "GetAllElements": "elements",
@@ -77,6 +79,16 @@ OFFICIAL_CONFIG = ApiSourceConfig(
         "IsAlive",  # not useful as tool
         "GetProductInfo",  # discovery_list_active_archicads covers this
         "ExecuteAddOnCommand", # we handle it with namespaces
+        "GetBuildingMaterialAttributes", # Tapir returns index
+        "GetCompositeAttributes", # Tapir returns index
+        "GetFillAttributes", # Tapir returns index
+        "GetLayerAttributes", # Tapir returns index
+        "GetLayerCombinationAttributes", # Tapir returns index
+        "GetLineAttributes", # Tapir returns index
+        "GetPenTableAttributes", # Tapir returns index
+        "GetProfileAttributes", # Tapir returns index
+        "GetSurfaceAttributes", # Tapir returns index
+        "GetZoneCategoryAttributes", # Tapir returns index
     },
     paginated_commands = {
         "GetElementsByClassification": "elements",

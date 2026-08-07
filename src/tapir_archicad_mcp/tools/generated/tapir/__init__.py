@@ -14,4 +14,5 @@ from tapir_archicad_mcp.tools.generated.tapir.navigator_commands import *
 from tapir_archicad_mcp.tools.generated.tapir.project_commands import *
 from tapir_archicad_mcp.tools.generated.tapir.property_commands import *
 from tapir_archicad_mcp.tools.generated.tapir.revision_management_commands import *
+from tapir_archicad_mcp.tools.generated.tapir.solid_element_operation_commands import *
 from tapir_archicad_mcp.tools.generated.tapir.teamwork_commands import *
