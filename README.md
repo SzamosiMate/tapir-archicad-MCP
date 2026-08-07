@@ -2,21 +2,21 @@
 
 This project provides a Model Context Protocol (MCP) server for Archicad. It acts as a bridge, allowing AI agents and applications (like Claude for Desktop) to interact with running Archicad instances by wrapping both the community-driven **Tapir API** and the **official Archicad JSON API**.
 
-The server dynamically generates a comprehensive set of **137** MCP tools from the combined API schemas, enabling fine-grained control over Archicad projects.
+The server dynamically generates a comprehensive set of **191+** MCP tools from the combined API schemas, enabling fine-grained control over Archicad projects.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Status](https://img.shields.io/badge/status-alpha-orange.svg)]()
 
-> **Disclaimer:** This project is in an early stage of development. It has not been extensively tested and is intended primarily for experimental and educational purposes. Interfaces and functionality may change in future updates. Please use with caution.
-
 ## Key Features
 
--   **Intelligent Tool Discovery:** The server exposes a simple `discover_tools` function that uses a powerful local semantic search engine to find the most relevant Archicad command from a user's natural language query.
--   **Massive Toolset, Minimal Footprint:** Provides access to a unified toolset of **137 commands** (and growing) by intelligently merging the community Tapir API and the official Archicad JSON API, without overwhelming the AI's context window.
--   **100% Local & Private Search:** The semantic search index is built and runs entirely on your machine using `sentence-transformers` and `faiss-cpu`. No data ever leaves your computer, and no API keys are required.
--   **Adaptive & Relevant Results:** Search uses a sophisticated "Top-Score Relative Threshold" to filter out noise and return only the most relevant tools for a given query.
--   **Multi-Instance Control:** Connect to and manage multiple running Archicad instances simultaneously.
--   **Robust & Packaged:** Designed as a proper Python package with a `pyproject.toml`, enabling simple and reliable installation.
+-   **Pydantic-Powered Runtime Validation & Schema Generation:** Every tool's input and output shapes are backed by rigorous Pydantic models. The server dynamically compiles these into detailed JSON Schemas for the AI agent to inspect, and strictly validates all incoming tool arguments at runtime *before* forwarding them to Archicad. It handles complex models, Union types, and TypeAliases seamlessly.
+-   **Progressive Tool Discovery (CLI-style):** The server uses a deterministic workflow (`archicad_list_commands` and `archicad_get_command_schema`) that allows AI agents to list available commands and fetch exact parameter schemas on demand. This avoids flooding the model's context window with large schemas.
+-   **No Heavy Machine-Learning Dependencies:** Vector-based search has been removed. The server no longer requires heavy packages like PyTorch, `faiss-cpu`, or `sentence-transformers`, dramatically reducing the package size and eliminating server startup delays.
+-   **Massive Toolset, Minimal Footprint:** Provides access to a unified toolset of **191+ commands** by merging the community Tapir API and the official Archicad JSON API.
+-   **Flexible Network Transports:** Supports `sse` (Server-Sent Events) and `streamable-http` transports in addition to standard input/output (`stdio`), allowing the server to be run on remote host configurations.
+-   **Bearer Token Authentication:** Secures HTTP endpoints when using SSE or Streamable-HTTP via an opt-in token validation middleware (`--token` flag or `TAPIR_MCP_TOKEN` environment variable).
+-   **Multi-Instance Control:** Connect to and manage multiple running Archicad instances simultaneously, targeting commands to specific instances via port numbers.
+-   **Cross-Platform Support:** Compatible with both Windows and macOS systems.
 
 ## Installation & Setup
 
@@ -24,13 +24,13 @@ Follow these steps to get the server running and connected to an MCP client like
 
 ### 1. Prerequisites
 
--   **Python 3.12+** and **`uv`**: Ensure you have a modern version of Python and the `uv` package manager installed. You can install `uv` with `pip install uv`.
+-   **Python 3.12+** and **`uv`**: Ensure you have a modern version of Python and the `uv` package manager installed.
 -   **Archicad & Tapir Add-On**: You must have Archicad running (which includes the official JSON API). To access the full set of community-developed tools, the [Tapir Archicad Add-On](https://github.com/ENZYME-APD/tapir-archicad-automation) must also be installed.
--   **MCP Client**: An application that can host MCP servers, such as [Claude for Desktop](https://www.claude.ai/download) or [Gemini CLI ](https://github.com/google-gemini/gemini-cli)
+-   **MCP Client**: An application that can host MCP servers, such as [Claude for Desktop](https://www.claude.ai/download) or [Gemini CLI](https://github.com/google-gemini/gemini-cli).
 
 ### 2. Configure Your AI Client
 
-This is now the **only step required**. Open your client's `config.json` file and add the following configuration. This command is universal and works on any operating system without modification.
+Open your client's `config.json` file and add the following configuration. This command works across operating systems:
 
 -   **macOS:** `~/Library/Application Support/Claude/claude_desktop_config.json`
 -   **Windows:** `%APDATA%\Claude\claude_desktop_config.json`
@@ -40,50 +40,55 @@ This is now the **only step required**. Open your client's `config.json` file an
   "mcpServers": {
     "ArchicadTapir": {
       "command": "uvx",
-        "args": [
-          "--from",
-          "tapir-archicad-mcp",
-          "archicad-server"
-        ]
+      "args": [
+        "--from",
+        "tapir-archicad-mcp",
+        "archicad-server"
+      ]
     }
   }
 }
 ```
 
-**How This Works:**
-The `uvx` command (part of the `uv` toolchain) is a powerful utility that automatically handles the entire process for you:
-1.  The first time the AI client needs the tool, `uvx` will download the latest version of `tapir-archicad-mcp` from PyPI.
-2.  It will install it into a temporary, isolated environment.
-3.  It will run the server.
+## Configuration Options
+
+You can customize the server via CLI flags or environment variables:
+
+| CLI Flag | Environment Variable | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `--transport` | - | `stdio` | Transport protocol to use (`stdio`, `sse`, or `streamable-http`) |
+| `--host` | `TAPIR_MCP_HOST` | `127.0.0.1` | Bind address for HTTP-based transports |
+| `--port` | `TAPIR_MCP_PORT` | `8000` | Bind port for HTTP-based transports |
+| `--token` | `TAPIR_MCP_TOKEN` | `None` | Optional Bearer token to secure HTTP endpoints |
 
 ## Usage
 
-1.  **Restart Claude for Desktop** to apply the configuration changes.
-2.  Ensure at least one instance of Archicad (with Tapir) is running.
-3.  The client will now have access to a small set of core tools. Start by asking it to find the running Archicad instances:
+1. **Restart Claude for Desktop** to apply configuration changes.
+2. Ensure at least one instance of Archicad is running.
+3. The client will initially have access to a small set of core tools. Start by asking the AI to find running Archicad instances:
 
-    > "Can you check what Archicad projects I have running?"
+   > "Can you check what Archicad projects I have running?"
 
-    The AI will run `discovery_list_active_archicads` and report the active instances and their `port` numbers.
+   The AI will call `discovery_list_active_archicads` and report the active instances and their `port` numbers.
 
-4.  Now, state your main goal. For example:
+4. State your main goal:
 
-    > "Okay, using port 12345, get all the Wall elements from the project."
+   > "Using port 19723, get all the Wall elements from the project."
 
-5.  The AI will now perform the two-step `discover`/`call` workflow:
-    *   **First, it will call `archicad_discover_tools`** with a query like `"get all wall elements"`. The server's semantic search will find that the best match is the `elements_get_elements_by_type` tool.
-    *   **Second, it will call `archicad_call_tool`**, using the `name="elements_get_elements_by_type"` it just discovered and constructing the necessary `arguments` (including the `port` and `params` with `elementType="Wall"`).
-    *   The final result is returned to you.
+5. The AI will execute a progressive discovery and calling loop:
+   - **Step 1:** It queries `archicad_list_commands` to look up the correct command name for the requested action (identifying `elements_get_elements_by_type`).
+   - **Step 2:** It calls `archicad_get_command_schema` with the target command name to retrieve the exact required JSON parameter structure.
+   - **Step 3:** It calls `archicad_call_tool` with the command name, the targeted `port`, and the required parameter payload.
 
 ## How It Works
 
 The server operates through a layered architecture:
 
--   **AI Agent (e.g., Claude):** Interacts with the user and decides which tools to call.
--   **MCP Client (e.g., Claude for Desktop):** Manages the server process and communication.
--   **MCP Server (This Project):** Provides an intelligent abstraction layer over Archicad's automation APIs, exposing a simple `discover`/`call` interface.
--   **`multiconn_archicad` Library:** The underlying Python library that handles the low-level communication with Archicad instances.
--   **Archicad & Tapir Add-On:** Archicad's built-in JSON API and the Tapir Add-on execute the commands.
+-   **AI Agent (e.g., Claude):** Interprets user prompts and orchestrates tool discovery.
+-   **MCP Client (e.g., Claude for Desktop):** Manages the server process and handles communication.
+-   **MCP Server (This Project):** Standardizes tool descriptions, parameters, and results, presenting a clean `list`/`schema`/`call` interface.
+-   **`multiconn_archicad` Library:** Resolves active socket connections and handles low-level command dispatch to Archicad instances.
+-   **Archicad & Tapir Add-On:** Built-in APIs and Tapir Add-on execute commands and return structured data.
 
 ## Contributing
 
