@@ -35,7 +35,6 @@ GetLayoutCustomSchemeResult,
 GetLayoutSettingsParameters,
 GetLayoutSettingsResult,
 GetModelViewOptionsResult,
-GetNavigatorItemTreeParameters,
 GetView2DTransformationsParameters,
 GetView2DTransformationsResult,
 GetViewSettingsParameters,
@@ -582,41 +581,6 @@ register_tool_for_dispatch(
     description="Gets all model view options",
     params_model=None,
     result_model=GetModelViewOptionsResult
-)
-
-
-def get_navigator_item_tree(port: int, params: GetNavigatorItemTreeParameters) -> None:
-    """
-    Returns the full navigator item tree for the specified map.
-    """
-    multi_conn = multi_conn_instance.get()
-    target_port = Port(port)
-    if target_port not in multi_conn.active:
-        raise ValueError(f"Port {port} is not an active Archicad connection.")
-    conn_header = multi_conn.active[target_port]
-    try:
-
-        conn_header.core.post_tapir_command(
-            command="GetNavigatorItemTree",
-            parameters=params.model_dump(mode='json')
-        )
-        return None
-
-    except ValidationError as e:
-        log.error(f"Validation error for GetNavigatorItemTree result: {e}")
-        raise ValueError(extract_archicad_errors(e, "GetNavigatorItemTree"))
-    except Exception as e:
-        log.error(f"Error executing GetNavigatorItemTree on port {port}: {e}")
-        raise e
-
-
-register_tool_for_dispatch(
-    get_navigator_item_tree,
-    name="navigator_get_navigator_item_tree",
-    title="GetNavigatorItemTree",
-    description="Returns the full navigator item tree for the specified map.",
-    params_model=GetNavigatorItemTreeParameters,
-    result_model=None
 )
 
 

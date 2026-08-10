@@ -31,6 +31,7 @@ TAPIR_CONFIG = ApiSourceConfig(
         "Favorites Commands": "favorites", "Property Commands": "properties", "Attribute Commands": "attributes",
         "Library Commands": "library", "Navigator Commands": "navigator", "Issue Management Commands": "issues",
         "Revision Management Commands": "revisions", "Teamwork Commands": "teamwork", "Developer Commands": "dev",
+        "Solid Element Operation Commands": "elements",
     },
     commands_to_exclude={
         "GetProjectInfo", # discovery_list_active_archicads covers this
@@ -39,6 +40,7 @@ TAPIR_CONFIG = ApiSourceConfig(
         "GenerateDocumentation", # command only for internal use
         "ShowScriptUI", # used in apps
         "GetScriptUIResult", # used in apps
+        "GetNavigatorItemTree", # no result model in multiconn, so the tool would return None - official command returns the tree
     },
     paginated_commands={
         "GetAllElements": "elements",
@@ -89,6 +91,10 @@ OFFICIAL_CONFIG = ApiSourceConfig(
         "GetProfileAttributes", # Tapir returns index
         "GetSurfaceAttributes", # Tapir returns index
         "GetZoneCategoryAttributes", # Tapir returns index
+        "DeleteAttributes", # Tapir command takes attribute type and index or name, not only ids
+        "DeleteNavigatorItems", # same parameters as the Tapir command
+        "MoveNavigatorItem", # same parameters as the Tapir command
+        "RenameNavigatorItem", # Tapir command takes flat parameters instead of a union
     },
     paginated_commands = {
         "GetElementsByClassification": "elements",

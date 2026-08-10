@@ -7,9 +7,7 @@ from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
 from tapir_archicad_mcp.tools.validation import validate_result, extract_archicad_errors
 
 from multiconn_archicad.models.official.commands import (
-    DeleteNavigatorItemsParameters,
-DeleteNavigatorItemsResult,
-GetBuiltInContainerNavigatorItemsParameters,
+    GetBuiltInContainerNavigatorItemsParameters,
 GetBuiltInContainerNavigatorItemsResult,
 GetDetailNavigatorItemsParameters,
 GetDetailNavigatorItemsResult,
@@ -29,48 +27,11 @@ GetSectionNavigatorItemsResult,
 GetStoryNavigatorItemsParameters,
 GetStoryNavigatorItemsResult,
 GetWorksheetNavigatorItemsParameters,
-GetWorksheetNavigatorItemsResult,
-MoveNavigatorItemParameters,
-RenameNavigatorItemParameters
+GetWorksheetNavigatorItemsResult
 )
 
 
 log = logging.getLogger()
-
-def delete_navigator_items(port: int, params: DeleteNavigatorItemsParameters) -> DeleteNavigatorItemsResult:
-    """
-    Deletes items from navigator tree.
-    """
-    multi_conn = multi_conn_instance.get()
-    target_port = Port(port)
-    if target_port not in multi_conn.active:
-        raise ValueError(f"Port {port} is not an active Archicad connection.")
-    conn_header = multi_conn.active[target_port]
-    try:
-
-        result_dict = conn_header.core.post_command(
-            command="API.DeleteNavigatorItems",
-            parameters=params.model_dump(mode='json')
-        )
-        return validate_result(DeleteNavigatorItemsResult, result_dict)
-
-    except ValidationError as e:
-        log.error(f"Validation error for DeleteNavigatorItems result: {e}")
-        raise ValueError(extract_archicad_errors(e, "DeleteNavigatorItems"))
-    except Exception as e:
-        log.error(f"Error executing DeleteNavigatorItems on port {port}: {e}")
-        raise e
-
-
-register_tool_for_dispatch(
-    delete_navigator_items,
-    name="navigator_delete_navigator_items",
-    title="DeleteNavigatorItems",
-    description="Deletes items from navigator tree.",
-    params_model=DeleteNavigatorItemsParameters,
-    result_model=DeleteNavigatorItemsResult
-)
-
 
 def get_built_in_container_navigator_items(port: int, params: GetBuiltInContainerNavigatorItemsParameters) -> GetBuiltInContainerNavigatorItemsResult:
     """
@@ -454,74 +415,4 @@ register_tool_for_dispatch(
     description="Returns the details of the worksheet navigator items identified by their Ids.",
     params_model=GetWorksheetNavigatorItemsParameters,
     result_model=GetWorksheetNavigatorItemsResult
-)
-
-
-def move_navigator_item(port: int, params: MoveNavigatorItemParameters) -> None:
-    """
-    Moves the given navigator item under the <i>parentNavigatorItemId</i> in the navigator tree. If <i>previousNavigatorItemId</i> is not given then inserts it at the first place under the new parent. If it is given then inserts it after this navigator item.
-    """
-    multi_conn = multi_conn_instance.get()
-    target_port = Port(port)
-    if target_port not in multi_conn.active:
-        raise ValueError(f"Port {port} is not an active Archicad connection.")
-    conn_header = multi_conn.active[target_port]
-    try:
-
-        conn_header.core.post_command(
-            command="API.MoveNavigatorItem",
-            parameters=params.model_dump(mode='json')
-        )
-        return None
-
-    except ValidationError as e:
-        log.error(f"Validation error for MoveNavigatorItem result: {e}")
-        raise ValueError(extract_archicad_errors(e, "MoveNavigatorItem"))
-    except Exception as e:
-        log.error(f"Error executing MoveNavigatorItem on port {port}: {e}")
-        raise e
-
-
-register_tool_for_dispatch(
-    move_navigator_item,
-    name="navigator_move_navigator_item",
-    title="MoveNavigatorItem",
-    description="Moves the given navigator item under the <i>parentNavigatorItemId</i> in the navigator tree. If <i>previousNavigatorItemId</i> is not given then inserts it at the first place under the new parent. If it is given then inserts it after this navigator item.",
-    params_model=MoveNavigatorItemParameters,
-    result_model=None
-)
-
-
-def rename_navigator_item(port: int, params: RenameNavigatorItemParameters) -> None:
-    """
-    Renames an existing navigator item by specifying either the name or the ID, or both.
-    """
-    multi_conn = multi_conn_instance.get()
-    target_port = Port(port)
-    if target_port not in multi_conn.active:
-        raise ValueError(f"Port {port} is not an active Archicad connection.")
-    conn_header = multi_conn.active[target_port]
-    try:
-
-        conn_header.core.post_command(
-            command="API.RenameNavigatorItem",
-            parameters=params.model_dump(mode='json')
-        )
-        return None
-
-    except ValidationError as e:
-        log.error(f"Validation error for RenameNavigatorItem result: {e}")
-        raise ValueError(extract_archicad_errors(e, "RenameNavigatorItem"))
-    except Exception as e:
-        log.error(f"Error executing RenameNavigatorItem on port {port}: {e}")
-        raise e
-
-
-register_tool_for_dispatch(
-    rename_navigator_item,
-    name="navigator_rename_navigator_item",
-    title="RenameNavigatorItem",
-    description="Renames an existing navigator item by specifying either the name or the ID, or both.",
-    params_model=RenameNavigatorItemParameters,
-    result_model=None
 )
