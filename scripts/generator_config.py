@@ -40,7 +40,10 @@ TAPIR_CONFIG = ApiSourceConfig(
         "GenerateDocumentation", # command only for internal use
         "ShowScriptUI", # used in apps
         "GetScriptUIResult", # used in apps
-        "GetNavigatorItemTree", # no result model in multiconn, so the tool would return None - official command returns the tree
+        "GetNavigatorItemTree", # result model missing from tapir documentation
+        "DeleteAttributes",  # official has a simpler interface for the same functionality (works for MEP systems)
+        "DeleteNavigatorItems",  # same parameters as the Tapir command
+        "MoveNavigatorItem",  # same parameters as the Tapir command
     },
     paginated_commands={
         "GetAllElements": "elements",
@@ -91,9 +94,6 @@ OFFICIAL_CONFIG = ApiSourceConfig(
         "GetProfileAttributes", # Tapir returns index
         "GetSurfaceAttributes", # Tapir returns index
         "GetZoneCategoryAttributes", # Tapir returns index
-        "DeleteAttributes", # Tapir command takes attribute type and index or name, not only ids
-        "DeleteNavigatorItems", # same parameters as the Tapir command
-        "MoveNavigatorItem", # same parameters as the Tapir command
         "RenameNavigatorItem", # Tapir command takes flat parameters instead of a union
     },
     paginated_commands = {
