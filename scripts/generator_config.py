@@ -75,7 +75,10 @@ TAPIR_CONFIG = ApiSourceConfig(
         "GetAttributesByType": "attributes",
         "GetIssues": "issues",
         "GetElementsByIFCIds": "elementsByIFCIds",
-        "GetElementsOfDesignOptions": "elementsOfDesignOptions"
+        "GetMEPElements": "elements",
+        "GetAvailableLibraryParts": "libraryParts",
+        "GetDetailsOfElements": "detailsOfElements",
+        "GetGDLParametersOfElements": "gdlParametersOfElements",
     }
 )
 
