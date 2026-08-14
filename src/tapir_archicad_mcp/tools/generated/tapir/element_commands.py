@@ -339,9 +339,17 @@ register_tool_for_dispatch(
 )
 
 
-def get_details_of_elements(port: int, params: GetDetailsOfElementsParameters) -> GetDetailsOfElementsResult:
+class PaginatedGetDetailsOfElementsResult(BaseModel):
+    """A paginated version of the GetDetailsOfElementsResult."""
+    detailsOfElements: list[Any]
+    next_page_token: str | None = None
+
+
+def get_details_of_elements(port: int, params: GetDetailsOfElementsParameters, page_token: str | None = None) -> PaginatedGetDetailsOfElementsResult:
     """
     Gets the details of the given elements (geometry parameters etc).
+        This response is paginated. If 'next_page_token' is returned, call this function
+        again with that token to get the next page of results.
     """
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
@@ -350,11 +358,32 @@ def get_details_of_elements(port: int, params: GetDetailsOfElementsParameters) -
     conn_header = multi_conn.active[target_port]
     try:
 
-        result_dict = conn_header.core.post_tapir_command(
-            command="GetDetailsOfElements",
-            parameters=params.model_dump(mode='json')
-        )
-        return validate_result(GetDetailsOfElementsResult, result_dict)
+        cache_key = f"{port}:GetDetailsOfElements:{params.model_dump_json()}"
+
+        if not page_token:
+            full_response_dict = conn_header.core.post_tapir_command(
+                command="GetDetailsOfElements",
+                parameters=params.model_dump(mode='json')
+            )
+            full_response_model = validate_result(GetDetailsOfElementsResult, full_response_dict)
+            PAGINATION_CACHE[cache_key] = (full_response_model, time.time())
+
+        if cache_key not in PAGINATION_CACHE:
+            raise ValueError("Pagination session expired or invalid. Please start a new request.")
+
+        full_response_model, timestamp = PAGINATION_CACHE[cache_key]
+        if time.time() - timestamp > CACHE_LIFETIME_SECONDS:
+            del PAGINATION_CACHE[cache_key]
+            raise ValueError("Pagination session expired. Please start a new request.")
+
+        list_to_paginate = getattr(full_response_model, "detailsOfElements")
+        paginated_result = handle_paginated_request(list_to_paginate, page_token)
+
+        response_data = full_response_model.model_dump()
+        response_data["detailsOfElements"] = paginated_result.items
+        response_data["next_page_token"] = paginated_result.next_page_token
+
+        return PaginatedGetDetailsOfElementsResult.model_validate(response_data)
 
     except ValidationError as e:
         log.error(f"Validation error for GetDetailsOfElements result: {e}")
@@ -370,7 +399,7 @@ register_tool_for_dispatch(
     title="GetDetailsOfElements",
     description="Gets the details of the given elements (geometry parameters etc).",
     params_model=GetDetailsOfElementsParameters,
-    result_model=GetDetailsOfElementsResult
+    result_model=PaginatedGetDetailsOfElementsResult
 )
 
 
@@ -508,9 +537,17 @@ register_tool_for_dispatch(
 )
 
 
-def get_gdl_parameters_of_elements(port: int, params: GetGDLParametersOfElementsParameters) -> GetGDLParametersOfElementsResult:
+class PaginatedGetGDLParametersOfElementsResult(BaseModel):
+    """A paginated version of the GetGDLParametersOfElementsResult."""
+    gdlParametersOfElements: list[Any]
+    next_page_token: str | None = None
+
+
+def get_gdl_parameters_of_elements(port: int, params: GetGDLParametersOfElementsParameters, page_token: str | None = None) -> PaginatedGetGDLParametersOfElementsResult:
     """
     Gets all the GDL parameters (name, type, value) of the given elements.
+        This response is paginated. If 'next_page_token' is returned, call this function
+        again with that token to get the next page of results.
     """
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
@@ -519,11 +556,32 @@ def get_gdl_parameters_of_elements(port: int, params: GetGDLParametersOfElements
     conn_header = multi_conn.active[target_port]
     try:
 
-        result_dict = conn_header.core.post_tapir_command(
-            command="GetGDLParametersOfElements",
-            parameters=params.model_dump(mode='json')
-        )
-        return validate_result(GetGDLParametersOfElementsResult, result_dict)
+        cache_key = f"{port}:GetGDLParametersOfElements:{params.model_dump_json()}"
+
+        if not page_token:
+            full_response_dict = conn_header.core.post_tapir_command(
+                command="GetGDLParametersOfElements",
+                parameters=params.model_dump(mode='json')
+            )
+            full_response_model = validate_result(GetGDLParametersOfElementsResult, full_response_dict)
+            PAGINATION_CACHE[cache_key] = (full_response_model, time.time())
+
+        if cache_key not in PAGINATION_CACHE:
+            raise ValueError("Pagination session expired or invalid. Please start a new request.")
+
+        full_response_model, timestamp = PAGINATION_CACHE[cache_key]
+        if time.time() - timestamp > CACHE_LIFETIME_SECONDS:
+            del PAGINATION_CACHE[cache_key]
+            raise ValueError("Pagination session expired. Please start a new request.")
+
+        list_to_paginate = getattr(full_response_model, "gdlParametersOfElements")
+        paginated_result = handle_paginated_request(list_to_paginate, page_token)
+
+        response_data = full_response_model.model_dump()
+        response_data["gdlParametersOfElements"] = paginated_result.items
+        response_data["next_page_token"] = paginated_result.next_page_token
+
+        return PaginatedGetGDLParametersOfElementsResult.model_validate(response_data)
 
     except ValidationError as e:
         log.error(f"Validation error for GetGDLParametersOfElements result: {e}")
@@ -539,7 +597,7 @@ register_tool_for_dispatch(
     title="GetGDLParametersOfElements",
     description="Gets all the GDL parameters (name, type, value) of the given elements.",
     params_model=GetGDLParametersOfElementsParameters,
-    result_model=GetGDLParametersOfElementsResult
+    result_model=PaginatedGetGDLParametersOfElementsResult
 )
 
 

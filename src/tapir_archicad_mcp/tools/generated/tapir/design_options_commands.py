@@ -5,10 +5,6 @@ from multiconn_archicad.basic_types import Port
 from tapir_archicad_mcp.context import multi_conn_instance
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
 from tapir_archicad_mcp.tools.validation import validate_result, extract_archicad_errors
-import time
-from typing import Any
-from pydantic import BaseModel
-from tapir_archicad_mcp.pagination import handle_paginated_request, PAGINATION_CACHE, CACHE_LIFETIME_SECONDS
 from multiconn_archicad.models.tapir.commands import (
     CreateDesignOptionCombinationsParameters,
     CreateDesignOptionCombinationsResult,
@@ -278,17 +274,9 @@ register_tool_for_dispatch(
 )
 
 
-class PaginatedGetElementsOfDesignOptionsResult(BaseModel):
-    """A paginated version of the GetElementsOfDesignOptionsResult."""
-    elementsOfDesignOptions: list[Any]
-    next_page_token: str | None = None
-
-
-def get_elements_of_design_options(port: int, params: GetElementsOfDesignOptionsParameters, page_token: str | None = None) -> PaginatedGetElementsOfDesignOptionsResult:
+def get_elements_of_design_options(port: int, params: GetElementsOfDesignOptionsParameters) -> GetElementsOfDesignOptionsResult:
     """
     Retrieves the elements associated with the given design options. Available from Archicad 29.
-        This response is paginated. If 'next_page_token' is returned, call this function
-        again with that token to get the next page of results.
     """
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
@@ -297,32 +285,11 @@ def get_elements_of_design_options(port: int, params: GetElementsOfDesignOptions
     conn_header = multi_conn.active[target_port]
     try:
 
-        cache_key = f"{port}:GetElementsOfDesignOptions:{params.model_dump_json()}"
-
-        if not page_token:
-            full_response_dict = conn_header.core.post_tapir_command(
-                command="GetElementsOfDesignOptions",
-                parameters=params.model_dump(mode='json')
-            )
-            full_response_model = validate_result(GetElementsOfDesignOptionsResult, full_response_dict)
-            PAGINATION_CACHE[cache_key] = (full_response_model, time.time())
-
-        if cache_key not in PAGINATION_CACHE:
-            raise ValueError("Pagination session expired or invalid. Please start a new request.")
-
-        full_response_model, timestamp = PAGINATION_CACHE[cache_key]
-        if time.time() - timestamp > CACHE_LIFETIME_SECONDS:
-            del PAGINATION_CACHE[cache_key]
-            raise ValueError("Pagination session expired. Please start a new request.")
-
-        list_to_paginate = getattr(full_response_model, "elementsOfDesignOptions")
-        paginated_result = handle_paginated_request(list_to_paginate, page_token)
-
-        response_data = full_response_model.model_dump()
-        response_data["elementsOfDesignOptions"] = paginated_result.items
-        response_data["next_page_token"] = paginated_result.next_page_token
-
-        return PaginatedGetElementsOfDesignOptionsResult.model_validate(response_data)
+        result_dict = conn_header.core.post_tapir_command(
+            command="GetElementsOfDesignOptions",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(GetElementsOfDesignOptionsResult, result_dict)
 
     except ValidationError as e:
         log.error(f"Validation error for GetElementsOfDesignOptions result: {e}")
@@ -338,7 +305,7 @@ register_tool_for_dispatch(
     title="GetElementsOfDesignOptions",
     description="Retrieves the elements associated with the given design options. Available from Archicad 29.",
     params_model=GetElementsOfDesignOptionsParameters,
-    result_model=PaginatedGetElementsOfDesignOptionsResult
+    result_model=GetElementsOfDesignOptionsResult
 )
 
 
