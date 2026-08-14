@@ -48,7 +48,7 @@ def create_groups(port: int, params: CreateGroupsParameters) -> CreateGroupsResu
 
 register_tool_for_dispatch(
     create_groups,
-    name="dev_create_groups",
+    name="grouping_create_groups",
     title="CreateGroups",
     description="Creates groups of the passed elements",
     params_model=CreateGroupsParameters,
@@ -83,7 +83,7 @@ def get_elements_of_groups(port: int, params: GetElementsOfGroupsParameters) -> 
 
 register_tool_for_dispatch(
     get_elements_of_groups,
-    name="dev_get_elements_of_groups",
+    name="grouping_get_elements_of_groups",
     title="GetElementsOfGroups",
     description="Gets the elements directly contained by each given group.",
     params_model=GetElementsOfGroupsParameters,
@@ -118,7 +118,7 @@ def get_groups_of_elements(port: int, params: GetGroupsOfElementsParameters) -> 
 
 register_tool_for_dispatch(
     get_groups_of_elements,
-    name="dev_get_groups_of_elements",
+    name="grouping_get_groups_of_elements",
     title="GetGroupsOfElements",
     description="Gets the identifier of the group that directly contains each given element. Returns an error for elements that are not part of any group.",
     params_model=GetGroupsOfElementsParameters,
@@ -153,7 +153,7 @@ def get_suspend_groups_mode(port: int) -> GetSuspendGroupsModeResult:
 
 register_tool_for_dispatch(
     get_suspend_groups_mode,
-    name="dev_get_suspend_groups_mode",
+    name="grouping_get_suspend_groups_mode",
     title="GetSuspendGroupsMode",
     description="Gets the current state of the Suspend Groups mode.",
     params_model=None,
@@ -188,7 +188,7 @@ def set_suspend_groups_mode(port: int, params: SetSuspendGroupsModeParameters) -
 
 register_tool_for_dispatch(
     set_suspend_groups_mode,
-    name="dev_set_suspend_groups_mode",
+    name="grouping_set_suspend_groups_mode",
     title="SetSuspendGroupsMode",
     description="Turns the Suspend Groups mode on or off. Suspend groups to perform operations on elements that are part of a group; remember to restore the previous state afterwards.",
     params_model=SetSuspendGroupsModeParameters,

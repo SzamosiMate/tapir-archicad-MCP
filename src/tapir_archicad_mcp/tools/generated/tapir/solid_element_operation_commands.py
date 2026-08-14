@@ -45,7 +45,7 @@ def create_solid_element_links(port: int, params: CreateSolidElementLinksParamet
 
 register_tool_for_dispatch(
     create_solid_element_links,
-    name="elements_create_solid_element_links",
+    name="solid_ops__create_solid_element_links",
     title="CreateSolidElementLinks",
     description="Creates solid element operation links between target and operator elements.",
     params_model=CreateSolidElementLinksParameters,
@@ -80,7 +80,7 @@ def get_solid_element_links(port: int, params: GetSolidElementLinksParameters) -
 
 register_tool_for_dispatch(
     get_solid_element_links,
-    name="elements_get_solid_element_links",
+    name="solid_ops__get_solid_element_links",
     title="GetSolidElementLinks",
     description="Returns solid element operation links for each queried element, grouped by role (target or operator).",
     params_model=GetSolidElementLinksParameters,
@@ -115,7 +115,7 @@ def remove_solid_element_links(port: int, params: RemoveSolidElementLinksParamet
 
 register_tool_for_dispatch(
     remove_solid_element_links,
-    name="elements_remove_solid_element_links",
+    name="solid_ops__remove_solid_element_links",
     title="RemoveSolidElementLinks",
     description="Removes solid element operation links between target and operator elements.",
     params_model=RemoveSolidElementLinksParameters,

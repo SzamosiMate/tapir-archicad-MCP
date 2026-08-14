@@ -5,7 +5,9 @@ from tapir_archicad_mcp.tools.generated.tapir.attribute_commands import *
 from tapir_archicad_mcp.tools.generated.tapir.classification_commands import *
 from tapir_archicad_mcp.tools.generated.tapir.design_options_commands import *
 from tapir_archicad_mcp.tools.generated.tapir.element_commands import *
+from tapir_archicad_mcp.tools.generated.tapir.element_creation_commands import *
 from tapir_archicad_mcp.tools.generated.tapir.element_grouping_commands import *
+from tapir_archicad_mcp.tools.generated.tapir.element_modification_commands import *
 from tapir_archicad_mcp.tools.generated.tapir.favorites_commands import *
 from tapir_archicad_mcp.tools.generated.tapir.ifc_commands import *
 from tapir_archicad_mcp.tools.generated.tapir.issue_management_commands import *

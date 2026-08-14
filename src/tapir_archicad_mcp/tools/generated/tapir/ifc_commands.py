@@ -82,7 +82,7 @@ def get_elements_by_ifc_ids(port: int, params: GetElementsByIFCIdsParameters, pa
 
 register_tool_for_dispatch(
     get_elements_by_ifc_ids,
-    name="dev_get_elements_by_ifc_ids",
+    name="ifc_get_elements_by_ifc_ids",
     title="GetElementsByIFCIds",
     description="Retrieves the elements by the given IFC identifiers.",
     params_model=GetElementsByIFCIdsParameters,
@@ -117,7 +117,7 @@ def get_ifc_ids_of_elements(port: int, params: GetIFCIdsOfElementsParameters) ->
 
 register_tool_for_dispatch(
     get_ifc_ids_of_elements,
-    name="dev_get_ifc_ids_of_elements",
+    name="ifc_get_ifc_ids_of_elements",
     title="GetIFCIdsOfElements",
     description="Retrieves the IFC identifiers of the given elements.",
     params_model=GetIFCIdsOfElementsParameters,
@@ -152,7 +152,7 @@ def get_ifc_properties_of_elements(port: int, params: GetIFCPropertiesOfElements
 
 register_tool_for_dispatch(
     get_ifc_properties_of_elements,
-    name="dev_get_ifc_properties_of_elements",
+    name="ifc_get_ifc_properties_of_elements",
     title="GetIFCPropertiesOfElements",
     description="Retrieves the IFC properties of the given elements.",
     params_model=GetIFCPropertiesOfElementsParameters,
@@ -187,7 +187,7 @@ def get_ifc_type_of_elements(port: int, params: GetIFCTypeOfElementsParameters) 
 
 register_tool_for_dispatch(
     get_ifc_type_of_elements,
-    name="dev_get_ifc_type_of_elements",
+    name="ifc_get_ifc_type_of_elements",
     title="GetIFCTypeOfElements",
     description="Retrieves the IFC types of the given elements.",
     params_model=GetIFCTypeOfElementsParameters,
@@ -222,7 +222,7 @@ def ifc_file_operation(port: int, params: IFCFileOperationParameters) -> IFCFile
 
 register_tool_for_dispatch(
     ifc_file_operation,
-    name="dev_ifc_file_operation",
+    name="ifc_ifc_file_operation",
     title="IFCFileOperation",
     description="Executes an IFC file operation.",
     params_model=IFCFileOperationParameters,

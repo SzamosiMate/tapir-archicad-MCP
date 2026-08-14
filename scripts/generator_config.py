@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Dict, Set
 
 ROOT_DIR = Path(__file__).parent.parent
+ORGANIZED_COMMANDS_URL = "https://raw.githubusercontent.com/SzamosiMate/multiconn_archicad/refs/heads/main/code_generation/unified/temp_files/01_organized_commands.json"
 
 @dataclass
 class ApiSourceConfig:
@@ -22,16 +23,37 @@ class ApiSourceConfig:
 
 TAPIR_CONFIG = ApiSourceConfig(
     name="tapir",
-    details_url="https://raw.githubusercontent.com/SzamosiMate/multiconn_archicad/main/code_generation/tapir/schema/_command_details.json",
+    details_url=ORGANIZED_COMMANDS_URL,
     model_names_url="https://raw.githubusercontent.com/SzamosiMate/multiconn_archicad/main/code_generation/tapir/schema/_command_model_names.json",
     output_dir=ROOT_DIR / "src" / "tapir_archicad_mcp" / "tools" / "generated" / "tapir",
     api_call_method="post_tapir_command",
     group_mapping={
-        "Application Commands": "app", "Project Commands": "project", "Element Commands": "elements",
-        "Favorites Commands": "favorites", "Property Commands": "properties", "Attribute Commands": "attributes",
-        "Library Commands": "library", "Navigator Commands": "navigator", "Issue Management Commands": "issues",
-        "Revision Management Commands": "revisions", "Teamwork Commands": "teamwork", "Developer Commands": "dev",
-        "Solid Element Operation Commands": "elements",
+        # Elements
+        "Element Creation Commands": "elements",
+        "Element Modification Commands": "elements",
+        "Element Commands": "elements",
+        "Element grouping Commands": "grouping",
+        "Solid Element Operation Commands": "solid_ops_",
+
+        # Domain specifics
+        "MEP Commands": "mep",
+        "Keynote Commands": "keynotes",
+        "Design Options Commands": "design_options",
+        "IFC Commands": "ifc",
+        "Classification Commands": "classifications",
+        "Property Commands": "properties",
+        "Attribute Commands": "attributes",
+        "Favorites Commands": "favorites",
+        "Library Commands": "library",
+
+        # Project & App structure
+        "Application Commands": "app",
+        "Project Commands": "project",
+        "Navigator Commands": "navigator",
+        "Issue Management Commands": "issues",
+        "Revision Management Commands": "revisions",
+        "Teamwork Commands": "teamwork",
+        "Script UI Commands": "dev",
     },
     commands_to_exclude={
         "GetProjectInfo", # discovery_list_active_archicads covers this
@@ -60,16 +82,24 @@ TAPIR_CONFIG = ApiSourceConfig(
 
 OFFICIAL_CONFIG = ApiSourceConfig(
     name="official",
-    details_url="https://raw.githubusercontent.com/SzamosiMate/multiconn_archicad/main/code_generation/official/schema/_command_details.json",
+    details_url=ORGANIZED_COMMANDS_URL,
     model_names_url="https://raw.githubusercontent.com/SzamosiMate/multiconn_archicad/main/code_generation/official/schema/_command_model_names.json",
     output_dir=ROOT_DIR / "src" / "tapir_archicad_mcp" / "tools" / "generated" / "official",
     api_call_method="post_command",
     prefix_to_strip="API.",
     group_mapping={
-        "View Map Commands": "view", "Layout Book Commands": "layout", "Navigator Tree Commands": "navigator",
-        "Attribute Commands": "attributes", "Element Geometry Commands": "elements", "Element Listing Commands": "elements",
-        "Element Relation Commands": "elements", "Classification Commands": "classifications", "Property Commands": "properties",
-        "Component Commands": "components", "AddOn Commands": "dev", "Basic Commands": "app",
+        "View Map Commands": "view",
+        "Layout Book Commands": "layout",
+        "Navigator Tree Commands": "navigator",
+        "Attribute Commands": "attributes",
+        "Element Geometry Commands": "elements",
+        "Element Listing Commands": "elements",
+        "Element Relation Commands": "elements",
+        "Classification Commands": "classifications",
+        "Property Commands": "properties",
+        "Component Commands": "components",
+        "AddOn Commands": "dev",
+        "Basic Commands": "app",
     },
     commands_to_exclude={
         "Get3DBoundingBoxes", # Tapir command works on subelements

@@ -54,7 +54,7 @@ def connect_mep_elements(port: int, params: ConnectMEPElementsParameters) -> Con
 
 register_tool_for_dispatch(
     connect_mep_elements,
-    name="dev_connect_mep_elements",
+    name="mep_connect_mep_elements",
     title="ConnectMEPElements",
     description="Connects MEP routing elements to other MEP elements or routes. Merges routes, splits routes or creates branch elements as needed. Available from Archicad 28.",
     params_model=ConnectMEPElementsParameters,
@@ -89,7 +89,7 @@ def create_mep_elements(port: int, params: CreateMEPElementsParameters) -> Creat
 
 register_tool_for_dispatch(
     create_mep_elements,
-    name="dev_create_mep_elements",
+    name="mep_create_mep_elements",
     title="CreateMEPElements",
     description="Creates MEP elements (Terminal, Accessory, Equipment or Fitting) at the given positions. Available from Archicad 28.",
     params_model=CreateMEPElementsParameters,
@@ -124,7 +124,7 @@ def create_mep_routing_elements(port: int, params: CreateMEPRoutingElementsParam
 
 register_tool_for_dispatch(
     create_mep_routing_elements,
-    name="dev_create_mep_routing_elements",
+    name="mep_create_mep_routing_elements",
     title="CreateMEPRoutingElements",
     description="Creates MEP routing elements (duct, pipe or cable carrier routes) along the given polylines with optional cross section data and MEP system. Available from Archicad 28.",
     params_model=CreateMEPRoutingElementsParameters,
@@ -159,7 +159,7 @@ def get_mep_distribution_systems(port: int) -> GetMEPDistributionSystemsResult:
 
 register_tool_for_dispatch(
     get_mep_distribution_systems,
-    name="dev_get_mep_distribution_systems",
+    name="mep_get_mep_distribution_systems",
     title="GetMEPDistributionSystems",
     description="Retrieves the MEP distribution systems of the project with their domain, MEP system attribute and member elements. Available from Archicad 28.",
     params_model=None,
@@ -194,7 +194,7 @@ def get_mep_elements(port: int, params: GetMEPElementsParameters) -> GetMEPEleme
 
 register_tool_for_dispatch(
     get_mep_elements,
-    name="dev_get_mep_elements",
+    name="mep_get_mep_elements",
     title="GetMEPElements",
     description="Retrieves the MEP (Mechanical, Electrical, Plumbing) elements of the project, optionally filtered by type and domain. MEP elements are ordinary elements, so the generic element commands work on them as well (for example they can be deleted with the DeleteElements command). Available from Archicad 28.",
     params_model=GetMEPElementsParameters,
@@ -229,7 +229,7 @@ def get_mep_ports(port: int, params: GetMEPPortsParameters) -> GetMEPPortsResult
 
 register_tool_for_dispatch(
     get_mep_ports,
-    name="dev_get_mep_ports",
+    name="mep_get_mep_ports",
     title="GetMEPPorts",
     description="Retrieves the ports of the given MEP elements including position, shape, size and connection status. Available from Archicad 28.",
     params_model=GetMEPPortsParameters,
@@ -264,7 +264,7 @@ def get_mep_routing_elements(port: int, params: GetMEPRoutingElementsParameters)
 
 register_tool_for_dispatch(
     get_mep_routing_elements,
-    name="dev_get_mep_routing_elements",
+    name="mep_get_mep_routing_elements",
     title="GetMEPRoutingElements",
     description="Retrieves the details of the given MEP routing elements: domain, MEP system, route polyline, segments with cross section data and nodes. Available from Archicad 28.",
     params_model=GetMEPRoutingElementsParameters,
@@ -299,7 +299,7 @@ def modify_mep_routing_elements(port: int, params: ModifyMEPRoutingElementsParam
 
 register_tool_for_dispatch(
     modify_mep_routing_elements,
-    name="dev_modify_mep_routing_elements",
+    name="mep_modify_mep_routing_elements",
     title="ModifyMEPRoutingElements",
     description="Modifies the given MEP routing elements: MEP system, cross section data of all segments and node positions. Available from Archicad 28.",
     params_model=ModifyMEPRoutingElementsParameters,
