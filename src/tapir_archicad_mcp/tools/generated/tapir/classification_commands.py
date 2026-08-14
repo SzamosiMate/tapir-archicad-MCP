@@ -51,7 +51,7 @@ def create_classification_items(port: int, params: CreateClassificationItemsPara
 
 register_tool_for_dispatch(
     create_classification_items,
-    name="dev_create_classification_items",
+    name="classifications_create_classification_items",
     title="CreateClassificationItems",
     description="Creates Classification Items in the given Classification Systems based on the given parameters.",
     params_model=CreateClassificationItemsParameters,
@@ -86,7 +86,7 @@ def create_classification_systems(port: int, params: CreateClassificationSystems
 
 register_tool_for_dispatch(
     create_classification_systems,
-    name="dev_create_classification_systems",
+    name="classifications_create_classification_systems",
     title="CreateClassificationSystems",
     description="Creates Classification Systems including Classification Items based on the given parameters.",
     params_model=CreateClassificationSystemsParameters,
@@ -121,7 +121,7 @@ def delete_classification_items(port: int, params: DeleteClassificationItemsPara
 
 register_tool_for_dispatch(
     delete_classification_items,
-    name="dev_delete_classification_items",
+    name="classifications_delete_classification_items",
     title="DeleteClassificationItems",
     description="Deletes the given Classification Items.",
     params_model=DeleteClassificationItemsParameters,
@@ -156,7 +156,7 @@ def delete_classification_systems(port: int, params: DeleteClassificationSystems
 
 register_tool_for_dispatch(
     delete_classification_systems,
-    name="dev_delete_classification_systems",
+    name="classifications_delete_classification_systems",
     title="DeleteClassificationSystems",
     description="Deletes the given Classification Systems.",
     params_model=DeleteClassificationSystemsParameters,
@@ -191,7 +191,7 @@ def get_classifications_of_elements(port: int, params: GetClassificationsOfEleme
 
 register_tool_for_dispatch(
     get_classifications_of_elements,
-    name="dev_get_classifications_of_elements",
+    name="classifications_get_classifications_of_elements",
     title="GetClassificationsOfElements",
     description="Returns the classification of the given elements in the given classification systems. It works for subelements of hierarchal elements also.",
     params_model=GetClassificationsOfElementsParameters,
@@ -226,7 +226,7 @@ def set_classifications_of_elements(port: int, params: SetClassificationsOfEleme
 
 register_tool_for_dispatch(
     set_classifications_of_elements,
-    name="dev_set_classifications_of_elements",
+    name="classifications_set_classifications_of_elements",
     title="SetClassificationsOfElements",
     description="Sets the classifications of elements. In order to set the classification of an element to unclassified, omit the classificationItemId field. It works for subelements of hierarchal elements also.",
     params_model=SetClassificationsOfElementsParameters,

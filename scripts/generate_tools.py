@@ -261,29 +261,45 @@ def generate_init_file(config: ApiSourceConfig, module_names: set[str]):
         f.write("\n".join(content))
     log.info(f"Generated __init__.py file at {init_path}")
 
+
 def run_generation_for_source(config: ApiSourceConfig) -> Set[str]:
     log.info(f"--- Starting Generation for {config.name.upper()} ---")
-    command_details_raw = fetch_json_data(config.details_url, f"{config.name} command details")
+
+    # 1. Fetch organized commands JSON and valid model names
+    all_organized_data = fetch_json_data(config.details_url, "Organized Commands")
     valid_model_names_list = fetch_json_data(config.model_names_url, f"{config.name} valid model names")
 
-    if not command_details_raw or not valid_model_names_list:
+    if not all_organized_data or not valid_model_names_list:
         log.critical(f"Could not fetch data for {config.name}. Aborting this source.")
         return set()
 
-    processed_commands = []
-    for cmd in command_details_raw:
-        name_for_api = cmd["name"]
-        name_camel = name_for_api.removeprefix(config.prefix_to_strip)
-        if name_camel in config.commands_to_exclude:
-            continue
-        cmd["name_camel"] = name_camel
-        cmd["name_for_api"] = name_for_api
-        processed_commands.append(cmd)
+    # 2. Extract and flatten commands for the current source ("tapir" or "official")
+    source_groups: dict[str, list[dict]] = all_organized_data.get(config.name, {})
 
-    log.info(f"Generating tools for {len(processed_commands)} commands from {config.name}.")
-    grouped_commands = group_commands_by_category(processed_commands)
+    grouped_commands: dict[str, list[dict]] = {}
+    processed_count = 0
+
+    for group_name, cmd_list in source_groups.items():
+        for cmd in cmd_list:
+            name_for_api = cmd["name"]
+            name_camel = name_for_api.removeprefix(config.prefix_to_strip)
+
+            if name_camel in config.commands_to_exclude:
+                continue
+
+            cmd_copy = dict(cmd)
+            cmd_copy["name_camel"] = name_camel
+            cmd_copy["name_for_api"] = name_for_api
+
+            grouped_commands.setdefault(group_name, []).append(cmd_copy)
+            processed_count += 1
+
+    log.info(
+        f"Generating tools for {processed_count} commands across {len(grouped_commands)} files from {config.name}.")
+
     valid_model_names = set(valid_model_names_list)
 
+    # 3. Generate individual files and __init__.py
     prepare_output_directory(config.output_dir)
     generate_tool_files(grouped_commands, config, valid_model_names)
 
@@ -291,7 +307,7 @@ def run_generation_for_source(config: ApiSourceConfig) -> Set[str]:
     generate_init_file(config, generated_modules)
 
     log.info(f"--- Finished Generation for {config.name.upper()} ---")
-    return {cmd['name_camel'] for cmd in processed_commands}
+    return {cmd["name_camel"] for cmds in grouped_commands.values() for cmd in cmds}
 
 
 if __name__ == "__main__":

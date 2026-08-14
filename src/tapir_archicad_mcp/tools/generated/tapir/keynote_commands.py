@@ -56,7 +56,7 @@ def create_keynote_folders(port: int, params: CreateKeynoteFoldersParameters) ->
 
 register_tool_for_dispatch(
     create_keynote_folders,
-    name="dev_create_keynote_folders",
+    name="keynotes_create_keynote_folders",
     title="CreateKeynoteFolders",
     description="Creates keynote folders under the given parent folders (or under the root folder). Available from Archicad 28.",
     params_model=CreateKeynoteFoldersParameters,
@@ -91,7 +91,7 @@ def create_keynote_items(port: int, params: CreateKeynoteItemsParameters) -> Cre
 
 register_tool_for_dispatch(
     create_keynote_items,
-    name="dev_create_keynote_items",
+    name="keynotes_create_keynote_items",
     title="CreateKeynoteItems",
     description="Creates keynote items in the given parent folders (or in the root folder). Available from Archicad 28.",
     params_model=CreateKeynoteItemsParameters,
@@ -126,7 +126,7 @@ def create_keynote_labels(port: int, params: CreateKeynoteLabelsParameters) -> C
 
 register_tool_for_dispatch(
     create_keynote_labels,
-    name="dev_create_keynote_labels",
+    name="keynotes_create_keynote_labels",
     title="CreateKeynoteLabels",
     description="Creates Label elements that reference the given keynote items via autotext. Available from Archicad 28.",
     params_model=CreateKeynoteLabelsParameters,
@@ -161,7 +161,7 @@ def delete_keynote_folders(port: int, params: DeleteKeynoteFoldersParameters) ->
 
 register_tool_for_dispatch(
     delete_keynote_folders,
-    name="dev_delete_keynote_folders",
+    name="keynotes_delete_keynote_folders",
     title="DeleteKeynoteFolders",
     description="Deletes the given keynote folders including their content. Available from Archicad 28.",
     params_model=DeleteKeynoteFoldersParameters,
@@ -196,7 +196,7 @@ def delete_keynote_items(port: int, params: DeleteKeynoteItemsParameters) -> Del
 
 register_tool_for_dispatch(
     delete_keynote_items,
-    name="dev_delete_keynote_items",
+    name="keynotes_delete_keynote_items",
     title="DeleteKeynoteItems",
     description="Deletes the given keynote items. Available from Archicad 28.",
     params_model=DeleteKeynoteItemsParameters,
@@ -231,7 +231,7 @@ def get_keynote_auto_texts(port: int, params: GetKeynoteAutoTextsParameters) -> 
 
 register_tool_for_dispatch(
     get_keynote_auto_texts,
-    name="dev_get_keynote_auto_texts",
+    name="keynotes_get_keynote_auto_texts",
     title="GetKeynoteAutoTexts",
     description="Retrieves the autotext tokens of the given keynote items. The tokens can be used as label text content to reference the fields of a keynote item. Available from Archicad 28.",
     params_model=GetKeynoteAutoTextsParameters,
@@ -266,7 +266,7 @@ def get_keynote_tree(port: int) -> GetKeynoteTreeResult:
 
 register_tool_for_dispatch(
     get_keynote_tree,
-    name="dev_get_keynote_tree",
+    name="keynotes_get_keynote_tree",
     title="GetKeynoteTree",
     description="Retrieves the whole keynote folder and item hierarchy. The technical root folder is not included in the output; the top-level folders and items are returned directly. Available from Archicad 28.",
     params_model=None,
@@ -301,7 +301,7 @@ def modify_keynote_folders(port: int, params: ModifyKeynoteFoldersParameters) ->
 
 register_tool_for_dispatch(
     modify_keynote_folders,
-    name="dev_modify_keynote_folders",
+    name="keynotes_modify_keynote_folders",
     title="ModifyKeynoteFolders",
     description="Modifies the key, title or reference of the given keynote folders. Available from Archicad 28.",
     params_model=ModifyKeynoteFoldersParameters,
@@ -336,7 +336,7 @@ def modify_keynote_items(port: int, params: ModifyKeynoteItemsParameters) -> Mod
 
 register_tool_for_dispatch(
     modify_keynote_items,
-    name="dev_modify_keynote_items",
+    name="keynotes_modify_keynote_items",
     title="ModifyKeynoteItems",
     description="Modifies the key, title, description or reference of the given keynote items. Available from Archicad 28.",
     params_model=ModifyKeynoteItemsParameters,

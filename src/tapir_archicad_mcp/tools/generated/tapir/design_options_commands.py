@@ -62,7 +62,7 @@ def create_design_option_combinations(port: int, params: CreateDesignOptionCombi
 
 register_tool_for_dispatch(
     create_design_option_combinations,
-    name="dev_create_design_option_combinations",
+    name="design_options_create_design_option_combinations",
     title="CreateDesignOptionCombinations",
     description="Creates new design option combinations with the given parameters. Available from Archicad 29.",
     params_model=CreateDesignOptionCombinationsParameters,
@@ -97,7 +97,7 @@ def create_design_option_sets(port: int, params: CreateDesignOptionSetsParameter
 
 register_tool_for_dispatch(
     create_design_option_sets,
-    name="dev_create_design_option_sets",
+    name="design_options_create_design_option_sets",
     title="CreateDesignOptionSets",
     description="Creates new design option sets with the given names. Available from Archicad 29.",
     params_model=CreateDesignOptionSetsParameters,
@@ -132,7 +132,7 @@ def create_design_options(port: int, params: CreateDesignOptionsParameters) -> C
 
 register_tool_for_dispatch(
     create_design_options,
-    name="dev_create_design_options",
+    name="design_options_create_design_options",
     title="CreateDesignOptions",
     description="Creates new design options with the given parameters. Available from Archicad 29.",
     params_model=CreateDesignOptionsParameters,
@@ -167,7 +167,7 @@ def get_design_option_combinations(port: int) -> GetDesignOptionCombinationsResu
 
 register_tool_for_dispatch(
     get_design_option_combinations,
-    name="dev_get_design_option_combinations",
+    name="design_options_get_design_option_combinations",
     title="GetDesignOptionCombinations",
     description="Retrieves information about existing design option combinations.",
     params_model=None,
@@ -202,7 +202,7 @@ def get_design_option_for_elements(port: int, params: GetDesignOptionForElements
 
 register_tool_for_dispatch(
     get_design_option_for_elements,
-    name="dev_get_design_option_for_elements",
+    name="design_options_get_design_option_for_elements",
     title="GetDesignOptionForElements",
     description="Retrieves the design option association for the specified elements. Available from Archicad 29.",
     params_model=GetDesignOptionForElementsParameters,
@@ -237,7 +237,7 @@ def get_design_option_sets(port: int) -> GetDesignOptionSetsResult:
 
 register_tool_for_dispatch(
     get_design_option_sets,
-    name="dev_get_design_option_sets",
+    name="design_options_get_design_option_sets",
     title="GetDesignOptionSets",
     description="Retrieves information about existing design option sets. Available from Archicad 29.",
     params_model=None,
@@ -272,7 +272,7 @@ def get_design_options(port: int) -> GetDesignOptionsResult:
 
 register_tool_for_dispatch(
     get_design_options,
-    name="dev_get_design_options",
+    name="design_options_get_design_options",
     title="GetDesignOptions",
     description="Retrieves information about existing design options. Available from Archicad 29.",
     params_model=None,
@@ -336,7 +336,7 @@ def get_elements_of_design_options(port: int, params: GetElementsOfDesignOptions
 
 register_tool_for_dispatch(
     get_elements_of_design_options,
-    name="dev_get_elements_of_design_options",
+    name="design_options_get_elements_of_design_options",
     title="GetElementsOfDesignOptions",
     description="Retrieves the elements associated with the given design options. Available from Archicad 29.",
     params_model=GetElementsOfDesignOptionsParameters,
@@ -371,7 +371,7 @@ def move_design_options_to_another_set(port: int, params: MoveDesignOptionsToAno
 
 register_tool_for_dispatch(
     move_design_options_to_another_set,
-    name="dev_move_design_options_to_another_set",
+    name="design_options_move_design_options_to_another_set",
     title="MoveDesignOptionsToAnotherSet",
     description="Moves the given design options to another sets. Available from Archicad 29.",
     params_model=MoveDesignOptionsToAnotherSetParameters,
@@ -406,7 +406,7 @@ def move_elements_to_design_options(port: int, params: MoveElementsToDesignOptio
 
 register_tool_for_dispatch(
     move_elements_to_design_options,
-    name="dev_move_elements_to_design_options",
+    name="design_options_move_elements_to_design_options",
     title="MoveElementsToDesignOptions",
     description="Moves the given elements into the given design options. Use NULLGuid for design option to remove the element from any design options and move it to the main model. Available from Archicad 29.",
     params_model=MoveElementsToDesignOptionsParameters,
@@ -441,7 +441,7 @@ def set_active_design_options_in_combinations(port: int, params: SetActiveDesign
 
 register_tool_for_dispatch(
     set_active_design_options_in_combinations,
-    name="dev_set_active_design_options_in_combinations",
+    name="design_options_set_active_design_options_in_combinations",
     title="SetActiveDesignOptionsInCombinations",
     description="Sets active design options in the given combinations. Available from Archicad 29.",
     params_model=SetActiveDesignOptionsInCombinationsParameters,
