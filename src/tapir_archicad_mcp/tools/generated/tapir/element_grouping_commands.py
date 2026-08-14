@@ -8,7 +8,14 @@ from tapir_archicad_mcp.tools.validation import validate_result, extract_archica
 
 from multiconn_archicad.models.tapir.commands import (
     CreateGroupsParameters,
-CreateGroupsResult
+CreateGroupsResult,
+GetElementsOfGroupsParameters,
+GetElementsOfGroupsResult,
+GetGroupsOfElementsParameters,
+GetGroupsOfElementsResult,
+GetSuspendGroupsModeResult,
+SetSuspendGroupsModeParameters,
+SetSuspendGroupsModeResult
 )
 
 
@@ -46,4 +53,144 @@ register_tool_for_dispatch(
     description="Creates groups of the passed elements",
     params_model=CreateGroupsParameters,
     result_model=CreateGroupsResult
+)
+
+
+def get_elements_of_groups(port: int, params: GetElementsOfGroupsParameters) -> GetElementsOfGroupsResult:
+    """
+    Gets the elements directly contained by each given group.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="GetElementsOfGroups",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(GetElementsOfGroupsResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for GetElementsOfGroups result: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetElementsOfGroups"))
+    except Exception as e:
+        log.error(f"Error executing GetElementsOfGroups on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    get_elements_of_groups,
+    name="dev_get_elements_of_groups",
+    title="GetElementsOfGroups",
+    description="Gets the elements directly contained by each given group.",
+    params_model=GetElementsOfGroupsParameters,
+    result_model=GetElementsOfGroupsResult
+)
+
+
+def get_groups_of_elements(port: int, params: GetGroupsOfElementsParameters) -> GetGroupsOfElementsResult:
+    """
+    Gets the identifier of the group that directly contains each given element. Returns an error for elements that are not part of any group.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="GetGroupsOfElements",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(GetGroupsOfElementsResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for GetGroupsOfElements result: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetGroupsOfElements"))
+    except Exception as e:
+        log.error(f"Error executing GetGroupsOfElements on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    get_groups_of_elements,
+    name="dev_get_groups_of_elements",
+    title="GetGroupsOfElements",
+    description="Gets the identifier of the group that directly contains each given element. Returns an error for elements that are not part of any group.",
+    params_model=GetGroupsOfElementsParameters,
+    result_model=GetGroupsOfElementsResult
+)
+
+
+def get_suspend_groups_mode(port: int) -> GetSuspendGroupsModeResult:
+    """
+    Gets the current state of the Suspend Groups mode.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="GetSuspendGroupsMode",
+            parameters={}
+        )
+        return validate_result(GetSuspendGroupsModeResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for GetSuspendGroupsMode result: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetSuspendGroupsMode"))
+    except Exception as e:
+        log.error(f"Error executing GetSuspendGroupsMode on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    get_suspend_groups_mode,
+    name="dev_get_suspend_groups_mode",
+    title="GetSuspendGroupsMode",
+    description="Gets the current state of the Suspend Groups mode.",
+    params_model=None,
+    result_model=GetSuspendGroupsModeResult
+)
+
+
+def set_suspend_groups_mode(port: int, params: SetSuspendGroupsModeParameters) -> SetSuspendGroupsModeResult:
+    """
+    Turns the Suspend Groups mode on or off. Suspend groups to perform operations on elements that are part of a group; remember to restore the previous state afterwards.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="SetSuspendGroupsMode",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(SetSuspendGroupsModeResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for SetSuspendGroupsMode result: {e}")
+        raise ValueError(extract_archicad_errors(e, "SetSuspendGroupsMode"))
+    except Exception as e:
+        log.error(f"Error executing SetSuspendGroupsMode on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    set_suspend_groups_mode,
+    name="dev_set_suspend_groups_mode",
+    title="SetSuspendGroupsMode",
+    description="Turns the Suspend Groups mode on or off. Suspend groups to perform operations on elements that are part of a group; remember to restore the previous state afterwards.",
+    params_model=SetSuspendGroupsModeParameters,
+    result_model=SetSuspendGroupsModeResult
 )

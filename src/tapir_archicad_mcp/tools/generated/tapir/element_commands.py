@@ -13,20 +13,30 @@ from tapir_archicad_mcp.pagination import handle_paginated_request, PAGINATION_C
 from multiconn_archicad.models.tapir.commands import (
     ChangeSelectionOfElementsParameters,
 ChangeSelectionOfElementsResult,
+CreateArcsParameters,
+CreateArcsResult,
 CreateAssociativeDimensionsOnSectionParameters,
 CreateAssociativeDimensionsOnSectionResult,
 CreateAssociativeDimensionsParameters,
 CreateAssociativeDimensionsResult,
 CreateBeamsParameters,
 CreateBeamsResult,
+CreateCirclesParameters,
+CreateCirclesResult,
 CreateColumnsParameters,
 CreateColumnsResult,
 CreateDoorsParameters,
 CreateDoorsResult,
+CreateHatchesParameters,
+CreateHatchesResult,
+CreateHotspotsParameters,
+CreateHotspotsResult,
 CreateLabelsParameters,
 CreateLabelsResult,
 CreateLampsParameters,
 CreateLampsResult,
+CreateLineElementsParameters,
+CreateLineElementsResult,
 CreateMeshesParameters,
 CreateMeshesResult,
 CreateMorphsParameters,
@@ -41,6 +51,8 @@ CreateRoofsParameters,
 CreateRoofsResult,
 CreateSlabsParameters,
 CreateSlabsResult,
+CreateSplinesParameters,
+CreateSplinesResult,
 CreateStairsParameters,
 CreateStairsResult,
 CreateTextsParameters,
@@ -160,6 +172,41 @@ register_tool_for_dispatch(
 )
 
 
+def create_arcs(port: int, params: CreateArcsParameters) -> CreateArcsResult:
+    """
+    Creates Arc elements based on the given parameters.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="CreateArcs",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(CreateArcsResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for CreateArcs result: {e}")
+        raise ValueError(extract_archicad_errors(e, "CreateArcs"))
+    except Exception as e:
+        log.error(f"Error executing CreateArcs on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    create_arcs,
+    name="elements_create_arcs",
+    title="CreateArcs",
+    description="Creates Arc elements based on the given parameters.",
+    params_model=CreateArcsParameters,
+    result_model=CreateArcsResult
+)
+
+
 def create_associative_dimensions(port: int, params: CreateAssociativeDimensionsParameters) -> CreateAssociativeDimensionsResult:
     """
     Creates associative linear dimensions from explicit witness point references.
@@ -265,6 +312,41 @@ register_tool_for_dispatch(
 )
 
 
+def create_circles(port: int, params: CreateCirclesParameters) -> CreateCirclesResult:
+    """
+    Creates Circle elements based on the given parameters.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="CreateCircles",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(CreateCirclesResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for CreateCircles result: {e}")
+        raise ValueError(extract_archicad_errors(e, "CreateCircles"))
+    except Exception as e:
+        log.error(f"Error executing CreateCircles on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    create_circles,
+    name="elements_create_circles",
+    title="CreateCircles",
+    description="Creates Circle elements based on the given parameters.",
+    params_model=CreateCirclesParameters,
+    result_model=CreateCirclesResult
+)
+
+
 def create_columns(port: int, params: CreateColumnsParameters) -> CreateColumnsResult:
     """
     Creates Column elements based on the given parameters.
@@ -335,6 +417,76 @@ register_tool_for_dispatch(
 )
 
 
+def create_hatches(port: int, params: CreateHatchesParameters) -> CreateHatchesResult:
+    """
+    Creates Hatch elements based on the given parameters.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="CreateHatches",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(CreateHatchesResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for CreateHatches result: {e}")
+        raise ValueError(extract_archicad_errors(e, "CreateHatches"))
+    except Exception as e:
+        log.error(f"Error executing CreateHatches on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    create_hatches,
+    name="elements_create_hatches",
+    title="CreateHatches",
+    description="Creates Hatch elements based on the given parameters.",
+    params_model=CreateHatchesParameters,
+    result_model=CreateHatchesResult
+)
+
+
+def create_hotspots(port: int, params: CreateHotspotsParameters) -> CreateHotspotsResult:
+    """
+    Creates Hotspot elements based on the given parameters.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="CreateHotspots",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(CreateHotspotsResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for CreateHotspots result: {e}")
+        raise ValueError(extract_archicad_errors(e, "CreateHotspots"))
+    except Exception as e:
+        log.error(f"Error executing CreateHotspots on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    create_hotspots,
+    name="elements_create_hotspots",
+    title="CreateHotspots",
+    description="Creates Hotspot elements based on the given parameters.",
+    params_model=CreateHotspotsParameters,
+    result_model=CreateHotspotsResult
+)
+
+
 def create_labels(port: int, params: CreateLabelsParameters) -> CreateLabelsResult:
     """
     Creates Label elements based on the given parameters.
@@ -402,6 +554,41 @@ register_tool_for_dispatch(
     description="Creates Lamp elements based on the given parameters.",
     params_model=CreateLampsParameters,
     result_model=CreateLampsResult
+)
+
+
+def create_line_elements(port: int, params: CreateLineElementsParameters) -> CreateLineElementsResult:
+    """
+    Creates Line elements based on the given parameters.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="CreateLineElements",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(CreateLineElementsResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for CreateLineElements result: {e}")
+        raise ValueError(extract_archicad_errors(e, "CreateLineElements"))
+    except Exception as e:
+        log.error(f"Error executing CreateLineElements on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    create_line_elements,
+    name="elements_create_line_elements",
+    title="CreateLineElements",
+    description="Creates Line elements based on the given parameters.",
+    params_model=CreateLineElementsParameters,
+    result_model=CreateLineElementsResult
 )
 
 
@@ -582,7 +769,7 @@ register_tool_for_dispatch(
 
 def create_roofs(port: int, params: CreateRoofsParameters) -> CreateRoofsResult:
     """
-    Creates multi-plane Roof elements based on footprint, level and roof profile data.
+    Creates Roof elements based on footprint, level and roof profile data. Creates a multi-plane roof by default; pass 'pivotLine' (and optionally 'angle') to create a single-plane roof instead.
     """
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
@@ -609,7 +796,7 @@ register_tool_for_dispatch(
     create_roofs,
     name="elements_create_roofs",
     title="CreateRoofs",
-    description="Creates multi-plane Roof elements based on footprint, level and roof profile data.",
+    description="Creates Roof elements based on footprint, level and roof profile data. Creates a multi-plane roof by default; pass 'pivotLine' (and optionally 'angle') to create a single-plane roof instead.",
     params_model=CreateRoofsParameters,
     result_model=CreateRoofsResult
 )
@@ -647,6 +834,41 @@ register_tool_for_dispatch(
     description="Creates Slab elements based on the given parameters.",
     params_model=CreateSlabsParameters,
     result_model=CreateSlabsResult
+)
+
+
+def create_splines(port: int, params: CreateSplinesParameters) -> CreateSplinesResult:
+    """
+    Creates Spline elements based on the given parameters.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="CreateSplines",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(CreateSplinesResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for CreateSplines result: {e}")
+        raise ValueError(extract_archicad_errors(e, "CreateSplines"))
+    except Exception as e:
+        log.error(f"Error executing CreateSplines on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    create_splines,
+    name="elements_create_splines",
+    title="CreateSplines",
+    description="Creates Spline elements based on the given parameters.",
+    params_model=CreateSplinesParameters,
+    result_model=CreateSplinesResult
 )
 
 

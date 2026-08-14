@@ -547,7 +547,7 @@ wheels = [
 
 [[package]]
 name = "multiconn-archicad"
-version = "0.6.6"
+version = "0.6.7"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "archicad" },
@@ -556,9 +556,9 @@ dependencies = [
     { name = "pydantic" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/54/1c/604438428d2c268d88ab8d6e9af4fe142b3021eb768409caa6c832c2689a/multiconn_archicad-0.6.6.tar.gz", hash = "sha256:9f75733a0b267e970d4615d1f098c6a0ae9befed98f80a4ea69f1178e7426391", size = 147111, upload-time = "2026-08-06T20:43:26.019Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/ab/77/b50f0dfa36d4a02caf5f082c48a5fa0b0dfbadb07c4965e30c789ea7e1f1/multiconn_archicad-0.6.7.tar.gz", hash = "sha256:b64fbbf95750a8fdd6692a08f84808d9823624dce4791a02536e2d7225a9f364", size = 160780, upload-time = "2026-08-13T21:09:07.231Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/db/63/7edac98b74a63ece07d7ea70b745ae400054efbd6cc829df343beb07fd07/multiconn_archicad-0.6.6-py3-none-any.whl", hash = "sha256:119d2448c3b28eb6b443412fbb87f55afe359186a66d71821985c90b3f31628c", size = 185374, upload-time = "2026-08-06T20:43:24.648Z" },
+    { url = "https://files.pythonhosted.org/packages/94/4d/f46fc9e07a976acf9ef259fa32525fee4a752d42ad8c91a4b091d5fef801/multiconn_archicad-0.6.7-py3-none-any.whl", hash = "sha256:613bad0915b7120458a91cf3494cacd875f864bd3271190a4dffbedb38e87df4", size = 200962, upload-time = "2026-08-13T21:09:08.425Z" },
 ]
 
 [[package]]
@@ -1073,7 +1073,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "fastmcp", specifier = ">=2.10.5" },
-    { name = "multiconn-archicad", specifier = "==0.6.6" },
+    { name = "multiconn-archicad", specifier = "==0.6.7" },
     { name = "uvicorn", specifier = ">=0.35.0" },
 ]
 
