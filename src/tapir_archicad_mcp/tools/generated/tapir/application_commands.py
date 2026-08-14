@@ -10,7 +10,12 @@ from multiconn_archicad.models.tapir.commands import (
     ChangeWindowParameters,
 ChangeWindowResult,
 GetAddOnVersionResult,
-GetCurrentWindowTypeResult
+GetCurrentWindowTypeResult,
+GetSpecialFoldersParameters,
+GetSpecialFoldersResult,
+GetUserGSIDResult,
+ShowAlertParameters,
+ShowAlertResult
 )
 
 
@@ -118,4 +123,109 @@ register_tool_for_dispatch(
     description="Returns the type of the current (active) window.",
     params_model=None,
     result_model=GetCurrentWindowTypeResult
+)
+
+
+def get_special_folders(port: int, params: GetSpecialFoldersParameters) -> GetSpecialFoldersResult:
+    """
+    Retrieves the filesystem paths of the special folders of the running Archicad (preferences, cache, data, temporary, application, defaults, templates, help, embedded project library, etc.).
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="GetSpecialFolders",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(GetSpecialFoldersResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for GetSpecialFolders result: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetSpecialFolders"))
+    except Exception as e:
+        log.error(f"Error executing GetSpecialFolders on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    get_special_folders,
+    name="app_get_special_folders",
+    title="GetSpecialFolders",
+    description="Retrieves the filesystem paths of the special folders of the running Archicad (preferences, cache, data, temporary, application, defaults, templates, help, embedded project library, etc.).",
+    params_model=GetSpecialFoldersParameters,
+    result_model=GetSpecialFoldersResult
+)
+
+
+def get_user_gsid(port: int) -> GetUserGSIDResult:
+    """
+    Get the current registered User-GSID and OrganizationsID. Requires Archicad 27 or later.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="GetUserGSID",
+            parameters={}
+        )
+        return validate_result(GetUserGSIDResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for GetUserGSID result: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetUserGSID"))
+    except Exception as e:
+        log.error(f"Error executing GetUserGSID on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    get_user_gsid,
+    name="app_get_user_gsid",
+    title="GetUserGSID",
+    description="Get the current registered User-GSID and OrganizationsID. Requires Archicad 27 or later.",
+    params_model=None,
+    result_model=GetUserGSIDResult
+)
+
+
+def show_alert(port: int, params: ShowAlertParameters) -> ShowAlertResult:
+    """
+    Display a dialog with up to three buttons.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="ShowAlert",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(ShowAlertResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for ShowAlert result: {e}")
+        raise ValueError(extract_archicad_errors(e, "ShowAlert"))
+    except Exception as e:
+        log.error(f"Error executing ShowAlert on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    show_alert,
+    name="app_show_alert",
+    title="ShowAlert",
+    description="Display a dialog with up to three buttons.",
+    params_model=ShowAlertParameters,
+    result_model=ShowAlertResult
 )

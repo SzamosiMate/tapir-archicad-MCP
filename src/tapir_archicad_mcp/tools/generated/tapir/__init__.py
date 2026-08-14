@@ -9,7 +9,9 @@ from tapir_archicad_mcp.tools.generated.tapir.element_grouping_commands import *
 from tapir_archicad_mcp.tools.generated.tapir.favorites_commands import *
 from tapir_archicad_mcp.tools.generated.tapir.ifc_commands import *
 from tapir_archicad_mcp.tools.generated.tapir.issue_management_commands import *
+from tapir_archicad_mcp.tools.generated.tapir.keynote_commands import *
 from tapir_archicad_mcp.tools.generated.tapir.library_commands import *
+from tapir_archicad_mcp.tools.generated.tapir.mep_commands import *
 from tapir_archicad_mcp.tools.generated.tapir.navigator_commands import *
 from tapir_archicad_mcp.tools.generated.tapir.project_commands import *
 from tapir_archicad_mcp.tools.generated.tapir.property_commands import *

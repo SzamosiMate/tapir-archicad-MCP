@@ -25,8 +25,6 @@ CreateViewsInViewMapParameters,
 CreateViewsInViewMapResult,
 CreateWorksheetsParameters,
 CreateWorksheetsResult,
-DeleteNavigatorItemsParameters,
-DeleteNavigatorItemsResult,
 FitInWindowParameters,
 FitInWindowResult,
 GetDatabaseIdFromNavigatorItemIdParameters,
@@ -39,8 +37,6 @@ GetView2DTransformationsParameters,
 GetView2DTransformationsResult,
 GetViewSettingsParameters,
 GetViewSettingsResult,
-MoveNavigatorItemParameters,
-MoveNavigatorItemResult,
 PublishPublisherSetParameters,
 RenameNavigatorItemParameters,
 RenameNavigatorItemResult,
@@ -374,41 +370,6 @@ register_tool_for_dispatch(
 )
 
 
-def delete_navigator_items(port: int, params: DeleteNavigatorItemsParameters) -> DeleteNavigatorItemsResult:
-    """
-    Deletes navigator items from the navigator tree.
-    """
-    multi_conn = multi_conn_instance.get()
-    target_port = Port(port)
-    if target_port not in multi_conn.active:
-        raise ValueError(f"Port {port} is not an active Archicad connection.")
-    conn_header = multi_conn.active[target_port]
-    try:
-
-        result_dict = conn_header.core.post_tapir_command(
-            command="DeleteNavigatorItems",
-            parameters=params.model_dump(mode='json')
-        )
-        return validate_result(DeleteNavigatorItemsResult, result_dict)
-
-    except ValidationError as e:
-        log.error(f"Validation error for DeleteNavigatorItems result: {e}")
-        raise ValueError(extract_archicad_errors(e, "DeleteNavigatorItems"))
-    except Exception as e:
-        log.error(f"Error executing DeleteNavigatorItems on port {port}: {e}")
-        raise e
-
-
-register_tool_for_dispatch(
-    delete_navigator_items,
-    name="navigator_delete_navigator_items",
-    title="DeleteNavigatorItems",
-    description="Deletes navigator items from the navigator tree.",
-    params_model=DeleteNavigatorItemsParameters,
-    result_model=DeleteNavigatorItemsResult
-)
-
-
 def fit_in_window(port: int, params: FitInWindowParameters) -> FitInWindowResult:
     """
     Zooms to the given elements or fits everything in the window.
@@ -651,41 +612,6 @@ register_tool_for_dispatch(
     description="Gets the view settings of navigator items",
     params_model=GetViewSettingsParameters,
     result_model=GetViewSettingsResult
-)
-
-
-def move_navigator_item(port: int, params: MoveNavigatorItemParameters) -> MoveNavigatorItemResult:
-    """
-    Moves a navigator item to a new parent in the navigator tree.
-    """
-    multi_conn = multi_conn_instance.get()
-    target_port = Port(port)
-    if target_port not in multi_conn.active:
-        raise ValueError(f"Port {port} is not an active Archicad connection.")
-    conn_header = multi_conn.active[target_port]
-    try:
-
-        result_dict = conn_header.core.post_tapir_command(
-            command="MoveNavigatorItem",
-            parameters=params.model_dump(mode='json')
-        )
-        return validate_result(MoveNavigatorItemResult, result_dict)
-
-    except ValidationError as e:
-        log.error(f"Validation error for MoveNavigatorItem result: {e}")
-        raise ValueError(extract_archicad_errors(e, "MoveNavigatorItem"))
-    except Exception as e:
-        log.error(f"Error executing MoveNavigatorItem on port {port}: {e}")
-        raise e
-
-
-register_tool_for_dispatch(
-    move_navigator_item,
-    name="navigator_move_navigator_item",
-    title="MoveNavigatorItem",
-    description="Moves a navigator item to a new parent in the navigator tree.",
-    params_model=MoveNavigatorItemParameters,
-    result_model=MoveNavigatorItemResult
 )
 
 

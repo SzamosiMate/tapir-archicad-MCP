@@ -33,8 +33,6 @@ CreateSurfacesParameters,
 CreateSurfacesResult,
 CreateZoneCategoriesParameters,
 CreateZoneCategoriesResult,
-DeleteAttributesParameters,
-DeleteAttributesResult,
 GetAttributesByTypeParameters,
 GetAttributesByTypeResult,
 GetBuildingMaterialPhysicalPropertiesParameters,
@@ -448,41 +446,6 @@ register_tool_for_dispatch(
     description="Creates or overwrites Zone Category attributes based on the given parameters.",
     params_model=CreateZoneCategoriesParameters,
     result_model=CreateZoneCategoriesResult
-)
-
-
-def delete_attributes(port: int, params: DeleteAttributesParameters) -> DeleteAttributesResult:
-    """
-    Deletes the given attributes.
-    """
-    multi_conn = multi_conn_instance.get()
-    target_port = Port(port)
-    if target_port not in multi_conn.active:
-        raise ValueError(f"Port {port} is not an active Archicad connection.")
-    conn_header = multi_conn.active[target_port]
-    try:
-
-        result_dict = conn_header.core.post_tapir_command(
-            command="DeleteAttributes",
-            parameters=params.model_dump(mode='json')
-        )
-        return validate_result(DeleteAttributesResult, result_dict)
-
-    except ValidationError as e:
-        log.error(f"Validation error for DeleteAttributes result: {e}")
-        raise ValueError(extract_archicad_errors(e, "DeleteAttributes"))
-    except Exception as e:
-        log.error(f"Error executing DeleteAttributes on port {port}: {e}")
-        raise e
-
-
-register_tool_for_dispatch(
-    delete_attributes,
-    name="attributes_delete_attributes",
-    title="DeleteAttributes",
-    description="Deletes the given attributes.",
-    params_model=DeleteAttributesParameters,
-    result_model=DeleteAttributesResult
 )
 
 
