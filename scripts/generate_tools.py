@@ -66,14 +66,12 @@ def _generate_imports_for_group(commands: list[dict], valid_model_names: set[str
             imports.add(p_model)
         if r_model in valid_model_names:
             imports.add(r_model)
+
     if not imports:
         return ""
-    import_statements = ",\n".join(f"    {imp}" for imp in sorted(list(imports)))
-    return dedent(f"""
-    from multiconn_archicad.models.{config.name}.commands import (
-    {import_statements}
-    )
-    """)
+
+    import_statements = ",\n".join(f"    {imp}" for imp in sorted(imports))
+    return f"from multiconn_archicad.models.{config.name}.commands import (\n{import_statements},\n)"
 
 
 def _generate_paginated_model_code(original_result_model: str, paginated_result_model: str,

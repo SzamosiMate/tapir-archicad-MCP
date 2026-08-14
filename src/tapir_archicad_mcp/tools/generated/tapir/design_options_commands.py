@@ -9,29 +9,27 @@ import time
 from typing import Any
 from pydantic import BaseModel
 from tapir_archicad_mcp.pagination import handle_paginated_request, PAGINATION_CACHE, CACHE_LIFETIME_SECONDS
-
 from multiconn_archicad.models.tapir.commands import (
     CreateDesignOptionCombinationsParameters,
-CreateDesignOptionCombinationsResult,
-CreateDesignOptionSetsParameters,
-CreateDesignOptionSetsResult,
-CreateDesignOptionsParameters,
-CreateDesignOptionsResult,
-GetDesignOptionCombinationsResult,
-GetDesignOptionForElementsParameters,
-GetDesignOptionForElementsResult,
-GetDesignOptionSetsResult,
-GetDesignOptionsResult,
-GetElementsOfDesignOptionsParameters,
-GetElementsOfDesignOptionsResult,
-MoveDesignOptionsToAnotherSetParameters,
-MoveDesignOptionsToAnotherSetResult,
-MoveElementsToDesignOptionsParameters,
-MoveElementsToDesignOptionsResult,
-SetActiveDesignOptionsInCombinationsParameters,
-SetActiveDesignOptionsInCombinationsResult
+    CreateDesignOptionCombinationsResult,
+    CreateDesignOptionSetsParameters,
+    CreateDesignOptionSetsResult,
+    CreateDesignOptionsParameters,
+    CreateDesignOptionsResult,
+    GetDesignOptionCombinationsResult,
+    GetDesignOptionForElementsParameters,
+    GetDesignOptionForElementsResult,
+    GetDesignOptionSetsResult,
+    GetDesignOptionsResult,
+    GetElementsOfDesignOptionsParameters,
+    GetElementsOfDesignOptionsResult,
+    MoveDesignOptionsToAnotherSetParameters,
+    MoveDesignOptionsToAnotherSetResult,
+    MoveElementsToDesignOptionsParameters,
+    MoveElementsToDesignOptionsResult,
+    SetActiveDesignOptionsInCombinationsParameters,
+    SetActiveDesignOptionsInCombinationsResult,
 )
-
 
 log = logging.getLogger()
 

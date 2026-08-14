@@ -9,29 +9,27 @@ import time
 from typing import Any
 from pydantic import BaseModel
 from tapir_archicad_mcp.pagination import handle_paginated_request, PAGINATION_CACHE, CACHE_LIFETIME_SECONDS
-
 from multiconn_archicad.models.tapir.commands import (
     CreatePropertyDefinitionsParameters,
-CreatePropertyDefinitionsResult,
-CreatePropertyGroupsParameters,
-CreatePropertyGroupsResult,
-DeletePropertyDefinitionsParameters,
-DeletePropertyDefinitionsResult,
-DeletePropertyGroupsParameters,
-DeletePropertyGroupsResult,
-GetAllPropertiesResult,
-GetPropertyValuesOfAttributesParameters,
-GetPropertyValuesOfAttributesResult,
-GetPropertyValuesOfElementsParameters,
-GetPropertyValuesOfElementsResult,
-SetPropertyValuesOfAttributesParameters,
-SetPropertyValuesOfAttributesResult,
-SetPropertyValuesOfElementsParameters,
-SetPropertyValuesOfElementsResult,
-UpdatePropertyDefinitionsParameters,
-UpdatePropertyDefinitionsResult
+    CreatePropertyDefinitionsResult,
+    CreatePropertyGroupsParameters,
+    CreatePropertyGroupsResult,
+    DeletePropertyDefinitionsParameters,
+    DeletePropertyDefinitionsResult,
+    DeletePropertyGroupsParameters,
+    DeletePropertyGroupsResult,
+    GetAllPropertiesResult,
+    GetPropertyValuesOfAttributesParameters,
+    GetPropertyValuesOfAttributesResult,
+    GetPropertyValuesOfElementsParameters,
+    GetPropertyValuesOfElementsResult,
+    SetPropertyValuesOfAttributesParameters,
+    SetPropertyValuesOfAttributesResult,
+    SetPropertyValuesOfElementsParameters,
+    SetPropertyValuesOfElementsResult,
+    UpdatePropertyDefinitionsParameters,
+    UpdatePropertyDefinitionsResult,
 )
-
 
 log = logging.getLogger()
 

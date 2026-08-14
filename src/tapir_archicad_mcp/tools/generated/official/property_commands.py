@@ -9,25 +9,23 @@ import time
 from typing import Any
 from pydantic import BaseModel
 from tapir_archicad_mcp.pagination import handle_paginated_request, PAGINATION_CACHE, CACHE_LIFETIME_SECONDS
-
 from multiconn_archicad.models.official.commands import (
     GetAllPropertyGroupIdsParameters,
-GetAllPropertyGroupIdsResult,
-GetAllPropertyIdsOfElementsParameters,
-GetAllPropertyIdsOfElementsResult,
-GetAllPropertyIdsParameters,
-GetAllPropertyIdsResult,
-GetAllPropertyNamesResult,
-GetDetailsOfPropertiesParameters,
-GetDetailsOfPropertiesResult,
-GetPropertyDefinitionAvailabilityParameters,
-GetPropertyDefinitionAvailabilityResult,
-GetPropertyGroupsParameters,
-GetPropertyGroupsResult,
-GetPropertyIdsParameters,
-GetPropertyIdsResult
+    GetAllPropertyGroupIdsResult,
+    GetAllPropertyIdsOfElementsParameters,
+    GetAllPropertyIdsOfElementsResult,
+    GetAllPropertyIdsParameters,
+    GetAllPropertyIdsResult,
+    GetAllPropertyNamesResult,
+    GetDetailsOfPropertiesParameters,
+    GetDetailsOfPropertiesResult,
+    GetPropertyDefinitionAvailabilityParameters,
+    GetPropertyDefinitionAvailabilityResult,
+    GetPropertyGroupsParameters,
+    GetPropertyGroupsResult,
+    GetPropertyIdsParameters,
+    GetPropertyIdsResult,
 )
-
 
 log = logging.getLogger()
 
