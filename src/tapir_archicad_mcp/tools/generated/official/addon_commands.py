@@ -5,12 +5,10 @@ from multiconn_archicad.basic_types import Port
 from tapir_archicad_mcp.context import multi_conn_instance
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
 from tapir_archicad_mcp.tools.validation import validate_result, extract_archicad_errors
-
 from multiconn_archicad.models.official.commands import (
     IsAddOnCommandAvailableParameters,
-IsAddOnCommandAvailableResult
+    IsAddOnCommandAvailableResult,
 )
-
 
 log = logging.getLogger()
 
