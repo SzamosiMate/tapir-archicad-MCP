@@ -27,7 +27,7 @@ def clone_project_map_item_to_view_map(port: int, params: CloneProjectMapItemToV
 
         result_dict = conn_header.core.post_command(
             command="API.CloneProjectMapItemToViewMap",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True)
         )
         return validate_result(CloneProjectMapItemToViewMapResult, result_dict)
 
@@ -62,7 +62,7 @@ def create_view_map_folder(port: int, params: CreateViewMapFolderParameters) -> 
 
         result_dict = conn_header.core.post_command(
             command="API.CreateViewMapFolder",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True)
         )
         return validate_result(CreateViewMapFolderResult, result_dict)
 

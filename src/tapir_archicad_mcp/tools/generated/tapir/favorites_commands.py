@@ -42,7 +42,7 @@ def apply_favorites_to_element_defaults(port: int, params: ApplyFavoritesToEleme
 
         result_dict = conn_header.core.post_tapir_command(
             command="ApplyFavoritesToElementDefaults",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True)
         )
         return validate_result(ApplyFavoritesToElementDefaultsResult, result_dict)
 
@@ -77,7 +77,7 @@ def apply_favorites_to_elements(port: int, params: ApplyFavoritesToElementsParam
 
         result_dict = conn_header.core.post_tapir_command(
             command="ApplyFavoritesToElements",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True)
         )
         return validate_result(ApplyFavoritesToElementsResult, result_dict)
 
@@ -112,7 +112,7 @@ def create_favorites_from_elements(port: int, params: CreateFavoritesFromElement
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreateFavoritesFromElements",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True)
         )
         return validate_result(CreateFavoritesFromElementsResult, result_dict)
 
@@ -147,7 +147,7 @@ def delete_favorites(port: int, params: DeleteFavoritesParameters) -> DeleteFavo
 
         result_dict = conn_header.core.post_tapir_command(
             command="DeleteFavorites",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True)
         )
         return validate_result(DeleteFavoritesResult, result_dict)
 
@@ -182,7 +182,7 @@ def export_favorites(port: int, params: ExportFavoritesParameters) -> None:
 
         conn_header.core.post_tapir_command(
             command="ExportFavorites",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True)
         )
         return None
 
@@ -217,7 +217,7 @@ def get_favorite_preview_image(port: int, params: GetFavoritePreviewImageParamet
 
         result_dict = conn_header.core.post_tapir_command(
             command="GetFavoritePreviewImage",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True)
         )
         return validate_result(GetFavoritePreviewImageResult, result_dict)
 
@@ -252,7 +252,7 @@ def get_favorites_by_type(port: int, params: GetFavoritesByTypeParameters) -> Ge
 
         result_dict = conn_header.core.post_tapir_command(
             command="GetFavoritesByType",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True)
         )
         return validate_result(GetFavoritesByTypeResult, result_dict)
 
@@ -287,7 +287,7 @@ def import_favorites(port: int, params: ImportFavoritesParameters) -> ImportFavo
 
         result_dict = conn_header.core.post_tapir_command(
             command="ImportFavorites",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True)
         )
         return validate_result(ImportFavoritesResult, result_dict)
 
@@ -322,7 +322,7 @@ def rename_favorites(port: int, params: RenameFavoritesParameters) -> RenameFavo
 
         result_dict = conn_header.core.post_tapir_command(
             command="RenameFavorites",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True)
         )
         return validate_result(RenameFavoritesResult, result_dict)
 
@@ -357,7 +357,7 @@ def update_favorites_from_elements(port: int, params: UpdateFavoritesFromElement
 
         result_dict = conn_header.core.post_tapir_command(
             command="UpdateFavoritesFromElements",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True)
         )
         return validate_result(UpdateFavoritesFromElementsResult, result_dict)
 

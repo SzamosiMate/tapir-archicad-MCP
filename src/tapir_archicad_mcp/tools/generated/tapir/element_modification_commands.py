@@ -41,7 +41,7 @@ def modify_beams(port: int, params: ModifyBeamsParameters) -> ModifyBeamsResult:
 
         result_dict = conn_header.core.post_tapir_command(
             command="ModifyBeams",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True)
         )
         return validate_result(ModifyBeamsResult, result_dict)
 
@@ -76,7 +76,7 @@ def modify_columns(port: int, params: ModifyColumnsParameters) -> ModifyColumnsR
 
         result_dict = conn_header.core.post_tapir_command(
             command="ModifyColumns",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True)
         )
         return validate_result(ModifyColumnsResult, result_dict)
 
@@ -111,7 +111,7 @@ def modify_doors(port: int, params: ModifyDoorsParameters) -> ModifyDoorsResult:
 
         result_dict = conn_header.core.post_tapir_command(
             command="ModifyDoors",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True)
         )
         return validate_result(ModifyDoorsResult, result_dict)
 
@@ -146,7 +146,7 @@ def modify_meshes(port: int, params: ModifyMeshesParameters) -> ModifyMeshesResu
 
         result_dict = conn_header.core.post_tapir_command(
             command="ModifyMeshes",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True)
         )
         return validate_result(ModifyMeshesResult, result_dict)
 
@@ -181,7 +181,7 @@ def modify_morphs(port: int, params: ModifyMorphsParameters) -> ModifyMorphsResu
 
         result_dict = conn_header.core.post_tapir_command(
             command="ModifyMorphs",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True)
         )
         return validate_result(ModifyMorphsResult, result_dict)
 
@@ -216,7 +216,7 @@ def modify_roofs(port: int, params: ModifyRoofsParameters) -> ModifyRoofsResult:
 
         result_dict = conn_header.core.post_tapir_command(
             command="ModifyRoofs",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True)
         )
         return validate_result(ModifyRoofsResult, result_dict)
 
@@ -251,7 +251,7 @@ def modify_slabs(port: int, params: ModifySlabsParameters) -> ModifySlabsResult:
 
         result_dict = conn_header.core.post_tapir_command(
             command="ModifySlabs",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True)
         )
         return validate_result(ModifySlabsResult, result_dict)
 
@@ -286,7 +286,7 @@ def modify_walls(port: int, params: ModifyWallsParameters) -> ModifyWallsResult:
 
         result_dict = conn_header.core.post_tapir_command(
             command="ModifyWalls",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True)
         )
         return validate_result(ModifyWallsResult, result_dict)
 
@@ -321,7 +321,7 @@ def modify_windows(port: int, params: ModifyWindowsParameters) -> ModifyWindowsR
 
         result_dict = conn_header.core.post_tapir_command(
             command="ModifyWindows",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True)
         )
         return validate_result(ModifyWindowsResult, result_dict)
 

@@ -25,7 +25,7 @@ def is_add_on_command_available(port: int, params: IsAddOnCommandAvailableParame
 
         result_dict = conn_header.core.post_command(
             command="API.IsAddOnCommandAvailable",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True)
         )
         return validate_result(IsAddOnCommandAvailableResult, result_dict)
 

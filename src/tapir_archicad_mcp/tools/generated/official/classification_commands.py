@@ -68,7 +68,7 @@ def get_all_classifications_in_system(port: int, params: GetAllClassificationsIn
 
         result_dict = conn_header.core.post_command(
             command="API.GetAllClassificationsInSystem",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True)
         )
         return validate_result(GetAllClassificationsInSystemResult, result_dict)
 
@@ -103,7 +103,7 @@ def get_classification_item_availability(port: int, params: GetClassificationIte
 
         result_dict = conn_header.core.post_command(
             command="API.GetClassificationItemAvailability",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True)
         )
         return validate_result(GetClassificationItemAvailabilityResult, result_dict)
 
@@ -173,7 +173,7 @@ def get_classification_systems(port: int, params: GetClassificationSystemsParame
 
         result_dict = conn_header.core.post_command(
             command="API.GetClassificationSystems",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True)
         )
         return validate_result(GetClassificationSystemsResult, result_dict)
 
@@ -208,7 +208,7 @@ def get_details_of_classification_items(port: int, params: GetDetailsOfClassific
 
         result_dict = conn_header.core.post_command(
             command="API.GetDetailsOfClassificationItems",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True)
         )
         return validate_result(GetDetailsOfClassificationItemsResult, result_dict)
 

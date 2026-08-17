@@ -66,7 +66,7 @@ def clone_project_map_item_to_view_map(port: int, params: CloneProjectMapItemToV
 
         result_dict = conn_header.core.post_tapir_command(
             command="CloneProjectMapItemToViewMap",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True)
         )
         return validate_result(CloneProjectMapItemToViewMapResult, result_dict)
 
@@ -101,7 +101,7 @@ def create_details(port: int, params: CreateDetailsParameters) -> CreateDetailsR
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreateDetails",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True)
         )
         return validate_result(CreateDetailsResult, result_dict)
 
@@ -136,7 +136,7 @@ def create_drawings(port: int, params: CreateDrawingsParameters) -> CreateDrawin
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreateDrawings",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True)
         )
         return validate_result(CreateDrawingsResult, result_dict)
 
@@ -171,7 +171,7 @@ def create_layout(port: int, params: CreateLayoutParameters) -> CreateLayoutResu
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreateLayout",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True)
         )
         return validate_result(CreateLayoutResult, result_dict)
 
@@ -206,7 +206,7 @@ def create_layout_subset(port: int, params: CreateLayoutSubsetParameters) -> Cre
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreateLayoutSubset",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True)
         )
         return validate_result(CreateLayoutSubsetResult, result_dict)
 
@@ -241,7 +241,7 @@ def create_sections(port: int, params: CreateSectionsParameters) -> CreateSectio
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreateSections",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True)
         )
         return validate_result(CreateSectionsResult, result_dict)
 
@@ -276,7 +276,7 @@ def create_view_map_folder(port: int, params: CreateViewMapFolderParameters) -> 
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreateViewMapFolder",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True)
         )
         return validate_result(CreateViewMapFolderResult, result_dict)
 
@@ -311,7 +311,7 @@ def create_views_in_view_map(port: int, params: CreateViewsInViewMapParameters) 
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreateViewsInViewMap",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True)
         )
         return validate_result(CreateViewsInViewMapResult, result_dict)
 
@@ -346,7 +346,7 @@ def create_worksheets(port: int, params: CreateWorksheetsParameters) -> CreateWo
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreateWorksheets",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True)
         )
         return validate_result(CreateWorksheetsResult, result_dict)
 
@@ -381,7 +381,7 @@ def fit_in_window(port: int, params: FitInWindowParameters) -> FitInWindowResult
 
         result_dict = conn_header.core.post_tapir_command(
             command="FitInWindow",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True)
         )
         return validate_result(FitInWindowResult, result_dict)
 
@@ -416,7 +416,7 @@ def get_database_id_from_navigator_item_id(port: int, params: GetDatabaseIdFromN
 
         result_dict = conn_header.core.post_tapir_command(
             command="GetDatabaseIdFromNavigatorItemId",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True)
         )
         return validate_result(GetDatabaseIdFromNavigatorItemIdResult, result_dict)
 
@@ -486,7 +486,7 @@ def get_layout_settings(port: int, params: GetLayoutSettingsParameters) -> GetLa
 
         result_dict = conn_header.core.post_tapir_command(
             command="GetLayoutSettings",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True)
         )
         return validate_result(GetLayoutSettingsResult, result_dict)
 
@@ -556,7 +556,7 @@ def get_view2_d_transformations(port: int, params: GetView2DTransformationsParam
 
         result_dict = conn_header.core.post_tapir_command(
             command="GetView2DTransformations",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True)
         )
         return validate_result(GetView2DTransformationsResult, result_dict)
 
@@ -591,7 +591,7 @@ def get_view_settings(port: int, params: GetViewSettingsParameters) -> GetViewSe
 
         result_dict = conn_header.core.post_tapir_command(
             command="GetViewSettings",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True)
         )
         return validate_result(GetViewSettingsResult, result_dict)
 
@@ -626,7 +626,7 @@ def publish_publisher_set(port: int, params: PublishPublisherSetParameters) -> N
 
         conn_header.core.post_tapir_command(
             command="PublishPublisherSet",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True)
         )
         return None
 
@@ -661,7 +661,7 @@ def rename_navigator_item(port: int, params: RenameNavigatorItemParameters) -> R
 
         result_dict = conn_header.core.post_tapir_command(
             command="RenameNavigatorItem",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True)
         )
         return validate_result(RenameNavigatorItemResult, result_dict)
 
@@ -696,7 +696,7 @@ def set3_d_cut_planes(port: int, params: Set3DCutPlanesParameters) -> Set3DCutPl
 
         result_dict = conn_header.core.post_tapir_command(
             command="Set3DCutPlanes",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True)
         )
         return validate_result(Set3DCutPlanesResult, result_dict)
 
@@ -731,7 +731,7 @@ def set_layout_settings(port: int, params: SetLayoutSettingsParameters) -> SetLa
 
         result_dict = conn_header.core.post_tapir_command(
             command="SetLayoutSettings",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True)
         )
         return validate_result(SetLayoutSettingsResult, result_dict)
 
@@ -766,7 +766,7 @@ def set_view_rotation(port: int, params: SetViewRotationParameters) -> SetViewRo
 
         result_dict = conn_header.core.post_tapir_command(
             command="SetViewRotation",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True)
         )
         return validate_result(SetViewRotationResult, result_dict)
 
@@ -801,7 +801,7 @@ def set_view_settings(port: int, params: SetViewSettingsParameters) -> SetViewSe
 
         result_dict = conn_header.core.post_tapir_command(
             command="SetViewSettings",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True)
         )
         return validate_result(SetViewSettingsResult, result_dict)
 
@@ -836,7 +836,7 @@ def update_drawings(port: int, params: UpdateDrawingsParameters) -> UpdateDrawin
 
         result_dict = conn_header.core.post_tapir_command(
             command="UpdateDrawings",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True)
         )
         return validate_result(UpdateDrawingsResult, result_dict)
 

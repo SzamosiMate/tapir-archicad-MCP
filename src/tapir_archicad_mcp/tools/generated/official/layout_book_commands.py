@@ -30,7 +30,7 @@ def create_layout(port: int, params: CreateLayoutParameters) -> CreateLayoutResu
 
         result_dict = conn_header.core.post_command(
             command="API.CreateLayout",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True)
         )
         return validate_result(CreateLayoutResult, result_dict)
 
@@ -65,7 +65,7 @@ def create_layout_subset(port: int, params: CreateLayoutSubsetParameters) -> Cre
 
         result_dict = conn_header.core.post_command(
             command="API.CreateLayoutSubset",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True)
         )
         return validate_result(CreateLayoutSubsetResult, result_dict)
 
@@ -100,7 +100,7 @@ def get_layout_settings(port: int, params: GetLayoutSettingsParameters) -> GetLa
 
         result_dict = conn_header.core.post_command(
             command="API.GetLayoutSettings",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True)
         )
         return validate_result(GetLayoutSettingsResult, result_dict)
 
@@ -135,7 +135,7 @@ def set_layout_settings(port: int, params: SetLayoutSettingsParameters) -> None:
 
         conn_header.core.post_command(
             command="API.SetLayoutSettings",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True)
         )
         return None
 

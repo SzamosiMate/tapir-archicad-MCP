@@ -47,7 +47,7 @@ def delete_navigator_items(port: int, params: DeleteNavigatorItemsParameters) ->
 
         result_dict = conn_header.core.post_command(
             command="API.DeleteNavigatorItems",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True)
         )
         return validate_result(DeleteNavigatorItemsResult, result_dict)
 
@@ -82,7 +82,7 @@ def get_built_in_container_navigator_items(port: int, params: GetBuiltInContaine
 
         result_dict = conn_header.core.post_command(
             command="API.GetBuiltInContainerNavigatorItems",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True)
         )
         return validate_result(GetBuiltInContainerNavigatorItemsResult, result_dict)
 
@@ -117,7 +117,7 @@ def get_detail_navigator_items(port: int, params: GetDetailNavigatorItemsParamet
 
         result_dict = conn_header.core.post_command(
             command="API.GetDetailNavigatorItems",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True)
         )
         return validate_result(GetDetailNavigatorItemsResult, result_dict)
 
@@ -152,7 +152,7 @@ def get_document3_d_navigator_items(port: int, params: GetDocument3DNavigatorIte
 
         result_dict = conn_header.core.post_command(
             command="API.GetDocument3DNavigatorItems",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True)
         )
         return validate_result(GetDocument3DNavigatorItemsResult, result_dict)
 
@@ -187,7 +187,7 @@ def get_elevation_navigator_items(port: int, params: GetElevationNavigatorItemsP
 
         result_dict = conn_header.core.post_command(
             command="API.GetElevationNavigatorItems",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True)
         )
         return validate_result(GetElevationNavigatorItemsResult, result_dict)
 
@@ -222,7 +222,7 @@ def get_interior_elevation_navigator_items(port: int, params: GetInteriorElevati
 
         result_dict = conn_header.core.post_command(
             command="API.GetInteriorElevationNavigatorItems",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True)
         )
         return validate_result(GetInteriorElevationNavigatorItemsResult, result_dict)
 
@@ -257,7 +257,7 @@ def get_navigator_item_tree(port: int, params: GetNavigatorItemTreeParameters) -
 
         result_dict = conn_header.core.post_command(
             command="API.GetNavigatorItemTree",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True)
         )
         return validate_result(GetNavigatorItemTreeResult, result_dict)
 
@@ -292,7 +292,7 @@ def get_navigator_items_type(port: int, params: GetNavigatorItemsTypeParameters)
 
         result_dict = conn_header.core.post_command(
             command="API.GetNavigatorItemsType",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True)
         )
         return validate_result(GetNavigatorItemsTypeResult, result_dict)
 
@@ -362,7 +362,7 @@ def get_section_navigator_items(port: int, params: GetSectionNavigatorItemsParam
 
         result_dict = conn_header.core.post_command(
             command="API.GetSectionNavigatorItems",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True)
         )
         return validate_result(GetSectionNavigatorItemsResult, result_dict)
 
@@ -397,7 +397,7 @@ def get_story_navigator_items(port: int, params: GetStoryNavigatorItemsParameter
 
         result_dict = conn_header.core.post_command(
             command="API.GetStoryNavigatorItems",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True)
         )
         return validate_result(GetStoryNavigatorItemsResult, result_dict)
 
@@ -432,7 +432,7 @@ def get_worksheet_navigator_items(port: int, params: GetWorksheetNavigatorItemsP
 
         result_dict = conn_header.core.post_command(
             command="API.GetWorksheetNavigatorItems",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True)
         )
         return validate_result(GetWorksheetNavigatorItemsResult, result_dict)
 
@@ -467,7 +467,7 @@ def move_navigator_item(port: int, params: MoveNavigatorItemParameters) -> None:
 
         conn_header.core.post_command(
             command="API.MoveNavigatorItem",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True)
         )
         return None
 

@@ -35,7 +35,7 @@ def create_classification_items(port: int, params: CreateClassificationItemsPara
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreateClassificationItems",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True)
         )
         return validate_result(CreateClassificationItemsResult, result_dict)
 
@@ -70,7 +70,7 @@ def create_classification_systems(port: int, params: CreateClassificationSystems
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreateClassificationSystems",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True)
         )
         return validate_result(CreateClassificationSystemsResult, result_dict)
 
@@ -105,7 +105,7 @@ def delete_classification_items(port: int, params: DeleteClassificationItemsPara
 
         result_dict = conn_header.core.post_tapir_command(
             command="DeleteClassificationItems",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True)
         )
         return validate_result(DeleteClassificationItemsResult, result_dict)
 
@@ -140,7 +140,7 @@ def delete_classification_systems(port: int, params: DeleteClassificationSystems
 
         result_dict = conn_header.core.post_tapir_command(
             command="DeleteClassificationSystems",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True)
         )
         return validate_result(DeleteClassificationSystemsResult, result_dict)
 
@@ -175,7 +175,7 @@ def get_classifications_of_elements(port: int, params: GetClassificationsOfEleme
 
         result_dict = conn_header.core.post_tapir_command(
             command="GetClassificationsOfElements",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True)
         )
         return validate_result(GetClassificationsOfElementsResult, result_dict)
 
@@ -210,7 +210,7 @@ def set_classifications_of_elements(port: int, params: SetClassificationsOfEleme
 
         result_dict = conn_header.core.post_tapir_command(
             command="SetClassificationsOfElements",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True)
         )
         return validate_result(SetClassificationsOfElementsResult, result_dict)
 

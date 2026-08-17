@@ -29,7 +29,7 @@ def create_solid_element_links(port: int, params: CreateSolidElementLinksParamet
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreateSolidElementLinks",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True)
         )
         return validate_result(CreateSolidElementLinksResult, result_dict)
 
@@ -64,7 +64,7 @@ def get_solid_element_links(port: int, params: GetSolidElementLinksParameters) -
 
         result_dict = conn_header.core.post_tapir_command(
             command="GetSolidElementLinks",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True)
         )
         return validate_result(GetSolidElementLinksResult, result_dict)
 
@@ -99,7 +99,7 @@ def remove_solid_element_links(port: int, params: RemoveSolidElementLinksParamet
 
         result_dict = conn_header.core.post_tapir_command(
             command="RemoveSolidElementLinks",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True)
         )
         return validate_result(RemoveSolidElementLinksResult, result_dict)
 
