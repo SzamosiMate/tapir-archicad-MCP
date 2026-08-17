@@ -12,10 +12,14 @@ from multiconn_archicad.models.tapir.commands import (
     ModifyColumnsResult,
     ModifyDoorsParameters,
     ModifyDoorsResult,
+    ModifyLampsParameters,
+    ModifyLampsResult,
     ModifyMeshesParameters,
     ModifyMeshesResult,
     ModifyMorphsParameters,
     ModifyMorphsResult,
+    ModifyObjectsParameters,
+    ModifyObjectsResult,
     ModifyRoofsParameters,
     ModifyRoofsResult,
     ModifySlabsParameters,
@@ -133,6 +137,41 @@ register_tool_for_dispatch(
 )
 
 
+def modify_lamps(port: int, params: ModifyLampsParameters) -> ModifyLampsResult:
+    """
+    Modifies Lamp elements based on the given parameters.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="ModifyLamps",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(ModifyLampsResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for ModifyLamps result: {e}")
+        raise ValueError(extract_archicad_errors(e, "ModifyLamps"))
+    except Exception as e:
+        log.error(f"Error executing ModifyLamps on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    modify_lamps,
+    name="elements_modify_lamps",
+    title="ModifyLamps",
+    description="Modifies Lamp elements based on the given parameters.",
+    params_model=ModifyLampsParameters,
+    result_model=ModifyLampsResult
+)
+
+
 def modify_meshes(port: int, params: ModifyMeshesParameters) -> ModifyMeshesResult:
     """
     Modifies the attributes of Mesh elements based on the given parameters.
@@ -200,6 +239,41 @@ register_tool_for_dispatch(
     description="Modifies Morph elements based on the given parameters.",
     params_model=ModifyMorphsParameters,
     result_model=ModifyMorphsResult
+)
+
+
+def modify_objects(port: int, params: ModifyObjectsParameters) -> ModifyObjectsResult:
+    """
+    Modifies Object elements based on the given parameters.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="ModifyObjects",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(ModifyObjectsResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for ModifyObjects result: {e}")
+        raise ValueError(extract_archicad_errors(e, "ModifyObjects"))
+    except Exception as e:
+        log.error(f"Error executing ModifyObjects on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    modify_objects,
+    name="elements_modify_objects",
+    title="ModifyObjects",
+    description="Modifies Object elements based on the given parameters.",
+    params_model=ModifyObjectsParameters,
+    result_model=ModifyObjectsResult
 )
 
 
