@@ -6,6 +6,8 @@ from tapir_archicad_mcp.context import multi_conn_instance
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
 from tapir_archicad_mcp.tools.validation import validate_result, extract_archicad_errors
 from multiconn_archicad.models.tapir.commands import (
+    ChangeDrawingLinkParameters,
+    ChangeDrawingLinkResult,
     CloneProjectMapItemToViewMapParameters,
     CloneProjectMapItemToViewMapResult,
     CreateDetailsParameters,
@@ -52,6 +54,41 @@ from multiconn_archicad.models.tapir.commands import (
 )
 
 log = logging.getLogger()
+
+def change_drawing_link(port: int, params: ChangeDrawingLinkParameters) -> ChangeDrawingLinkResult:
+    """
+    Relinks a Drawing to a different source navigator item. Archicad has no in-place relink API, so this recreates the Drawing against the new source and deletes the original - the returned elementId is a NEW guid, not the input one. The Drawing Title marker's own position is not preserved (undocumented Archicad limitation).
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="ChangeDrawingLink",
+            parameters=params.model_dump(mode='json')
+        )
+        return validate_result(ChangeDrawingLinkResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for ChangeDrawingLink result: {e}")
+        raise ValueError(extract_archicad_errors(e, "ChangeDrawingLink"))
+    except Exception as e:
+        log.error(f"Error executing ChangeDrawingLink on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    change_drawing_link,
+    name="navigator_change_drawing_link",
+    title="ChangeDrawingLink",
+    description="Relinks a Drawing to a different source navigator item. Archicad has no in-place relink API, so this recreates the Drawing against the new source and deletes the original - the returned elementId is a NEW guid, not the input one. The Drawing Title marker's own position is not preserved (undocumented Archicad limitation).",
+    params_model=ChangeDrawingLinkParameters,
+    result_model=ChangeDrawingLinkResult
+)
+
 
 def clone_project_map_item_to_view_map(port: int, params: CloneProjectMapItemToViewMapParameters) -> CloneProjectMapItemToViewMapResult:
     """
