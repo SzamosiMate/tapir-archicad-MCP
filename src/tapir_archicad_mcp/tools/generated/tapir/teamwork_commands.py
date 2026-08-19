@@ -29,7 +29,7 @@ def release_elements(port: int, params: ReleaseElementsParameters) -> ReleaseEle
 
         result_dict = conn_header.core.post_tapir_command(
             command="ReleaseElements",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(ReleaseElementsResult, result_dict)
 
@@ -64,7 +64,7 @@ def reserve_elements(port: int, params: ReserveElementsParameters) -> ReserveEle
 
         result_dict = conn_header.core.post_tapir_command(
             command="ReserveElements",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(ReserveElementsResult, result_dict)
 

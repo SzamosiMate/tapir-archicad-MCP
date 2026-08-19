@@ -42,7 +42,7 @@ def get_elements_by_classification(port: int, params: GetElementsByClassificatio
         if not page_token:
             full_response_dict = conn_header.core.post_command(
                 command="API.GetElementsByClassification",
-                parameters=params.model_dump(mode='json')
+                parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
             )
             full_response_model = validate_result(GetElementsByClassificationResult, full_response_dict)
             PAGINATION_CACHE[cache_key] = (full_response_model, time.time())
@@ -95,7 +95,7 @@ def get_types_of_elements(port: int, params: GetTypesOfElementsParameters) -> Ge
 
         result_dict = conn_header.core.post_command(
             command="API.GetTypesOfElements",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(GetTypesOfElementsResult, result_dict)
 

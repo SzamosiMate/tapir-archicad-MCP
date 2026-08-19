@@ -32,7 +32,7 @@ def change_window(port: int, params: ChangeWindowParameters) -> ChangeWindowResu
 
         result_dict = conn_header.core.post_tapir_command(
             command="ChangeWindow",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(ChangeWindowResult, result_dict)
 
@@ -137,7 +137,7 @@ def get_special_folders(port: int, params: GetSpecialFoldersParameters) -> GetSp
 
         result_dict = conn_header.core.post_tapir_command(
             command="GetSpecialFolders",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(GetSpecialFoldersResult, result_dict)
 
@@ -207,7 +207,7 @@ def show_alert(port: int, params: ShowAlertParameters) -> ShowAlertResult:
 
         result_dict = conn_header.core.post_tapir_command(
             command="ShowAlert",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(ShowAlertResult, result_dict)
 

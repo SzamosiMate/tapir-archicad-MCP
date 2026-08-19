@@ -48,7 +48,7 @@ def get_elements_by_ifc_ids(port: int, params: GetElementsByIFCIdsParameters, pa
         if not page_token:
             full_response_dict = conn_header.core.post_tapir_command(
                 command="GetElementsByIFCIds",
-                parameters=params.model_dump(mode='json')
+                parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
             )
             full_response_model = validate_result(GetElementsByIFCIdsResult, full_response_dict)
             PAGINATION_CACHE[cache_key] = (full_response_model, time.time())
@@ -101,7 +101,7 @@ def get_ifc_ids_of_elements(port: int, params: GetIFCIdsOfElementsParameters) ->
 
         result_dict = conn_header.core.post_tapir_command(
             command="GetIFCIdsOfElements",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(GetIFCIdsOfElementsResult, result_dict)
 
@@ -136,7 +136,7 @@ def get_ifc_properties_of_elements(port: int, params: GetIFCPropertiesOfElements
 
         result_dict = conn_header.core.post_tapir_command(
             command="GetIFCPropertiesOfElements",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(GetIFCPropertiesOfElementsResult, result_dict)
 
@@ -171,7 +171,7 @@ def get_ifc_type_of_elements(port: int, params: GetIFCTypeOfElementsParameters) 
 
         result_dict = conn_header.core.post_tapir_command(
             command="GetIFCTypeOfElements",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(GetIFCTypeOfElementsResult, result_dict)
 
@@ -206,7 +206,7 @@ def ifc_file_operation(port: int, params: IFCFileOperationParameters) -> IFCFile
 
         result_dict = conn_header.core.post_tapir_command(
             command="IFCFileOperation",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(IFCFileOperationResult, result_dict)
 

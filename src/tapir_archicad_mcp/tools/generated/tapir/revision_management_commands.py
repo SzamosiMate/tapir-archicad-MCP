@@ -30,7 +30,7 @@ def get_current_revision_changes_of_layouts(port: int, params: GetCurrentRevisio
 
         result_dict = conn_header.core.post_tapir_command(
             command="GetCurrentRevisionChangesOfLayouts",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(GetCurrentRevisionChangesOfLayoutsResult, result_dict)
 
@@ -135,7 +135,7 @@ def get_revision_changes_of_elements(port: int, params: GetRevisionChangesOfElem
 
         result_dict = conn_header.core.post_tapir_command(
             command="GetRevisionChangesOfElements",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(GetRevisionChangesOfElementsResult, result_dict)
 

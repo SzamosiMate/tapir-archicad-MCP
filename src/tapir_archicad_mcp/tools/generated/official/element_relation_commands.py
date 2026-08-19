@@ -25,7 +25,7 @@ def get_elements_related_to_zones(port: int, params: GetElementsRelatedToZonesPa
 
         result_dict = conn_header.core.post_command(
             command="API.GetElementsRelatedToZones",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(GetElementsRelatedToZonesResult, result_dict)
 

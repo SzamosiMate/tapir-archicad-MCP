@@ -44,7 +44,7 @@ def connect_mep_elements(port: int, params: ConnectMEPElementsParameters) -> Con
 
         result_dict = conn_header.core.post_tapir_command(
             command="ConnectMEPElements",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(ConnectMEPElementsResult, result_dict)
 
@@ -79,7 +79,7 @@ def create_mep_elements(port: int, params: CreateMEPElementsParameters) -> Creat
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreateMEPElements",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(CreateMEPElementsResult, result_dict)
 
@@ -114,7 +114,7 @@ def create_mep_routing_elements(port: int, params: CreateMEPRoutingElementsParam
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreateMEPRoutingElements",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(CreateMEPRoutingElementsResult, result_dict)
 
@@ -195,7 +195,7 @@ def get_mep_elements(port: int, params: GetMEPElementsParameters, page_token: st
         if not page_token:
             full_response_dict = conn_header.core.post_tapir_command(
                 command="GetMEPElements",
-                parameters=params.model_dump(mode='json')
+                parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
             )
             full_response_model = validate_result(GetMEPElementsResult, full_response_dict)
             PAGINATION_CACHE[cache_key] = (full_response_model, time.time())
@@ -248,7 +248,7 @@ def get_mep_ports(port: int, params: GetMEPPortsParameters) -> GetMEPPortsResult
 
         result_dict = conn_header.core.post_tapir_command(
             command="GetMEPPorts",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(GetMEPPortsResult, result_dict)
 
@@ -283,7 +283,7 @@ def get_mep_preference_tables(port: int, params: GetMEPPreferenceTablesParameter
 
         result_dict = conn_header.core.post_tapir_command(
             command="GetMEPPreferenceTables",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(GetMEPPreferenceTablesResult, result_dict)
 
@@ -318,7 +318,7 @@ def get_mep_routing_elements(port: int, params: GetMEPRoutingElementsParameters)
 
         result_dict = conn_header.core.post_tapir_command(
             command="GetMEPRoutingElements",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(GetMEPRoutingElementsResult, result_dict)
 
@@ -353,7 +353,7 @@ def modify_mep_routing_elements(port: int, params: ModifyMEPRoutingElementsParam
 
         result_dict = conn_header.core.post_tapir_command(
             command="ModifyMEPRoutingElements",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(ModifyMEPRoutingElementsResult, result_dict)
 

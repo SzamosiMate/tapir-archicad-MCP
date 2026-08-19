@@ -32,7 +32,7 @@ def create_groups(port: int, params: CreateGroupsParameters) -> CreateGroupsResu
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreateGroups",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(CreateGroupsResult, result_dict)
 
@@ -67,7 +67,7 @@ def get_elements_of_groups(port: int, params: GetElementsOfGroupsParameters) -> 
 
         result_dict = conn_header.core.post_tapir_command(
             command="GetElementsOfGroups",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(GetElementsOfGroupsResult, result_dict)
 
@@ -102,7 +102,7 @@ def get_groups_of_elements(port: int, params: GetGroupsOfElementsParameters) -> 
 
         result_dict = conn_header.core.post_tapir_command(
             command="GetGroupsOfElements",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(GetGroupsOfElementsResult, result_dict)
 
@@ -172,7 +172,7 @@ def set_suspend_groups_mode(port: int, params: SetSuspendGroupsModeParameters) -
 
         result_dict = conn_header.core.post_tapir_command(
             command="SetSuspendGroupsMode",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(SetSuspendGroupsModeResult, result_dict)
 

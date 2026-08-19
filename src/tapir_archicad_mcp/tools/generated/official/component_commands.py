@@ -27,7 +27,7 @@ def get_components_of_elements(port: int, params: GetComponentsOfElementsParamet
 
         result_dict = conn_header.core.post_command(
             command="API.GetComponentsOfElements",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(GetComponentsOfElementsResult, result_dict)
 
@@ -62,7 +62,7 @@ def get_property_values_of_element_components(port: int, params: GetPropertyValu
 
         result_dict = conn_header.core.post_command(
             command="API.GetPropertyValuesOfElementComponents",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(GetPropertyValuesOfElementComponentsResult, result_dict)
 

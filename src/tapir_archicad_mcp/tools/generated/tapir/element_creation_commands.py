@@ -75,7 +75,7 @@ def create_arcs(port: int, params: CreateArcsParameters) -> CreateArcsResult:
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreateArcs",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(CreateArcsResult, result_dict)
 
@@ -110,7 +110,7 @@ def create_associative_dimensions(port: int, params: CreateAssociativeDimensions
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreateAssociativeDimensions",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(CreateAssociativeDimensionsResult, result_dict)
 
@@ -145,7 +145,7 @@ def create_associative_dimensions_on_section(port: int, params: CreateAssociativ
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreateAssociativeDimensionsOnSection",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(CreateAssociativeDimensionsOnSectionResult, result_dict)
 
@@ -180,7 +180,7 @@ def create_beams(port: int, params: CreateBeamsParameters) -> CreateBeamsResult:
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreateBeams",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(CreateBeamsResult, result_dict)
 
@@ -215,7 +215,7 @@ def create_circles(port: int, params: CreateCirclesParameters) -> CreateCirclesR
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreateCircles",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(CreateCirclesResult, result_dict)
 
@@ -250,7 +250,7 @@ def create_columns(port: int, params: CreateColumnsParameters) -> CreateColumnsR
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreateColumns",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(CreateColumnsResult, result_dict)
 
@@ -285,7 +285,7 @@ def create_doors(port: int, params: CreateDoorsParameters) -> CreateDoorsResult:
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreateDoors",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(CreateDoorsResult, result_dict)
 
@@ -320,7 +320,7 @@ def create_hatches(port: int, params: CreateHatchesParameters) -> CreateHatchesR
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreateHatches",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(CreateHatchesResult, result_dict)
 
@@ -355,7 +355,7 @@ def create_hotspots(port: int, params: CreateHotspotsParameters) -> CreateHotspo
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreateHotspots",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(CreateHotspotsResult, result_dict)
 
@@ -390,7 +390,7 @@ def create_labels(port: int, params: CreateLabelsParameters) -> CreateLabelsResu
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreateLabels",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(CreateLabelsResult, result_dict)
 
@@ -425,7 +425,7 @@ def create_lamps(port: int, params: CreateLampsParameters) -> CreateLampsResult:
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreateLamps",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(CreateLampsResult, result_dict)
 
@@ -460,7 +460,7 @@ def create_line_elements(port: int, params: CreateLineElementsParameters) -> Cre
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreateLineElements",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(CreateLineElementsResult, result_dict)
 
@@ -495,7 +495,7 @@ def create_meshes(port: int, params: CreateMeshesParameters) -> CreateMeshesResu
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreateMeshes",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(CreateMeshesResult, result_dict)
 
@@ -530,7 +530,7 @@ def create_morphs(port: int, params: CreateMorphsParameters) -> CreateMorphsResu
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreateMorphs",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(CreateMorphsResult, result_dict)
 
@@ -565,7 +565,7 @@ def create_objects(port: int, params: CreateObjectsParameters) -> CreateObjectsR
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreateObjects",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(CreateObjectsResult, result_dict)
 
@@ -600,7 +600,7 @@ def create_openings(port: int, params: CreateOpeningsParameters) -> CreateOpenin
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreateOpenings",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(CreateOpeningsResult, result_dict)
 
@@ -635,7 +635,7 @@ def create_polylines(port: int, params: CreatePolylinesParameters) -> CreatePoly
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreatePolylines",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(CreatePolylinesResult, result_dict)
 
@@ -670,7 +670,7 @@ def create_roofs(port: int, params: CreateRoofsParameters) -> CreateRoofsResult:
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreateRoofs",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(CreateRoofsResult, result_dict)
 
@@ -705,7 +705,7 @@ def create_slabs(port: int, params: CreateSlabsParameters) -> CreateSlabsResult:
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreateSlabs",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(CreateSlabsResult, result_dict)
 
@@ -740,7 +740,7 @@ def create_splines(port: int, params: CreateSplinesParameters) -> CreateSplinesR
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreateSplines",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(CreateSplinesResult, result_dict)
 
@@ -775,7 +775,7 @@ def create_stairs(port: int, params: CreateStairsParameters) -> CreateStairsResu
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreateStairs",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(CreateStairsResult, result_dict)
 
@@ -810,7 +810,7 @@ def create_texts(port: int, params: CreateTextsParameters) -> CreateTextsResult:
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreateTexts",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(CreateTextsResult, result_dict)
 
@@ -845,7 +845,7 @@ def create_wall_thickness_dimensions(port: int, params: CreateWallThicknessDimen
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreateWallThicknessDimensions",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(CreateWallThicknessDimensionsResult, result_dict)
 
@@ -880,7 +880,7 @@ def create_walls(port: int, params: CreateWallsParameters) -> CreateWallsResult:
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreateWalls",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(CreateWallsResult, result_dict)
 
@@ -915,7 +915,7 @@ def create_windows(port: int, params: CreateWindowsParameters) -> CreateWindowsR
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreateWindows",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(CreateWindowsResult, result_dict)
 
@@ -950,7 +950,7 @@ def create_zones(port: int, params: CreateZonesParameters) -> CreateZonesResult:
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreateZones",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(CreateZonesResult, result_dict)
 

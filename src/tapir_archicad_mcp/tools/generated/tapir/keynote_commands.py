@@ -40,7 +40,7 @@ def create_keynote_folders(port: int, params: CreateKeynoteFoldersParameters) ->
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreateKeynoteFolders",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(CreateKeynoteFoldersResult, result_dict)
 
@@ -75,7 +75,7 @@ def create_keynote_items(port: int, params: CreateKeynoteItemsParameters) -> Cre
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreateKeynoteItems",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(CreateKeynoteItemsResult, result_dict)
 
@@ -110,7 +110,7 @@ def create_keynote_labels(port: int, params: CreateKeynoteLabelsParameters) -> C
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreateKeynoteLabels",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(CreateKeynoteLabelsResult, result_dict)
 
@@ -145,7 +145,7 @@ def delete_keynote_folders(port: int, params: DeleteKeynoteFoldersParameters) ->
 
         result_dict = conn_header.core.post_tapir_command(
             command="DeleteKeynoteFolders",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(DeleteKeynoteFoldersResult, result_dict)
 
@@ -180,7 +180,7 @@ def delete_keynote_items(port: int, params: DeleteKeynoteItemsParameters) -> Del
 
         result_dict = conn_header.core.post_tapir_command(
             command="DeleteKeynoteItems",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(DeleteKeynoteItemsResult, result_dict)
 
@@ -215,7 +215,7 @@ def get_keynote_auto_texts(port: int, params: GetKeynoteAutoTextsParameters) -> 
 
         result_dict = conn_header.core.post_tapir_command(
             command="GetKeynoteAutoTexts",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(GetKeynoteAutoTextsResult, result_dict)
 
@@ -285,7 +285,7 @@ def modify_keynote_folders(port: int, params: ModifyKeynoteFoldersParameters) ->
 
         result_dict = conn_header.core.post_tapir_command(
             command="ModifyKeynoteFolders",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(ModifyKeynoteFoldersResult, result_dict)
 
@@ -320,7 +320,7 @@ def modify_keynote_items(port: int, params: ModifyKeynoteItemsParameters) -> Mod
 
         result_dict = conn_header.core.post_tapir_command(
             command="ModifyKeynoteItems",
-            parameters=params.model_dump(mode='json')
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(ModifyKeynoteItemsResult, result_dict)
 
