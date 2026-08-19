@@ -25,7 +25,7 @@ def get2_d_bounding_boxes(port: int, params: Get2DBoundingBoxesParameters) -> Ge
 
         result_dict = conn_header.core.post_command(
             command="API.Get2DBoundingBoxes",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(Get2DBoundingBoxesResult, result_dict)
 

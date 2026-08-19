@@ -33,7 +33,7 @@ def add_files_to_embedded_library(port: int, params: AddFilesToEmbeddedLibraryPa
 
         result_dict = conn_header.core.post_tapir_command(
             command="AddFilesToEmbeddedLibrary",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(AddFilesToEmbeddedLibraryResult, result_dict)
 
@@ -79,7 +79,7 @@ def get_available_library_parts(port: int, params: GetAvailableLibraryPartsParam
         if not page_token:
             full_response_dict = conn_header.core.post_tapir_command(
                 command="GetAvailableLibraryParts",
-                parameters=params.model_dump(mode='json', by_alias=True)
+                parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
             )
             full_response_model = validate_result(GetAvailableLibraryPartsResult, full_response_dict)
             PAGINATION_CACHE[cache_key] = (full_response_model, time.time())

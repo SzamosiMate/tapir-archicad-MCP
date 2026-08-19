@@ -46,7 +46,7 @@ def create_property_definitions(port: int, params: CreatePropertyDefinitionsPara
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreatePropertyDefinitions",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(CreatePropertyDefinitionsResult, result_dict)
 
@@ -81,7 +81,7 @@ def create_property_groups(port: int, params: CreatePropertyGroupsParameters) ->
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreatePropertyGroups",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(CreatePropertyGroupsResult, result_dict)
 
@@ -116,7 +116,7 @@ def delete_property_definitions(port: int, params: DeletePropertyDefinitionsPara
 
         result_dict = conn_header.core.post_tapir_command(
             command="DeletePropertyDefinitions",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(DeletePropertyDefinitionsResult, result_dict)
 
@@ -151,7 +151,7 @@ def delete_property_groups(port: int, params: DeletePropertyGroupsParameters) ->
 
         result_dict = conn_header.core.post_tapir_command(
             command="DeletePropertyGroups",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(DeletePropertyGroupsResult, result_dict)
 
@@ -250,7 +250,7 @@ def get_property_values_of_attributes(port: int, params: GetPropertyValuesOfAttr
 
         result_dict = conn_header.core.post_tapir_command(
             command="GetPropertyValuesOfAttributes",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(GetPropertyValuesOfAttributesResult, result_dict)
 
@@ -285,7 +285,7 @@ def get_property_values_of_elements(port: int, params: GetPropertyValuesOfElemen
 
         result_dict = conn_header.core.post_tapir_command(
             command="GetPropertyValuesOfElements",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(GetPropertyValuesOfElementsResult, result_dict)
 
@@ -320,7 +320,7 @@ def set_property_values_of_attributes(port: int, params: SetPropertyValuesOfAttr
 
         result_dict = conn_header.core.post_tapir_command(
             command="SetPropertyValuesOfAttributes",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(SetPropertyValuesOfAttributesResult, result_dict)
 
@@ -355,7 +355,7 @@ def set_property_values_of_elements(port: int, params: SetPropertyValuesOfElemen
 
         result_dict = conn_header.core.post_tapir_command(
             command="SetPropertyValuesOfElements",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(SetPropertyValuesOfElementsResult, result_dict)
 
@@ -390,7 +390,7 @@ def update_property_definitions(port: int, params: UpdatePropertyDefinitionsPara
 
         result_dict = conn_header.core.post_tapir_command(
             command="UpdatePropertyDefinitions",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(UpdatePropertyDefinitionsResult, result_dict)
 

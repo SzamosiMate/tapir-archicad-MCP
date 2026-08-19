@@ -42,7 +42,7 @@ def get_all_property_group_ids(port: int, params: GetAllPropertyGroupIdsParamete
 
         result_dict = conn_header.core.post_command(
             command="API.GetAllPropertyGroupIds",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(GetAllPropertyGroupIdsResult, result_dict)
 
@@ -88,7 +88,7 @@ def get_all_property_ids(port: int, params: GetAllPropertyIdsParameters, page_to
         if not page_token:
             full_response_dict = conn_header.core.post_command(
                 command="API.GetAllPropertyIds",
-                parameters=params.model_dump(mode='json', by_alias=True)
+                parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
             )
             full_response_model = validate_result(GetAllPropertyIdsResult, full_response_dict)
             PAGINATION_CACHE[cache_key] = (full_response_model, time.time())
@@ -141,7 +141,7 @@ def get_all_property_ids_of_elements(port: int, params: GetAllPropertyIdsOfEleme
 
         result_dict = conn_header.core.post_command(
             command="API.GetAllPropertyIdsOfElements",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(GetAllPropertyIdsOfElementsResult, result_dict)
 
@@ -240,7 +240,7 @@ def get_details_of_properties(port: int, params: GetDetailsOfPropertiesParameter
 
         result_dict = conn_header.core.post_command(
             command="API.GetDetailsOfProperties",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(GetDetailsOfPropertiesResult, result_dict)
 
@@ -275,7 +275,7 @@ def get_property_definition_availability(port: int, params: GetPropertyDefinitio
 
         result_dict = conn_header.core.post_command(
             command="API.GetPropertyDefinitionAvailability",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(GetPropertyDefinitionAvailabilityResult, result_dict)
 
@@ -310,7 +310,7 @@ def get_property_groups(port: int, params: GetPropertyGroupsParameters) -> GetPr
 
         result_dict = conn_header.core.post_command(
             command="API.GetPropertyGroups",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(GetPropertyGroupsResult, result_dict)
 
@@ -345,7 +345,7 @@ def get_property_ids(port: int, params: GetPropertyIdsParameters) -> GetProperty
 
         result_dict = conn_header.core.post_command(
             command="API.GetPropertyIds",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(GetPropertyIdsResult, result_dict)
 

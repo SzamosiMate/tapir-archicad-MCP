@@ -75,7 +75,7 @@ def create_building_materials(port: int, params: CreateBuildingMaterialsParamete
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreateBuildingMaterials",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(CreateBuildingMaterialsResult, result_dict)
 
@@ -110,7 +110,7 @@ def create_composites(port: int, params: CreateCompositesParameters) -> CreateCo
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreateComposites",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(CreateCompositesResult, result_dict)
 
@@ -145,7 +145,7 @@ def create_fills(port: int, params: CreateFillsParameters) -> CreateFillsResult:
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreateFills",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(CreateFillsResult, result_dict)
 
@@ -180,7 +180,7 @@ def create_layer_combinations(port: int, params: CreateLayerCombinationsParamete
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreateLayerCombinations",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(CreateLayerCombinationsResult, result_dict)
 
@@ -215,7 +215,7 @@ def create_layers(port: int, params: CreateLayersParameters) -> CreateLayersResu
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreateLayers",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(CreateLayersResult, result_dict)
 
@@ -250,7 +250,7 @@ def create_lines(port: int, params: CreateLinesParameters) -> CreateLinesResult:
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreateLines",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(CreateLinesResult, result_dict)
 
@@ -285,7 +285,7 @@ def create_mep_systems(port: int, params: CreateMEPSystemsParameters) -> CreateM
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreateMEPSystems",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(CreateMEPSystemsResult, result_dict)
 
@@ -320,7 +320,7 @@ def create_pen_tables(port: int, params: CreatePenTablesParameters) -> CreatePen
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreatePenTables",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(CreatePenTablesResult, result_dict)
 
@@ -355,7 +355,7 @@ def create_profiles(port: int, params: CreateProfilesParameters) -> CreateProfil
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreateProfiles",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(CreateProfilesResult, result_dict)
 
@@ -390,7 +390,7 @@ def create_surfaces(port: int, params: CreateSurfacesParameters) -> CreateSurfac
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreateSurfaces",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(CreateSurfacesResult, result_dict)
 
@@ -425,7 +425,7 @@ def create_zone_categories(port: int, params: CreateZoneCategoriesParameters) ->
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreateZoneCategories",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(CreateZoneCategoriesResult, result_dict)
 
@@ -471,7 +471,7 @@ def get_attributes_by_type(port: int, params: GetAttributesByTypeParameters, pag
         if not page_token:
             full_response_dict = conn_header.core.post_tapir_command(
                 command="GetAttributesByType",
-                parameters=params.model_dump(mode='json', by_alias=True)
+                parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
             )
             full_response_model = validate_result(GetAttributesByTypeResult, full_response_dict)
             PAGINATION_CACHE[cache_key] = (full_response_model, time.time())
@@ -524,7 +524,7 @@ def get_building_material_physical_properties(port: int, params: GetBuildingMate
 
         result_dict = conn_header.core.post_tapir_command(
             command="GetBuildingMaterialPhysicalProperties",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(GetBuildingMaterialPhysicalPropertiesResult, result_dict)
 
@@ -559,7 +559,7 @@ def get_building_materials(port: int, params: GetBuildingMaterialsParameters) ->
 
         result_dict = conn_header.core.post_tapir_command(
             command="GetBuildingMaterials",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(GetBuildingMaterialsResult, result_dict)
 
@@ -594,7 +594,7 @@ def get_composites(port: int, params: GetCompositesParameters) -> GetCompositesR
 
         result_dict = conn_header.core.post_tapir_command(
             command="GetComposites",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(GetCompositesResult, result_dict)
 
@@ -629,7 +629,7 @@ def get_fills(port: int, params: GetFillsParameters) -> GetFillsResult:
 
         result_dict = conn_header.core.post_tapir_command(
             command="GetFills",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(GetFillsResult, result_dict)
 
@@ -664,7 +664,7 @@ def get_layer_combinations(port: int, params: GetLayerCombinationsParameters) ->
 
         result_dict = conn_header.core.post_tapir_command(
             command="GetLayerCombinations",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(GetLayerCombinationsResult, result_dict)
 
@@ -699,7 +699,7 @@ def get_layers(port: int, params: GetLayersParameters) -> GetLayersResult:
 
         result_dict = conn_header.core.post_tapir_command(
             command="GetLayers",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(GetLayersResult, result_dict)
 
@@ -734,7 +734,7 @@ def get_lines(port: int, params: GetLinesParameters) -> GetLinesResult:
 
         result_dict = conn_header.core.post_tapir_command(
             command="GetLines",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(GetLinesResult, result_dict)
 
@@ -769,7 +769,7 @@ def get_mep_systems(port: int, params: GetMEPSystemsParameters) -> GetMEPSystems
 
         result_dict = conn_header.core.post_tapir_command(
             command="GetMEPSystems",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(GetMEPSystemsResult, result_dict)
 
@@ -804,7 +804,7 @@ def get_pen_tables(port: int, params: GetPenTablesParameters) -> GetPenTablesRes
 
         result_dict = conn_header.core.post_tapir_command(
             command="GetPenTables",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(GetPenTablesResult, result_dict)
 
@@ -839,7 +839,7 @@ def get_profiles(port: int, params: GetProfilesParameters) -> GetProfilesResult:
 
         result_dict = conn_header.core.post_tapir_command(
             command="GetProfiles",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(GetProfilesResult, result_dict)
 
@@ -874,7 +874,7 @@ def get_surfaces(port: int, params: GetSurfacesParameters) -> GetSurfacesResult:
 
         result_dict = conn_header.core.post_tapir_command(
             command="GetSurfaces",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(GetSurfacesResult, result_dict)
 
@@ -909,7 +909,7 @@ def get_zone_categories(port: int, params: GetZoneCategoriesParameters) -> GetZo
 
         result_dict = conn_header.core.post_tapir_command(
             command="GetZoneCategories",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(GetZoneCategoriesResult, result_dict)
 

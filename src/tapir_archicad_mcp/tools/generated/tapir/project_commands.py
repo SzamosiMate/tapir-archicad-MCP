@@ -80,7 +80,7 @@ def create_project_info_fields(port: int, params: CreateProjectInfoFieldsParamet
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreateProjectInfoFields",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(CreateProjectInfoFieldsResult, result_dict)
 
@@ -115,7 +115,7 @@ def delete_project_info_fields(port: int, params: DeleteProjectInfoFieldsParamet
 
         result_dict = conn_header.core.post_tapir_command(
             command="DeleteProjectInfoFields",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(DeleteProjectInfoFieldsResult, result_dict)
 
@@ -325,7 +325,7 @@ def open_project(port: int, params: OpenProjectParameters) -> OpenProjectResult:
 
         result_dict = conn_header.core.post_tapir_command(
             command="OpenProject",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(OpenProjectResult, result_dict)
 
@@ -360,7 +360,7 @@ def print_view(port: int, params: PrintViewParameters) -> PrintViewResult:
 
         result_dict = conn_header.core.post_tapir_command(
             command="PrintView",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(PrintViewResult, result_dict)
 
@@ -395,7 +395,7 @@ def rebuild_view(port: int, params: RebuildViewParameters) -> RebuildViewResult:
 
         result_dict = conn_header.core.post_tapir_command(
             command="RebuildView",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(RebuildViewResult, result_dict)
 
@@ -465,7 +465,7 @@ def set_geo_location(port: int, params: SetGeoLocationParameters) -> SetGeoLocat
 
         result_dict = conn_header.core.post_tapir_command(
             command="SetGeoLocation",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(SetGeoLocationResult, result_dict)
 
@@ -500,7 +500,7 @@ def set_project_info_field(port: int, params: SetProjectInfoFieldParameters) -> 
 
         conn_header.core.post_tapir_command(
             command="SetProjectInfoField",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return None
 
@@ -535,7 +535,7 @@ def set_stories(port: int, params: SetStoriesParameters) -> SetStoriesResult:
 
         result_dict = conn_header.core.post_tapir_command(
             command="SetStories",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(SetStoriesResult, result_dict)
 

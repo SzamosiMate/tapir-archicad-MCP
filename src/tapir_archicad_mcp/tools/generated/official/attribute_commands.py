@@ -41,7 +41,7 @@ def create_attribute_folders(port: int, params: CreateAttributeFoldersParameters
 
         result_dict = conn_header.core.post_command(
             command="API.CreateAttributeFolders",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(CreateAttributeFoldersResult, result_dict)
 
@@ -76,7 +76,7 @@ def delete_attribute_folders(port: int, params: DeleteAttributeFoldersParameters
 
         result_dict = conn_header.core.post_command(
             command="API.DeleteAttributeFolders",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(DeleteAttributeFoldersResult, result_dict)
 
@@ -111,7 +111,7 @@ def delete_attributes(port: int, params: DeleteAttributesParameters) -> DeleteAt
 
         result_dict = conn_header.core.post_command(
             command="API.DeleteAttributes",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(DeleteAttributesResult, result_dict)
 
@@ -181,7 +181,7 @@ def get_attribute_folder_structure(port: int, params: GetAttributeFolderStructur
 
         result_dict = conn_header.core.post_command(
             command="API.GetAttributeFolderStructure",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(GetAttributeFolderStructureResult, result_dict)
 
@@ -216,7 +216,7 @@ def get_attribute_folders(port: int, params: GetAttributeFoldersParameters) -> G
 
         result_dict = conn_header.core.post_command(
             command="API.GetAttributeFolders",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(GetAttributeFoldersResult, result_dict)
 
@@ -251,7 +251,7 @@ def get_attributes_indices(port: int, params: GetAttributesIndicesParameters) ->
 
         result_dict = conn_header.core.post_command(
             command="API.GetAttributesIndices",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(GetAttributesIndicesResult, result_dict)
 
@@ -286,7 +286,7 @@ def get_profile_attribute_preview(port: int, params: GetProfileAttributePreviewP
 
         result_dict = conn_header.core.post_command(
             command="API.GetProfileAttributePreview",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(GetProfileAttributePreviewResult, result_dict)
 
@@ -321,7 +321,7 @@ def move_attributes_and_folders(port: int, params: MoveAttributesAndFoldersParam
 
         conn_header.core.post_command(
             command="API.MoveAttributesAndFolders",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return None
 
@@ -356,7 +356,7 @@ def rename_attribute_folders(port: int, params: RenameAttributeFoldersParameters
 
         result_dict = conn_header.core.post_command(
             command="API.RenameAttributeFolders",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(RenameAttributeFoldersResult, result_dict)
 

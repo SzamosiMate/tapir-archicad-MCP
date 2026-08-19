@@ -12,10 +12,14 @@ from multiconn_archicad.models.tapir.commands import (
     ModifyColumnsResult,
     ModifyDoorsParameters,
     ModifyDoorsResult,
+    ModifyLampsParameters,
+    ModifyLampsResult,
     ModifyMeshesParameters,
     ModifyMeshesResult,
     ModifyMorphsParameters,
     ModifyMorphsResult,
+    ModifyObjectsParameters,
+    ModifyObjectsResult,
     ModifyRoofsParameters,
     ModifyRoofsResult,
     ModifySlabsParameters,
@@ -41,7 +45,7 @@ def modify_beams(port: int, params: ModifyBeamsParameters) -> ModifyBeamsResult:
 
         result_dict = conn_header.core.post_tapir_command(
             command="ModifyBeams",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(ModifyBeamsResult, result_dict)
 
@@ -76,7 +80,7 @@ def modify_columns(port: int, params: ModifyColumnsParameters) -> ModifyColumnsR
 
         result_dict = conn_header.core.post_tapir_command(
             command="ModifyColumns",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(ModifyColumnsResult, result_dict)
 
@@ -111,7 +115,7 @@ def modify_doors(port: int, params: ModifyDoorsParameters) -> ModifyDoorsResult:
 
         result_dict = conn_header.core.post_tapir_command(
             command="ModifyDoors",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(ModifyDoorsResult, result_dict)
 
@@ -133,6 +137,41 @@ register_tool_for_dispatch(
 )
 
 
+def modify_lamps(port: int, params: ModifyLampsParameters) -> ModifyLampsResult:
+    """
+    Modifies Lamp elements based on the given parameters.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="ModifyLamps",
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        )
+        return validate_result(ModifyLampsResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for ModifyLamps result: {e}")
+        raise ValueError(extract_archicad_errors(e, "ModifyLamps"))
+    except Exception as e:
+        log.error(f"Error executing ModifyLamps on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    modify_lamps,
+    name="elements_modify_lamps",
+    title="ModifyLamps",
+    description="Modifies Lamp elements based on the given parameters.",
+    params_model=ModifyLampsParameters,
+    result_model=ModifyLampsResult
+)
+
+
 def modify_meshes(port: int, params: ModifyMeshesParameters) -> ModifyMeshesResult:
     """
     Modifies the attributes of Mesh elements based on the given parameters.
@@ -146,7 +185,7 @@ def modify_meshes(port: int, params: ModifyMeshesParameters) -> ModifyMeshesResu
 
         result_dict = conn_header.core.post_tapir_command(
             command="ModifyMeshes",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(ModifyMeshesResult, result_dict)
 
@@ -181,7 +220,7 @@ def modify_morphs(port: int, params: ModifyMorphsParameters) -> ModifyMorphsResu
 
         result_dict = conn_header.core.post_tapir_command(
             command="ModifyMorphs",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(ModifyMorphsResult, result_dict)
 
@@ -203,6 +242,41 @@ register_tool_for_dispatch(
 )
 
 
+def modify_objects(port: int, params: ModifyObjectsParameters) -> ModifyObjectsResult:
+    """
+    Modifies Object elements based on the given parameters.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="ModifyObjects",
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        )
+        return validate_result(ModifyObjectsResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for ModifyObjects result: {e}")
+        raise ValueError(extract_archicad_errors(e, "ModifyObjects"))
+    except Exception as e:
+        log.error(f"Error executing ModifyObjects on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    modify_objects,
+    name="elements_modify_objects",
+    title="ModifyObjects",
+    description="Modifies Object elements based on the given parameters.",
+    params_model=ModifyObjectsParameters,
+    result_model=ModifyObjectsResult
+)
+
+
 def modify_roofs(port: int, params: ModifyRoofsParameters) -> ModifyRoofsResult:
     """
     Modifies multi-plane Roof elements based on the given parameters.
@@ -216,7 +290,7 @@ def modify_roofs(port: int, params: ModifyRoofsParameters) -> ModifyRoofsResult:
 
         result_dict = conn_header.core.post_tapir_command(
             command="ModifyRoofs",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(ModifyRoofsResult, result_dict)
 
@@ -251,7 +325,7 @@ def modify_slabs(port: int, params: ModifySlabsParameters) -> ModifySlabsResult:
 
         result_dict = conn_header.core.post_tapir_command(
             command="ModifySlabs",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(ModifySlabsResult, result_dict)
 
@@ -286,7 +360,7 @@ def modify_walls(port: int, params: ModifyWallsParameters) -> ModifyWallsResult:
 
         result_dict = conn_header.core.post_tapir_command(
             command="ModifyWalls",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(ModifyWallsResult, result_dict)
 
@@ -321,7 +395,7 @@ def modify_windows(port: int, params: ModifyWindowsParameters) -> ModifyWindowsR
 
         result_dict = conn_header.core.post_tapir_command(
             command="ModifyWindows",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(ModifyWindowsResult, result_dict)
 

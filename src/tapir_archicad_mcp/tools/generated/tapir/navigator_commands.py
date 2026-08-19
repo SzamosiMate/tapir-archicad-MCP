@@ -6,12 +6,16 @@ from tapir_archicad_mcp.context import multi_conn_instance
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
 from tapir_archicad_mcp.tools.validation import validate_result, extract_archicad_errors
 from multiconn_archicad.models.tapir.commands import (
+    ChangeDrawingLinkParameters,
+    ChangeDrawingLinkResult,
     CloneProjectMapItemToViewMapParameters,
     CloneProjectMapItemToViewMapResult,
     CreateDetailsParameters,
     CreateDetailsResult,
     CreateDrawingsParameters,
     CreateDrawingsResult,
+    CreateInteriorElevationsParameters,
+    CreateInteriorElevationsResult,
     CreateLayoutParameters,
     CreateLayoutResult,
     CreateLayoutSubsetParameters,
@@ -53,6 +57,41 @@ from multiconn_archicad.models.tapir.commands import (
 
 log = logging.getLogger()
 
+def change_drawing_link(port: int, params: ChangeDrawingLinkParameters) -> ChangeDrawingLinkResult:
+    """
+    Relinks a Drawing to a different source navigator item. Archicad has no in-place relink API, so this recreates the Drawing against the new source and deletes the original - the returned elementId is a NEW guid, not the input one. The Drawing Title marker's own position is not preserved (undocumented Archicad limitation).
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="ChangeDrawingLink",
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        )
+        return validate_result(ChangeDrawingLinkResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for ChangeDrawingLink result: {e}")
+        raise ValueError(extract_archicad_errors(e, "ChangeDrawingLink"))
+    except Exception as e:
+        log.error(f"Error executing ChangeDrawingLink on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    change_drawing_link,
+    name="navigator_change_drawing_link",
+    title="ChangeDrawingLink",
+    description="Relinks a Drawing to a different source navigator item. Archicad has no in-place relink API, so this recreates the Drawing against the new source and deletes the original - the returned elementId is a NEW guid, not the input one. The Drawing Title marker's own position is not preserved (undocumented Archicad limitation).",
+    params_model=ChangeDrawingLinkParameters,
+    result_model=ChangeDrawingLinkResult
+)
+
+
 def clone_project_map_item_to_view_map(port: int, params: CloneProjectMapItemToViewMapParameters) -> CloneProjectMapItemToViewMapResult:
     """
     Clones Project Map viewpoints into the View Map, optionally into a specified folder.
@@ -66,7 +105,7 @@ def clone_project_map_item_to_view_map(port: int, params: CloneProjectMapItemToV
 
         result_dict = conn_header.core.post_tapir_command(
             command="CloneProjectMapItemToViewMap",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(CloneProjectMapItemToViewMapResult, result_dict)
 
@@ -101,7 +140,7 @@ def create_details(port: int, params: CreateDetailsParameters) -> CreateDetailsR
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreateDetails",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(CreateDetailsResult, result_dict)
 
@@ -136,7 +175,7 @@ def create_drawings(port: int, params: CreateDrawingsParameters) -> CreateDrawin
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreateDrawings",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(CreateDrawingsResult, result_dict)
 
@@ -158,6 +197,41 @@ register_tool_for_dispatch(
 )
 
 
+def create_interior_elevations(port: int, params: CreateInteriorElevationsParameters) -> CreateInteriorElevationsResult:
+    """
+    Creates Interior Elevation elements on the floor plan. Every consecutive pair of the given points becomes one segment, each with its own viewpoint - feed it the corner points of a room to get an interior elevation of that room.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="CreateInteriorElevations",
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        )
+        return validate_result(CreateInteriorElevationsResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for CreateInteriorElevations result: {e}")
+        raise ValueError(extract_archicad_errors(e, "CreateInteriorElevations"))
+    except Exception as e:
+        log.error(f"Error executing CreateInteriorElevations on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    create_interior_elevations,
+    name="navigator_create_interior_elevations",
+    title="CreateInteriorElevations",
+    description="Creates Interior Elevation elements on the floor plan. Every consecutive pair of the given points becomes one segment, each with its own viewpoint - feed it the corner points of a room to get an interior elevation of that room.",
+    params_model=CreateInteriorElevationsParameters,
+    result_model=CreateInteriorElevationsResult
+)
+
+
 def create_layout(port: int, params: CreateLayoutParameters) -> CreateLayoutResult:
     """
     Creates Layouts and their backing master layouts.
@@ -171,7 +245,7 @@ def create_layout(port: int, params: CreateLayoutParameters) -> CreateLayoutResu
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreateLayout",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(CreateLayoutResult, result_dict)
 
@@ -206,7 +280,7 @@ def create_layout_subset(port: int, params: CreateLayoutSubsetParameters) -> Cre
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreateLayoutSubset",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(CreateLayoutSubsetResult, result_dict)
 
@@ -241,7 +315,7 @@ def create_sections(port: int, params: CreateSectionsParameters) -> CreateSectio
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreateSections",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(CreateSectionsResult, result_dict)
 
@@ -276,7 +350,7 @@ def create_view_map_folder(port: int, params: CreateViewMapFolderParameters) -> 
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreateViewMapFolder",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(CreateViewMapFolderResult, result_dict)
 
@@ -311,7 +385,7 @@ def create_views_in_view_map(port: int, params: CreateViewsInViewMapParameters) 
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreateViewsInViewMap",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(CreateViewsInViewMapResult, result_dict)
 
@@ -346,7 +420,7 @@ def create_worksheets(port: int, params: CreateWorksheetsParameters) -> CreateWo
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreateWorksheets",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(CreateWorksheetsResult, result_dict)
 
@@ -381,7 +455,7 @@ def fit_in_window(port: int, params: FitInWindowParameters) -> FitInWindowResult
 
         result_dict = conn_header.core.post_tapir_command(
             command="FitInWindow",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(FitInWindowResult, result_dict)
 
@@ -416,7 +490,7 @@ def get_database_id_from_navigator_item_id(port: int, params: GetDatabaseIdFromN
 
         result_dict = conn_header.core.post_tapir_command(
             command="GetDatabaseIdFromNavigatorItemId",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(GetDatabaseIdFromNavigatorItemIdResult, result_dict)
 
@@ -486,7 +560,7 @@ def get_layout_settings(port: int, params: GetLayoutSettingsParameters) -> GetLa
 
         result_dict = conn_header.core.post_tapir_command(
             command="GetLayoutSettings",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(GetLayoutSettingsResult, result_dict)
 
@@ -556,7 +630,7 @@ def get_view2_d_transformations(port: int, params: GetView2DTransformationsParam
 
         result_dict = conn_header.core.post_tapir_command(
             command="GetView2DTransformations",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(GetView2DTransformationsResult, result_dict)
 
@@ -591,7 +665,7 @@ def get_view_settings(port: int, params: GetViewSettingsParameters) -> GetViewSe
 
         result_dict = conn_header.core.post_tapir_command(
             command="GetViewSettings",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(GetViewSettingsResult, result_dict)
 
@@ -626,7 +700,7 @@ def publish_publisher_set(port: int, params: PublishPublisherSetParameters) -> N
 
         conn_header.core.post_tapir_command(
             command="PublishPublisherSet",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return None
 
@@ -661,7 +735,7 @@ def rename_navigator_item(port: int, params: RenameNavigatorItemParameters) -> R
 
         result_dict = conn_header.core.post_tapir_command(
             command="RenameNavigatorItem",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(RenameNavigatorItemResult, result_dict)
 
@@ -696,7 +770,7 @@ def set3_d_cut_planes(port: int, params: Set3DCutPlanesParameters) -> Set3DCutPl
 
         result_dict = conn_header.core.post_tapir_command(
             command="Set3DCutPlanes",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(Set3DCutPlanesResult, result_dict)
 
@@ -731,7 +805,7 @@ def set_layout_settings(port: int, params: SetLayoutSettingsParameters) -> SetLa
 
         result_dict = conn_header.core.post_tapir_command(
             command="SetLayoutSettings",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(SetLayoutSettingsResult, result_dict)
 
@@ -766,7 +840,7 @@ def set_view_rotation(port: int, params: SetViewRotationParameters) -> SetViewRo
 
         result_dict = conn_header.core.post_tapir_command(
             command="SetViewRotation",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(SetViewRotationResult, result_dict)
 
@@ -801,7 +875,7 @@ def set_view_settings(port: int, params: SetViewSettingsParameters) -> SetViewSe
 
         result_dict = conn_header.core.post_tapir_command(
             command="SetViewSettings",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(SetViewSettingsResult, result_dict)
 
@@ -836,7 +910,7 @@ def update_drawings(port: int, params: UpdateDrawingsParameters) -> UpdateDrawin
 
         result_dict = conn_header.core.post_tapir_command(
             command="UpdateDrawings",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(UpdateDrawingsResult, result_dict)
 

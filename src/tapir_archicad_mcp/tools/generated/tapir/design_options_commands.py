@@ -42,7 +42,7 @@ def create_design_option_combinations(port: int, params: CreateDesignOptionCombi
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreateDesignOptionCombinations",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(CreateDesignOptionCombinationsResult, result_dict)
 
@@ -77,7 +77,7 @@ def create_design_option_sets(port: int, params: CreateDesignOptionSetsParameter
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreateDesignOptionSets",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(CreateDesignOptionSetsResult, result_dict)
 
@@ -112,7 +112,7 @@ def create_design_options(port: int, params: CreateDesignOptionsParameters) -> C
 
         result_dict = conn_header.core.post_tapir_command(
             command="CreateDesignOptions",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(CreateDesignOptionsResult, result_dict)
 
@@ -182,7 +182,7 @@ def get_design_option_for_elements(port: int, params: GetDesignOptionForElements
 
         result_dict = conn_header.core.post_tapir_command(
             command="GetDesignOptionForElements",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(GetDesignOptionForElementsResult, result_dict)
 
@@ -287,7 +287,7 @@ def get_elements_of_design_options(port: int, params: GetElementsOfDesignOptions
 
         result_dict = conn_header.core.post_tapir_command(
             command="GetElementsOfDesignOptions",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(GetElementsOfDesignOptionsResult, result_dict)
 
@@ -322,7 +322,7 @@ def move_design_options_to_another_set(port: int, params: MoveDesignOptionsToAno
 
         result_dict = conn_header.core.post_tapir_command(
             command="MoveDesignOptionsToAnotherSet",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(MoveDesignOptionsToAnotherSetResult, result_dict)
 
@@ -357,7 +357,7 @@ def move_elements_to_design_options(port: int, params: MoveElementsToDesignOptio
 
         result_dict = conn_header.core.post_tapir_command(
             command="MoveElementsToDesignOptions",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(MoveElementsToDesignOptionsResult, result_dict)
 
@@ -392,7 +392,7 @@ def set_active_design_options_in_combinations(port: int, params: SetActiveDesign
 
         result_dict = conn_header.core.post_tapir_command(
             command="SetActiveDesignOptionsInCombinations",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(SetActiveDesignOptionsInCombinationsResult, result_dict)
 

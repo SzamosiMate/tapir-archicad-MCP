@@ -85,7 +85,7 @@ class {paginated_result_model}(BaseModel):
 
 
 def _generate_call_block(cmd: dict, result_model: str, has_params: bool, has_result: bool, config: ApiSourceConfig) -> str:
-    params_for_api_call = "params.model_dump(mode='json', by_alias=True)" if has_params else "{}"
+    params_for_api_call = "params.model_dump(mode='json', by_alias=True, exclude_none=True)" if has_params else "{}"
     api_call = f'conn_header.core.{config.api_call_method}'
     if has_result:
         return dedent(f'''
@@ -106,7 +106,7 @@ def _generate_call_block(cmd: dict, result_model: str, has_params: bool, has_res
 
 
 def _generate_paginated_call_block(cmd: dict, original_result_model: str, paginated_result_model: str, list_attribute_name: str, has_params: bool, config: ApiSourceConfig) -> str:
-    params_for_api_call = "params.model_dump(mode='json', by_alias=True)" if has_params else "{}"
+    params_for_api_call = "params.model_dump(mode='json', by_alias=True, exclude_none=True)" if has_params else "{}"
     cache_key_params_part = f':{{params.model_dump_json()}}' if has_params else ''
     api_call = f'conn_header.core.{config.api_call_method}'
 

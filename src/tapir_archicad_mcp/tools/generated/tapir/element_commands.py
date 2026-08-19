@@ -34,8 +34,12 @@ from multiconn_archicad.models.tapir.commands import (
     GetElementsByTypeResult,
     GetGDLParametersOfElementsParameters,
     GetGDLParametersOfElementsResult,
+    GetRelationsOfElementsParameters,
+    GetRelationsOfElementsResult,
     GetRoomImageParameters,
     GetRoomImageResult,
+    GetSectionElementsParameters,
+    GetSectionElementsResult,
     GetSelectedElementsResult,
     GetSubelementsOfHierarchicalElementsParameters,
     GetSubelementsOfHierarchicalElementsResult,
@@ -78,7 +82,7 @@ def change_selection_of_elements(port: int, params: ChangeSelectionOfElementsPar
 
         result_dict = conn_header.core.post_tapir_command(
             command="ChangeSelectionOfElements",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(ChangeSelectionOfElementsResult, result_dict)
 
@@ -113,7 +117,7 @@ def delete_elements(port: int, params: DeleteElementsParameters) -> DeleteElemen
 
         result_dict = conn_header.core.post_tapir_command(
             command="DeleteElements",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(DeleteElementsResult, result_dict)
 
@@ -148,7 +152,7 @@ def filter_elements(port: int, params: FilterElementsParameters) -> FilterElemen
 
         result_dict = conn_header.core.post_tapir_command(
             command="FilterElements",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(FilterElementsResult, result_dict)
 
@@ -183,7 +187,7 @@ def get3_d_bounding_boxes(port: int, params: Get3DBoundingBoxesParameters) -> Ge
 
         result_dict = conn_header.core.post_tapir_command(
             command="Get3DBoundingBoxes",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(Get3DBoundingBoxesResult, result_dict)
 
@@ -229,7 +233,7 @@ def get_all_elements(port: int, params: GetAllElementsParameters, page_token: st
         if not page_token:
             full_response_dict = conn_header.core.post_tapir_command(
                 command="GetAllElements",
-                parameters=params.model_dump(mode='json', by_alias=True)
+                parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
             )
             full_response_model = validate_result(GetAllElementsResult, full_response_dict)
             PAGINATION_CACHE[cache_key] = (full_response_model, time.time())
@@ -282,7 +286,7 @@ def get_collisions(port: int, params: GetCollisionsParameters) -> GetCollisionsR
 
         result_dict = conn_header.core.post_tapir_command(
             command="GetCollisions",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(GetCollisionsResult, result_dict)
 
@@ -306,7 +310,7 @@ register_tool_for_dispatch(
 
 def get_connected_elements(port: int, params: GetConnectedElementsParameters) -> GetConnectedElementsResult:
     """
-    Gets connected elements of the given elements.
+    Gets the elements hosted by (connected to) the given owner elements, filtered to the given element type: for example the Windows or Doors of a Wall, the frames, panels, junctions and accessories of a Curtain Wall, the risers, treads and structures of a Stair, or the posts, rails and panels of a Railing.
     """
     multi_conn = multi_conn_instance.get()
     target_port = Port(port)
@@ -317,7 +321,7 @@ def get_connected_elements(port: int, params: GetConnectedElementsParameters) ->
 
         result_dict = conn_header.core.post_tapir_command(
             command="GetConnectedElements",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(GetConnectedElementsResult, result_dict)
 
@@ -333,7 +337,7 @@ register_tool_for_dispatch(
     get_connected_elements,
     name="elements_get_connected_elements",
     title="GetConnectedElements",
-    description="Gets connected elements of the given elements.",
+    description="Gets the elements hosted by (connected to) the given owner elements, filtered to the given element type: for example the Windows or Doors of a Wall, the frames, panels, junctions and accessories of a Curtain Wall, the risers, treads and structures of a Stair, or the posts, rails and panels of a Railing.",
     params_model=GetConnectedElementsParameters,
     result_model=GetConnectedElementsResult
 )
@@ -363,7 +367,7 @@ def get_details_of_elements(port: int, params: GetDetailsOfElementsParameters, p
         if not page_token:
             full_response_dict = conn_header.core.post_tapir_command(
                 command="GetDetailsOfElements",
-                parameters=params.model_dump(mode='json', by_alias=True)
+                parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
             )
             full_response_model = validate_result(GetDetailsOfElementsResult, full_response_dict)
             PAGINATION_CACHE[cache_key] = (full_response_model, time.time())
@@ -416,7 +420,7 @@ def get_dimension_data(port: int, params: GetDimensionDataParameters) -> GetDime
 
         result_dict = conn_header.core.post_tapir_command(
             command="GetDimensionData",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(GetDimensionDataResult, result_dict)
 
@@ -451,7 +455,7 @@ def get_element_preview_image(port: int, params: GetElementPreviewImageParameter
 
         result_dict = conn_header.core.post_tapir_command(
             command="GetElementPreviewImage",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(GetElementPreviewImageResult, result_dict)
 
@@ -497,7 +501,7 @@ def get_elements_by_type(port: int, params: GetElementsByTypeParameters, page_to
         if not page_token:
             full_response_dict = conn_header.core.post_tapir_command(
                 command="GetElementsByType",
-                parameters=params.model_dump(mode='json', by_alias=True)
+                parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
             )
             full_response_model = validate_result(GetElementsByTypeResult, full_response_dict)
             PAGINATION_CACHE[cache_key] = (full_response_model, time.time())
@@ -561,7 +565,7 @@ def get_gdl_parameters_of_elements(port: int, params: GetGDLParametersOfElements
         if not page_token:
             full_response_dict = conn_header.core.post_tapir_command(
                 command="GetGDLParametersOfElements",
-                parameters=params.model_dump(mode='json', by_alias=True)
+                parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
             )
             full_response_model = validate_result(GetGDLParametersOfElementsResult, full_response_dict)
             PAGINATION_CACHE[cache_key] = (full_response_model, time.time())
@@ -601,6 +605,41 @@ register_tool_for_dispatch(
 )
 
 
+def get_relations_of_elements(port: int, params: GetRelationsOfElementsParameters) -> GetRelationsOfElementsResult:
+    """
+    Gets the type-specific relations of the given elements: endpoint and reference line connections of walls, beams and beam segments, boundary elements and boundary sections of zones, the zones on the two sides of windows, doors, skylights and curtain wall panels, and the zones connected to roofs and shells. Available from Archicad 26.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="GetRelationsOfElements",
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        )
+        return validate_result(GetRelationsOfElementsResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for GetRelationsOfElements result: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetRelationsOfElements"))
+    except Exception as e:
+        log.error(f"Error executing GetRelationsOfElements on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    get_relations_of_elements,
+    name="elements_get_relations_of_elements",
+    title="GetRelationsOfElements",
+    description="Gets the type-specific relations of the given elements: endpoint and reference line connections of walls, beams and beam segments, boundary elements and boundary sections of zones, the zones on the two sides of windows, doors, skylights and curtain wall panels, and the zones connected to roofs and shells. Available from Archicad 26.",
+    params_model=GetRelationsOfElementsParameters,
+    result_model=GetRelationsOfElementsResult
+)
+
+
 def get_room_image(port: int, params: GetRoomImageParameters) -> GetRoomImageResult:
     """
     Returns the room image of the given zone.
@@ -614,7 +653,7 @@ def get_room_image(port: int, params: GetRoomImageParameters) -> GetRoomImageRes
 
         result_dict = conn_header.core.post_tapir_command(
             command="GetRoomImage",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(GetRoomImageResult, result_dict)
 
@@ -633,6 +672,41 @@ register_tool_for_dispatch(
     description="Returns the room image of the given zone.",
     params_model=GetRoomImageParameters,
     result_model=GetRoomImageResult
+)
+
+
+def get_section_elements(port: int, params: GetSectionElementsParameters) -> GetSectionElementsResult:
+    """
+    Gets the elements drawn in the given section, elevation or interior elevation databases, each with the owner element it was generated from. This is the only command that returns raw section element identifiers - every other listing command converts them to their owner - so it is the way to obtain the sectionElementId that CreateAssociativeDimensionsOnSection requires.
+    """
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+    try:
+
+        result_dict = conn_header.core.post_tapir_command(
+            command="GetSectionElements",
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        )
+        return validate_result(GetSectionElementsResult, result_dict)
+
+    except ValidationError as e:
+        log.error(f"Validation error for GetSectionElements result: {e}")
+        raise ValueError(extract_archicad_errors(e, "GetSectionElements"))
+    except Exception as e:
+        log.error(f"Error executing GetSectionElements on port {port}: {e}")
+        raise e
+
+
+register_tool_for_dispatch(
+    get_section_elements,
+    name="elements_get_section_elements",
+    title="GetSectionElements",
+    description="Gets the elements drawn in the given section, elevation or interior elevation databases, each with the owner element it was generated from. This is the only command that returns raw section element identifiers - every other listing command converts them to their owner - so it is the way to obtain the sectionElementId that CreateAssociativeDimensionsOnSection requires.",
+    params_model=GetSectionElementsParameters,
+    result_model=GetSectionElementsResult
 )
 
 
@@ -713,7 +787,7 @@ def get_subelements_of_hierarchical_elements(port: int, params: GetSubelementsOf
 
         result_dict = conn_header.core.post_tapir_command(
             command="GetSubelementsOfHierarchicalElements",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(GetSubelementsOfHierarchicalElementsResult, result_dict)
 
@@ -748,7 +822,7 @@ def get_zone_boundaries(port: int, params: GetZoneBoundariesParameters) -> GetZo
 
         result_dict = conn_header.core.post_tapir_command(
             command="GetZoneBoundaries",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(GetZoneBoundariesResult, result_dict)
 
@@ -783,7 +857,7 @@ def highlight_elements(port: int, params: HighlightElementsParameters) -> Highli
 
         result_dict = conn_header.core.post_tapir_command(
             command="HighlightElements",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(HighlightElementsResult, result_dict)
 
@@ -818,7 +892,7 @@ def lock_elements(port: int, params: LockElementsParameters) -> LockElementsResu
 
         result_dict = conn_header.core.post_tapir_command(
             command="LockElements",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(LockElementsResult, result_dict)
 
@@ -853,7 +927,7 @@ def move_elements(port: int, params: MoveElementsParameters) -> MoveElementsResu
 
         result_dict = conn_header.core.post_tapir_command(
             command="MoveElements",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(MoveElementsResult, result_dict)
 
@@ -888,7 +962,7 @@ def remove_element_notification_client(port: int, params: RemoveElementNotificat
 
         result_dict = conn_header.core.post_tapir_command(
             command="RemoveElementNotificationClient",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(RemoveElementNotificationClientResult, result_dict)
 
@@ -923,7 +997,7 @@ def rotate_elements(port: int, params: RotateElementsParameters) -> RotateElemen
 
         result_dict = conn_header.core.post_tapir_command(
             command="RotateElements",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(RotateElementsResult, result_dict)
 
@@ -958,7 +1032,7 @@ def set_details_of_elements(port: int, params: SetDetailsOfElementsParameters) -
 
         result_dict = conn_header.core.post_tapir_command(
             command="SetDetailsOfElements",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(SetDetailsOfElementsResult, result_dict)
 
@@ -993,7 +1067,7 @@ def set_element_notification_client(port: int, params: SetElementNotificationCli
 
         result_dict = conn_header.core.post_tapir_command(
             command="SetElementNotificationClient",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(SetElementNotificationClientResult, result_dict)
 
@@ -1028,7 +1102,7 @@ def set_gdl_parameters_of_elements(port: int, params: SetGDLParametersOfElements
 
         result_dict = conn_header.core.post_tapir_command(
             command="SetGDLParametersOfElements",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(SetGDLParametersOfElementsResult, result_dict)
 
@@ -1063,7 +1137,7 @@ def unlock_elements(port: int, params: UnlockElementsParameters) -> UnlockElemen
 
         result_dict = conn_header.core.post_tapir_command(
             command="UnlockElements",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(UnlockElementsResult, result_dict)
 
@@ -1098,7 +1172,7 @@ def update_zones(port: int, params: UpdateZonesParameters) -> UpdateZonesResult:
 
         result_dict = conn_header.core.post_tapir_command(
             command="UpdateZones",
-            parameters=params.model_dump(mode='json', by_alias=True)
+            parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
         )
         return validate_result(UpdateZonesResult, result_dict)
 
