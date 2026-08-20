@@ -57,7 +57,7 @@ If you prefer not to edit `config.json` by hand, pack this repository as an [MCP
 ```bash
 npm install -g @anthropic-ai/mcpb
 mcpb validate manifest.json
-mcpb pack . tapir-archicad-0.5.4.mcpb
+mcpb pack . tapir-archicad-0.5.4.0.mcpb
 ```
 
 Then in Claude Desktop: Settings → Extensions → **Install Extension…** and select the `.mcpb` file. Quit Claude fully and reopen it.
@@ -68,7 +68,9 @@ This also covers the Microsoft Store build of Claude Desktop, which does not rea
 
 The packed extension launches this package's `archicad-server` entry point. It can modify the open Archicad project, export files, and send or receive Teamwork. Treat enabling it like giving the MCP client your Archicad seat.
 
-Icon artwork is the official Tapir mark from [ENZYME-APD/tapir-archicad-automation](https://github.com/ENZYME-APD/tapir-archicad-automation) (`branding/logo/png/tapir_discord_512.png`), MIT, Copyright 2024 Enzyme APD.
+The MCPB `version` in `manifest.json` is the Python package version plus a pack revision, so a packaging-only change does not require a PyPI release. The first pack of `0.5.4` is `0.5.4.0`. Icon or ignore-rule fixes become `0.5.4.1`. A new package version resets the revision to `0` (for example `0.5.5.0`). Keep `pyproject.toml` on three-part semver for PyPI.
+
+Icon artwork is the official Tapir mark from [ENZYME-APD/tapir-archicad-automation](https://github.com/ENZYME-APD/tapir-archicad-automation) (`branding/logo/png/tapir_logo_black_512.png`), MIT, Copyright 2024 Enzyme APD.
 
 ## Configuration Options
 
