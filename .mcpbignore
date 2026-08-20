@@ -1,0 +1,16 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+*.egg-info/
+.git/
+.github/
+.python-version
+.env
+context/
+tests/
+scripts/
+*.mcpb
+server/lib/
+server/venv/

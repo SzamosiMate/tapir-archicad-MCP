@@ -50,6 +50,26 @@ Open your client's `config.json` file and add the following configuration. This 
 }
 ```
 
+### 3. Claude Desktop extension (optional)
+
+If you prefer not to edit `config.json` by hand, pack this repository as an [MCPB](https://github.com/modelcontextprotocol/mcpb) desktop extension:
+
+```bash
+npm install -g @anthropic-ai/mcpb
+mcpb validate manifest.json
+mcpb pack . tapir-archicad-0.5.4.mcpb
+```
+
+Then in Claude Desktop: Settings → Extensions → **Install Extension…** and select the `.mcpb` file. Quit Claude fully and reopen it.
+
+This also covers the Microsoft Store build of Claude Desktop, which does not read the usual `%APPDATA%\Claude\claude_desktop_config.json` path.
+
+`uv` must be on the PATH that Claude Desktop sees. The bundle uses `server.type: "uv"`, so uv provisions Python and installs the locked dependencies. No system Python is required.
+
+The packed extension launches this package's `archicad-server` entry point. It can modify the open Archicad project, export files, and send or receive Teamwork. Treat enabling it like giving the MCP client your Archicad seat.
+
+Icon artwork is the official Tapir mark from [ENZYME-APD/tapir-archicad-automation](https://github.com/ENZYME-APD/tapir-archicad-automation) (`branding/logo/png/tapir_discord_512.png`), MIT, Copyright 2024 Enzyme APD.
+
 ## Configuration Options
 
 You can customize the server via CLI flags or environment variables:
