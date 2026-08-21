@@ -54,15 +54,15 @@ Open your client's `config.json` file and add the following configuration. This 
 
 This repository can be packed as an [MCP Bundle](https://github.com/modelcontextprotocol/mcpb) (`.mcpb`) for one-click install in any client that implements the format (Claude Desktop, Claude Code, MCP for Windows, and others).
 
-Download a pre-packed `.mcpb` from [Releases](https://github.com/SzamosiMate/tapir-archicad-MCP/releases) and open it in your MCPB-capable client.
-
-To pack from this repository instead:
+Pack from this repository:
 
 ```bash
 npm install -g @anthropic-ai/mcpb
 mcpb validate manifest.json
 mcpb pack . tapir-archicad-0.5.4.0.mcpb
 ```
+
+Open the resulting `.mcpb` in your MCPB-capable client. After this workflow is on the default branch, each GitHub Release will also attach that file (for example `tapir-archicad-0.5.4.0.mcpb` on the next tagged release).
 
 `uv` must be on the PATH that the host application sees. The bundle uses `server.type: "uv"`, so uv provisions Python and installs the locked dependencies. No system Python is required.
 
