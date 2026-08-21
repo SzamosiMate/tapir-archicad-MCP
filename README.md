@@ -52,15 +52,15 @@ Open your client's `config.json` file and add the following configuration. This 
 
 ### 3. Claude Desktop extension (optional)
 
-If you prefer not to edit `config.json` by hand, pack this repository as an [MCPB](https://github.com/modelcontextprotocol/mcpb) desktop extension:
+Download a pre-packed `.mcpb` from [Releases](https://github.com/SzamosiMate/tapir-archicad-MCP/releases) and install it in Claude Desktop: Settings → Extensions → **Install Extension…**. Quit Claude fully and reopen it.
+
+To pack from this repository instead:
 
 ```bash
 npm install -g @anthropic-ai/mcpb
 mcpb validate manifest.json
 mcpb pack . tapir-archicad-0.5.4.0.mcpb
 ```
-
-Then in Claude Desktop: Settings → Extensions → **Install Extension…** and select the `.mcpb` file. Quit Claude fully and reopen it.
 
 This also covers the Microsoft Store build of Claude Desktop, which does not read the usual `%APPDATA%\Claude\claude_desktop_config.json` path.
 
