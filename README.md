@@ -50,9 +50,11 @@ Open your client's `config.json` file and add the following configuration. This 
 }
 ```
 
-### 3. Claude Desktop extension (optional)
+### 3. MCPB desktop extension (optional)
 
-Download a pre-packed `.mcpb` from [Releases](https://github.com/SzamosiMate/tapir-archicad-MCP/releases) and install it in Claude Desktop: Settings → Extensions → **Install Extension…**. Quit Claude fully and reopen it.
+This repository can be packed as an [MCP Bundle](https://github.com/modelcontextprotocol/mcpb) (`.mcpb`) for one-click install in any client that implements the format (Claude Desktop, Claude Code, MCP for Windows, and others).
+
+Download a pre-packed `.mcpb` from [Releases](https://github.com/SzamosiMate/tapir-archicad-MCP/releases) and open it in your MCPB-capable client.
 
 To pack from this repository instead:
 
@@ -62,11 +64,11 @@ mcpb validate manifest.json
 mcpb pack . tapir-archicad-0.5.4.0.mcpb
 ```
 
-This also covers the Microsoft Store build of Claude Desktop, which does not read the usual `%APPDATA%\Claude\claude_desktop_config.json` path.
+`uv` must be on the PATH that the host application sees. The bundle uses `server.type: "uv"`, so uv provisions Python and installs the locked dependencies. No system Python is required.
 
-`uv` must be on the PATH that Claude Desktop sees. The bundle uses `server.type: "uv"`, so uv provisions Python and installs the locked dependencies. No system Python is required.
+On the Microsoft Store build of Claude Desktop, AppData is redirected, so the usual `%APPDATA%\Claude\claude_desktop_config.json` is not the file the app reads. Installing the `.mcpb` avoids editing that config.
 
-The packed extension launches this package's `archicad-server` entry point. It can modify the open Archicad project, export files, and send or receive Teamwork. Treat enabling it like giving the MCP client your Archicad seat.
+The packed bundle launches this package's `archicad-server` entry point. It can modify the open Archicad project, export files, and send or receive Teamwork. Treat enabling it like giving the MCP client your Archicad seat.
 
 The MCPB `version` in `manifest.json` is the Python package version plus a pack revision, so a packaging-only change does not require a PyPI release. The first pack of `0.5.4` is `0.5.4.0`. Icon or ignore-rule fixes become `0.5.4.1`. A new package version resets the revision to `0` (for example `0.5.5.0`). Keep `pyproject.toml` on three-part semver for PyPI.
 
