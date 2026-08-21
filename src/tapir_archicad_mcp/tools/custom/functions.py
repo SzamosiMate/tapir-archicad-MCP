@@ -2,6 +2,8 @@ import logging
 from typing import Optional, Any, Dict
 from pydantic import BaseModel, ValidationError
 
+from mcp.types import ToolAnnotations
+
 from tapir_archicad_mcp.app import mcp
 from tapir_archicad_mcp.context import multi_conn_instance
 from tapir_archicad_mcp.tools.custom.models import (
@@ -35,7 +37,13 @@ log = logging.getLogger()
         "Scans for and lists running Archicad instances. "
         "Returns 'active' (ready to receive commands with their target 'port') "
         "and 'unavailable' (instances that are unresponsive or missing the Tapir Add-On)."
-    )
+    ),
+    annotations=ToolAnnotations(
+        readOnlyHint=True,
+        destructiveHint=False,
+        idempotentHint=True,
+        openWorldHint=True,
+    ),
 )
 def list_active_archicads() -> DiscoveryResult:
     log.info("Executing list_active_archicads tool...")
@@ -141,7 +149,13 @@ def _get_tapir_version_warning(tapir: TapirInfo) -> Optional[str]:
         "Do NOT guess or hallucinate command names. "
         "STEP 2: Once you find the relevant command name, you MUST use the 'archicad_get_command_schema' "
         "tool to learn its exact required arguments."
-    )
+    ),
+    annotations=ToolAnnotations(
+        readOnlyHint=True,
+        destructiveHint=False,
+        idempotentHint=True,
+        openWorldHint=False,
+    ),
 )
 def archicad_list_commands() -> list[CommandOverview]:
     log.info("Executing archicad_list_commands tool...")
@@ -162,7 +176,13 @@ def archicad_list_commands() -> list[CommandOverview]:
         "Provide the exact 'command_name' obtained from 'archicad_list_commands'. "
         "CRITICAL: You MUST call this tool before executing 'archicad_call_tool' to ensure you provide "
         "the correct parameters. Do NOT guess or hallucinate parameters based on the command name."
-    )
+    ),
+    annotations=ToolAnnotations(
+        readOnlyHint=True,
+        destructiveHint=False,
+        idempotentHint=True,
+        openWorldHint=False,
+    ),
 )
 def archicad_get_command_schema(command_name: str) -> CommandSchema:
     log.info(f"Executing archicad_get_command_schema for: {command_name}")
@@ -189,7 +209,13 @@ def archicad_get_command_schema(command_name: str) -> CommandSchema:
         "The 'arguments' dictionary MUST contain a 'port' number (obtained from 'discovery_list_active_archicads'). "
         "If a tool's response includes a 'next_page_token', call this same tool again with the same parameters "
         "and add a 'page_token' key to the 'arguments' dictionary."
-    )
+    ),
+    annotations=ToolAnnotations(
+        readOnlyHint=False,
+        destructiveHint=True,
+        idempotentHint=False,
+        openWorldHint=True,
+    ),
 )
 def archicad_call_tool(name: str, arguments: dict) -> dict:
     log.info(f"Executing archicad_call_tool for tool: {name}")
