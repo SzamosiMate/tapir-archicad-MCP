@@ -1,0 +1,37 @@
+name: Pack MCPB
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  pack:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Pack desktop extension
+        run: |
+          npm install -g @anthropic-ai/mcpb
+          mcpb validate manifest.json
+          VERSION=$(python3 -c "import json; print(json.load(open('manifest.json'))['version'])")
+          FILE="tapir-archicad-${VERSION}.mcpb"
+          mcpb pack . "$FILE"
+          echo "PACK_FILE=$FILE" >> "$GITHUB_ENV"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.PACK_FILE }}
+          path: ${{ env.PACK_FILE }}
+
+      - uses: softprops/action-gh-release@v2
+        if: github.event_name == 'release'
+        with:
+          files: ${{ env.PACK_FILE }}

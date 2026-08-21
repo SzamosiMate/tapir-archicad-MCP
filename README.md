@@ -50,6 +50,30 @@ Open your client's `config.json` file and add the following configuration. This 
 }
 ```
 
+### 3. MCPB desktop extension (optional)
+
+This repository can be packed as an [MCP Bundle](https://github.com/modelcontextprotocol/mcpb) (`.mcpb`) for one-click install in any client that implements the format (Claude Desktop, Claude Code, MCP for Windows, and others).
+
+Pack from this repository:
+
+```bash
+npm install -g @anthropic-ai/mcpb
+mcpb validate manifest.json
+mcpb pack . tapir-archicad-0.5.4.0.mcpb
+```
+
+Open the resulting `.mcpb` in your MCPB-capable client. After this workflow is on the default branch, each GitHub Release will also attach that file (for example `tapir-archicad-0.5.4.0.mcpb` on the next tagged release).
+
+`uv` must be on the PATH that the host application sees. The bundle uses `server.type: "uv"`, so uv provisions Python and installs the locked dependencies. No system Python is required.
+
+On the Microsoft Store build of Claude Desktop, AppData is redirected, so the usual `%APPDATA%\Claude\claude_desktop_config.json` is not the file the app reads. Installing the `.mcpb` avoids editing that config.
+
+The packed bundle launches this package's `archicad-server` entry point. It can modify the open Archicad project, export files, and send or receive Teamwork. Treat enabling it like giving the MCP client your Archicad seat.
+
+The MCPB `version` in `manifest.json` is the Python package version plus a pack revision, so a packaging-only change does not require a PyPI release. The first pack of `0.5.4` is `0.5.4.0`. Icon or ignore-rule fixes become `0.5.4.1`. A new package version resets the revision to `0` (for example `0.5.5.0`). Keep `pyproject.toml` on three-part semver for PyPI.
+
+Icon artwork is the official Tapir mark from [ENZYME-APD/tapir-archicad-automation](https://github.com/ENZYME-APD/tapir-archicad-automation) (`branding/logo/png/tapir_logo_black_512.png`), MIT, Copyright 2024 Enzyme APD.
+
 ## Configuration Options
 
 You can customize the server via CLI flags or environment variables:

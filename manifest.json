@@ -1,0 +1,72 @@
+{
+  "manifest_version": "0.4",
+  "name": "tapir-archicad",
+  "display_name": "Archicad (Tapir)",
+  "version": "0.5.4.0",
+  "description": "Drive a running Archicad instance through the Tapir add-on and Archicad's JSON API.",
+  "long_description": "Local MCP server for a running Archicad session. Discovers active instances, lists available Archicad API commands, retrieves each command's schema, and executes them.\n\nThis can create, modify, and delete elements; open, close, and save projects; export files (IFC, BCF, favorites); and send or receive Teamwork. Project names, paths, and model data are sent to the MCP client. Requires Archicad open on this machine, and the Tapir Archicad Add-On for the full command set.",
+  "author": {
+    "name": "SzamosiMate",
+    "email": "szamimate@yahoo.com",
+    "url": "https://github.com/SzamosiMate"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SzamosiMate/tapir-archicad-MCP.git"
+  },
+  "homepage": "https://github.com/SzamosiMate/tapir-archicad-MCP",
+  "documentation": "https://pypi.org/project/tapir-archicad-mcp/",
+  "support": "https://github.com/SzamosiMate/tapir-archicad-MCP/issues",
+  "icon": "icon.png",
+  "license": "MIT",
+  "keywords": [
+    "archicad",
+    "bim",
+    "tapir",
+    "aec",
+    "openbim",
+    "mcp"
+  ],
+  "server": {
+    "type": "uv",
+    "entry_point": "src/tapir_archicad_mcp/server.py",
+    "mcp_config": {
+      "command": "uv",
+      "args": [
+        "run",
+        "--frozen",
+        "--directory",
+        "${__dirname}",
+        "archicad-server"
+      ],
+      "env": {}
+    }
+  },
+  "tools": [
+    {
+      "name": "discovery_list_active_archicads",
+      "description": "Lists running Archicad instances and their ports."
+    },
+    {
+      "name": "archicad_list_commands",
+      "description": "Lists all available Archicad API commands."
+    },
+    {
+      "name": "archicad_get_command_schema",
+      "description": "Returns the JSON schema for a specific Archicad command."
+    },
+    {
+      "name": "archicad_call_tool",
+      "description": "Executes an Archicad API command against a target instance. Includes commands that modify the model, export files, and interact with Teamwork."
+    }
+  ],
+  "compatibility": {
+    "platforms": [
+      "win32",
+      "darwin"
+    ],
+    "runtimes": {
+      "python": ">=3.12"
+    }
+  }
+}
