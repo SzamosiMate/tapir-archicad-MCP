@@ -17,6 +17,13 @@ jobs:
         with:
           node-version: "22"
 
+      - uses: astral-sh/setup-uv@v5
+
+      # The bundle ships uv.lock and the host runs `uv run --frozen`, so a stale
+      # lock would be baked into the release. --frozen does not catch this itself.
+      - name: Verify lockfile matches pyproject.toml
+        run: uv lock --check
+
       - name: Pack desktop extension
         run: |
           npm install -g @anthropic-ai/mcpb

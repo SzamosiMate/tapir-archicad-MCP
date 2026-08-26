@@ -72,6 +72,12 @@ The packed bundle launches this package's `archicad-server` entry point. It can 
 
 The MCPB `version` in `manifest.json` is the Python package version plus a pack revision, so a packaging-only change does not require a PyPI release. The first pack of `0.5.4` is `0.5.4.0`. Icon or ignore-rule fixes become `0.5.4.1`. A new package version resets the revision to `0` (for example `0.5.5.0`). Keep `pyproject.toml` on three-part semver for PyPI.
 
+#### Troubleshooting the bundle
+
+-   **Server shows as failed or "Server disconnected".** Uninstall the bundle, restart the client, then install it again. Installing over an existing bundle can leave stale state in the extension directory that a straight reinstall does not clear. This is the usual fix after upgrading from a bundle that failed to install.
+-   **First launch is slow.** uv builds the environment on the first run: roughly 15 to 30 seconds on a clean machine, longer over a slow connection or with antivirus scanning the newly written packages. If the client reports a timeout, restart it once before assuming the bundle is broken. Subsequent launches reuse the environment.
+-   **Claude Desktop logs.** `%APPDATA%\Claude\logs\mcp-server-Archicad (Tapir).log`. On the Microsoft Store build that path is redirected, and the real file is `%LOCALAPPDATA%\Packages\Claude_pzs8sxrjxfjjc\LocalCache\Roaming\Claude\logs\mcp-server-Archicad (Tapir).log`.
+
 Icon artwork is the official Tapir mark from [ENZYME-APD/tapir-archicad-automation](https://github.com/ENZYME-APD/tapir-archicad-automation) (`branding/logo/png/tapir_logo_black_512.png`), MIT, Copyright 2024 Enzyme APD.
 
 ## Configuration Options
