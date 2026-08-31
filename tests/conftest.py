@@ -21,7 +21,7 @@ class FakeArchicad:
         self.calls: list[tuple[str, dict | None]] = []
         self._canned_responses: dict[str, dict] = {}
         self.core = SimpleNamespace(post_tapir_command=self._post_tapir_command)
-        self.product_info = ProductInfo(version=28, build=6003, lang="USA")
+        self.product_info = ProductInfo(version=28, buildNumber=6003, languageCode="USA")
         self.archicad_location = ArchicadLocation(archicadLocation="/Applications/GRAPHISOFT/Archicad 28/ARCHICAD")
         self.archicad_id = SoloProjectID(projectName="FakeProject", projectPath="/path/to/fake_project.pln")
 
