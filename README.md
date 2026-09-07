@@ -50,33 +50,22 @@ Open your client's `config.json` file and add the following configuration. This 
 }
 ```
 
-### 3. MCPB desktop extension (optional)
+### 3. One-click install (optional)
 
-This repository can be packed as an [MCP Bundle](https://github.com/modelcontextprotocol/mcpb) (`.mcpb`) for one-click install in any client that implements the format (Claude Desktop, Claude Code, MCP for Windows, and others).
+If your client supports [MCP Bundles](https://github.com/modelcontextprotocol/mcpb) you can skip the config file above. Claude Desktop, Claude Code and MCP for Windows all install `.mcpb` files.
 
-Pack from this repository:
+Download [tapir-archicad.mcpb](https://github.com/SzamosiMate/tapir-archicad-MCP/releases/latest/download/tapir-archicad.mcpb) from the latest release and open it in your client. On the Microsoft Store build of Claude Desktop this is the easier route, because the app does not read the `%APPDATA%\Claude\claude_desktop_config.json` that everyone documents.
 
-```bash
-npm install -g @anthropic-ai/mcpb
-mcpb validate manifest.json
-mcpb pack . tapir-archicad-0.5.4.0.mcpb
-```
+`uv` still has to be on the PATH your client sees, but it provisions Python and the locked dependencies itself, so there is nothing else to install. The first launch takes 15 to 30 seconds while it builds that environment. The bundle can modify the open project, export files, and send or receive Teamwork, so treat installing it like handing your client your Archicad seat.
 
-Open the resulting `.mcpb` in your MCPB-capable client. After this workflow is on the default branch, each GitHub Release will also attach that file (for example `tapir-archicad-0.5.4.0.mcpb` on the next tagged release).
+<details>
+<summary>If the bundle will not start</summary>
 
-`uv` must be on the PATH that the host application sees. The bundle uses `server.type: "uv"`, so uv provisions Python and installs the locked dependencies. No system Python is required.
+-   **"Server disconnected", or the install itself fails.** Uninstall the bundle, restart the client, then install it again. Installing over an existing bundle can leave stale state behind that a straight reinstall does not clear.
+-   **Nothing happens for the first half minute.** That is uv building the environment, and antivirus scanning or a slow connection stretches it out. Restart the client once before assuming the bundle is broken.
+-   **Claude Desktop logs** are at `%APPDATA%\Claude\logs\mcp-server-Archicad (Tapir).log`. On the Microsoft Store build that path is redirected and the real file is `%LOCALAPPDATA%\Packages\Claude_pzs8sxrjxfjjc\LocalCache\Roaming\Claude\logs\mcp-server-Archicad (Tapir).log`.
 
-On the Microsoft Store build of Claude Desktop, AppData is redirected, so the usual `%APPDATA%\Claude\claude_desktop_config.json` is not the file the app reads. Installing the `.mcpb` avoids editing that config.
-
-The packed bundle launches this package's `archicad-server` entry point. It can modify the open Archicad project, export files, and send or receive Teamwork. Treat enabling it like giving the MCP client your Archicad seat.
-
-The MCPB `version` in `manifest.json` is the Python package version plus a pack revision, so a packaging-only change does not require a PyPI release. The first pack of `0.5.4` is `0.5.4.0`. Icon or ignore-rule fixes become `0.5.4.1`. A new package version resets the revision to `0` (for example `0.5.5.0`). Keep `pyproject.toml` on three-part semver for PyPI.
-
-#### Troubleshooting the bundle
-
--   **Server shows as failed or "Server disconnected".** Uninstall the bundle, restart the client, then install it again. Installing over an existing bundle can leave stale state in the extension directory that a straight reinstall does not clear. This is the usual fix after upgrading from a bundle that failed to install.
--   **First launch is slow.** uv builds the environment on the first run: roughly 15 to 30 seconds on a clean machine, longer over a slow connection or with antivirus scanning the newly written packages. If the client reports a timeout, restart it once before assuming the bundle is broken. Subsequent launches reuse the environment.
--   **Claude Desktop logs.** `%APPDATA%\Claude\logs\mcp-server-Archicad (Tapir).log`. On the Microsoft Store build that path is redirected, and the real file is `%LOCALAPPDATA%\Packages\Claude_pzs8sxrjxfjjc\LocalCache\Roaming\Claude\logs\mcp-server-Archicad (Tapir).log`.
+</details>
 
 Icon artwork is the official Tapir mark from [ENZYME-APD/tapir-archicad-automation](https://github.com/ENZYME-APD/tapir-archicad-automation) (`branding/logo/png/tapir_logo_black_512.png`), MIT, Copyright 2024 Enzyme APD.
 

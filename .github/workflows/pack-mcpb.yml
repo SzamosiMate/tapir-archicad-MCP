@@ -31,6 +31,9 @@ jobs:
           VERSION=$(python3 -c "import json; print(json.load(open('manifest.json'))['version'])")
           FILE="tapir-archicad-${VERSION}.mcpb"
           mcpb pack . "$FILE"
+          # A second copy under a fixed name so the README can link to
+          # releases/latest/download/tapir-archicad.mcpb and never be edited again.
+          cp "$FILE" tapir-archicad.mcpb
           echo "PACK_FILE=$FILE" >> "$GITHUB_ENV"
 
       - uses: actions/upload-artifact@v4
@@ -41,4 +44,6 @@ jobs:
       - uses: softprops/action-gh-release@v2
         if: github.event_name == 'release'
         with:
-          files: ${{ env.PACK_FILE }}
+          files: |
+            ${{ env.PACK_FILE }}
+            tapir-archicad.mcpb
