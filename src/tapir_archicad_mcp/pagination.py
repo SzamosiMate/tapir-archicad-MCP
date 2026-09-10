@@ -2,7 +2,7 @@ import base64
 from pydantic import BaseModel
 from typing import List, Optional, Any, Tuple, Dict
 
-PAGINATION_CACHE: Dict[str, Tuple[BaseModel, float]] = {}
+PAGINATION_CACHE: Dict[str, Tuple[dict, float]] = {}
 CACHE_LIFETIME_SECONDS = 300
 PAGE_SIZE = 100
 

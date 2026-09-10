@@ -19,7 +19,6 @@ class ToolRegistryEntry(BaseModel):
 
     callable: Callable
     params_model: ModelOrUnion = None
-    result_model: ModelOrUnion = None
     arguments_model: Type[BaseModel]
 
 
@@ -34,7 +33,6 @@ def _build_tool_arguments_model(name: str, func: Callable, params_model: ModelOr
             int,
             Field(
                 ...,
-                strict=True,
                 ge=DEFAULT_PORT_RANGE.start,
                 lt=DEFAULT_PORT_RANGE.stop,
                 description="The target Archicad instance port. Find it with 'discovery_list_active_archicads'.",
@@ -64,7 +62,6 @@ def register_tool_for_dispatch(
     title: str,
     description: str,
     params_model: ModelOrUnion = None,
-    result_model: ModelOrUnion = None,
 ):
     """
     Orchestrates the registration of a tool, populating both the internal
@@ -77,7 +74,6 @@ def register_tool_for_dispatch(
     TOOL_CALLABLE_REGISTRY[name] = ToolRegistryEntry(
         callable=func,
         params_model=params_model,
-        result_model=result_model,
         arguments_model=arguments_model,
     )
 

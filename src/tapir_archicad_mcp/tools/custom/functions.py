@@ -18,6 +18,7 @@ from tapir_archicad_mcp.tools.tool_registry import get_tool_entry, TOOL_DISCOVER
 
 from multiconn_archicad.conn_header import ConnHeader
 from multiconn_archicad.basic_types import (
+    Port,
     TeamworkProjectID,
     SoloProjectID,
     ProductInfo,
@@ -230,7 +231,13 @@ def archicad_call_tool(name: str, arguments: dict) -> dict:
         raise ValueError(f"Invalid arguments provided for tool '{name}'. Validation details: {e}") from e
 
     port = validated_arguments.port
-    call_args: Dict[str, Any] = {"port": port}
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    conn_header = multi_conn.active[target_port]
+
+    call_args: Dict[str, Any] = {"conn_header": conn_header}
 
     if tool_entry.params_model:
         call_args["params"] = validated_arguments.params
@@ -244,8 +251,11 @@ def archicad_call_tool(name: str, arguments: dict) -> dict:
         if result is None:
             return {}
 
+        if isinstance(result, dict):
+            return result
+
         if isinstance(result, BaseModel):
-            return result.model_dump(mode='json', by_alias=True, exclude_none=True)
+            return result.model_dump(mode="json", by_alias=True, exclude_none=True)
 
         return {"result": result}
 
