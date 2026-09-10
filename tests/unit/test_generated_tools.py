@@ -21,6 +21,14 @@ def test_generated_read_tool_dispatches_and_validates(fake_archicad):
     assert result["elements"] == [{"elementId": {"guid": GUID}}]
     assert fake_archicad.calls[0][0] == "GetSelectedElements"
 
+    next_page = archicad_call_tool(
+        "elements_get_selected_elements",
+        {"port": fake_archicad.port, "page_token": "MQ=="},
+    )
+
+    assert next_page["elements"] == []
+    assert len(fake_archicad.calls) == 1
+
 
 def test_generated_create_tool_dispatches_params_and_validates(fake_archicad):
     """
@@ -60,6 +68,36 @@ def test_unknown_port_is_rejected(fake_archicad):
     """Targeting a port that is not active must fail with a clear error."""
     with pytest.raises(ValueError, match="19999"):
         archicad_call_tool("elements_get_selected_elements", {"port": 19999})
+
+    assert fake_archicad.calls == []
+
+
+@pytest.mark.parametrize(
+    ("name", "arguments"),
+    [
+        ("app_get_add_on_version", {"port": 19723, "unexpected": True}),
+        ("elements_create_slabs", {"port": 19723, "slabsData": []}),
+        ("elements_create_slabs", {"port": 19723}),
+        ("app_get_add_on_version", {"port": 19723, "params": {}}),
+        ("app_get_add_on_version", {"port": 19723, "page_token": "next"}),
+        ("app_get_add_on_version", {"port": True}),
+        ("app_get_add_on_version", {"port": "19723"}),
+        ("app_get_add_on_version", {"port": 19722}),
+        ("app_get_add_on_version", {"port": 19744}),
+    ],
+)
+def test_invalid_command_envelopes_are_rejected_before_transport(fake_archicad, name, arguments):
+    with pytest.raises(ValueError, match="Invalid arguments provided"):
+        archicad_call_tool(name, arguments)
+
+    assert fake_archicad.calls == []
+
+
+def test_inactive_in_range_port_is_rejected_before_transport(fake_archicad):
+    with pytest.raises(ValueError, match="19724.*not an active Archicad connection"):
+        archicad_call_tool("app_get_add_on_version", {"port": 19724})
+
+    assert fake_archicad.calls == []
 
 
 def test_aliased_parameter_is_sent_under_its_api_name(fake_archicad):

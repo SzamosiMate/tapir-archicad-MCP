@@ -15,7 +15,6 @@ from tapir_archicad_mcp.tools.custom.models import (
     CommandOverview,
 )
 from tapir_archicad_mcp.tools.tool_registry import get_tool_entry, TOOL_DISCOVERY_CATALOG
-from tapir_archicad_mcp.tools.validation import validate_result
 
 from multiconn_archicad.conn_header import ConnHeader
 from multiconn_archicad.basic_types import (
@@ -164,7 +163,7 @@ def archicad_list_commands() -> list[CommandOverview]:
             name=tool["name"],
             description=tool["description"],
         )
-        for tool in TOOL_DISCOVERY_CATALOG
+        for tool in TOOL_DISCOVERY_CATALOG.values()
     ]
 
 
@@ -186,16 +185,17 @@ def archicad_list_commands() -> list[CommandOverview]:
 )
 def archicad_get_command_schema(command_name: str) -> CommandSchema:
     log.info(f"Executing archicad_get_command_schema for: {command_name}")
-    for tool in TOOL_DISCOVERY_CATALOG:
-        if tool["name"] == command_name:
-            return CommandSchema(
-                name=tool["name"],
-                input_schema=tool["input_schema"],
-            )
+    try:
+        tool = TOOL_DISCOVERY_CATALOG[command_name]
+    except KeyError:
+        raise ValueError(
+            f"Command '{command_name}' not found. Please use 'archicad_list_commands' "
+            f"to verify the exact spelling of the command name."
+        ) from None
 
-    raise ValueError(
-        f"Command '{command_name}' not found. Please use 'archicad_list_commands' "
-        f"to verify the exact spelling of the command name."
+    return CommandSchema(
+        name=tool["name"],
+        input_schema=tool["input_schema"],
     )
 
 
@@ -220,28 +220,23 @@ def archicad_get_command_schema(command_name: str) -> CommandSchema:
 def archicad_call_tool(name: str, arguments: dict) -> dict:
     log.info(f"Executing archicad_call_tool for tool: {name}")
 
-    if 'port' not in arguments:
-        raise ValueError("The 'arguments' dictionary must contain the 'port' number.")
-
-    port = arguments['port']
     tool_entry = get_tool_entry(name)
     target_func = tool_entry.callable
-    params_model = tool_entry.params_model
 
-    call_args: Dict[str, Any] = {'port': port}
+    try:
+        validated_arguments = tool_entry.arguments_model.model_validate(arguments)
+    except ValidationError as e:
+        log.error(f"Validation error for arguments of {name}: {e}")
+        raise ValueError(f"Invalid arguments provided for tool '{name}'. Validation details: {e}") from e
 
-    if params_model:
-        # Check if the agent wrapped the params in a 'params' key or flattened them
-        raw_params = arguments.get('params', arguments)
-        try:
-            params_instance = validate_result(params_model, raw_params)
-            call_args['params'] = params_instance
-        except ValidationError as e:
-            log.error(f"Validation error for parameters of {name}: {e}")
-            raise ValueError(f"Invalid parameters provided for tool '{name}'. Validation details: {e}")
+    port = validated_arguments.port
+    call_args: Dict[str, Any] = {"port": port}
 
-    if 'page_token' in arguments:
-        call_args['page_token'] = arguments['page_token']
+    if tool_entry.params_model:
+        call_args["params"] = validated_arguments.params
+
+    if "page_token" in validated_arguments.model_fields_set:
+        call_args["page_token"] = validated_arguments.page_token
 
     try:
         result = target_func(**call_args)

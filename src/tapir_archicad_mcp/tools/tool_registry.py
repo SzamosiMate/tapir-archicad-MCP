@@ -1,8 +1,10 @@
 import logging
 import inspect
 from types import UnionType
-from typing import Dict, Callable, Any, List, Type, Optional, Union
-from pydantic import BaseModel, ConfigDict, TypeAdapter
+from typing import Dict, Callable, Any, Type, Optional, Union
+from pydantic import BaseModel, ConfigDict, Field, create_model
+
+from multiconn_archicad.constants import DEFAULT_PORT_RANGE
 
 log = logging.getLogger(__name__)
 
@@ -12,67 +14,57 @@ ModelOrUnion = Optional[type | UnionType | type(Union)]
 
 class ToolRegistryEntry(BaseModel):
     """Internal metadata for tool dispatch."""
+
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     callable: Callable
     params_model: ModelOrUnion = None
     result_model: ModelOrUnion = None
+    arguments_model: Type[BaseModel]
 
 
 TOOL_CALLABLE_REGISTRY: Dict[str, ToolRegistryEntry] = {}
-TOOL_DISCOVERY_CATALOG: List[Dict[str, Any]] = []
+TOOL_DISCOVERY_CATALOG: dict[str, dict[str, Any]] = {}
 
 
-def _get_schema_dict(model_type: ModelOrUnion) -> dict:
-    """Helper to safely get the JSON schema dictionary."""
-    if not model_type:
-        return {}
-
-    if isinstance(model_type, type) and issubclass(model_type, BaseModel):
-        return model_type.model_json_schema()
-    else:
-        return TypeAdapter(model_type).json_schema()
-
-
-
-def _build_tool_input_schema(func: Callable, params_model: ModelOrUnion) -> dict:
-    """
-    Builds the complete JSON schema for the 'arguments' parameter of the
-    archicad_call_tool, specific to the tool being registered.
-    """
-    input_schema = {
-        "type": "object",
-        "properties": {
-            "port": {
-                "type": "integer",
-                "description": "The target Archicad instance port. Find it with 'discovery_list_active_archicads'."
-            }
-        },
-        "required": ["port"]
+def _build_tool_arguments_model(name: str, func: Callable, params_model: ModelOrUnion) -> Type[BaseModel]:
+    """Build the runtime and discovery model for one command's arguments envelope."""
+    fields: dict[str, tuple[Any, Any]] = {
+        "port": (
+            int,
+            Field(
+                ...,
+                strict=True,
+                ge=DEFAULT_PORT_RANGE.start,
+                lt=DEFAULT_PORT_RANGE.stop,
+                description="The target Archicad instance port. Find it with 'discovery_list_active_archicads'.",
+            ),
+        )
     }
 
     if params_model:
-        params_schema = _get_schema_dict(params_model)
-        input_schema["properties"]["params"] = params_schema
-        input_schema["required"].append("params")
+        fields["params"] = (params_model, Field(...))
 
-    sig = inspect.signature(func)
-    if 'page_token' in sig.parameters:
-        input_schema['properties']['page_token'] = {
-            "type": "string",
-            "description": "Token for the next page of results (for paginated responses)."
-        }
+    if "page_token" in inspect.signature(func).parameters:
+        fields["page_token"] = (
+            str | None,
+            Field(default=None, description="Token for the next page of results (for paginated responses)."),
+        )
 
-    return input_schema
+    return create_model(
+        f"{name.title().replace('_', '')}Arguments",
+        __config__=ConfigDict(extra="forbid"),
+        **fields,
+    )
 
 
 def register_tool_for_dispatch(
-        func: Callable,
-        name: str,
-        title: str,
-        description: str,
-        params_model: ModelOrUnion = None,
-        result_model: ModelOrUnion = None
+    func: Callable,
+    name: str,
+    title: str,
+    description: str,
+    params_model: ModelOrUnion = None,
+    result_model: ModelOrUnion = None,
 ):
     """
     Orchestrates the registration of a tool, populating both the internal
@@ -81,20 +73,20 @@ def register_tool_for_dispatch(
     if name in TOOL_CALLABLE_REGISTRY:
         log.warning(f"Tool {name} already registered. Overwriting.")
 
+    arguments_model = _build_tool_arguments_model(name, func, params_model)
     TOOL_CALLABLE_REGISTRY[name] = ToolRegistryEntry(
         callable=func,
         params_model=params_model,
-        result_model=result_model
+        result_model=result_model,
+        arguments_model=arguments_model,
     )
 
-    input_schema = _build_tool_input_schema(func, params_model)
-
-    TOOL_DISCOVERY_CATALOG.append({
+    TOOL_DISCOVERY_CATALOG[name] = {
         "name": name,
         "title": title,
         "description": description,
-        "input_schema": input_schema,
-    })
+        "input_schema": arguments_model.model_json_schema(),
+    }
     log.debug(f"Registered tool: {name}")
 
 
