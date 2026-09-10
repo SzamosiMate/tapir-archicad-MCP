@@ -3,6 +3,7 @@ from types import SimpleNamespace
 from unittest.mock import Mock
 from typing import Any
 import pytest
+from pydantic import BaseModel
 
 from multiconn_archicad.basic_types import (
     APIResponseError,
@@ -29,7 +30,7 @@ from tapir_archicad_mcp.tools.custom.models import (
     CommandSchema,
     DiscoveryResult,
 )
-from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
+from tapir_archicad_mcp.tools.tool_registry import get_tool_entry, register_tool_for_dispatch
 
 
 # ============================================================================
@@ -104,6 +105,96 @@ def test_archicad_get_command_schema_valid(fake_archicad):
     assert schema_result.input_schema["type"] == "object"
     assert "port" in schema_result.input_schema["properties"]
     assert "port" in schema_result.input_schema["required"]
+
+
+def test_command_schemas_describe_the_exact_runtime_envelopes(fake_archicad):
+    no_params = archicad_get_command_schema("app_get_add_on_version").input_schema
+    with_params = archicad_get_command_schema("elements_create_slabs").input_schema
+    paginated_no_params = archicad_get_command_schema("issues_get_issues").input_schema
+    paginated_with_params = archicad_get_command_schema("elements_get_all_elements").input_schema
+
+    assert no_params["additionalProperties"] is False
+    assert set(no_params["properties"]) == {"port"}
+    assert no_params["required"] == ["port"]
+    assert no_params["properties"]["port"]["minimum"] == 19723
+    assert no_params["properties"]["port"]["exclusiveMaximum"] == 19744
+
+    assert set(with_params["properties"]) == {"port", "params"}
+    assert set(with_params["required"]) == {"port", "params"}
+    assert set(paginated_no_params["properties"]) == {"port", "page_token"}
+    assert paginated_no_params["required"] == ["port"]
+    assert set(paginated_with_params["properties"]) == {"port", "params", "page_token"}
+    assert set(paginated_with_params["required"]) == {"port", "params"}
+
+
+def test_command_schema_nested_references_are_locally_resolvable(fake_archicad):
+    schema = archicad_get_command_schema("elements_create_slabs").input_schema
+
+    def resolve_local_references(value: Any) -> None:
+        if isinstance(value, dict):
+            if "$ref" in value:
+                target: Any = schema
+                for segment in value["$ref"].removeprefix("#/").split("/"):
+                    target = target[segment.replace("~1", "/").replace("~0", "~")]
+                assert target
+            for child in value.values():
+                resolve_local_references(child)
+        elif isinstance(value, list):
+            for child in value:
+                resolve_local_references(child)
+
+    resolve_local_references(schema)
+
+
+def test_reregistered_command_keeps_discovery_and_runtime_models_in_sync():
+    class Params(BaseModel):
+        value: int
+
+    def without_params(port: int) -> None:
+        pass
+
+    def with_params(port: int, params: Params) -> None:
+        pass
+
+    name = "test_reregistered_command"
+    register_tool_for_dispatch(without_params, name=name, title="Before", description="Before")
+    register_tool_for_dispatch(with_params, name=name, title="After", description="After", params_model=Params)
+
+    runtime_schema = get_tool_entry(name).arguments_model.model_json_schema()
+    discovery_schema = archicad_get_command_schema(name).input_schema
+
+    assert discovery_schema == runtime_schema
+    assert set(discovery_schema["required"]) == {"port", "params"}
+
+
+def test_union_parameter_models_validate_and_dispatch():
+    class FirstParams(BaseModel):
+        first: int
+
+    class SecondParams(BaseModel):
+        second: str
+
+    received: list[FirstParams | SecondParams] = []
+
+    def union_command(port: int, params: FirstParams | SecondParams) -> None:
+        received.append(params)
+
+    name = "test_union_parameter_command"
+    register_tool_for_dispatch(
+        union_command,
+        name=name,
+        title="Union",
+        description="Union parameters",
+        params_model=FirstParams | SecondParams,
+    )
+
+    result = archicad_call_tool(name, {"port": 19723, "params": {"second": "value"}})
+    schema = archicad_get_command_schema(name).input_schema
+
+    assert result == {}
+    assert isinstance(received[0], SecondParams)
+    assert schema == get_tool_entry(name).arguments_model.model_json_schema()
+    assert len(schema["properties"]["params"]["anyOf"]) == 2
 
 
 def test_archicad_get_command_schema_invalid(fake_archicad):
