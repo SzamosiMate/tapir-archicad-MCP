@@ -1,3 +1,7 @@
+# these are needed to ensure configuration happens before models are loaded
+from tapir_archicad_mcp.server import mcp
+from tapir_archicad_mcp.context import multi_conn_instance
+
 from types import SimpleNamespace
 import pytest
 from unittest.mock import Mock

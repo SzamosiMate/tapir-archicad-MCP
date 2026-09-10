@@ -61,11 +61,9 @@ def prepare_output_directory(path: Path):
 def _generate_imports_for_group(commands: list[dict], valid_model_names: set[str], config: ApiSourceConfig) -> str:
     imports = set()
     for cmd in commands:
-        p_model, r_model = get_command_model_names(cmd["name_camel"])
+        p_model, _ = get_command_model_names(cmd["name_camel"])
         if p_model in valid_model_names:
             imports.add(p_model)
-        if r_model in valid_model_names:
-            imports.add(r_model)
 
     if not imports:
         return ""
@@ -74,69 +72,57 @@ def _generate_imports_for_group(commands: list[dict], valid_model_names: set[str
     return f"from multiconn_archicad.models.{config.name}.commands import (\n{import_statements},\n)"
 
 
-def _generate_paginated_model_code(original_result_model: str, paginated_result_model: str,
-                                   list_attribute_name: str) -> str:
-    return dedent(f'''
-class {paginated_result_model}(BaseModel):
-    """A paginated version of the {original_result_model}."""
-    {list_attribute_name}: list[Any]
-    next_page_token: str | None = None
-''')
-
-
-def _generate_call_block(cmd: dict, result_model: str, has_params: bool, has_result: bool, config: ApiSourceConfig) -> str:
+def _generate_call_block(cmd: dict, has_params: bool, config: ApiSourceConfig) -> str:
     params_for_api_call = "params.model_dump(mode='json', by_alias=True, exclude_none=True)" if has_params else "{}"
     api_call = f'conn_header.core.{config.api_call_method}'
-    if has_result:
-        return dedent(f'''
-            result_dict = {api_call}(
-                command="{cmd["name_for_api"]}",
-                parameters={params_for_api_call}
-            )
-            return validate_result({result_model}, result_dict)
-        ''')
-    else:
-        return dedent(f'''
-            {api_call}(
-                command="{cmd["name_for_api"]}",
-                parameters={params_for_api_call}
-            )
-            return None
-        ''')
+    return dedent(f'''
+        return {api_call}(
+            command="{cmd["name_for_api"]}",
+            parameters={params_for_api_call}
+        )
+    ''')
 
 
-def _generate_paginated_call_block(cmd: dict, original_result_model: str, paginated_result_model: str, list_attribute_name: str, has_params: bool, config: ApiSourceConfig) -> str:
+def _generate_paginated_call_block(cmd: dict, list_attribute_name: str, has_params: bool, config: ApiSourceConfig) -> str:
     params_for_api_call = "params.model_dump(mode='json', by_alias=True, exclude_none=True)" if has_params else "{}"
-    cache_key_params_part = f':{{params.model_dump_json()}}' if has_params else ''
+    cache_key_params_part = ':{{params.model_dump_json()}}' if has_params else ''
     api_call = f'conn_header.core.{config.api_call_method}'
 
     return dedent(f'''
-        cache_key = f"{{port}}:{cmd["name_camel"]}{cache_key_params_part}"
+        cache_key = f"{{id(conn_header)}}:{cmd["name_camel"]}{cache_key_params_part}"
         
         if not page_token:
             full_response_dict = {api_call}(
                 command="{cmd["name_for_api"]}",
                 parameters={params_for_api_call}
             )
-            full_response_model = validate_result({original_result_model}, full_response_dict)
-            PAGINATION_CACHE[cache_key] = (full_response_model, time.time())
+            PAGINATION_CACHE[cache_key] = (full_response_dict, time.time())
 
         if cache_key not in PAGINATION_CACHE:
             raise ValueError("Pagination session expired or invalid. Please start a new request.")
 
-        full_response_model, timestamp = PAGINATION_CACHE[cache_key]
+        full_response_dict, timestamp = PAGINATION_CACHE[cache_key]
         if time.time() - timestamp > CACHE_LIFETIME_SECONDS:
             del PAGINATION_CACHE[cache_key]
             raise ValueError("Pagination session expired. Please start a new request.")
 
-        list_to_paginate = getattr(full_response_model, "{list_attribute_name}")
+        list_to_paginate = full_response_dict.get("{list_attribute_name}")
+        if not isinstance(list_to_paginate, list):
+            # A paginated command may return an Archicad error object instead
+            # of its success payload. Response validation is intentionally
+            # disabled, so preserve that object unchanged for the client.
+            PAGINATION_CACHE.pop(cache_key, None)
+            return full_response_dict
         paginated_result = handle_paginated_request(list_to_paginate, page_token)
 
-        response_data = full_response_model.model_dump()
+        response_data = dict(full_response_dict)
         response_data["{list_attribute_name}"] = paginated_result.items
-        response_data["next_page_token"] = paginated_result.next_page_token
+        if paginated_result.next_page_token is None:
+            response_data.pop("next_page_token", None)
+        else:
+            response_data["next_page_token"] = paginated_result.next_page_token
 
-        return {paginated_result_model}.model_validate(response_data)
+        return response_data
     ''')
 
 
@@ -146,30 +132,23 @@ def _generate_tool_function_code(command: dict, valid_model_names: set[str], con
     short_group_name = config.group_mapping.get(command["group"], "dev")
     tool_name = f"{short_group_name}_{command_name_snake}"
 
-    params_model, result_model = get_command_model_names(command_name_camel)
+    params_model, _ = get_command_model_names(command_name_camel)
     has_params = params_model in valid_model_names
-    has_result = result_model in valid_model_names
     is_paginated = command_name_camel in config.paginated_commands
 
     param_signature = f", params: {params_model}" if has_params else ""
     docstring_addendum = ""
-    model_code = ""
-
     if is_paginated:
         list_attribute_name = config.paginated_commands[command_name_camel]
-        paginated_result_model = f"Paginated{result_model}"
         param_signature += ", page_token: str | None = None"
-        return_annotation = paginated_result_model
+        return_annotation = "dict"
         docstring_addendum = PAGINATED_DOCSTRING_ADDENDUM
-        model_code = _generate_paginated_model_code(result_model, paginated_result_model, list_attribute_name)
-        call_block = _generate_paginated_call_block(command, result_model, paginated_result_model, list_attribute_name, has_params, config)
+        call_block = _generate_paginated_call_block(command, list_attribute_name, has_params, config)
         param_reg_arg = params_model if has_params else "None"
-        result_reg_arg = paginated_result_model
     else:
-        return_annotation = result_model if has_result else "None"
-        call_block = _generate_call_block(command, result_model, has_params, has_result, config)
+        return_annotation = "dict"
+        call_block = _generate_call_block(command, has_params, config)
         param_reg_arg = params_model if has_params else "None"
-        result_reg_arg = result_model if has_result else "None"
 
     docstring = f'"""\n{indent(command["description"], "    ")}{indent(docstring_addendum, "    ")}\n    """'
     decorator = ""
@@ -182,21 +161,9 @@ def _generate_tool_function_code(command: dict, valid_model_names: set[str], con
         )
         ''')
 
-    function_code = f'''{decorator}def {command_name_snake}(port: int{param_signature}) -> {return_annotation}:
+    function_code = f'''{decorator}def {command_name_snake}(conn_header: ConnHeader{param_signature}) -> {return_annotation}:
     {docstring}
-    multi_conn = multi_conn_instance.get()
-    target_port = Port(port)
-    if target_port not in multi_conn.active:
-        raise ValueError(f"Port {{port}} is not an active Archicad connection.")
-    conn_header = multi_conn.active[target_port]
-    try:
-{indent(call_block, "        ")}
-    except ValidationError as e:
-        log.error(f"Validation error for {command_name_camel} result: {{e}}")
-        raise ValueError(extract_archicad_errors(e, "{command_name_camel}"))
-    except Exception as e:
-        log.error(f"Error executing {command_name_camel} on port {{port}}: {{e}}")
-        raise e
+{indent(call_block, "    ")}
 '''
     registration_call = dedent(f"""
     register_tool_for_dispatch(
@@ -204,11 +171,10 @@ def _generate_tool_function_code(command: dict, valid_model_names: set[str], con
         name="{tool_name}",
         title="{command_name_camel}",
         description="{command["description"]}",
-        params_model={param_reg_arg},
-        result_model={result_reg_arg}
+        params_model={param_reg_arg}
     )
     """)
-    return f"{model_code}\n\n{function_code}\n{registration_call}".strip() + "\n"
+    return f"{function_code}\n{registration_call}".strip() + "\n"
 
 
 def generate_tool_files(grouped_commands: dict[str, list[dict]], config: ApiSourceConfig, valid_model_names: set[str]):
@@ -221,26 +187,18 @@ def generate_tool_files(grouped_commands: dict[str, list[dict]], config: ApiSour
 
         common_imports = [
             FILE_HEADER,
-            "import logging",
-            "from pydantic import ValidationError",
-            "from multiconn_archicad.basic_types import Port",
-            "from tapir_archicad_mcp.context import multi_conn_instance",
+            "from multiconn_archicad.conn_header import ConnHeader",
             "from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch",
-            "from tapir_archicad_mcp.tools.validation import validate_result, extract_archicad_errors"
         ]
         if is_any_paginated:
             common_imports.extend([
                 "import time",
-                "from typing import Any",
-                "from pydantic import BaseModel",
                 "from tapir_archicad_mcp.pagination import handle_paginated_request, PAGINATION_CACHE, CACHE_LIFETIME_SECONDS",
             ])
         if REGISTER_AS_MCP_TOOLS:
             common_imports.append("from tapir_archicad_mcp.app import mcp")
         if imports_block:
             common_imports.append(imports_block)
-
-        common_imports.append("\nlog = logging.getLogger()")
 
         file_content = ["\n".join(common_imports)]
         for cmd in sorted(commands, key=lambda x: x["name_camel"]):

@@ -150,10 +150,10 @@ def test_reregistered_command_keeps_discovery_and_runtime_models_in_sync():
     class Params(BaseModel):
         value: int
 
-    def without_params(port: int) -> None:
+    def without_params(conn_header) -> None:
         pass
 
-    def with_params(port: int, params: Params) -> None:
+    def with_params(conn_header, params: Params) -> None:
         pass
 
     name = "test_reregistered_command"
@@ -167,7 +167,7 @@ def test_reregistered_command_keeps_discovery_and_runtime_models_in_sync():
     assert set(discovery_schema["required"]) == {"port", "params"}
 
 
-def test_union_parameter_models_validate_and_dispatch():
+def test_union_parameter_models_validate_and_dispatch(fake_archicad):
     class FirstParams(BaseModel):
         first: int
 
@@ -176,7 +176,7 @@ def test_union_parameter_models_validate_and_dispatch():
 
     received: list[FirstParams | SecondParams] = []
 
-    def union_command(port: int, params: FirstParams | SecondParams) -> None:
+    def union_command(conn_header, params: FirstParams | SecondParams) -> None:
         received.append(params)
 
     name = "test_union_parameter_command"
