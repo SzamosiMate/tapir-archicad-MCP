@@ -2,13 +2,13 @@ import logging
 from contextlib import asynccontextmanager
 from collections.abc import AsyncIterator
 
-from mcp.server.fastmcp import FastMCP
+from mcp.server.mcpserver import MCPServer
 from multiconn_archicad.multi_conn import MultiConn
 
 from tapir_archicad_mcp.context import mcp_instance, multi_conn_instance
 
 @asynccontextmanager
-async def app_lifespan(server: FastMCP) -> AsyncIterator[None]:
+async def app_lifespan(server: MCPServer) -> AsyncIterator[None]:
     from tapir_archicad_mcp.tools.registration import register_all_tools
 
     logging.info("MCP Server Lifespan: Initializing...")
@@ -24,7 +24,7 @@ async def app_lifespan(server: FastMCP) -> AsyncIterator[None]:
     finally:
         logging.info("MCP Server Lifespan: Shutting down...")
 
-mcp = FastMCP(
+mcp = MCPServer(
     "Archicad Tapir MCP Server",
     lifespan=app_lifespan
 )
