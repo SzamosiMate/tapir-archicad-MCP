@@ -1,5 +1,4 @@
 import logging
-import inspect
 from types import UnionType
 from typing import Dict, Callable, Any, Type, Optional, Union
 from pydantic import BaseModel, ConfigDict, Field, create_model
@@ -20,13 +19,14 @@ class ToolRegistryEntry(BaseModel):
     callable: Callable
     params_model: ModelOrUnion = None
     arguments_model: Type[BaseModel]
+    pagination_field: str | None = None
 
 
 TOOL_CALLABLE_REGISTRY: Dict[str, ToolRegistryEntry] = {}
 TOOL_DISCOVERY_CATALOG: dict[str, dict[str, Any]] = {}
 
 
-def _build_tool_arguments_model(name: str, func: Callable, params_model: ModelOrUnion) -> Type[BaseModel]:
+def _build_tool_arguments_model(name: str, params_model: ModelOrUnion, pagination_field: str | None) -> Type[BaseModel]:
     """Build the runtime and discovery model for one command's arguments envelope."""
     fields: dict[str, tuple[Any, Any]] = {
         "port": (
@@ -43,7 +43,7 @@ def _build_tool_arguments_model(name: str, func: Callable, params_model: ModelOr
     if params_model:
         fields["params"] = (params_model, Field(...))
 
-    if "page_token" in inspect.signature(func).parameters:
+    if pagination_field is not None:
         fields["page_token"] = (
             str | None,
             Field(default=None, description="Token for the next page of results (for paginated responses)."),
@@ -62,6 +62,7 @@ def register_tool_for_dispatch(
     title: str,
     description: str,
     params_model: ModelOrUnion = None,
+    pagination_field: str | None = None,
 ):
     """
     Orchestrates the registration of a tool, populating both the internal
@@ -70,11 +71,12 @@ def register_tool_for_dispatch(
     if name in TOOL_CALLABLE_REGISTRY:
         log.warning(f"Tool {name} already registered. Overwriting.")
 
-    arguments_model = _build_tool_arguments_model(name, func, params_model)
+    arguments_model = _build_tool_arguments_model(name, params_model, pagination_field)
     TOOL_CALLABLE_REGISTRY[name] = ToolRegistryEntry(
         callable=func,
         params_model=params_model,
         arguments_model=arguments_model,
+        pagination_field=pagination_field,
     )
 
     TOOL_DISCOVERY_CATALOG[name] = {

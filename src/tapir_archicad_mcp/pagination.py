@@ -1,36 +1,100 @@
-import base64
-from pydantic import BaseModel
-from typing import List, Optional, Any, Tuple, Dict
+from copy import deepcopy
+from dataclasses import dataclass
+from threading import Lock
+from typing import Any, Callable
+import secrets
+import time
 
-PAGINATION_CACHE: Dict[str, Tuple[dict, float]] = {}
-CACHE_LIFETIME_SECONDS = 300
+CACHE_LIFETIME_SECONDS = 1200
 PAGE_SIZE = 100
+MAX_CACHE_ENTRIES = 128
 
-class PaginatedResult(BaseModel):
-    """A generic container for a paginated list and the next token."""
-    items: List[Any]
-    next_page_token: Optional[str] = None
 
-def handle_paginated_request(
-    full_list: List[Any],
-    page_token: Optional[str] = None
-) -> PaginatedResult:
-    """
-    Takes a full list and a page token, and returns a paginated slice and the next token.
-    This function is completely data-agnostic.
-    """
-    start_index = 0
-    if page_token:
-        try:
-            start_index = int(base64.b64decode(page_token).decode('utf-8'))
-        except (TypeError, ValueError):
-            raise ValueError("Invalid or expired page_token.")
+@dataclass(frozen=True)
+class PaginationRequest:
+    """The request identity that a continuation token must match."""
 
-    end_index = start_index + PAGE_SIZE
-    page_items = full_list[start_index:end_index]
+    connection: Any
+    command: str
+    parameters: str
+    field: str
 
-    new_next_token = None
-    if end_index < len(full_list):
-        new_next_token = base64.b64encode(str(end_index).encode('utf-8')).decode('utf-8')
+    def matches(self, other: "PaginationRequest") -> bool:
+        return (
+            self.connection is other.connection
+            and self.command == other.command
+            and self.parameters == other.parameters
+            and self.field == other.field
+        )
 
-    return PaginatedResult(items=page_items, next_page_token=new_next_token)
+
+@dataclass
+class _Snapshot:
+    request: PaginationRequest
+    response: dict
+    created_at: float
+
+
+PAGINATION_CACHE: dict[str, _Snapshot] = {}
+_CACHE_LOCK = Lock()
+_INVALID_TOKEN = "Invalid or expired page_token. Please start a new request."
+
+
+def dispatch_paginated(
+        fetch: Callable[[], Any], request: PaginationRequest, page_token: str | None = None
+) -> Any:
+    """Route continuation requests to the cache and initial requests to Archicad."""
+    if page_token is not None:
+        with _CACHE_LOCK:
+            return _fetch_cached_page(request, page_token)
+    response = fetch()
+    with _CACHE_LOCK:
+        return _cache_response(response, request)
+
+
+def _fetch_cached_page(request: PaginationRequest, page_token: str) -> dict:
+    _prune(time.monotonic())
+    session, separator, raw_offset = page_token.partition(":")
+    snapshot = PAGINATION_CACHE.get(session)
+    if not separator or snapshot is None or not snapshot.request.matches(request):
+        raise ValueError(_INVALID_TOKEN)
+    item_count = len(snapshot.response[request.field])
+    # A valid index cannot need more digits than the list length.
+    if len(raw_offset) > len(str(item_count)) or not raw_offset.isascii() or not raw_offset.isdecimal():
+        raise ValueError(_INVALID_TOKEN)
+    offset = int(raw_offset)
+    if offset <= 0 or offset % PAGE_SIZE or offset >= item_count:
+        raise ValueError(_INVALID_TOKEN)
+    return _page(snapshot, session, offset)
+
+
+def _cache_response(response: dict, request: PaginationRequest) -> dict:
+    _prune(time.monotonic())
+    if not isinstance(response, dict) or not isinstance(response.get(request.field), list):
+        return response
+    if len(response[request.field]) <= PAGE_SIZE:
+        return response
+
+    snapshot = _Snapshot(request, deepcopy(response), time.monotonic())
+    session = secrets.token_urlsafe(24)
+    while len(PAGINATION_CACHE) >= MAX_CACHE_ENTRIES:
+        del PAGINATION_CACHE[next(iter(PAGINATION_CACHE))]
+    PAGINATION_CACHE[session] = snapshot
+    return _page(snapshot, session, 0)
+
+
+def _prune(now: float) -> None:
+    for key, snapshot in list(PAGINATION_CACHE.items()):
+        if now - snapshot.created_at >= CACHE_LIFETIME_SECONDS:
+            del PAGINATION_CACHE[key]
+
+
+def _page(snapshot: _Snapshot, session: str, offset: int) -> dict:
+    field = snapshot.request.field
+    response = deepcopy({key: value for key, value in snapshot.response.items() if key != field})
+    items = snapshot.response[field]
+    response[field] = deepcopy(items[offset : offset + PAGE_SIZE])
+    response.pop("next_page_token", None)
+    if offset + PAGE_SIZE < len(items):
+        response["next_page_token"] = f"{session}:{offset + PAGE_SIZE}"
+    return response
