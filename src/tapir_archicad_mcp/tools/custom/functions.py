@@ -1,11 +1,13 @@
 import logging
+import json
 from typing import Optional, Any, Dict
-from pydantic import BaseModel, ValidationError
+from pydantic import ValidationError
 
 from mcp.types import ToolAnnotations
 
 from tapir_archicad_mcp.app import mcp
 from tapir_archicad_mcp.context import multi_conn_instance
+from tapir_archicad_mcp.pagination import PaginationRequest, dispatch_paginated
 from tapir_archicad_mcp.tools.custom.models import (
     ReadyInstance,
     UnavailableInstance,
@@ -14,7 +16,7 @@ from tapir_archicad_mcp.tools.custom.models import (
     CommandSchema,
     CommandOverview,
 )
-from tapir_archicad_mcp.tools.tool_registry import get_tool_entry, TOOL_DISCOVERY_CATALOG
+from tapir_archicad_mcp.tools.tool_registry import get_tool_entry, TOOL_DISCOVERY_CATALOG, ToolRegistryEntry
 
 from multiconn_archicad.conn_header import ConnHeader
 from multiconn_archicad.basic_types import (
@@ -231,33 +233,20 @@ def archicad_call_tool(name: str, arguments: dict) -> dict:
         raise ValueError(f"Invalid arguments provided for tool '{name}'. Validation details: {e}") from e
 
     port = validated_arguments.port
-    multi_conn = multi_conn_instance.get()
-    target_port = Port(port)
-    if target_port not in multi_conn.active:
-        raise ValueError(f"Port {port} is not an active Archicad connection.")
-    conn_header = multi_conn.active[target_port]
+    conn_header = _get_header(port)
 
     call_args: Dict[str, Any] = {"conn_header": conn_header}
 
     if tool_entry.params_model:
         call_args["params"] = validated_arguments.params
 
-    if "page_token" in validated_arguments.model_fields_set:
-        call_args["page_token"] = validated_arguments.page_token
-
     try:
-        result = target_func(**call_args)
+        if tool_entry.pagination_field is not None:
+            result = _call_paginated_tool(name, tool_entry, call_args, validated_arguments.page_token)
+        else:
+            result = target_func(**call_args)
 
-        if result is None:
-            return {}
-
-        if isinstance(result, dict):
-            return result
-
-        if isinstance(result, BaseModel):
-            return result.model_dump(mode="json", by_alias=True, exclude_none=True)
-
-        return {"result": result}
+        return {} if result is None else result
 
     except AddOnCommandUnavailable as e:
         log.warning(f"AddOnCommandUnavailable for tool '{name}' on port {port}: {e}")
@@ -269,4 +258,24 @@ def archicad_call_tool(name: str, arguments: dict) -> dict:
         ) from e
     except Exception as e:
         log.error(f"Error executing dispatched tool {name}: {e}")
-        raise e
+        raise
+
+def _call_paginated_tool(
+    name: str, tool_entry: ToolRegistryEntry, call_args: dict, page_token: str | None,
+) -> dict | None:
+    params = call_args.get("params")
+    parameters = params.model_dump(mode="json", by_alias=True, exclude_none=True) if params is not None else {}
+    request = PaginationRequest(
+        connection=call_args["conn_header"], command=name,
+        parameters=json.dumps(parameters, sort_keys=True, separators=(",", ":")),
+        field=tool_entry.pagination_field,
+    )
+    return dispatch_paginated(lambda: tool_entry.callable(**call_args), request, page_token)
+
+
+def _get_header(port: int) -> ConnHeader:
+    multi_conn = multi_conn_instance.get()
+    target_port = Port(port)
+    if target_port not in multi_conn.active:
+        raise ValueError(f"Port {port} is not an active Archicad connection.")
+    return multi_conn.active[target_port]
