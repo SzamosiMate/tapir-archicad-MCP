@@ -46,16 +46,12 @@ async def test_live_sse_server_enforces_token():
     that requests are rejected without the token and accepted with it.
 
     Uses the SSE app because the streamable-http session manager can only
-    be started once per FastMCP instance across the test session.
+    be started once per MCPServer instance across the test session.
     """
     port = get_free_port()
     token = "integration-secret"
 
-    if hasattr(mcp, "sse_app"):
-        app = mcp.sse_app()
-    else:
-        from fastmcp.server.http import create_sse_app
-        app = create_sse_app(mcp)
+    app = mcp.sse_app()
 
     config = uvicorn.Config(
         app=BearerTokenMiddleware(app, token),

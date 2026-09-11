@@ -28,7 +28,7 @@ classifiers = [
 ]
 
 dependencies = [
-    "fastmcp>=2.10.5",
+    "mcp>=2,<3",
     "multiconn-archicad==0.8.1",
     "uvicorn>=0.35.0",
 ]

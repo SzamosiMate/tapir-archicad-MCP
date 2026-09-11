@@ -79,8 +79,8 @@ def mock_run_targets(monkeypatch):
     mock_uvicorn_run = MagicMock()
     monkeypatch.setattr(mcp, "run", mock_mcp_run)
     monkeypatch.setattr(server_module.uvicorn, "run", mock_uvicorn_run)
-    monkeypatch.setattr(mcp, "streamable_http_app", lambda: plain_app)
-    monkeypatch.setattr(mcp, "sse_app", lambda: plain_app)
+    monkeypatch.setattr(mcp, "streamable_http_app", lambda **kwargs: plain_app)
+    monkeypatch.setattr(mcp, "sse_app", lambda **kwargs: plain_app)
     return mock_mcp_run, mock_uvicorn_run
 
 
@@ -150,5 +150,7 @@ def test_http_transport_without_token_stays_unwrapped(monkeypatch, mock_run_targ
     from tapir_archicad_mcp.server import main
     main()
 
-    mock_mcp_run.assert_called_once_with(transport="streamable-http")
+    mock_mcp_run.assert_called_once_with(
+        transport="streamable-http", host="127.0.0.1", port=8000, streamable_http_path="/mcp"
+    )
     mock_uvicorn_run.assert_not_called()

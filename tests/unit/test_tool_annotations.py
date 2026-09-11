@@ -21,16 +21,16 @@ def test_discovery_and_schema_tools_are_read_only():
     for name, open_world in READ_ONLY_TOOLS.items():
         annotations = tools[name].annotations
         assert annotations is not None, f"{name} has no annotations"
-        assert annotations.readOnlyHint is True, name
-        assert annotations.destructiveHint is False, name
-        assert annotations.idempotentHint is True, name
-        assert annotations.openWorldHint is open_world, name
+        assert annotations.read_only_hint is True, name
+        assert annotations.destructive_hint is False, name
+        assert annotations.idempotent_hint is True, name
+        assert annotations.open_world_hint is open_world, name
 
 
 def test_call_tool_is_write_delete():
     annotations = _tools_by_name()["archicad_call_tool"].annotations
     assert annotations is not None
-    assert annotations.readOnlyHint is False
-    assert annotations.destructiveHint is True
-    assert annotations.idempotentHint is False
-    assert annotations.openWorldHint is True
+    assert annotations.read_only_hint is False
+    assert annotations.destructive_hint is True
+    assert annotations.idempotent_hint is False
+    assert annotations.open_world_hint is True

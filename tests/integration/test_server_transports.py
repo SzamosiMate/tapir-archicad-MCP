@@ -5,8 +5,7 @@ import socket
 import httpx
 import uvicorn
 from unittest.mock import MagicMock
-from fastmcp import Client
-from mcp import ClientSession
+from mcp import Client, ClientSession
 from mcp.client.sse import sse_client
 
 from tapir_archicad_mcp.app import mcp
@@ -40,7 +39,7 @@ async def test_tool_execution_in_memory():
     """
     async with Client(mcp) as client:
         # Check that tools are registered successfully
-        tools = await client.list_tools()
+        tools = (await client.list_tools()).tools
         tool_names = [t.name for t in tools]
         assert "discovery_list_active_archicads" in tool_names
 
@@ -59,11 +58,7 @@ async def test_live_tool_call_over_sse():
     port = get_free_port()
 
     # Configure Uvicorn to run our SSE app
-    if hasattr(mcp, "sse_app"):
-        app = mcp.sse_app()
-    else:
-        from fastmcp.server.http import create_sse_app
-        app = create_sse_app(mcp)
+    app = mcp.sse_app()
 
     config = uvicorn.Config(app=app, host="127.0.0.1", port=port, log_level="warning")
     server = uvicorn.Server(config)
@@ -85,7 +80,7 @@ async def test_live_tool_call_over_sse():
                 result = await session.call_tool("discovery_list_active_archicads", arguments={})
 
                 # Verify that we successfully received a response matching our mocked state
-                assert result.isError is False
+                assert result.is_error is False
                 payload = json.loads(result.content[0].text)
                 assert payload == {"activeInstances": [], "unavailableInstances": []}
     finally:
@@ -103,10 +98,7 @@ async def test_live_streamable_http_server():
     port = get_free_port()
 
     # Configure Uvicorn to run our Streamable HTTP app
-    if hasattr(mcp, "streamable_http_app"):
-        app = mcp.streamable_http_app()
-    else:
-        app = mcp.http_app()
+    app = mcp.streamable_http_app()
 
     config = uvicorn.Config(app=app, host="127.0.0.1", port=port, log_level="warning")
     server = uvicorn.Server(config)
@@ -119,9 +111,9 @@ async def test_live_streamable_http_server():
     try:
         # Make a real HTTP network call over local loopback
         async with httpx.AsyncClient() as client:
-            path = mcp.settings.streamable_http_path or "/mcp"
+            path = "/mcp"
             response = await client.post(f"http://127.0.0.1:{port}{path}", json={})
-            # A 200, 400, or 406 proves the HTTP connection was successful and reached our FastMCP router
+            # A 200, 400, or 406 proves the HTTP connection was successful and reached our MCPServer router
             assert response.status_code in [200, 400, 406]
     finally:
         # Cleanly signal the Uvicorn server to shutdown and wait for the task to exit
@@ -138,11 +130,7 @@ async def test_live_sse_server():
     port = get_free_port()
 
     # Configure Uvicorn to run our SSE app
-    if hasattr(mcp, "sse_app"):
-        app = mcp.sse_app()
-    else:
-        from fastmcp.server.http import create_sse_app
-        app = create_sse_app(mcp)
+    app = mcp.sse_app()
 
     config = uvicorn.Config(app=app, host="127.0.0.1", port=port, log_level="warning")
     server = uvicorn.Server(config)

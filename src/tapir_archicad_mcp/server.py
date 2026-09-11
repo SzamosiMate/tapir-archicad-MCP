@@ -7,6 +7,7 @@ import logging
 import argparse
 import os
 import sys
+from typing import Any
 
 import uvicorn
 
@@ -65,22 +66,27 @@ def main():
         args.mount_path
     )
 
-    mcp.settings.host = args.host
-    mcp.settings.port = args.port
-    if args.streamable_http_path:
-        mcp.settings.streamable_http_path = args.streamable_http_path
-    if args.mount_path:
-        mcp.settings.mount_path = args.mount_path
+    # MCPServer takes host/port/path options on the transport call rather than
+    # on the server instance, so collect the HTTP-specific ones here and hand
+    # them to whichever entry point (app factory or run) serves the transport.
+    http_options: dict[str, Any] = {"host": args.host}
+    if args.transport == "sse" and args.mount_path:
+        http_options["sse_path"] = args.mount_path
+    elif args.transport == "streamable-http" and args.streamable_http_path:
+        http_options["streamable_http_path"] = args.streamable_http_path
 
     if args.token and args.transport != "stdio":
-        app = mcp.sse_app() if args.transport == "sse" else mcp.streamable_http_app()
+        app = mcp.sse_app(**http_options) if args.transport == "sse" else mcp.streamable_http_app(**http_options)
         uvicorn.run(BearerTokenMiddleware(app, args.token), host=args.host, port=args.port)
         return
 
     if args.token:
         logging.warning("--token is only used for HTTP-based transports and is ignored for stdio.")
 
-    mcp.run(transport=args.transport)
+    if args.transport == "stdio":
+        mcp.run(transport="stdio")
+    else:
+        mcp.run(transport=args.transport, port=args.port, **http_options)
 
 if __name__ == "__main__":
     main()
