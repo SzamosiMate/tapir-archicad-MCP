@@ -16,7 +16,7 @@ from tapir_archicad_mcp.tools.custom.models import (
     CommandSchema,
     CommandOverview,
 )
-from tapir_archicad_mcp.tools.tool_registry import get_tool_entry, TOOL_DISCOVERY_CATALOG, ToolRegistryEntry
+from tapir_archicad_mcp.tools.tool_registry import get_tool_entry, get_tool_input_schema, TOOL_DISCOVERY_CATALOG, ToolRegistryEntry
 
 from multiconn_archicad.conn_header import ConnHeader
 from multiconn_archicad.basic_types import (
@@ -198,7 +198,7 @@ def archicad_get_command_schema(command_name: str) -> CommandSchema:
 
     return CommandSchema(
         name=tool["name"],
-        input_schema=tool["input_schema"],
+        input_schema=get_tool_input_schema(command_name),
     )
 
 

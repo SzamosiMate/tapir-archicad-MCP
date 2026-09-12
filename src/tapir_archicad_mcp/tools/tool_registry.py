@@ -24,6 +24,7 @@ class ToolRegistryEntry(BaseModel):
 
 TOOL_CALLABLE_REGISTRY: Dict[str, ToolRegistryEntry] = {}
 TOOL_DISCOVERY_CATALOG: dict[str, dict[str, Any]] = {}
+_TOOL_INPUT_SCHEMA_CACHE: dict[str, dict[str, Any]] = {}
 
 
 def _build_tool_arguments_model(name: str, params_model: ModelOrUnion, pagination_field: str | None) -> Type[BaseModel]:
@@ -83,9 +84,24 @@ def register_tool_for_dispatch(
         "name": name,
         "title": title,
         "description": description,
-        "input_schema": arguments_model.model_json_schema(),
     }
     log.debug(f"Registered tool: {name}")
+
+
+def get_tool_input_schema(name: str) -> dict[str, Any]:
+    """
+    Returns a tool's argument JSON schema, building it on first request.
+
+    The catalog spans hundreds of commands, and generating every schema up
+    front costs a measurable slice of server startup while the discovery
+    workflow asks for exactly one command's schema at a time; build lazily and
+    cache so repeat lookups stay cheap.
+    """
+    schema = _TOOL_INPUT_SCHEMA_CACHE.get(name)
+    if schema is None:
+        schema = get_tool_entry(name).arguments_model.model_json_schema()
+        _TOOL_INPUT_SCHEMA_CACHE[name] = schema
+    return schema
 
 
 def get_tool_entry(name: str) -> ToolRegistryEntry:

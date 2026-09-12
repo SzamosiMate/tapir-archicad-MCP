@@ -9,8 +9,6 @@ import os
 import sys
 from typing import Any
 
-import uvicorn
-
 from tapir_archicad_mcp.app import mcp
 from tapir_archicad_mcp.logging_config import setup_logging
 from tapir_archicad_mcp.middleware import BearerTokenMiddleware
@@ -76,6 +74,9 @@ def main():
         http_options["streamable_http_path"] = args.streamable_http_path
 
     if args.token and args.transport != "stdio":
+        # Imported here so the stdio transport does not pay for uvicorn's import.
+        import uvicorn
+
         app = mcp.sse_app(**http_options) if args.transport == "sse" else mcp.streamable_http_app(**http_options)
         uvicorn.run(BearerTokenMiddleware(app, args.token), host=args.host, port=args.port)
         return
