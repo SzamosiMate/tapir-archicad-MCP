@@ -304,18 +304,19 @@ wheels = [
 
 [[package]]
 name = "multiconn-archicad"
-version = "0.8.1"
+version = "0.8.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "archicad" },
     { name = "httpx" },
+    { name = "packaging" },
     { name = "psutil" },
     { name = "pydantic" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/ed/00/a82f5f9215b9a7fabfbdbb370f61de8941b814caac1b118c3aac32f7b10b/multiconn_archicad-0.8.1.tar.gz", hash = "sha256:ea3a6f396f8e067b3eff120d3cb0db535292999d4b4198e1f15c24280280fd8c", size = 189170, upload-time = "2026-09-10T20:16:32.126Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/55/77/968d6ca86e4ab7c6ae66b124eaada36ee79b1951941fa20a3978332387c4/multiconn_archicad-0.8.2.tar.gz", hash = "sha256:c7d7cd07811343253845651ded680ddbd604ef14bfbd6cbd44c482b9cdf89c39", size = 189474, upload-time = "2026-09-12T18:25:18.374Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/01/c4/2d1d0fa8260b78f746aa97a37acc53116ae2855a1c6fcf04940965eeae0c/multiconn_archicad-0.8.1-py3-none-any.whl", hash = "sha256:003f216023e9e7278855e7e02c00b82798a3a2f43befc6e78b17280cc04c1d18", size = 227670, upload-time = "2026-09-10T20:16:33.329Z" },
+    { url = "https://files.pythonhosted.org/packages/39/9c/edd007ff92ee2bc5acc1d49136c5af138d79ec61c84f7e485edf4a0563f9/multiconn_archicad-0.8.2-py3-none-any.whl", hash = "sha256:a8d91460803cba9344b9b8d24568dec42ade5ff08a549e3cba9f4ed240d67747", size = 227680, upload-time = "2026-09-12T18:25:19.533Z" },
 ]
 
 [[package]]
@@ -613,7 +614,6 @@ source = { editable = "." }
 dependencies = [
     { name = "mcp" },
     { name = "multiconn-archicad" },
-    { name = "packaging" },
     { name = "uvicorn" },
 ]
 
@@ -627,8 +627,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "mcp", specifier = ">=2,<3" },
-    { name = "multiconn-archicad", specifier = "==0.8.1" },
-    { name = "packaging", specifier = ">=23.0" },
+    { name = "multiconn-archicad", specifier = "==0.8.2" },
     { name = "uvicorn", specifier = ">=0.35.0" },
 ]
 
