@@ -72,13 +72,14 @@ def mock_run_targets(monkeypatch):
     starting a real server, and replaces the HTTP app factories with
     a plain sentinel app.
     """
-    import tapir_archicad_mcp.server as server_module
+    import uvicorn
+
     from tapir_archicad_mcp.app import mcp
 
     mock_mcp_run = MagicMock()
     mock_uvicorn_run = MagicMock()
     monkeypatch.setattr(mcp, "run", mock_mcp_run)
-    monkeypatch.setattr(server_module.uvicorn, "run", mock_uvicorn_run)
+    monkeypatch.setattr(uvicorn, "run", mock_uvicorn_run)
     monkeypatch.setattr(mcp, "streamable_http_app", lambda **kwargs: plain_app)
     monkeypatch.setattr(mcp, "sse_app", lambda **kwargs: plain_app)
     return mock_mcp_run, mock_uvicorn_run
