@@ -51,6 +51,19 @@ def parse_args() -> argparse.Namespace:
     )
     return parser.parse_args()
 
+
+def sse_paths_from_mount_path(mount_path: str | None) -> dict[str, str]:
+    """Preserve the legacy SSE prefix in v2's explicit routes."""
+    if not mount_path or mount_path == "/":
+        return {}
+
+    prefix = "/" + mount_path.strip("/")
+    return {
+        "sse_path": f"{prefix}/sse",
+        "message_path": f"{prefix}/messages/",
+    }
+
+
 def main():
     args = parse_args()
     sys.argv = [sys.argv[0]]
@@ -64,17 +77,14 @@ def main():
         args.mount_path
     )
 
-    # MCPServer takes host/port/path options on the transport call rather than
-    # on the server instance, so collect the HTTP-specific ones here and hand
-    # them to whichever entry point (app factory or run) serves the transport.
+    # MCPServer configures HTTP options on its transport methods.
     http_options: dict[str, Any] = {"host": args.host}
     if args.transport == "sse" and args.mount_path:
-        http_options["sse_path"] = args.mount_path
+        http_options.update(sse_paths_from_mount_path(args.mount_path))
     elif args.transport == "streamable-http" and args.streamable_http_path:
         http_options["streamable_http_path"] = args.streamable_http_path
 
     if args.token and args.transport != "stdio":
-        # Imported here so the stdio transport does not pay for uvicorn's import.
         import uvicorn
 
         app = mcp.sse_app(**http_options) if args.transport == "sse" else mcp.streamable_http_app(**http_options)

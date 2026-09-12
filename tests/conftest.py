@@ -61,6 +61,6 @@ def fake_archicad():
         active={Port(fake.port): fake},
     )
 
-    token = multi_conn_instance.set(multi_conn)
+    multi_conn_instance.set(multi_conn)
     yield fake
-    multi_conn_instance.reset(token)
+    multi_conn_instance.clear()

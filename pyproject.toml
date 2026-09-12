@@ -29,9 +29,7 @@ classifiers = [
 
 dependencies = [
     "mcp>=2,<3",
-    "multiconn-archicad==0.8.1",
-    # multiconn-archicad imports packaging at runtime but does not declare it.
-    "packaging>=23.0",
+    "multiconn-archicad==0.8.2",
     "uvicorn>=0.35.0",
 ]
 

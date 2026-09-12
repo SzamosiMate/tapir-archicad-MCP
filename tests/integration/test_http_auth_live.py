@@ -17,11 +17,7 @@ def get_free_port() -> int:
 
 
 async def serve_until_started(server: uvicorn.Server) -> asyncio.Task:
-    """
-    Starts a Uvicorn server in the background and returns once it is
-    actually accepting connections, polling server.started instead of
-    sleeping a fixed interval (faster locally, no flaky CI timeouts).
-    """
+    """Run Uvicorn until it accepts connections."""
     task = asyncio.create_task(server.serve())
     while not server.started:
         await asyncio.sleep(0.01)
@@ -30,10 +26,6 @@ async def serve_until_started(server: uvicorn.Server) -> asyncio.Task:
 
 @pytest.fixture(autouse=True)
 def mock_heavy_dependencies(monkeypatch):
-    """
-    Automatically mocks out Archicad connections
-    so these tests can run safely on headless runner environments.
-    """
     fake_multi_conn = MagicMock()
     fake_multi_conn.active = {}
     monkeypatch.setattr("tapir_archicad_mcp.app.MultiConn", lambda: fake_multi_conn)
