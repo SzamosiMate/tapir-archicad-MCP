@@ -22,6 +22,8 @@ async def app_lifespan(server: MCPServer) -> AsyncIterator[None]:
     try:
         yield
     finally:
+        mcp_instance.clear()
+        multi_conn_instance.clear()
         logging.info("MCP Server Lifespan: Shutting down...")
 
 mcp = MCPServer(

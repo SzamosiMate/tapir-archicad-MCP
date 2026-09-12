@@ -111,5 +111,24 @@ def test_server_cli_override_configuration(monkeypatch, mock_server_run):
 
     # Assert CLI overrides took precedence over ENVs
     mock_server_run.assert_called_once_with(
-        transport="sse", host="192.168.1.100", port=7070, sse_path="/cli-sse-path"
+        transport="sse",
+        host="192.168.1.100",
+        port=7070,
+        sse_path="/cli-sse-path/sse",
+        message_path="/cli-sse-path/messages/",
     )
+
+
+@pytest.mark.parametrize(
+    ("mount_path", "expected"),
+    [
+        (None, {}),
+        ("/", {}),
+        ("archicad", {"sse_path": "/archicad/sse", "message_path": "/archicad/messages/"}),
+        ("/archicad/", {"sse_path": "/archicad/sse", "message_path": "/archicad/messages/"}),
+    ],
+)
+def test_sse_paths_from_legacy_mount_path(mount_path, expected):
+    from tapir_archicad_mcp.server import sse_paths_from_mount_path
+
+    assert sse_paths_from_mount_path(mount_path) == expected

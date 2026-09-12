@@ -61,10 +61,6 @@ async def test_request_with_valid_token_passes_through():
     assert response.text == "ok"
 
 
-# ==========================================
-# CLI wiring: --token / TAPIR_MCP_TOKEN
-# ==========================================
-
 @pytest.fixture
 def mock_run_targets(monkeypatch):
     """
@@ -122,6 +118,27 @@ def test_token_env_fallback(monkeypatch, mock_run_targets):
     served_app = mock_uvicorn_run.call_args.args[0]
     assert isinstance(served_app, BearerTokenMiddleware)
     assert served_app.token == "env-secret"
+
+
+def test_sse_token_transport_preserves_legacy_mount_path(monkeypatch, mock_run_targets):
+    from tapir_archicad_mcp.app import mcp
+
+    mock_sse_app = MagicMock(return_value=plain_app)
+    monkeypatch.setattr(mcp, "sse_app", mock_sse_app)
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        ["server.py", "--transport", "sse", "--mount-path", "/archicad", "--token", "secret"],
+    )
+
+    from tapir_archicad_mcp.server import main
+    main()
+
+    mock_sse_app.assert_called_once_with(
+        host="127.0.0.1",
+        sse_path="/archicad/sse",
+        message_path="/archicad/messages/",
+    )
 
 
 def test_stdio_transport_ignores_token(monkeypatch, mock_run_targets):

@@ -58,8 +58,6 @@ def make_header(
 
 @pytest.fixture
 def set_multi_conn():
-    tokens = []
-
     def _set(headers: dict[int, Any]) -> None:
         typed = {Port(p): h for p, h in headers.items()}
         mc = SimpleNamespace(
@@ -69,12 +67,10 @@ def set_multi_conn():
             open_ports=list(typed.keys()),
             active=typed,
         )
-        tokens.append(multi_conn_instance.set(mc))
+        multi_conn_instance.set(mc)
 
     yield _set
-
-    for token in tokens:
-        multi_conn_instance.reset(token)
+    multi_conn_instance.clear()
 
 
 # ============================================================================
