@@ -1,8 +1,4 @@
-from multiconn_archicad.models.config import configure
-from multiconn_archicad.models.mixins import ForbidExtrasMixin
-
-configure(ForbidExtrasMixin)
-
+import tapir_archicad_mcp.model_configuration  # noqa: F401
 import logging
 import argparse
 import os
