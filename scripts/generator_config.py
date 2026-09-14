@@ -131,7 +131,7 @@ OFFICIAL_CONFIG = ApiSourceConfig(
     },
     paginated_commands = {
         "GetElementsByClassification": "elements",
-        "GetAllPropertyIds": "properties",
+        "GetAllPropertyIds": "propertyIds",
         "GetAllPropertyNames": "properties",
     }
 )
