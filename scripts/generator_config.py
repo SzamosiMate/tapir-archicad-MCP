@@ -64,8 +64,8 @@ TAPIR_CONFIG = ApiSourceConfig(
         "GetScriptUIResult", # used in apps
         "GetNavigatorItemTree", # result model missing from tapir documentation
         "DeleteAttributes",  # official has a simpler interface for the same functionality (works for MEP systems)
-        "DeleteNavigatorItems",  # same parameters as the Tapir command
-        "MoveNavigatorItem",  # same parameters as the Tapir command
+        "DeleteNavigatorItems",  # same parameters as the Official command
+        "MoveNavigatorItem",  # same parameters as the Official command
     },
     paginated_commands={
         "GetAllElements": "elements",
