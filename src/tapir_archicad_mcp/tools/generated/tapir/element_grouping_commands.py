@@ -8,16 +8,12 @@ from multiconn_archicad.models.tapir.commands import (
     SetSuspendGroupsModeParameters,
 )
 
+
 def create_groups(conn_header: ConnHeader, params: CreateGroupsParameters) -> dict:
-    """
-    Creates groups of the passed elements
-    """
-
+    """Creates groups of the passed elements"""
     return conn_header.core.post_tapir_command(
-        command="CreateGroups",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="CreateGroups", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -25,20 +21,15 @@ register_tool_for_dispatch(
     name="grouping_create_groups",
     title="CreateGroups",
     description="Creates groups of the passed elements",
-    params_model=CreateGroupsParameters
+    params_model=CreateGroupsParameters,
 )
 
 
 def get_elements_of_groups(conn_header: ConnHeader, params: GetElementsOfGroupsParameters) -> dict:
-    """
-    Gets the elements directly contained by each given group.
-    """
-
+    """Gets the elements directly contained by each given group."""
     return conn_header.core.post_tapir_command(
-        command="GetElementsOfGroups",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="GetElementsOfGroups", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -46,41 +37,35 @@ register_tool_for_dispatch(
     name="grouping_get_elements_of_groups",
     title="GetElementsOfGroups",
     description="Gets the elements directly contained by each given group.",
-    params_model=GetElementsOfGroupsParameters
+    params_model=GetElementsOfGroupsParameters,
 )
 
 
 def get_groups_of_elements(conn_header: ConnHeader, params: GetGroupsOfElementsParameters) -> dict:
     """
-    Gets the identifier of the group that directly contains each given element. Returns an error for elements that are not part of any group.
+    Gets the identifier of the group that directly contains each given element. Returns an error for elements that are
+    not part of any group.
     """
-
     return conn_header.core.post_tapir_command(
-        command="GetGroupsOfElements",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="GetGroupsOfElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
     get_groups_of_elements,
     name="grouping_get_groups_of_elements",
     title="GetGroupsOfElements",
-    description="Gets the identifier of the group that directly contains each given element. Returns an error for elements that are not part of any group.",
-    params_model=GetGroupsOfElementsParameters
+    description=(
+        "Gets the identifier of the group that directly contains each given element. Returns an error for elements "
+        "that are not part of any group."
+    ),
+    params_model=GetGroupsOfElementsParameters,
 )
 
 
 def get_suspend_groups_mode(conn_header: ConnHeader) -> dict:
-    """
-    Gets the current state of the Suspend Groups mode.
-    """
-
-    return conn_header.core.post_tapir_command(
-        command="GetSuspendGroupsMode",
-        parameters={}
-    )
-
+    """Gets the current state of the Suspend Groups mode."""
+    return conn_header.core.post_tapir_command(command="GetSuspendGroupsMode", parameters={})
 
 
 register_tool_for_dispatch(
@@ -88,26 +73,27 @@ register_tool_for_dispatch(
     name="grouping_get_suspend_groups_mode",
     title="GetSuspendGroupsMode",
     description="Gets the current state of the Suspend Groups mode.",
-    params_model=None
+    params_model=None,
 )
 
 
 def set_suspend_groups_mode(conn_header: ConnHeader, params: SetSuspendGroupsModeParameters) -> dict:
     """
-    Turns the Suspend Groups mode on or off. Suspend groups to perform operations on elements that are part of a group; remember to restore the previous state afterwards.
+    Turns the Suspend Groups mode on or off. Suspend groups to perform operations on elements that are part of a group;
+    remember to restore the previous state afterwards.
     """
-
     return conn_header.core.post_tapir_command(
-        command="SetSuspendGroupsMode",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="SetSuspendGroupsMode", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
     set_suspend_groups_mode,
     name="grouping_set_suspend_groups_mode",
     title="SetSuspendGroupsMode",
-    description="Turns the Suspend Groups mode on or off. Suspend groups to perform operations on elements that are part of a group; remember to restore the previous state afterwards.",
-    params_model=SetSuspendGroupsModeParameters
+    description=(
+        "Turns the Suspend Groups mode on or off. Suspend groups to perform operations on elements that are part of a "
+        "group; remember to restore the previous state afterwards."
+    ),
+    params_model=SetSuspendGroupsModeParameters,
 )

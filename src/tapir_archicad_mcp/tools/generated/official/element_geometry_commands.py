@@ -5,22 +5,26 @@ from multiconn_archicad.models.official.commands import (
     Get2DBoundingBoxesParameters,
 )
 
+
 def get2_d_bounding_boxes(conn_header: ConnHeader, params: Get2DBoundingBoxesParameters) -> dict:
     """
-    Get the 2D bounding box of elements identified by their GUIDs. The bounding box is calculated from the global origin on the floor plan view. The output is the array of the bounding boxes respective to the input GUIDs. Only works for elements detailed in <i>Element Information</i>.
+    Get the 2D bounding box of elements identified by their GUIDs. The bounding box is calculated from the global origin
+    on the floor plan view. The output is the array of the bounding boxes respective to the input GUIDs. Only works for
+    elements detailed in <i>Element Information</i>.
     """
-
     return conn_header.core.post_command(
-        command="API.Get2DBoundingBoxes",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="API.Get2DBoundingBoxes", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
     get2_d_bounding_boxes,
     name="elements_get2_d_bounding_boxes",
     title="Get2DBoundingBoxes",
-    description="Get the 2D bounding box of elements identified by their GUIDs. The bounding box is calculated from the global origin on the floor plan view. The output is the array of the bounding boxes respective to the input GUIDs. Only works for elements detailed in <i>Element Information</i>.",
-    params_model=Get2DBoundingBoxesParameters
+    description=(
+        "Get the 2D bounding box of elements identified by their GUIDs. The bounding box is calculated from the global "
+        "origin on the floor plan view. The output is the array of the bounding boxes respective to the input GUIDs. "
+        "Only works for elements detailed in <i>Element Information</i>."
+    ),
+    params_model=Get2DBoundingBoxesParameters,
 )

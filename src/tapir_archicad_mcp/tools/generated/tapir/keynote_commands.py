@@ -12,79 +12,66 @@ from multiconn_archicad.models.tapir.commands import (
     ModifyKeynoteItemsParameters,
 )
 
+
 def create_keynote_folders(conn_header: ConnHeader, params: CreateKeynoteFoldersParameters) -> dict:
-    """
-    Creates keynote folders under the given parent folders (or under the root folder). Available from Archicad 28.
-    """
-
+    """Creates keynote folders under the given parent folders (or under the root folder). Available from Archicad 28."""
     return conn_header.core.post_tapir_command(
-        command="CreateKeynoteFolders",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="CreateKeynoteFolders", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
     create_keynote_folders,
     name="keynotes_create_keynote_folders",
     title="CreateKeynoteFolders",
-    description="Creates keynote folders under the given parent folders (or under the root folder). Available from Archicad 28.",
-    params_model=CreateKeynoteFoldersParameters
+    description=(
+        "Creates keynote folders under the given parent folders (or under the root folder). Available from Archicad 28."
+    ),
+    params_model=CreateKeynoteFoldersParameters,
 )
 
 
 def create_keynote_items(conn_header: ConnHeader, params: CreateKeynoteItemsParameters) -> dict:
-    """
-    Creates keynote items in the given parent folders (or in the root folder). Available from Archicad 28.
-    """
-
+    """Creates keynote items in the given parent folders (or in the root folder). Available from Archicad 28."""
     return conn_header.core.post_tapir_command(
-        command="CreateKeynoteItems",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="CreateKeynoteItems", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
     create_keynote_items,
     name="keynotes_create_keynote_items",
     title="CreateKeynoteItems",
-    description="Creates keynote items in the given parent folders (or in the root folder). Available from Archicad 28.",
-    params_model=CreateKeynoteItemsParameters
+    description=(
+        "Creates keynote items in the given parent folders (or in the root folder). Available from Archicad 28."
+    ),
+    params_model=CreateKeynoteItemsParameters,
 )
 
 
 def create_keynote_labels(conn_header: ConnHeader, params: CreateKeynoteLabelsParameters) -> dict:
-    """
-    Creates Label elements that reference the given keynote items via autotext. Available from Archicad 28.
-    """
-
+    """Creates Label elements that reference the given keynote items via autotext. Available from Archicad 28."""
     return conn_header.core.post_tapir_command(
-        command="CreateKeynoteLabels",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="CreateKeynoteLabels", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
     create_keynote_labels,
     name="keynotes_create_keynote_labels",
     title="CreateKeynoteLabels",
-    description="Creates Label elements that reference the given keynote items via autotext. Available from Archicad 28.",
-    params_model=CreateKeynoteLabelsParameters
+    description=(
+        "Creates Label elements that reference the given keynote items via autotext. Available from Archicad 28."
+    ),
+    params_model=CreateKeynoteLabelsParameters,
 )
 
 
 def delete_keynote_folders(conn_header: ConnHeader, params: DeleteKeynoteFoldersParameters) -> dict:
-    """
-    Deletes the given keynote folders including their content. Available from Archicad 28.
-    """
-
+    """Deletes the given keynote folders including their content. Available from Archicad 28."""
     return conn_header.core.post_tapir_command(
-        command="DeleteKeynoteFolders",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="DeleteKeynoteFolders", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -92,20 +79,15 @@ register_tool_for_dispatch(
     name="keynotes_delete_keynote_folders",
     title="DeleteKeynoteFolders",
     description="Deletes the given keynote folders including their content. Available from Archicad 28.",
-    params_model=DeleteKeynoteFoldersParameters
+    params_model=DeleteKeynoteFoldersParameters,
 )
 
 
 def delete_keynote_items(conn_header: ConnHeader, params: DeleteKeynoteItemsParameters) -> dict:
-    """
-    Deletes the given keynote items. Available from Archicad 28.
-    """
-
+    """Deletes the given keynote items. Available from Archicad 28."""
     return conn_header.core.post_tapir_command(
-        command="DeleteKeynoteItems",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="DeleteKeynoteItems", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -113,62 +95,57 @@ register_tool_for_dispatch(
     name="keynotes_delete_keynote_items",
     title="DeleteKeynoteItems",
     description="Deletes the given keynote items. Available from Archicad 28.",
-    params_model=DeleteKeynoteItemsParameters
+    params_model=DeleteKeynoteItemsParameters,
 )
 
 
 def get_keynote_auto_texts(conn_header: ConnHeader, params: GetKeynoteAutoTextsParameters) -> dict:
     """
-    Retrieves the autotext tokens of the given keynote items. The tokens can be used as label text content to reference the fields of a keynote item. Available from Archicad 28.
+    Retrieves the autotext tokens of the given keynote items. The tokens can be used as label text content to reference
+    the fields of a keynote item. Available from Archicad 28.
     """
-
     return conn_header.core.post_tapir_command(
-        command="GetKeynoteAutoTexts",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="GetKeynoteAutoTexts", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
     get_keynote_auto_texts,
     name="keynotes_get_keynote_auto_texts",
     title="GetKeynoteAutoTexts",
-    description="Retrieves the autotext tokens of the given keynote items. The tokens can be used as label text content to reference the fields of a keynote item. Available from Archicad 28.",
-    params_model=GetKeynoteAutoTextsParameters
+    description=(
+        "Retrieves the autotext tokens of the given keynote items. The tokens can be used as label text content to "
+        "reference the fields of a keynote item. Available from Archicad 28."
+    ),
+    params_model=GetKeynoteAutoTextsParameters,
 )
 
 
 def get_keynote_tree(conn_header: ConnHeader) -> dict:
     """
-    Retrieves the whole keynote folder and item hierarchy. The technical root folder is not included in the output; the top-level folders and items are returned directly. Available from Archicad 28.
+    Retrieves the whole keynote folder and item hierarchy. The technical root folder is not included in the output; the
+    top-level folders and items are returned directly. Available from Archicad 28.
     """
-
-    return conn_header.core.post_tapir_command(
-        command="GetKeynoteTree",
-        parameters={}
-    )
-
+    return conn_header.core.post_tapir_command(command="GetKeynoteTree", parameters={})
 
 
 register_tool_for_dispatch(
     get_keynote_tree,
     name="keynotes_get_keynote_tree",
     title="GetKeynoteTree",
-    description="Retrieves the whole keynote folder and item hierarchy. The technical root folder is not included in the output; the top-level folders and items are returned directly. Available from Archicad 28.",
-    params_model=None
+    description=(
+        "Retrieves the whole keynote folder and item hierarchy. The technical root folder is not included in the "
+        "output; the top-level folders and items are returned directly. Available from Archicad 28."
+    ),
+    params_model=None,
 )
 
 
 def modify_keynote_folders(conn_header: ConnHeader, params: ModifyKeynoteFoldersParameters) -> dict:
-    """
-    Modifies the key, title or reference of the given keynote folders. Available from Archicad 28.
-    """
-
+    """Modifies the key, title or reference of the given keynote folders. Available from Archicad 28."""
     return conn_header.core.post_tapir_command(
-        command="ModifyKeynoteFolders",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="ModifyKeynoteFolders", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -176,26 +153,23 @@ register_tool_for_dispatch(
     name="keynotes_modify_keynote_folders",
     title="ModifyKeynoteFolders",
     description="Modifies the key, title or reference of the given keynote folders. Available from Archicad 28.",
-    params_model=ModifyKeynoteFoldersParameters
+    params_model=ModifyKeynoteFoldersParameters,
 )
 
 
 def modify_keynote_items(conn_header: ConnHeader, params: ModifyKeynoteItemsParameters) -> dict:
-    """
-    Modifies the key, title, description or reference of the given keynote items. Available from Archicad 28.
-    """
-
+    """Modifies the key, title, description or reference of the given keynote items. Available from Archicad 28."""
     return conn_header.core.post_tapir_command(
-        command="ModifyKeynoteItems",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="ModifyKeynoteItems", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
     modify_keynote_items,
     name="keynotes_modify_keynote_items",
     title="ModifyKeynoteItems",
-    description="Modifies the key, title, description or reference of the given keynote items. Available from Archicad 28.",
-    params_model=ModifyKeynoteItemsParameters
+    description=(
+        "Modifies the key, title, description or reference of the given keynote items. Available from Archicad 28."
+    ),
+    params_model=ModifyKeynoteItemsParameters,
 )

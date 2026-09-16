@@ -6,16 +6,13 @@ from multiconn_archicad.models.official.commands import (
     CreateViewMapFolderParameters,
 )
 
-def clone_project_map_item_to_view_map(conn_header: ConnHeader, params: CloneProjectMapItemToViewMapParameters) -> dict:
-    """
-    Clones a project map item to the view map.
-    """
 
+def clone_project_map_item_to_view_map(conn_header: ConnHeader, params: CloneProjectMapItemToViewMapParameters) -> dict:
+    """Clones a project map item to the view map."""
     return conn_header.core.post_command(
         command="API.CloneProjectMapItemToViewMap",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
     )
-
 
 
 register_tool_for_dispatch(
@@ -23,20 +20,15 @@ register_tool_for_dispatch(
     name="view_clone_project_map_item_to_view_map",
     title="CloneProjectMapItemToViewMap",
     description="Clones a project map item to the view map.",
-    params_model=CloneProjectMapItemToViewMapParameters
+    params_model=CloneProjectMapItemToViewMapParameters,
 )
 
 
 def create_view_map_folder(conn_header: ConnHeader, params: CreateViewMapFolderParameters) -> dict:
-    """
-    Creates a view folder item at the given position in the navigator tree.
-    """
-
+    """Creates a view folder item at the given position in the navigator tree."""
     return conn_header.core.post_command(
-        command="API.CreateViewMapFolder",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="API.CreateViewMapFolder", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -44,5 +36,5 @@ register_tool_for_dispatch(
     name="view_create_view_map_folder",
     title="CreateViewMapFolder",
     description="Creates a view folder item at the given position in the navigator tree.",
-    params_model=CreateViewMapFolderParameters
+    params_model=CreateViewMapFolderParameters,
 )

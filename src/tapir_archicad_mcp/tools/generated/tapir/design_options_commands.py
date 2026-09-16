@@ -12,16 +12,15 @@ from multiconn_archicad.models.tapir.commands import (
     SetActiveDesignOptionsInCombinationsParameters,
 )
 
-def create_design_option_combinations(conn_header: ConnHeader, params: CreateDesignOptionCombinationsParameters) -> dict:
-    """
-    Creates new design option combinations with the given parameters. Available from Archicad 29.
-    """
 
+def create_design_option_combinations(
+    conn_header: ConnHeader, params: CreateDesignOptionCombinationsParameters
+) -> dict:
+    """Creates new design option combinations with the given parameters. Available from Archicad 29."""
     return conn_header.core.post_tapir_command(
         command="CreateDesignOptionCombinations",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
     )
-
 
 
 register_tool_for_dispatch(
@@ -29,20 +28,15 @@ register_tool_for_dispatch(
     name="design_options_create_design_option_combinations",
     title="CreateDesignOptionCombinations",
     description="Creates new design option combinations with the given parameters. Available from Archicad 29.",
-    params_model=CreateDesignOptionCombinationsParameters
+    params_model=CreateDesignOptionCombinationsParameters,
 )
 
 
 def create_design_option_sets(conn_header: ConnHeader, params: CreateDesignOptionSetsParameters) -> dict:
-    """
-    Creates new design option sets with the given names. Available from Archicad 29.
-    """
-
+    """Creates new design option sets with the given names. Available from Archicad 29."""
     return conn_header.core.post_tapir_command(
-        command="CreateDesignOptionSets",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="CreateDesignOptionSets", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -50,20 +44,15 @@ register_tool_for_dispatch(
     name="design_options_create_design_option_sets",
     title="CreateDesignOptionSets",
     description="Creates new design option sets with the given names. Available from Archicad 29.",
-    params_model=CreateDesignOptionSetsParameters
+    params_model=CreateDesignOptionSetsParameters,
 )
 
 
 def create_design_options(conn_header: ConnHeader, params: CreateDesignOptionsParameters) -> dict:
-    """
-    Creates new design options with the given parameters. Available from Archicad 29.
-    """
-
+    """Creates new design options with the given parameters. Available from Archicad 29."""
     return conn_header.core.post_tapir_command(
-        command="CreateDesignOptions",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="CreateDesignOptions", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -71,20 +60,13 @@ register_tool_for_dispatch(
     name="design_options_create_design_options",
     title="CreateDesignOptions",
     description="Creates new design options with the given parameters. Available from Archicad 29.",
-    params_model=CreateDesignOptionsParameters
+    params_model=CreateDesignOptionsParameters,
 )
 
 
 def get_design_option_combinations(conn_header: ConnHeader) -> dict:
-    """
-    Retrieves information about existing design option combinations.
-    """
-
-    return conn_header.core.post_tapir_command(
-        command="GetDesignOptionCombinations",
-        parameters={}
-    )
-
+    """Retrieves information about existing design option combinations."""
+    return conn_header.core.post_tapir_command(command="GetDesignOptionCombinations", parameters={})
 
 
 register_tool_for_dispatch(
@@ -92,20 +74,16 @@ register_tool_for_dispatch(
     name="design_options_get_design_option_combinations",
     title="GetDesignOptionCombinations",
     description="Retrieves information about existing design option combinations.",
-    params_model=None
+    params_model=None,
 )
 
 
 def get_design_option_for_elements(conn_header: ConnHeader, params: GetDesignOptionForElementsParameters) -> dict:
-    """
-    Retrieves the design option association for the specified elements. Available from Archicad 29.
-    """
-
+    """Retrieves the design option association for the specified elements. Available from Archicad 29."""
     return conn_header.core.post_tapir_command(
         command="GetDesignOptionForElements",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
     )
-
 
 
 register_tool_for_dispatch(
@@ -113,20 +91,13 @@ register_tool_for_dispatch(
     name="design_options_get_design_option_for_elements",
     title="GetDesignOptionForElements",
     description="Retrieves the design option association for the specified elements. Available from Archicad 29.",
-    params_model=GetDesignOptionForElementsParameters
+    params_model=GetDesignOptionForElementsParameters,
 )
 
 
 def get_design_option_sets(conn_header: ConnHeader) -> dict:
-    """
-    Retrieves information about existing design option sets. Available from Archicad 29.
-    """
-
-    return conn_header.core.post_tapir_command(
-        command="GetDesignOptionSets",
-        parameters={}
-    )
-
+    """Retrieves information about existing design option sets. Available from Archicad 29."""
+    return conn_header.core.post_tapir_command(command="GetDesignOptionSets", parameters={})
 
 
 register_tool_for_dispatch(
@@ -134,20 +105,13 @@ register_tool_for_dispatch(
     name="design_options_get_design_option_sets",
     title="GetDesignOptionSets",
     description="Retrieves information about existing design option sets. Available from Archicad 29.",
-    params_model=None
+    params_model=None,
 )
 
 
 def get_design_options(conn_header: ConnHeader) -> dict:
-    """
-    Retrieves information about existing design options. Available from Archicad 29.
-    """
-
-    return conn_header.core.post_tapir_command(
-        command="GetDesignOptions",
-        parameters={}
-    )
-
+    """Retrieves information about existing design options. Available from Archicad 29."""
+    return conn_header.core.post_tapir_command(command="GetDesignOptions", parameters={})
 
 
 register_tool_for_dispatch(
@@ -155,20 +119,16 @@ register_tool_for_dispatch(
     name="design_options_get_design_options",
     title="GetDesignOptions",
     description="Retrieves information about existing design options. Available from Archicad 29.",
-    params_model=None
+    params_model=None,
 )
 
 
 def get_elements_of_design_options(conn_header: ConnHeader, params: GetElementsOfDesignOptionsParameters) -> dict:
-    """
-    Retrieves the elements associated with the given design options. Available from Archicad 29.
-    """
-
+    """Retrieves the elements associated with the given design options. Available from Archicad 29."""
     return conn_header.core.post_tapir_command(
         command="GetElementsOfDesignOptions",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
     )
-
 
 
 register_tool_for_dispatch(
@@ -176,20 +136,18 @@ register_tool_for_dispatch(
     name="design_options_get_elements_of_design_options",
     title="GetElementsOfDesignOptions",
     description="Retrieves the elements associated with the given design options. Available from Archicad 29.",
-    params_model=GetElementsOfDesignOptionsParameters
+    params_model=GetElementsOfDesignOptionsParameters,
 )
 
 
-def move_design_options_to_another_set(conn_header: ConnHeader, params: MoveDesignOptionsToAnotherSetParameters) -> dict:
-    """
-    Moves the given design options to another sets. Available from Archicad 29.
-    """
-
+def move_design_options_to_another_set(
+    conn_header: ConnHeader, params: MoveDesignOptionsToAnotherSetParameters
+) -> dict:
+    """Moves the given design options to another sets. Available from Archicad 29."""
     return conn_header.core.post_tapir_command(
         command="MoveDesignOptionsToAnotherSet",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
     )
-
 
 
 register_tool_for_dispatch(
@@ -197,41 +155,41 @@ register_tool_for_dispatch(
     name="design_options_move_design_options_to_another_set",
     title="MoveDesignOptionsToAnotherSet",
     description="Moves the given design options to another sets. Available from Archicad 29.",
-    params_model=MoveDesignOptionsToAnotherSetParameters
+    params_model=MoveDesignOptionsToAnotherSetParameters,
 )
 
 
 def move_elements_to_design_options(conn_header: ConnHeader, params: MoveElementsToDesignOptionsParameters) -> dict:
     """
-    Moves the given elements into the given design options. Use NULLGuid for design option to remove the element from any design options and move it to the main model. Available from Archicad 29.
+    Moves the given elements into the given design options. Use NULLGuid for design option to remove the element from
+    any design options and move it to the main model. Available from Archicad 29.
     """
-
     return conn_header.core.post_tapir_command(
         command="MoveElementsToDesignOptions",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
     )
-
 
 
 register_tool_for_dispatch(
     move_elements_to_design_options,
     name="design_options_move_elements_to_design_options",
     title="MoveElementsToDesignOptions",
-    description="Moves the given elements into the given design options. Use NULLGuid for design option to remove the element from any design options and move it to the main model. Available from Archicad 29.",
-    params_model=MoveElementsToDesignOptionsParameters
+    description=(
+        "Moves the given elements into the given design options. Use NULLGuid for design option to remove the element "
+        "from any design options and move it to the main model. Available from Archicad 29."
+    ),
+    params_model=MoveElementsToDesignOptionsParameters,
 )
 
 
-def set_active_design_options_in_combinations(conn_header: ConnHeader, params: SetActiveDesignOptionsInCombinationsParameters) -> dict:
-    """
-    Sets active design options in the given combinations. Available from Archicad 29.
-    """
-
+def set_active_design_options_in_combinations(
+    conn_header: ConnHeader, params: SetActiveDesignOptionsInCombinationsParameters
+) -> dict:
+    """Sets active design options in the given combinations. Available from Archicad 29."""
     return conn_header.core.post_tapir_command(
         command="SetActiveDesignOptionsInCombinations",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
     )
-
 
 
 register_tool_for_dispatch(
@@ -239,5 +197,5 @@ register_tool_for_dispatch(
     name="design_options_set_active_design_options_in_combinations",
     title="SetActiveDesignOptionsInCombinations",
     description="Sets active design options in the given combinations. Available from Archicad 29.",
-    params_model=SetActiveDesignOptionsInCombinationsParameters
+    params_model=SetActiveDesignOptionsInCombinationsParameters,
 )

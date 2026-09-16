@@ -13,16 +13,12 @@ from multiconn_archicad.models.tapir.commands import (
     UpdatePropertyDefinitionsParameters,
 )
 
+
 def create_property_definitions(conn_header: ConnHeader, params: CreatePropertyDefinitionsParameters) -> dict:
-    """
-    Creates Custom Property Definitions based on the given parameters.
-    """
-
+    """Creates Custom Property Definitions based on the given parameters."""
     return conn_header.core.post_tapir_command(
-        command="CreatePropertyDefinitions",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="CreatePropertyDefinitions", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -30,20 +26,15 @@ register_tool_for_dispatch(
     name="properties_create_property_definitions",
     title="CreatePropertyDefinitions",
     description="Creates Custom Property Definitions based on the given parameters.",
-    params_model=CreatePropertyDefinitionsParameters
+    params_model=CreatePropertyDefinitionsParameters,
 )
 
 
 def create_property_groups(conn_header: ConnHeader, params: CreatePropertyGroupsParameters) -> dict:
-    """
-    Creates Property Groups based on the given parameters.
-    """
-
+    """Creates Property Groups based on the given parameters."""
     return conn_header.core.post_tapir_command(
-        command="CreatePropertyGroups",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="CreatePropertyGroups", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -51,20 +42,15 @@ register_tool_for_dispatch(
     name="properties_create_property_groups",
     title="CreatePropertyGroups",
     description="Creates Property Groups based on the given parameters.",
-    params_model=CreatePropertyGroupsParameters
+    params_model=CreatePropertyGroupsParameters,
 )
 
 
 def delete_property_definitions(conn_header: ConnHeader, params: DeletePropertyDefinitionsParameters) -> dict:
-    """
-    Deletes the given Custom Property Definitions.
-    """
-
+    """Deletes the given Custom Property Definitions."""
     return conn_header.core.post_tapir_command(
-        command="DeletePropertyDefinitions",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="DeletePropertyDefinitions", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -72,20 +58,15 @@ register_tool_for_dispatch(
     name="properties_delete_property_definitions",
     title="DeletePropertyDefinitions",
     description="Deletes the given Custom Property Definitions.",
-    params_model=DeletePropertyDefinitionsParameters
+    params_model=DeletePropertyDefinitionsParameters,
 )
 
 
 def delete_property_groups(conn_header: ConnHeader, params: DeletePropertyGroupsParameters) -> dict:
-    """
-    Deletes the given Custom Property Groups.
-    """
-
+    """Deletes the given Custom Property Groups."""
     return conn_header.core.post_tapir_command(
-        command="DeletePropertyGroups",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="DeletePropertyGroups", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -93,22 +74,19 @@ register_tool_for_dispatch(
     name="properties_delete_property_groups",
     title="DeletePropertyGroups",
     description="Deletes the given Custom Property Groups.",
-    params_model=DeletePropertyGroupsParameters
+    params_model=DeletePropertyGroupsParameters,
 )
 
 
 def get_all_properties(conn_header: ConnHeader) -> dict:
     """
     Returns all user defined and built-in properties.
-        This response is paginated. If 'next_page_token' is returned, call archicad_call_tool
-        again with the same arguments and page_token set to that token to get the next page
-        of results.
-    """
 
-    return conn_header.core.post_tapir_command(
-        command="GetAllProperties",
-        parameters={}
-    )
+    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
+    and page_token set to that token to get the next page of results.
+    """
+    return conn_header.core.post_tapir_command(command="GetAllProperties", parameters={})
+
 
 register_tool_for_dispatch(
     get_all_properties,
@@ -116,20 +94,16 @@ register_tool_for_dispatch(
     title="GetAllProperties",
     description="Returns all user defined and built-in properties.",
     params_model=None,
-    pagination_field="properties"
+    pagination_field="properties",
 )
 
 
 def get_property_values_of_attributes(conn_header: ConnHeader, params: GetPropertyValuesOfAttributesParameters) -> dict:
-    """
-    Returns the property values of the attributes for the given property.
-    """
-
+    """Returns the property values of the attributes for the given property."""
     return conn_header.core.post_tapir_command(
         command="GetPropertyValuesOfAttributes",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
     )
-
 
 
 register_tool_for_dispatch(
@@ -137,41 +111,39 @@ register_tool_for_dispatch(
     name="properties_get_property_values_of_attributes",
     title="GetPropertyValuesOfAttributes",
     description="Returns the property values of the attributes for the given property.",
-    params_model=GetPropertyValuesOfAttributesParameters
+    params_model=GetPropertyValuesOfAttributesParameters,
 )
 
 
 def get_property_values_of_elements(conn_header: ConnHeader, params: GetPropertyValuesOfElementsParameters) -> dict:
     """
-    Returns the property values of the elements for the given property. It works for subelements of hierarchal elements also.
+    Returns the property values of the elements for the given property. It works for subelements of hierarchal elements
+    also.
     """
-
     return conn_header.core.post_tapir_command(
         command="GetPropertyValuesOfElements",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
     )
-
 
 
 register_tool_for_dispatch(
     get_property_values_of_elements,
     name="properties_get_property_values_of_elements",
     title="GetPropertyValuesOfElements",
-    description="Returns the property values of the elements for the given property. It works for subelements of hierarchal elements also.",
-    params_model=GetPropertyValuesOfElementsParameters
+    description=(
+        "Returns the property values of the elements for the given property. It works for subelements of hierarchal "
+        "elements also."
+    ),
+    params_model=GetPropertyValuesOfElementsParameters,
 )
 
 
 def set_property_values_of_attributes(conn_header: ConnHeader, params: SetPropertyValuesOfAttributesParameters) -> dict:
-    """
-    Sets the property values of attributes.
-    """
-
+    """Sets the property values of attributes."""
     return conn_header.core.post_tapir_command(
         command="SetPropertyValuesOfAttributes",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
     )
-
 
 
 register_tool_for_dispatch(
@@ -179,20 +151,16 @@ register_tool_for_dispatch(
     name="properties_set_property_values_of_attributes",
     title="SetPropertyValuesOfAttributes",
     description="Sets the property values of attributes.",
-    params_model=SetPropertyValuesOfAttributesParameters
+    params_model=SetPropertyValuesOfAttributesParameters,
 )
 
 
 def set_property_values_of_elements(conn_header: ConnHeader, params: SetPropertyValuesOfElementsParameters) -> dict:
-    """
-    Sets the property values of elements. It works for subelements of hierarchal elements also.
-    """
-
+    """Sets the property values of elements. It works for subelements of hierarchal elements also."""
     return conn_header.core.post_tapir_command(
         command="SetPropertyValuesOfElements",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
     )
-
 
 
 register_tool_for_dispatch(
@@ -200,27 +168,27 @@ register_tool_for_dispatch(
     name="properties_set_property_values_of_elements",
     title="SetPropertyValuesOfElements",
     description="Sets the property values of elements. It works for subelements of hierarchal elements also.",
-    params_model=SetPropertyValuesOfElementsParameters
+    params_model=SetPropertyValuesOfElementsParameters,
 )
 
 
 def update_property_definitions(conn_header: ConnHeader, params: UpdatePropertyDefinitionsParameters) -> dict:
     """
-    Updates the expression(s) of existing expression-based Custom Property Definitions.
+    Updates existing Custom Property Definitions: the expression(s) of an expression-based property, or the possible
+    enum values of an enumeration property.
     """
-
     return conn_header.core.post_tapir_command(
-        command="UpdatePropertyDefinitions",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="UpdatePropertyDefinitions", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
     update_property_definitions,
     name="properties_update_property_definitions",
     title="UpdatePropertyDefinitions",
-    description="Updates the expression(s) of existing expression-based Custom Property Definitions.",
-    params_model=UpdatePropertyDefinitionsParameters
+    description=(
+        "Updates existing Custom Property Definitions: the expression(s) of an expression-based property, or the "
+        "possible enum values of an enumeration property."
+    ),
+    params_model=UpdatePropertyDefinitionsParameters,
 )
-

@@ -2,26 +2,48 @@
 from multiconn_archicad.conn_header import ConnHeader
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
 from multiconn_archicad.models.tapir.commands import (
+    ChangeHotlinkInstancesParameters,
+    CreateHotlinkInstancesParameters,
+    CreateHotlinkNodesParameters,
     CreateProjectInfoFieldsParameters,
     DeleteProjectInfoFieldsParameters,
+    GetAutoTextKeysParameters,
+    GetAutoTextNameParameters,
     OpenProjectParameters,
     PrintViewParameters,
     RebuildViewParameters,
+    SaveAsModuleFileParameters,
     SetGeoLocationParameters,
     SetProjectInfoFieldParameters,
     SetStoriesParameters,
 )
 
-def close_project(conn_header: ConnHeader) -> dict:
-    """
-    Closes the currently opened project.
-    """
 
+def change_hotlink_instances(conn_header: ConnHeader, params: ChangeHotlinkInstancesParameters) -> dict:
+    """
+    Moves, rotates or mirrors placed hotlink instances by changing their transformation. MoveElements and RotateElements
+    do not work on hotlink instances.
+    """
     return conn_header.core.post_tapir_command(
-        command="CloseProject",
-        parameters={}
+        command="ChangeHotlinkInstances", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
 
+
+register_tool_for_dispatch(
+    change_hotlink_instances,
+    name="project_change_hotlink_instances",
+    title="ChangeHotlinkInstances",
+    description=(
+        "Moves, rotates or mirrors placed hotlink instances by changing their transformation. MoveElements and "
+        "RotateElements do not work on hotlink instances."
+    ),
+    params_model=ChangeHotlinkInstancesParameters,
+)
+
+
+def close_project(conn_header: ConnHeader) -> dict:
+    """Closes the currently opened project."""
+    return conn_header.core.post_tapir_command(command="CloseProject", parameters={})
 
 
 register_tool_for_dispatch(
@@ -29,20 +51,53 @@ register_tool_for_dispatch(
     name="project_close_project",
     title="CloseProject",
     description="Closes the currently opened project.",
-    params_model=None
+    params_model=None,
+)
+
+
+def create_hotlink_instances(conn_header: ConnHeader, params: CreateHotlinkInstancesParameters) -> dict:
+    """Places instances of hotlink module nodes at an origin, rotation and mirroring."""
+    return conn_header.core.post_tapir_command(
+        command="CreateHotlinkInstances", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    create_hotlink_instances,
+    name="project_create_hotlink_instances",
+    title="CreateHotlinkInstances",
+    description="Places instances of hotlink module nodes at an origin, rotation and mirroring.",
+    params_model=CreateHotlinkInstancesParameters,
+)
+
+
+def create_hotlink_nodes(conn_header: ConnHeader, params: CreateHotlinkNodesParameters) -> dict:
+    """
+    Creates hotlink module nodes from source files. A node that already points at the same file is returned instead of
+    duplicated (Archicad 26 and later; 25 cannot see an unplaced node).
+    """
+    return conn_header.core.post_tapir_command(
+        command="CreateHotlinkNodes", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    create_hotlink_nodes,
+    name="project_create_hotlink_nodes",
+    title="CreateHotlinkNodes",
+    description=(
+        "Creates hotlink module nodes from source files. A node that already points at the same file is returned "
+        "instead of duplicated (Archicad 26 and later; 25 cannot see an unplaced node)."
+    ),
+    params_model=CreateHotlinkNodesParameters,
 )
 
 
 def create_project_info_fields(conn_header: ConnHeader, params: CreateProjectInfoFieldsParameters) -> dict:
-    """
-    Creates one or more custom project info fields.
-    """
-
+    """Creates one or more custom project info fields."""
     return conn_header.core.post_tapir_command(
-        command="CreateProjectInfoFields",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="CreateProjectInfoFields", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -50,20 +105,15 @@ register_tool_for_dispatch(
     name="project_create_project_info_fields",
     title="CreateProjectInfoFields",
     description="Creates one or more custom project info fields.",
-    params_model=CreateProjectInfoFieldsParameters
+    params_model=CreateProjectInfoFieldsParameters,
 )
 
 
 def delete_project_info_fields(conn_header: ConnHeader, params: DeleteProjectInfoFieldsParameters) -> dict:
-    """
-    Deletes one or more custom project info fields. Hardcoded fields cannot be deleted.
-    """
-
+    """Deletes one or more custom project info fields. Hardcoded fields cannot be deleted."""
     return conn_header.core.post_tapir_command(
-        command="DeleteProjectInfoFields",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="DeleteProjectInfoFields", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -71,20 +121,57 @@ register_tool_for_dispatch(
     name="project_delete_project_info_fields",
     title="DeleteProjectInfoFields",
     description="Deletes one or more custom project info fields. Hardcoded fields cannot be deleted.",
-    params_model=DeleteProjectInfoFieldsParameters
+    params_model=DeleteProjectInfoFieldsParameters,
+)
+
+
+def get_auto_text_keys(conn_header: ConnHeader, params: GetAutoTextKeysParameters) -> dict:
+    """
+    Retrieves the available autotext keys (name and embeddable key), optionally for a specific element. Embed a key in a
+    Text or Label content by surrounding it with '<' and '>'.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetAutoTextKeys", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    get_auto_text_keys,
+    name="project_get_auto_text_keys",
+    title="GetAutoTextKeys",
+    description=(
+        "Retrieves the available autotext keys (name and embeddable key), optionally for a specific element. Embed a "
+        "key in a Text or Label content by surrounding it with '<' and '>'."
+    ),
+    params_model=GetAutoTextKeysParameters,
+)
+
+
+def get_auto_text_name(conn_header: ConnHeader, params: GetAutoTextNameParameters) -> dict:
+    """
+    Retrieves the display names of one or more autotext keys (as returned inside a '<...>' embedded key), with a direct
+    guid lookup for property-based keys instead of enumerating every property definition.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetAutoTextName", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    get_auto_text_name,
+    name="project_get_auto_text_name",
+    title="GetAutoTextName",
+    description=(
+        "Retrieves the display names of one or more autotext keys (as returned inside a '<...>' embedded key), with a "
+        "direct guid lookup for property-based keys instead of enumerating every property definition."
+    ),
+    params_model=GetAutoTextNameParameters,
 )
 
 
 def get_calculation_units(conn_header: ConnHeader) -> dict:
-    """
-    Gets the project calculation units.
-    """
-
-    return conn_header.core.post_tapir_command(
-        command="GetCalculationUnits",
-        parameters={}
-    )
-
+    """Gets the project calculation units."""
+    return conn_header.core.post_tapir_command(command="GetCalculationUnits", parameters={})
 
 
 register_tool_for_dispatch(
@@ -92,20 +179,13 @@ register_tool_for_dispatch(
     name="project_get_calculation_units",
     title="GetCalculationUnits",
     description="Gets the project calculation units.",
-    params_model=None
+    params_model=None,
 )
 
 
 def get_geo_location(conn_header: ConnHeader) -> dict:
-    """
-    Gets the project location details.
-    """
-
-    return conn_header.core.post_tapir_command(
-        command="GetGeoLocation",
-        parameters={}
-    )
-
+    """Gets the project location details."""
+    return conn_header.core.post_tapir_command(command="GetGeoLocation", parameters={})
 
 
 register_tool_for_dispatch(
@@ -113,7 +193,7 @@ register_tool_for_dispatch(
     name="project_get_geo_location",
     title="GetGeoLocation",
     description="Gets the project location details.",
-    params_model=None
+    params_model=None,
 )
 
 
@@ -121,33 +201,24 @@ def get_hotlinks(conn_header: ConnHeader) -> dict:
     """
     Gets the file system locations (path) of the hotlink modules. The hotlinks can have tree hierarchy in the project.
     """
-
-    return conn_header.core.post_tapir_command(
-        command="GetHotlinks",
-        parameters={}
-    )
-
+    return conn_header.core.post_tapir_command(command="GetHotlinks", parameters={})
 
 
 register_tool_for_dispatch(
     get_hotlinks,
     name="project_get_hotlinks",
     title="GetHotlinks",
-    description="Gets the file system locations (path) of the hotlink modules. The hotlinks can have tree hierarchy in the project.",
-    params_model=None
+    description=(
+        "Gets the file system locations (path) of the hotlink modules. The hotlinks can have tree hierarchy in the "
+        "project."
+    ),
+    params_model=None,
 )
 
 
 def get_project_info_fields(conn_header: ConnHeader) -> dict:
-    """
-    Retrieves the names and values of all project info fields.
-    """
-
-    return conn_header.core.post_tapir_command(
-        command="GetProjectInfoFields",
-        parameters={}
-    )
-
+    """Retrieves the names and values of all project info fields."""
+    return conn_header.core.post_tapir_command(command="GetProjectInfoFields", parameters={})
 
 
 register_tool_for_dispatch(
@@ -155,20 +226,13 @@ register_tool_for_dispatch(
     name="project_get_project_info_fields",
     title="GetProjectInfoFields",
     description="Retrieves the names and values of all project info fields.",
-    params_model=None
+    params_model=None,
 )
 
 
 def get_stories(conn_header: ConnHeader) -> dict:
-    """
-    Retrieves information about the story sructure of the currently loaded project.
-    """
-
-    return conn_header.core.post_tapir_command(
-        command="GetStories",
-        parameters={}
-    )
-
+    """Retrieves information about the story sructure of the currently loaded project."""
+    return conn_header.core.post_tapir_command(command="GetStories", parameters={})
 
 
 register_tool_for_dispatch(
@@ -176,20 +240,15 @@ register_tool_for_dispatch(
     name="project_get_stories",
     title="GetStories",
     description="Retrieves information about the story sructure of the currently loaded project.",
-    params_model=None
+    params_model=None,
 )
 
 
 def open_project(conn_header: ConnHeader, params: OpenProjectParameters) -> dict:
-    """
-    Opens the given project.
-    """
-
+    """Opens the given project."""
     return conn_header.core.post_tapir_command(
-        command="OpenProject",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="OpenProject", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -197,20 +256,15 @@ register_tool_for_dispatch(
     name="project_open_project",
     title="OpenProject",
     description="Opens the given project.",
-    params_model=OpenProjectParameters
+    params_model=OpenProjectParameters,
 )
 
 
 def print_view(conn_header: ConnHeader, params: PrintViewParameters) -> dict:
-    """
-    Prints from the current view.
-    """
-
+    """Prints from the current view."""
     return conn_header.core.post_tapir_command(
-        command="PrintView",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="PrintView", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -218,20 +272,15 @@ register_tool_for_dispatch(
     name="project_print_view",
     title="PrintView",
     description="Prints from the current view.",
-    params_model=PrintViewParameters
+    params_model=PrintViewParameters,
 )
 
 
 def rebuild_view(conn_header: ConnHeader, params: RebuildViewParameters) -> dict:
-    """
-    Rebuilds the current view.
-    """
-
+    """Rebuilds the current view."""
     return conn_header.core.post_tapir_command(
-        command="RebuildView",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="RebuildView", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -239,20 +288,29 @@ register_tool_for_dispatch(
     name="project_rebuild_view",
     title="RebuildView",
     description="Rebuilds the current view.",
-    params_model=RebuildViewParameters
+    params_model=RebuildViewParameters,
+)
+
+
+def save_as_module_file(conn_header: ConnHeader, params: SaveAsModuleFileParameters) -> dict:
+    """Saves the given elements, or the current selection, as a hotlink module (.mod) file."""
+    return conn_header.core.post_tapir_command(
+        command="SaveAsModuleFile", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    save_as_module_file,
+    name="project_save_as_module_file",
+    title="SaveAsModuleFile",
+    description="Saves the given elements, or the current selection, as a hotlink module (.mod) file.",
+    params_model=SaveAsModuleFileParameters,
 )
 
 
 def save_project(conn_header: ConnHeader) -> dict:
-    """
-    Saves the currently opened project.
-    """
-
-    return conn_header.core.post_tapir_command(
-        command="SaveProject",
-        parameters={}
-    )
-
+    """Saves the currently opened project."""
+    return conn_header.core.post_tapir_command(command="SaveProject", parameters={})
 
 
 register_tool_for_dispatch(
@@ -260,20 +318,15 @@ register_tool_for_dispatch(
     name="project_save_project",
     title="SaveProject",
     description="Saves the currently opened project.",
-    params_model=None
+    params_model=None,
 )
 
 
 def set_geo_location(conn_header: ConnHeader, params: SetGeoLocationParameters) -> dict:
-    """
-    Sets the project location details.
-    """
-
+    """Sets the project location details."""
     return conn_header.core.post_tapir_command(
-        command="SetGeoLocation",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="SetGeoLocation", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -281,20 +334,15 @@ register_tool_for_dispatch(
     name="project_set_geo_location",
     title="SetGeoLocation",
     description="Sets the project location details.",
-    params_model=SetGeoLocationParameters
+    params_model=SetGeoLocationParameters,
 )
 
 
 def set_project_info_field(conn_header: ConnHeader, params: SetProjectInfoFieldParameters) -> dict:
-    """
-    Sets the value of a project info field.
-    """
-
+    """Sets the value of a project info field."""
     return conn_header.core.post_tapir_command(
-        command="SetProjectInfoField",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="SetProjectInfoField", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -302,20 +350,15 @@ register_tool_for_dispatch(
     name="project_set_project_info_field",
     title="SetProjectInfoField",
     description="Sets the value of a project info field.",
-    params_model=SetProjectInfoFieldParameters
+    params_model=SetProjectInfoFieldParameters,
 )
 
 
 def set_stories(conn_header: ConnHeader, params: SetStoriesParameters) -> dict:
-    """
-    Sets the story sructure of the currently loaded project.
-    """
-
+    """Sets the story sructure of the currently loaded project."""
     return conn_header.core.post_tapir_command(
-        command="SetStories",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="SetStories", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -323,5 +366,5 @@ register_tool_for_dispatch(
     name="project_set_stories",
     title="SetStories",
     description="Sets the story sructure of the currently loaded project.",
-    params_model=SetStoriesParameters
+    params_model=SetStoriesParameters,
 )

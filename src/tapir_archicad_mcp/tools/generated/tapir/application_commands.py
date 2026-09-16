@@ -3,20 +3,17 @@ from multiconn_archicad.conn_header import ConnHeader
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
 from multiconn_archicad.models.tapir.commands import (
     ChangeWindowParameters,
+    GetPointFromUserParameters,
     GetSpecialFoldersParameters,
     ShowAlertParameters,
 )
 
+
 def change_window(conn_header: ConnHeader, params: ChangeWindowParameters) -> dict:
-    """
-    Changes the current (active) window to the given window.
-    """
-
+    """Changes the current (active) window to the given window."""
     return conn_header.core.post_tapir_command(
-        command="ChangeWindow",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="ChangeWindow", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -24,20 +21,13 @@ register_tool_for_dispatch(
     name="app_change_window",
     title="ChangeWindow",
     description="Changes the current (active) window to the given window.",
-    params_model=ChangeWindowParameters
+    params_model=ChangeWindowParameters,
 )
 
 
 def get_add_on_version(conn_header: ConnHeader) -> dict:
-    """
-    Retrieves the version of the Tapir Additional JSON Commands Add-On.
-    """
-
-    return conn_header.core.post_tapir_command(
-        command="GetAddOnVersion",
-        parameters={}
-    )
-
+    """Retrieves the version of the Tapir Additional JSON Commands Add-On."""
+    return conn_header.core.post_tapir_command(command="GetAddOnVersion", parameters={})
 
 
 register_tool_for_dispatch(
@@ -45,20 +35,13 @@ register_tool_for_dispatch(
     name="app_get_add_on_version",
     title="GetAddOnVersion",
     description="Retrieves the version of the Tapir Additional JSON Commands Add-On.",
-    params_model=None
+    params_model=None,
 )
 
 
 def get_current_window_type(conn_header: ConnHeader) -> dict:
-    """
-    Returns the type of the current (active) window.
-    """
-
-    return conn_header.core.post_tapir_command(
-        command="GetCurrentWindowType",
-        parameters={}
-    )
-
+    """Returns the type of the current (active) window."""
+    return conn_header.core.post_tapir_command(command="GetCurrentWindowType", parameters={})
 
 
 register_tool_for_dispatch(
@@ -66,41 +49,58 @@ register_tool_for_dispatch(
     name="app_get_current_window_type",
     title="GetCurrentWindowType",
     description="Returns the type of the current (active) window.",
-    params_model=None
+    params_model=None,
+)
+
+
+def get_point_from_user(conn_header: ConnHeader, params: GetPointFromUserParameters) -> dict:
+    """
+    Asks the designer to click a point in the current window and returns it. Archicad waits for the click or for Escape,
+    and every other JSON command queues behind this one until then; the call fails when the input is cancelled.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetPointFromUser", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    get_point_from_user,
+    name="app_get_point_from_user",
+    title="GetPointFromUser",
+    description=(
+        "Asks the designer to click a point in the current window and returns it. Archicad waits for the click or for "
+        "Escape, and every other JSON command queues behind this one until then; the call fails when the input is "
+        "cancelled."
+    ),
+    params_model=GetPointFromUserParameters,
 )
 
 
 def get_special_folders(conn_header: ConnHeader, params: GetSpecialFoldersParameters) -> dict:
     """
-    Retrieves the filesystem paths of the special folders of the running Archicad (preferences, cache, data, temporary, application, defaults, templates, help, embedded project library, etc.).
+    Retrieves the filesystem paths of the special folders of the running Archicad (preferences, cache, data, temporary,
+    application, defaults, templates, help, embedded project library, etc.).
     """
-
     return conn_header.core.post_tapir_command(
-        command="GetSpecialFolders",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="GetSpecialFolders", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
     get_special_folders,
     name="app_get_special_folders",
     title="GetSpecialFolders",
-    description="Retrieves the filesystem paths of the special folders of the running Archicad (preferences, cache, data, temporary, application, defaults, templates, help, embedded project library, etc.).",
-    params_model=GetSpecialFoldersParameters
+    description=(
+        "Retrieves the filesystem paths of the special folders of the running Archicad (preferences, cache, data, "
+        "temporary, application, defaults, templates, help, embedded project library, etc.)."
+    ),
+    params_model=GetSpecialFoldersParameters,
 )
 
 
 def get_user_gsid(conn_header: ConnHeader) -> dict:
-    """
-    Get the current registered User-GSID and OrganizationsID. Requires Archicad 27 or later.
-    """
-
-    return conn_header.core.post_tapir_command(
-        command="GetUserGSID",
-        parameters={}
-    )
-
+    """Get the current registered User-GSID and OrganizationsID. Requires Archicad 27 or later."""
+    return conn_header.core.post_tapir_command(command="GetUserGSID", parameters={})
 
 
 register_tool_for_dispatch(
@@ -108,20 +108,15 @@ register_tool_for_dispatch(
     name="app_get_user_gsid",
     title="GetUserGSID",
     description="Get the current registered User-GSID and OrganizationsID. Requires Archicad 27 or later.",
-    params_model=None
+    params_model=None,
 )
 
 
 def show_alert(conn_header: ConnHeader, params: ShowAlertParameters) -> dict:
-    """
-    Display a dialog with up to three buttons.
-    """
-
+    """Display a dialog with up to three buttons."""
     return conn_header.core.post_tapir_command(
-        command="ShowAlert",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="ShowAlert", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -129,5 +124,5 @@ register_tool_for_dispatch(
     name="app_show_alert",
     title="ShowAlert",
     description="Display a dialog with up to three buttons.",
-    params_model=ShowAlertParameters
+    params_model=ShowAlertParameters,
 )

@@ -3,19 +3,17 @@ from multiconn_archicad.conn_header import ConnHeader
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
 from multiconn_archicad.models.tapir.commands import (
     AddFilesToEmbeddedLibraryParameters,
+    AddLibrariesParameters,
     GetAvailableLibraryPartsParameters,
+    SetLibrariesParameters,
 )
 
+
 def add_files_to_embedded_library(conn_header: ConnHeader, params: AddFilesToEmbeddedLibraryParameters) -> dict:
-    """
-    Adds the given files into the embedded library.
-    """
-
+    """Adds the given files into the embedded library."""
     return conn_header.core.post_tapir_command(
-        command="AddFilesToEmbeddedLibrary",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="AddFilesToEmbeddedLibrary", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -23,43 +21,54 @@ register_tool_for_dispatch(
     name="library_add_files_to_embedded_library",
     title="AddFilesToEmbeddedLibrary",
     description="Adds the given files into the embedded library.",
-    params_model=AddFilesToEmbeddedLibraryParameters
+    params_model=AddFilesToEmbeddedLibraryParameters,
+)
+
+
+def add_libraries(conn_header: ConnHeader, params: AddLibrariesParameters) -> dict:
+    """Adds the given folders to the project's local libraries, skipping any already loaded."""
+    return conn_header.core.post_tapir_command(
+        command="AddLibraries", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    add_libraries,
+    name="library_add_libraries",
+    title="AddLibraries",
+    description="Adds the given folders to the project's local libraries, skipping any already loaded.",
+    params_model=AddLibrariesParameters,
 )
 
 
 def get_available_library_parts(conn_header: ConnHeader, params: GetAvailableLibraryPartsParameters) -> dict:
     """
     Lists library parts currently available to the project. Filter by typeId (e.g. 'Door', 'Window', 'Object', 'Lamp').
-        This response is paginated. If 'next_page_token' is returned, call archicad_call_tool
-        again with the same arguments and page_token set to that token to get the next page
-        of results.
-    """
 
+    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
+    and page_token set to that token to get the next page of results.
+    """
     return conn_header.core.post_tapir_command(
-        command="GetAvailableLibraryParts",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="GetAvailableLibraryParts", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
+
 
 register_tool_for_dispatch(
     get_available_library_parts,
     name="library_get_available_library_parts",
     title="GetAvailableLibraryParts",
-    description="Lists library parts currently available to the project. Filter by typeId (e.g. 'Door', 'Window', 'Object', 'Lamp').",
+    description=(
+        "Lists library parts currently available to the project. Filter by typeId (e.g. 'Door', 'Window', 'Object', "
+        "'Lamp')."
+    ),
     params_model=GetAvailableLibraryPartsParameters,
-    pagination_field="libraryParts"
+    pagination_field="libraryParts",
 )
 
 
 def get_libraries(conn_header: ConnHeader) -> dict:
-    """
-    Gets the list of loaded libraries.
-    """
-
-    return conn_header.core.post_tapir_command(
-        command="GetLibraries",
-        parameters={}
-    )
-
+    """Gets the list of loaded libraries."""
+    return conn_header.core.post_tapir_command(command="GetLibraries", parameters={})
 
 
 register_tool_for_dispatch(
@@ -67,20 +76,13 @@ register_tool_for_dispatch(
     name="library_get_libraries",
     title="GetLibraries",
     description="Gets the list of loaded libraries.",
-    params_model=None
+    params_model=None,
 )
 
 
 def reload_libraries(conn_header: ConnHeader) -> dict:
-    """
-    Executes the reload libraries command.
-    """
-
-    return conn_header.core.post_tapir_command(
-        command="ReloadLibraries",
-        parameters={}
-    )
-
+    """Executes the reload libraries command."""
+    return conn_header.core.post_tapir_command(command="ReloadLibraries", parameters={})
 
 
 register_tool_for_dispatch(
@@ -88,6 +90,27 @@ register_tool_for_dispatch(
     name="library_reload_libraries",
     title="ReloadLibraries",
     description="Executes the reload libraries command.",
-    params_model=None
+    params_model=None,
 )
 
+
+def set_libraries(conn_header: ConnHeader, params: SetLibrariesParameters) -> dict:
+    """
+    Makes the given folders the project's local libraries; built-in, embedded, server and web libraries are kept. Set
+    the libraries before opening a file that needs them and the missing-library dialog does not appear.
+    """
+    return conn_header.core.post_tapir_command(
+        command="SetLibraries", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    set_libraries,
+    name="library_set_libraries",
+    title="SetLibraries",
+    description=(
+        "Makes the given folders the project's local libraries; built-in, embedded, server and web libraries are kept. "
+        "Set the libraries before opening a file that needs them and the missing-library dialog does not appear."
+    ),
+    params_model=SetLibrariesParameters,
+)

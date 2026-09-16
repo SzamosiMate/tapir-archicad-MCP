@@ -31,16 +31,12 @@ from multiconn_archicad.models.tapir.commands import (
     UpdateZonesParameters,
 )
 
+
 def change_selection_of_elements(conn_header: ConnHeader, params: ChangeSelectionOfElementsParameters) -> dict:
-    """
-    Adds/removes a number of elements to/from the current selection.
-    """
-
+    """Adds/removes a number of elements to/from the current selection."""
     return conn_header.core.post_tapir_command(
-        command="ChangeSelectionOfElements",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="ChangeSelectionOfElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -48,20 +44,15 @@ register_tool_for_dispatch(
     name="elements_change_selection_of_elements",
     title="ChangeSelectionOfElements",
     description="Adds/removes a number of elements to/from the current selection.",
-    params_model=ChangeSelectionOfElementsParameters
+    params_model=ChangeSelectionOfElementsParameters,
 )
 
 
 def delete_elements(conn_header: ConnHeader, params: DeleteElementsParameters) -> dict:
-    """
-    Deletes elements.
-    """
-
+    """Deletes elements."""
     return conn_header.core.post_tapir_command(
-        command="DeleteElements",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="DeleteElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -69,20 +60,15 @@ register_tool_for_dispatch(
     name="elements_delete_elements",
     title="DeleteElements",
     description="Deletes elements.",
-    params_model=DeleteElementsParameters
+    params_model=DeleteElementsParameters,
 )
 
 
 def filter_elements(conn_header: ConnHeader, params: FilterElementsParameters) -> dict:
-    """
-    Tests an elements by the given criterias.
-    """
-
+    """Tests an elements by the given criterias."""
     return conn_header.core.post_tapir_command(
-        command="FilterElements",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="FilterElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -90,64 +76,61 @@ register_tool_for_dispatch(
     name="elements_filter_elements",
     title="FilterElements",
     description="Tests an elements by the given criterias.",
-    params_model=FilterElementsParameters
+    params_model=FilterElementsParameters,
 )
 
 
 def get3_d_bounding_boxes(conn_header: ConnHeader, params: Get3DBoundingBoxesParameters) -> dict:
     """
-    Get the 3D bounding box of elements. The bounding box is calculated from the global origin in the 3D view. The output is the array of the bounding boxes respective to the input array of elements.
+    Get the 3D bounding box of elements. The bounding box is calculated from the global origin in the 3D view. The
+    output is the array of the bounding boxes respective to the input array of elements.
     """
-
     return conn_header.core.post_tapir_command(
-        command="Get3DBoundingBoxes",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="Get3DBoundingBoxes", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
     get3_d_bounding_boxes,
     name="elements_get3_d_bounding_boxes",
     title="Get3DBoundingBoxes",
-    description="Get the 3D bounding box of elements. The bounding box is calculated from the global origin in the 3D view. The output is the array of the bounding boxes respective to the input array of elements.",
-    params_model=Get3DBoundingBoxesParameters
+    description=(
+        "Get the 3D bounding box of elements. The bounding box is calculated from the global origin in the 3D view. "
+        "The output is the array of the bounding boxes respective to the input array of elements."
+    ),
+    params_model=Get3DBoundingBoxesParameters,
 )
 
 
 def get_all_elements(conn_header: ConnHeader, params: GetAllElementsParameters) -> dict:
     """
     Returns the identifier of all elements on the plan. Use the optional filter parameter for filtering.
-        This response is paginated. If 'next_page_token' is returned, call archicad_call_tool
-        again with the same arguments and page_token set to that token to get the next page
-        of results.
-    """
 
+    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
+    and page_token set to that token to get the next page of results.
+    """
     return conn_header.core.post_tapir_command(
-        command="GetAllElements",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="GetAllElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
+
 
 register_tool_for_dispatch(
     get_all_elements,
     name="elements_get_all_elements",
     title="GetAllElements",
-    description="Returns the identifier of all elements on the plan. Use the optional filter parameter for filtering.",
+    description=(
+        "Returns the identifier of all elements on the plan. Use the optional filter parameter for filtering."
+    ),
     params_model=GetAllElementsParameters,
-    pagination_field="elements"
+    pagination_field="elements",
 )
 
 
 def get_collisions(conn_header: ConnHeader, params: GetCollisionsParameters) -> dict:
-    """
-    Detect collisions between the given two groups of elements.
-    """
-
+    """Detect collisions between the given two groups of elements."""
     return conn_header.core.post_tapir_command(
-        command="GetCollisions",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="GetCollisions", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -155,64 +138,65 @@ register_tool_for_dispatch(
     name="elements_get_collisions",
     title="GetCollisions",
     description="Detect collisions between the given two groups of elements.",
-    params_model=GetCollisionsParameters
+    params_model=GetCollisionsParameters,
 )
 
 
 def get_connected_elements(conn_header: ConnHeader, params: GetConnectedElementsParameters) -> dict:
     """
-    Gets the elements hosted by (connected to) the given owner elements, filtered to the given element type: for example the Windows or Doors of a Wall, the frames, panels, junctions and accessories of a Curtain Wall, the risers, treads and structures of a Stair, or the posts, rails and panels of a Railing.
+    Gets the elements hosted by (connected to) the given owner elements, filtered to the given element type: for example
+    the Windows or Doors of a Wall, the frames, panels, junctions and accessories of a Curtain Wall, the risers, treads
+    and structures of a Stair, or the posts, rails and panels of a Railing.
     """
-
     return conn_header.core.post_tapir_command(
-        command="GetConnectedElements",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="GetConnectedElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
     get_connected_elements,
     name="elements_get_connected_elements",
     title="GetConnectedElements",
-    description="Gets the elements hosted by (connected to) the given owner elements, filtered to the given element type: for example the Windows or Doors of a Wall, the frames, panels, junctions and accessories of a Curtain Wall, the risers, treads and structures of a Stair, or the posts, rails and panels of a Railing.",
-    params_model=GetConnectedElementsParameters
+    description=(
+        "Gets the elements hosted by (connected to) the given owner elements, filtered to the given element type: for "
+        "example the Windows or Doors of a Wall, the frames, panels, junctions and accessories of a Curtain Wall, the "
+        "risers, treads and structures of a Stair, or the posts, rails and panels of a Railing."
+    ),
+    params_model=GetConnectedElementsParameters,
 )
 
 
 def get_details_of_elements(conn_header: ConnHeader, params: GetDetailsOfElementsParameters) -> dict:
     """
-    Gets the details of the given elements (geometry parameters etc).
-        This response is paginated. If 'next_page_token' is returned, call archicad_call_tool
-        again with the same arguments and page_token set to that token to get the next page
-        of results.
-    """
+    Gets the details of the given elements (geometry parameters etc). Use the optional fields parameter to return only
+    the fields you need and skip the computation of the others (for example floorPlanPolygons).
 
+    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
+    and page_token set to that token to get the next page of results.
+    """
     return conn_header.core.post_tapir_command(
-        command="GetDetailsOfElements",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="GetDetailsOfElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
+
 
 register_tool_for_dispatch(
     get_details_of_elements,
     name="elements_get_details_of_elements",
     title="GetDetailsOfElements",
-    description="Gets the details of the given elements (geometry parameters etc).",
+    description=(
+        "Gets the details of the given elements (geometry parameters etc). Use the optional fields parameter to return "
+        "only the fields you need and skip the computation of the others (for example floorPlanPolygons)."
+    ),
     params_model=GetDetailsOfElementsParameters,
-    pagination_field="detailsOfElements"
+    pagination_field="detailsOfElements",
 )
 
 
 def get_dimension_data(conn_header: ConnHeader, params: GetDimensionDataParameters) -> dict:
-    """
-    Gets witness point data (coordinates, measured values) from existing dimension chains.
-    """
-
+    """Gets witness point data (coordinates, measured values) from existing dimension chains."""
     return conn_header.core.post_tapir_command(
-        command="GetDimensionData",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="GetDimensionData", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -220,20 +204,15 @@ register_tool_for_dispatch(
     name="elements_get_dimension_data",
     title="GetDimensionData",
     description="Gets witness point data (coordinates, measured values) from existing dimension chains.",
-    params_model=GetDimensionDataParameters
+    params_model=GetDimensionDataParameters,
 )
 
 
 def get_element_preview_image(conn_header: ConnHeader, params: GetElementPreviewImageParameters) -> dict:
-    """
-    Returns the preview image of the given element.
-    """
-
+    """Returns the preview image of the given element."""
     return conn_header.core.post_tapir_command(
-        command="GetElementPreviewImage",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="GetElementPreviewImage", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -241,45 +220,48 @@ register_tool_for_dispatch(
     name="elements_get_element_preview_image",
     title="GetElementPreviewImage",
     description="Returns the preview image of the given element.",
-    params_model=GetElementPreviewImageParameters
+    params_model=GetElementPreviewImageParameters,
 )
 
 
 def get_elements_by_type(conn_header: ConnHeader, params: GetElementsByTypeParameters) -> dict:
     """
-    Returns the identifier of every element of the given type on the plan. It works for any type. Use the optional filter parameter for filtering.
-        This response is paginated. If 'next_page_token' is returned, call archicad_call_tool
-        again with the same arguments and page_token set to that token to get the next page
-        of results.
-    """
+    Returns the identifier of every element of the given type on the plan. It works for any type. Use the optional
+    filter parameter for filtering.
 
+    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
+    and page_token set to that token to get the next page of results.
+    """
     return conn_header.core.post_tapir_command(
-        command="GetElementsByType",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="GetElementsByType", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
+
 
 register_tool_for_dispatch(
     get_elements_by_type,
     name="elements_get_elements_by_type",
     title="GetElementsByType",
-    description="Returns the identifier of every element of the given type on the plan. It works for any type. Use the optional filter parameter for filtering.",
+    description=(
+        "Returns the identifier of every element of the given type on the plan. It works for any type. Use the "
+        "optional filter parameter for filtering."
+    ),
     params_model=GetElementsByTypeParameters,
-    pagination_field="elements"
+    pagination_field="elements",
 )
 
 
 def get_gdl_parameters_of_elements(conn_header: ConnHeader, params: GetGDLParametersOfElementsParameters) -> dict:
     """
     Gets all the GDL parameters (name, type, value) of the given elements.
-        This response is paginated. If 'next_page_token' is returned, call archicad_call_tool
-        again with the same arguments and page_token set to that token to get the next page
-        of results.
-    """
 
+    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
+    and page_token set to that token to get the next page of results.
+    """
     return conn_header.core.post_tapir_command(
         command="GetGDLParametersOfElements",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
     )
+
 
 register_tool_for_dispatch(
     get_gdl_parameters_of_elements,
@@ -287,41 +269,40 @@ register_tool_for_dispatch(
     title="GetGDLParametersOfElements",
     description="Gets all the GDL parameters (name, type, value) of the given elements.",
     params_model=GetGDLParametersOfElementsParameters,
-    pagination_field="gdlParametersOfElements"
+    pagination_field="gdlParametersOfElements",
 )
 
 
 def get_relations_of_elements(conn_header: ConnHeader, params: GetRelationsOfElementsParameters) -> dict:
     """
-    Gets the type-specific relations of the given elements: endpoint and reference line connections of walls, beams and beam segments, boundary elements and boundary sections of zones, the zones on the two sides of windows, doors, skylights and curtain wall panels, and the zones connected to roofs and shells. Available from Archicad 26.
+    Gets the type-specific relations of the given elements: endpoint and reference line connections of walls, beams and
+    beam segments, boundary elements and boundary sections of zones, the zones on the two sides of windows, doors,
+    skylights and curtain wall panels, and the zones connected to roofs and shells. Available from Archicad 26.
     """
-
     return conn_header.core.post_tapir_command(
-        command="GetRelationsOfElements",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="GetRelationsOfElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
     get_relations_of_elements,
     name="elements_get_relations_of_elements",
     title="GetRelationsOfElements",
-    description="Gets the type-specific relations of the given elements: endpoint and reference line connections of walls, beams and beam segments, boundary elements and boundary sections of zones, the zones on the two sides of windows, doors, skylights and curtain wall panels, and the zones connected to roofs and shells. Available from Archicad 26.",
-    params_model=GetRelationsOfElementsParameters
+    description=(
+        "Gets the type-specific relations of the given elements: endpoint and reference line connections of walls, "
+        "beams and beam segments, boundary elements and boundary sections of zones, the zones on the two sides of "
+        "windows, doors, skylights and curtain wall panels, and the zones connected to roofs and shells. Available "
+        "from Archicad 26."
+    ),
+    params_model=GetRelationsOfElementsParameters,
 )
 
 
 def get_room_image(conn_header: ConnHeader, params: GetRoomImageParameters) -> dict:
-    """
-    Returns the room image of the given zone.
-    """
-
+    """Returns the room image of the given zone."""
     return conn_header.core.post_tapir_command(
-        command="GetRoomImage",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="GetRoomImage", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -329,43 +310,45 @@ register_tool_for_dispatch(
     name="elements_get_room_image",
     title="GetRoomImage",
     description="Returns the room image of the given zone.",
-    params_model=GetRoomImageParameters
+    params_model=GetRoomImageParameters,
 )
 
 
 def get_section_elements(conn_header: ConnHeader, params: GetSectionElementsParameters) -> dict:
     """
-    Gets the elements drawn in the given section, elevation or interior elevation databases, each with the owner element it was generated from. This is the only command that returns raw section element identifiers - every other listing command converts them to their owner - so it is the way to obtain the sectionElementId that CreateAssociativeDimensionsOnSection requires.
+    Gets the elements drawn in the given section, elevation or interior elevation databases, each with the owner element
+    it was generated from. This is the only command that returns raw section element identifiers - every other listing
+    command converts them to their owner - so it is the way to obtain the sectionElementId that
+    CreateAssociativeDimensionsOnSection requires.
     """
-
     return conn_header.core.post_tapir_command(
-        command="GetSectionElements",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="GetSectionElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
     get_section_elements,
     name="elements_get_section_elements",
     title="GetSectionElements",
-    description="Gets the elements drawn in the given section, elevation or interior elevation databases, each with the owner element it was generated from. This is the only command that returns raw section element identifiers - every other listing command converts them to their owner - so it is the way to obtain the sectionElementId that CreateAssociativeDimensionsOnSection requires.",
-    params_model=GetSectionElementsParameters
+    description=(
+        "Gets the elements drawn in the given section, elevation or interior elevation databases, each with the owner "
+        "element it was generated from. This is the only command that returns raw section element identifiers - every "
+        "other listing command converts them to their owner - so it is the way to obtain the sectionElementId that "
+        "CreateAssociativeDimensionsOnSection requires."
+    ),
+    params_model=GetSectionElementsParameters,
 )
 
 
 def get_selected_elements(conn_header: ConnHeader) -> dict:
     """
     Gets the list of the currently selected elements.
-        This response is paginated. If 'next_page_token' is returned, call archicad_call_tool
-        again with the same arguments and page_token set to that token to get the next page
-        of results.
-    """
 
-    return conn_header.core.post_tapir_command(
-        command="GetSelectedElements",
-        parameters={}
-    )
+    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
+    and page_token set to that token to get the next page of results.
+    """
+    return conn_header.core.post_tapir_command(command="GetSelectedElements", parameters={})
+
 
 register_tool_for_dispatch(
     get_selected_elements,
@@ -373,20 +356,18 @@ register_tool_for_dispatch(
     title="GetSelectedElements",
     description="Gets the list of the currently selected elements.",
     params_model=None,
-    pagination_field="elements"
+    pagination_field="elements",
 )
 
 
-def get_subelements_of_hierarchical_elements(conn_header: ConnHeader, params: GetSubelementsOfHierarchicalElementsParameters) -> dict:
-    """
-    Gets the subelements of the given hierarchical elements.
-    """
-
+def get_subelements_of_hierarchical_elements(
+    conn_header: ConnHeader, params: GetSubelementsOfHierarchicalElementsParameters
+) -> dict:
+    """Gets the subelements of the given hierarchical elements."""
     return conn_header.core.post_tapir_command(
         command="GetSubelementsOfHierarchicalElements",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
     )
-
 
 
 register_tool_for_dispatch(
@@ -394,62 +375,61 @@ register_tool_for_dispatch(
     name="elements_get_subelements_of_hierarchical_elements",
     title="GetSubelementsOfHierarchicalElements",
     description="Gets the subelements of the given hierarchical elements.",
-    params_model=GetSubelementsOfHierarchicalElementsParameters
+    params_model=GetSubelementsOfHierarchicalElementsParameters,
 )
 
 
 def get_zone_boundaries(conn_header: ConnHeader, params: GetZoneBoundariesParameters) -> dict:
     """
-    Gets the boundaries of the given Zone (connected elements, neighbour zones, etc.).
+    Gets the boundaries of the given Zones (connected elements, neighbour zones, etc.). Accepts either a single
+    zoneElementId or a list of zones. Prefer the list: the expensive boundary recalculation runs once per call, so
+    querying many Zones in one call is much faster than calling the command once per Zone.
     """
-
     return conn_header.core.post_tapir_command(
-        command="GetZoneBoundaries",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="GetZoneBoundaries", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
     get_zone_boundaries,
     name="elements_get_zone_boundaries",
     title="GetZoneBoundaries",
-    description="Gets the boundaries of the given Zone (connected elements, neighbour zones, etc.).",
-    params_model=GetZoneBoundariesParameters
+    description=(
+        "Gets the boundaries of the given Zones (connected elements, neighbour zones, etc.). Accepts either a single "
+        "zoneElementId or a list of zones. Prefer the list: the expensive boundary recalculation runs once per call, "
+        "so querying many Zones in one call is much faster than calling the command once per Zone."
+    ),
+    params_model=GetZoneBoundariesParameters,
 )
 
 
 def highlight_elements(conn_header: ConnHeader, params: HighlightElementsParameters) -> dict:
     """
-    Highlights the elements given in the elements array. In case of empty elements array removes all previously set highlights.
+    Highlights the elements given in the elements array. In case of empty elements array removes all previously set
+    highlights.
     """
-
     return conn_header.core.post_tapir_command(
-        command="HighlightElements",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="HighlightElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
     highlight_elements,
     name="elements_highlight_elements",
     title="HighlightElements",
-    description="Highlights the elements given in the elements array. In case of empty elements array removes all previously set highlights.",
-    params_model=HighlightElementsParameters
+    description=(
+        "Highlights the elements given in the elements array. In case of empty elements array removes all previously "
+        "set highlights."
+    ),
+    params_model=HighlightElementsParameters,
 )
 
 
 def lock_elements(conn_header: ConnHeader, params: LockElementsParameters) -> dict:
-    """
-    Locks the given elements. Manual lock, not teamwork!
-    """
-
+    """Locks the given elements. Manual lock, not teamwork!"""
     return conn_header.core.post_tapir_command(
-        command="LockElements",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="LockElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -457,20 +437,15 @@ register_tool_for_dispatch(
     name="elements_lock_elements",
     title="LockElements",
     description="Locks the given elements. Manual lock, not teamwork!",
-    params_model=LockElementsParameters
+    params_model=LockElementsParameters,
 )
 
 
 def move_elements(conn_header: ConnHeader, params: MoveElementsParameters) -> dict:
-    """
-    Moves elements with a given vector.
-    """
-
+    """Moves elements with a given vector."""
     return conn_header.core.post_tapir_command(
-        command="MoveElements",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="MoveElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -478,20 +453,18 @@ register_tool_for_dispatch(
     name="elements_move_elements",
     title="MoveElements",
     description="Moves elements with a given vector.",
-    params_model=MoveElementsParameters
+    params_model=MoveElementsParameters,
 )
 
 
-def remove_element_notification_client(conn_header: ConnHeader, params: RemoveElementNotificationClientParameters) -> dict:
-    """
-    Removes an element notification client.
-    """
-
+def remove_element_notification_client(
+    conn_header: ConnHeader, params: RemoveElementNotificationClientParameters
+) -> dict:
+    """Removes an element notification client."""
     return conn_header.core.post_tapir_command(
         command="RemoveElementNotificationClient",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
     )
-
 
 
 register_tool_for_dispatch(
@@ -499,20 +472,15 @@ register_tool_for_dispatch(
     name="elements_remove_element_notification_client",
     title="RemoveElementNotificationClient",
     description="Removes an element notification client.",
-    params_model=RemoveElementNotificationClientParameters
+    params_model=RemoveElementNotificationClientParameters,
 )
 
 
 def rotate_elements(conn_header: ConnHeader, params: RotateElementsParameters) -> dict:
-    """
-    Rotates elements around a reference point.
-    """
-
+    """Rotates elements around a reference point."""
     return conn_header.core.post_tapir_command(
-        command="RotateElements",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="RotateElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -520,20 +488,15 @@ register_tool_for_dispatch(
     name="elements_rotate_elements",
     title="RotateElements",
     description="Rotates elements around a reference point.",
-    params_model=RotateElementsParameters
+    params_model=RotateElementsParameters,
 )
 
 
 def set_details_of_elements(conn_header: ConnHeader, params: SetDetailsOfElementsParameters) -> dict:
-    """
-    Sets the details of the given elements (floor, layer, order etc).
-    """
-
+    """Sets the details of the given elements (floor, layer, order etc)."""
     return conn_header.core.post_tapir_command(
-        command="SetDetailsOfElements",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="SetDetailsOfElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -541,20 +504,16 @@ register_tool_for_dispatch(
     name="elements_set_details_of_elements",
     title="SetDetailsOfElements",
     description="Sets the details of the given elements (floor, layer, order etc).",
-    params_model=SetDetailsOfElementsParameters
+    params_model=SetDetailsOfElementsParameters,
 )
 
 
 def set_element_notification_client(conn_header: ConnHeader, params: SetElementNotificationClientParameters) -> dict:
-    """
-    Sets up a new notification client to receive element events.
-    """
-
+    """Sets up a new notification client to receive element events."""
     return conn_header.core.post_tapir_command(
         command="SetElementNotificationClient",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
     )
-
 
 
 register_tool_for_dispatch(
@@ -562,20 +521,16 @@ register_tool_for_dispatch(
     name="elements_set_element_notification_client",
     title="SetElementNotificationClient",
     description="Sets up a new notification client to receive element events.",
-    params_model=SetElementNotificationClientParameters
+    params_model=SetElementNotificationClientParameters,
 )
 
 
 def set_gdl_parameters_of_elements(conn_header: ConnHeader, params: SetGDLParametersOfElementsParameters) -> dict:
-    """
-    Sets the given GDL parameters of the given elements.
-    """
-
+    """Sets the given GDL parameters of the given elements."""
     return conn_header.core.post_tapir_command(
         command="SetGDLParametersOfElements",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
     )
-
 
 
 register_tool_for_dispatch(
@@ -583,20 +538,15 @@ register_tool_for_dispatch(
     name="elements_set_gdl_parameters_of_elements",
     title="SetGDLParametersOfElements",
     description="Sets the given GDL parameters of the given elements.",
-    params_model=SetGDLParametersOfElementsParameters
+    params_model=SetGDLParametersOfElementsParameters,
 )
 
 
 def unlock_elements(conn_header: ConnHeader, params: UnlockElementsParameters) -> dict:
-    """
-    Unlocks the given elements. Manual lock, not teamwork!
-    """
-
+    """Unlocks the given elements. Manual lock, not teamwork!"""
     return conn_header.core.post_tapir_command(
-        command="UnlockElements",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="UnlockElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -604,27 +554,23 @@ register_tool_for_dispatch(
     name="elements_unlock_elements",
     title="UnlockElements",
     description="Unlocks the given elements. Manual lock, not teamwork!",
-    params_model=UnlockElementsParameters
+    params_model=UnlockElementsParameters,
 )
 
 
 def update_zones(conn_header: ConnHeader, params: UpdateZonesParameters) -> dict:
-    """
-    Updates all Zones (recalculates their geometry, updates their Zone Stamps and the connected elements).
-    """
-
+    """Updates all Zones (recalculates their geometry, updates their Zone Stamps and the connected elements)."""
     return conn_header.core.post_tapir_command(
-        command="UpdateZones",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="UpdateZones", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
     update_zones,
     name="elements_update_zones",
     title="UpdateZones",
-    description="Updates all Zones (recalculates their geometry, updates their Zone Stamps and the connected elements).",
-    params_model=UpdateZonesParameters
+    description=(
+        "Updates all Zones (recalculates their geometry, updates their Zone Stamps and the connected elements)."
+    ),
+    params_model=UpdateZonesParameters,
 )
-

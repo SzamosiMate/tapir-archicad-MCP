@@ -10,16 +10,12 @@ from multiconn_archicad.models.tapir.commands import (
     SetClassificationsOfElementsParameters,
 )
 
+
 def create_classification_items(conn_header: ConnHeader, params: CreateClassificationItemsParameters) -> dict:
-    """
-    Creates Classification Items in the given Classification Systems based on the given parameters.
-    """
-
+    """Creates Classification Items in the given Classification Systems based on the given parameters."""
     return conn_header.core.post_tapir_command(
-        command="CreateClassificationItems",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="CreateClassificationItems", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -27,20 +23,16 @@ register_tool_for_dispatch(
     name="classifications_create_classification_items",
     title="CreateClassificationItems",
     description="Creates Classification Items in the given Classification Systems based on the given parameters.",
-    params_model=CreateClassificationItemsParameters
+    params_model=CreateClassificationItemsParameters,
 )
 
 
 def create_classification_systems(conn_header: ConnHeader, params: CreateClassificationSystemsParameters) -> dict:
-    """
-    Creates Classification Systems including Classification Items based on the given parameters.
-    """
-
+    """Creates Classification Systems including Classification Items based on the given parameters."""
     return conn_header.core.post_tapir_command(
         command="CreateClassificationSystems",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
     )
-
 
 
 register_tool_for_dispatch(
@@ -48,20 +40,15 @@ register_tool_for_dispatch(
     name="classifications_create_classification_systems",
     title="CreateClassificationSystems",
     description="Creates Classification Systems including Classification Items based on the given parameters.",
-    params_model=CreateClassificationSystemsParameters
+    params_model=CreateClassificationSystemsParameters,
 )
 
 
 def delete_classification_items(conn_header: ConnHeader, params: DeleteClassificationItemsParameters) -> dict:
-    """
-    Deletes the given Classification Items.
-    """
-
+    """Deletes the given Classification Items."""
     return conn_header.core.post_tapir_command(
-        command="DeleteClassificationItems",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="DeleteClassificationItems", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -69,20 +56,16 @@ register_tool_for_dispatch(
     name="classifications_delete_classification_items",
     title="DeleteClassificationItems",
     description="Deletes the given Classification Items.",
-    params_model=DeleteClassificationItemsParameters
+    params_model=DeleteClassificationItemsParameters,
 )
 
 
 def delete_classification_systems(conn_header: ConnHeader, params: DeleteClassificationSystemsParameters) -> dict:
-    """
-    Deletes the given Classification Systems.
-    """
-
+    """Deletes the given Classification Systems."""
     return conn_header.core.post_tapir_command(
         command="DeleteClassificationSystems",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
     )
-
 
 
 register_tool_for_dispatch(
@@ -90,47 +73,51 @@ register_tool_for_dispatch(
     name="classifications_delete_classification_systems",
     title="DeleteClassificationSystems",
     description="Deletes the given Classification Systems.",
-    params_model=DeleteClassificationSystemsParameters
+    params_model=DeleteClassificationSystemsParameters,
 )
 
 
 def get_classifications_of_elements(conn_header: ConnHeader, params: GetClassificationsOfElementsParameters) -> dict:
     """
-    Returns the classification of the given elements in the given classification systems. It works for subelements of hierarchal elements also.
+    Returns the classification of the given elements in the given classification systems. It works for subelements of
+    hierarchal elements also.
     """
-
     return conn_header.core.post_tapir_command(
         command="GetClassificationsOfElements",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
     )
-
 
 
 register_tool_for_dispatch(
     get_classifications_of_elements,
     name="classifications_get_classifications_of_elements",
     title="GetClassificationsOfElements",
-    description="Returns the classification of the given elements in the given classification systems. It works for subelements of hierarchal elements also.",
-    params_model=GetClassificationsOfElementsParameters
+    description=(
+        "Returns the classification of the given elements in the given classification systems. It works for "
+        "subelements of hierarchal elements also."
+    ),
+    params_model=GetClassificationsOfElementsParameters,
 )
 
 
 def set_classifications_of_elements(conn_header: ConnHeader, params: SetClassificationsOfElementsParameters) -> dict:
     """
-    Sets the classifications of elements. In order to set the classification of an element to unclassified, omit the classificationItemId field. It works for subelements of hierarchal elements also.
+    Sets the classifications of elements. In order to set the classification of an element to unclassified, omit the
+    classificationItemId field. It works for subelements of hierarchal elements also.
     """
-
     return conn_header.core.post_tapir_command(
         command="SetClassificationsOfElements",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
     )
-
 
 
 register_tool_for_dispatch(
     set_classifications_of_elements,
     name="classifications_set_classifications_of_elements",
     title="SetClassificationsOfElements",
-    description="Sets the classifications of elements. In order to set the classification of an element to unclassified, omit the classificationItemId field. It works for subelements of hierarchal elements also.",
-    params_model=SetClassificationsOfElementsParameters
+    description=(
+        "Sets the classifications of elements. In order to set the classification of an element to unclassified, omit "
+        "the classificationItemId field. It works for subelements of hierarchal elements also."
+    ),
+    params_model=SetClassificationsOfElementsParameters,
 )

@@ -3,20 +3,19 @@ from multiconn_archicad.conn_header import ConnHeader
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
 from multiconn_archicad.models.tapir.commands import (
     CreateSolidElementLinksParameters,
+    GetElementTrimsParameters,
     GetSolidElementLinksParameters,
+    RemoveElementTrimsParameters,
     RemoveSolidElementLinksParameters,
+    TrimElementsParameters,
 )
 
+
 def create_solid_element_links(conn_header: ConnHeader, params: CreateSolidElementLinksParameters) -> dict:
-    """
-    Creates solid element operation links between target and operator elements.
-    """
-
+    """Creates solid element operation links between target and operator elements."""
     return conn_header.core.post_tapir_command(
-        command="CreateSolidElementLinks",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="CreateSolidElementLinks", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -24,41 +23,65 @@ register_tool_for_dispatch(
     name="solid_ops__create_solid_element_links",
     title="CreateSolidElementLinks",
     description="Creates solid element operation links between target and operator elements.",
-    params_model=CreateSolidElementLinksParameters
+    params_model=CreateSolidElementLinksParameters,
+)
+
+
+def get_element_trims(conn_header: ConnHeader, params: GetElementTrimsParameters) -> dict:
+    """Which roofs and shells trim each queried element, with the trim type, and which elements it trims."""
+    return conn_header.core.post_tapir_command(
+        command="GetElementTrims", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    get_element_trims,
+    name="solid_ops__get_element_trims",
+    title="GetElementTrims",
+    description=("Which roofs and shells trim each queried element, with the trim type, and which elements it trims."),
+    params_model=GetElementTrimsParameters,
 )
 
 
 def get_solid_element_links(conn_header: ConnHeader, params: GetSolidElementLinksParameters) -> dict:
-    """
-    Returns solid element operation links for each queried element, grouped by role (target or operator).
-    """
-
+    """Returns solid element operation links for each queried element, grouped by role (target or operator)."""
     return conn_header.core.post_tapir_command(
-        command="GetSolidElementLinks",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="GetSolidElementLinks", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
     get_solid_element_links,
     name="solid_ops__get_solid_element_links",
     title="GetSolidElementLinks",
-    description="Returns solid element operation links for each queried element, grouped by role (target or operator).",
-    params_model=GetSolidElementLinksParameters
+    description=(
+        "Returns solid element operation links for each queried element, grouped by role (target or operator)."
+    ),
+    params_model=GetSolidElementLinksParameters,
+)
+
+
+def remove_element_trims(conn_header: ConnHeader, params: RemoveElementTrimsParameters) -> dict:
+    """Removes the trim between an element and the roof or shell trimming it."""
+    return conn_header.core.post_tapir_command(
+        command="RemoveElementTrims", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    remove_element_trims,
+    name="solid_ops__remove_element_trims",
+    title="RemoveElementTrims",
+    description="Removes the trim between an element and the roof or shell trimming it.",
+    params_model=RemoveElementTrimsParameters,
 )
 
 
 def remove_solid_element_links(conn_header: ConnHeader, params: RemoveSolidElementLinksParameters) -> dict:
-    """
-    Removes solid element operation links between target and operator elements.
-    """
-
+    """Removes solid element operation links between target and operator elements."""
     return conn_header.core.post_tapir_command(
-        command="RemoveSolidElementLinks",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="RemoveSolidElementLinks", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -66,5 +89,27 @@ register_tool_for_dispatch(
     name="solid_ops__remove_solid_element_links",
     title="RemoveSolidElementLinks",
     description="Removes solid element operation links between target and operator elements.",
-    params_model=RemoveSolidElementLinksParameters
+    params_model=RemoveSolidElementLinksParameters,
+)
+
+
+def trim_elements(conn_header: ConnHeader, params: TrimElementsParameters) -> dict:
+    """
+    Trims construction elements with a roof or shell: the roofs and shells in the list, or one given trimming element
+    with a trim type.
+    """
+    return conn_header.core.post_tapir_command(
+        command="TrimElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    trim_elements,
+    name="solid_ops__trim_elements",
+    title="TrimElements",
+    description=(
+        "Trims construction elements with a roof or shell: the roofs and shells in the list, or one given trimming "
+        "element with a trim type."
+    ),
+    params_model=TrimElementsParameters,
 )

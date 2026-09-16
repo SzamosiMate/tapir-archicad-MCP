@@ -30,16 +30,12 @@ from multiconn_archicad.models.tapir.commands import (
     CreateZonesParameters,
 )
 
+
 def create_arcs(conn_header: ConnHeader, params: CreateArcsParameters) -> dict:
-    """
-    Creates Arc elements based on the given parameters.
-    """
-
+    """Creates Arc elements based on the given parameters."""
     return conn_header.core.post_tapir_command(
-        command="CreateArcs",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="CreateArcs", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -47,20 +43,16 @@ register_tool_for_dispatch(
     name="elements_create_arcs",
     title="CreateArcs",
     description="Creates Arc elements based on the given parameters.",
-    params_model=CreateArcsParameters
+    params_model=CreateArcsParameters,
 )
 
 
 def create_associative_dimensions(conn_header: ConnHeader, params: CreateAssociativeDimensionsParameters) -> dict:
-    """
-    Creates associative linear dimensions from explicit witness point references.
-    """
-
+    """Creates associative linear dimensions from explicit witness point references."""
     return conn_header.core.post_tapir_command(
         command="CreateAssociativeDimensions",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
     )
-
 
 
 register_tool_for_dispatch(
@@ -68,41 +60,42 @@ register_tool_for_dispatch(
     name="elements_create_associative_dimensions",
     title="CreateAssociativeDimensions",
     description="Creates associative linear dimensions from explicit witness point references.",
-    params_model=CreateAssociativeDimensionsParameters
+    params_model=CreateAssociativeDimensionsParameters,
 )
 
 
-def create_associative_dimensions_on_section(conn_header: ConnHeader, params: CreateAssociativeDimensionsOnSectionParameters) -> dict:
+def create_associative_dimensions_on_section(
+    conn_header: ConnHeader, params: CreateAssociativeDimensionsOnSectionParameters
+) -> dict:
     """
     Creates associative linear dimensions on section elements using common wall, slab, beam, column and opening presets.
+    The preset points of multiple section elements can be merged into one continuous dimension chain via
+    sectionElementIds.
     """
-
     return conn_header.core.post_tapir_command(
         command="CreateAssociativeDimensionsOnSection",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
     )
-
 
 
 register_tool_for_dispatch(
     create_associative_dimensions_on_section,
     name="elements_create_associative_dimensions_on_section",
     title="CreateAssociativeDimensionsOnSection",
-    description="Creates associative linear dimensions on section elements using common wall, slab, beam, column and opening presets.",
-    params_model=CreateAssociativeDimensionsOnSectionParameters
+    description=(
+        "Creates associative linear dimensions on section elements using common wall, slab, beam, column and opening "
+        "presets. The preset points of multiple section elements can be merged into one continuous dimension chain via "
+        "sectionElementIds."
+    ),
+    params_model=CreateAssociativeDimensionsOnSectionParameters,
 )
 
 
 def create_beams(conn_header: ConnHeader, params: CreateBeamsParameters) -> dict:
-    """
-    Creates Beam elements based on the given parameters.
-    """
-
+    """Creates Beam elements based on the given parameters."""
     return conn_header.core.post_tapir_command(
-        command="CreateBeams",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="CreateBeams", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -110,20 +103,15 @@ register_tool_for_dispatch(
     name="elements_create_beams",
     title="CreateBeams",
     description="Creates Beam elements based on the given parameters.",
-    params_model=CreateBeamsParameters
+    params_model=CreateBeamsParameters,
 )
 
 
 def create_circles(conn_header: ConnHeader, params: CreateCirclesParameters) -> dict:
-    """
-    Creates Circle elements based on the given parameters.
-    """
-
+    """Creates Circle elements based on the given parameters."""
     return conn_header.core.post_tapir_command(
-        command="CreateCircles",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="CreateCircles", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -131,20 +119,15 @@ register_tool_for_dispatch(
     name="elements_create_circles",
     title="CreateCircles",
     description="Creates Circle elements based on the given parameters.",
-    params_model=CreateCirclesParameters
+    params_model=CreateCirclesParameters,
 )
 
 
 def create_columns(conn_header: ConnHeader, params: CreateColumnsParameters) -> dict:
-    """
-    Creates Column elements based on the given parameters.
-    """
-
+    """Creates Column elements based on the given parameters."""
     return conn_header.core.post_tapir_command(
-        command="CreateColumns",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="CreateColumns", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -152,20 +135,15 @@ register_tool_for_dispatch(
     name="elements_create_columns",
     title="CreateColumns",
     description="Creates Column elements based on the given parameters.",
-    params_model=CreateColumnsParameters
+    params_model=CreateColumnsParameters,
 )
 
 
 def create_doors(conn_header: ConnHeader, params: CreateDoorsParameters) -> dict:
-    """
-    Creates Door elements in host walls based on the given parameters.
-    """
-
+    """Creates Door elements in host walls based on the given parameters."""
     return conn_header.core.post_tapir_command(
-        command="CreateDoors",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="CreateDoors", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -173,20 +151,15 @@ register_tool_for_dispatch(
     name="elements_create_doors",
     title="CreateDoors",
     description="Creates Door elements in host walls based on the given parameters.",
-    params_model=CreateDoorsParameters
+    params_model=CreateDoorsParameters,
 )
 
 
 def create_hatches(conn_header: ConnHeader, params: CreateHatchesParameters) -> dict:
-    """
-    Creates Hatch elements based on the given parameters.
-    """
-
+    """Creates Hatch elements based on the given parameters."""
     return conn_header.core.post_tapir_command(
-        command="CreateHatches",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="CreateHatches", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -194,20 +167,15 @@ register_tool_for_dispatch(
     name="elements_create_hatches",
     title="CreateHatches",
     description="Creates Hatch elements based on the given parameters.",
-    params_model=CreateHatchesParameters
+    params_model=CreateHatchesParameters,
 )
 
 
 def create_hotspots(conn_header: ConnHeader, params: CreateHotspotsParameters) -> dict:
-    """
-    Creates Hotspot elements based on the given parameters.
-    """
-
+    """Creates Hotspot elements based on the given parameters."""
     return conn_header.core.post_tapir_command(
-        command="CreateHotspots",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="CreateHotspots", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -215,20 +183,15 @@ register_tool_for_dispatch(
     name="elements_create_hotspots",
     title="CreateHotspots",
     description="Creates Hotspot elements based on the given parameters.",
-    params_model=CreateHotspotsParameters
+    params_model=CreateHotspotsParameters,
 )
 
 
 def create_labels(conn_header: ConnHeader, params: CreateLabelsParameters) -> dict:
-    """
-    Creates Label elements based on the given parameters.
-    """
-
+    """Creates Label elements based on the given parameters."""
     return conn_header.core.post_tapir_command(
-        command="CreateLabels",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="CreateLabels", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -236,20 +199,15 @@ register_tool_for_dispatch(
     name="elements_create_labels",
     title="CreateLabels",
     description="Creates Label elements based on the given parameters.",
-    params_model=CreateLabelsParameters
+    params_model=CreateLabelsParameters,
 )
 
 
 def create_lamps(conn_header: ConnHeader, params: CreateLampsParameters) -> dict:
-    """
-    Creates Lamp elements based on the given parameters.
-    """
-
+    """Creates Lamp elements based on the given parameters."""
     return conn_header.core.post_tapir_command(
-        command="CreateLamps",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="CreateLamps", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -257,20 +215,15 @@ register_tool_for_dispatch(
     name="elements_create_lamps",
     title="CreateLamps",
     description="Creates Lamp elements based on the given parameters.",
-    params_model=CreateLampsParameters
+    params_model=CreateLampsParameters,
 )
 
 
 def create_line_elements(conn_header: ConnHeader, params: CreateLineElementsParameters) -> dict:
-    """
-    Creates Line elements based on the given parameters.
-    """
-
+    """Creates Line elements based on the given parameters."""
     return conn_header.core.post_tapir_command(
-        command="CreateLineElements",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="CreateLineElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -278,20 +231,15 @@ register_tool_for_dispatch(
     name="elements_create_line_elements",
     title="CreateLineElements",
     description="Creates Line elements based on the given parameters.",
-    params_model=CreateLineElementsParameters
+    params_model=CreateLineElementsParameters,
 )
 
 
 def create_meshes(conn_header: ConnHeader, params: CreateMeshesParameters) -> dict:
-    """
-    Creates Mesh elements based on the given parameters.
-    """
-
+    """Creates Mesh elements based on the given parameters."""
     return conn_header.core.post_tapir_command(
-        command="CreateMeshes",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="CreateMeshes", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -299,20 +247,15 @@ register_tool_for_dispatch(
     name="elements_create_meshes",
     title="CreateMeshes",
     description="Creates Mesh elements based on the given parameters.",
-    params_model=CreateMeshesParameters
+    params_model=CreateMeshesParameters,
 )
 
 
 def create_morphs(conn_header: ConnHeader, params: CreateMorphsParameters) -> dict:
-    """
-    Creates Morph elements from simple box definitions.
-    """
-
+    """Creates Morph elements from simple box definitions."""
     return conn_header.core.post_tapir_command(
-        command="CreateMorphs",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="CreateMorphs", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -320,20 +263,15 @@ register_tool_for_dispatch(
     name="elements_create_morphs",
     title="CreateMorphs",
     description="Creates Morph elements from simple box definitions.",
-    params_model=CreateMorphsParameters
+    params_model=CreateMorphsParameters,
 )
 
 
 def create_objects(conn_header: ConnHeader, params: CreateObjectsParameters) -> dict:
-    """
-    Creates Object elements based on the given parameters.
-    """
-
+    """Creates Object elements based on the given parameters."""
     return conn_header.core.post_tapir_command(
-        command="CreateObjects",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="CreateObjects", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -341,20 +279,15 @@ register_tool_for_dispatch(
     name="elements_create_objects",
     title="CreateObjects",
     description="Creates Object elements based on the given parameters.",
-    params_model=CreateObjectsParameters
+    params_model=CreateObjectsParameters,
 )
 
 
 def create_openings(conn_header: ConnHeader, params: CreateOpeningsParameters) -> dict:
-    """
-    Creates Opening elements in the given host elements.
-    """
-
+    """Creates Opening elements in the given host elements."""
     return conn_header.core.post_tapir_command(
-        command="CreateOpenings",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="CreateOpenings", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -362,20 +295,15 @@ register_tool_for_dispatch(
     name="elements_create_openings",
     title="CreateOpenings",
     description="Creates Opening elements in the given host elements.",
-    params_model=CreateOpeningsParameters
+    params_model=CreateOpeningsParameters,
 )
 
 
 def create_polylines(conn_header: ConnHeader, params: CreatePolylinesParameters) -> dict:
-    """
-    Creates Polyline elements based on the given parameters.
-    """
-
+    """Creates Polyline elements based on the given parameters."""
     return conn_header.core.post_tapir_command(
-        command="CreatePolylines",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="CreatePolylines", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -383,41 +311,37 @@ register_tool_for_dispatch(
     name="elements_create_polylines",
     title="CreatePolylines",
     description="Creates Polyline elements based on the given parameters.",
-    params_model=CreatePolylinesParameters
+    params_model=CreatePolylinesParameters,
 )
 
 
 def create_roofs(conn_header: ConnHeader, params: CreateRoofsParameters) -> dict:
     """
-    Creates Roof elements based on footprint, level and roof profile data. Creates a multi-plane roof by default; pass 'pivotLine' (and optionally 'angle') to create a single-plane roof instead.
+    Creates Roof elements based on footprint, level and roof profile data. Creates a multi-plane roof by default; pass
+    'pivotLine' (and optionally 'angle') to create a single-plane roof instead.
     """
-
     return conn_header.core.post_tapir_command(
-        command="CreateRoofs",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="CreateRoofs", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
     create_roofs,
     name="elements_create_roofs",
     title="CreateRoofs",
-    description="Creates Roof elements based on footprint, level and roof profile data. Creates a multi-plane roof by default; pass 'pivotLine' (and optionally 'angle') to create a single-plane roof instead.",
-    params_model=CreateRoofsParameters
+    description=(
+        "Creates Roof elements based on footprint, level and roof profile data. Creates a multi-plane roof by default; "
+        "pass 'pivotLine' (and optionally 'angle') to create a single-plane roof instead."
+    ),
+    params_model=CreateRoofsParameters,
 )
 
 
 def create_slabs(conn_header: ConnHeader, params: CreateSlabsParameters) -> dict:
-    """
-    Creates Slab elements based on the given parameters.
-    """
-
+    """Creates Slab elements based on the given parameters."""
     return conn_header.core.post_tapir_command(
-        command="CreateSlabs",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="CreateSlabs", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -425,20 +349,15 @@ register_tool_for_dispatch(
     name="elements_create_slabs",
     title="CreateSlabs",
     description="Creates Slab elements based on the given parameters.",
-    params_model=CreateSlabsParameters
+    params_model=CreateSlabsParameters,
 )
 
 
 def create_splines(conn_header: ConnHeader, params: CreateSplinesParameters) -> dict:
-    """
-    Creates Spline elements based on the given parameters.
-    """
-
+    """Creates Spline elements based on the given parameters."""
     return conn_header.core.post_tapir_command(
-        command="CreateSplines",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="CreateSplines", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -446,20 +365,15 @@ register_tool_for_dispatch(
     name="elements_create_splines",
     title="CreateSplines",
     description="Creates Spline elements based on the given parameters.",
-    params_model=CreateSplinesParameters
+    params_model=CreateSplinesParameters,
 )
 
 
 def create_stairs(conn_header: ConnHeader, params: CreateStairsParameters) -> dict:
-    """
-    Creates Stair elements based on the given baseline and parameters.
-    """
-
+    """Creates Stair elements based on the given baseline and parameters."""
     return conn_header.core.post_tapir_command(
-        command="CreateStairs",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="CreateStairs", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -467,20 +381,15 @@ register_tool_for_dispatch(
     name="elements_create_stairs",
     title="CreateStairs",
     description="Creates Stair elements based on the given baseline and parameters.",
-    params_model=CreateStairsParameters
+    params_model=CreateStairsParameters,
 )
 
 
 def create_texts(conn_header: ConnHeader, params: CreateTextsParameters) -> dict:
-    """
-    Creates standalone Text elements based on the given parameters.
-    """
-
+    """Creates standalone Text elements based on the given parameters."""
     return conn_header.core.post_tapir_command(
-        command="CreateTexts",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="CreateTexts", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -488,20 +397,16 @@ register_tool_for_dispatch(
     name="elements_create_texts",
     title="CreateTexts",
     description="Creates standalone Text elements based on the given parameters.",
-    params_model=CreateTextsParameters
+    params_model=CreateTextsParameters,
 )
 
 
 def create_wall_thickness_dimensions(conn_header: ConnHeader, params: CreateWallThicknessDimensionsParameters) -> dict:
-    """
-    Creates associative wall thickness dimensions for the given walls.
-    """
-
+    """Creates associative wall thickness dimensions for the given walls."""
     return conn_header.core.post_tapir_command(
         command="CreateWallThicknessDimensions",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
     )
-
 
 
 register_tool_for_dispatch(
@@ -509,20 +414,15 @@ register_tool_for_dispatch(
     name="elements_create_wall_thickness_dimensions",
     title="CreateWallThicknessDimensions",
     description="Creates associative wall thickness dimensions for the given walls.",
-    params_model=CreateWallThicknessDimensionsParameters
+    params_model=CreateWallThicknessDimensionsParameters,
 )
 
 
 def create_walls(conn_header: ConnHeader, params: CreateWallsParameters) -> dict:
-    """
-    Creates Wall elements based on the given parameters.
-    """
-
+    """Creates Wall elements based on the given parameters."""
     return conn_header.core.post_tapir_command(
-        command="CreateWalls",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="CreateWalls", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -530,20 +430,15 @@ register_tool_for_dispatch(
     name="elements_create_walls",
     title="CreateWalls",
     description="Creates Wall elements based on the given parameters.",
-    params_model=CreateWallsParameters
+    params_model=CreateWallsParameters,
 )
 
 
 def create_windows(conn_header: ConnHeader, params: CreateWindowsParameters) -> dict:
-    """
-    Creates Window elements in host walls based on the given parameters.
-    """
-
+    """Creates Window elements in host walls based on the given parameters."""
     return conn_header.core.post_tapir_command(
-        command="CreateWindows",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="CreateWindows", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -551,20 +446,15 @@ register_tool_for_dispatch(
     name="elements_create_windows",
     title="CreateWindows",
     description="Creates Window elements in host walls based on the given parameters.",
-    params_model=CreateWindowsParameters
+    params_model=CreateWindowsParameters,
 )
 
 
 def create_zones(conn_header: ConnHeader, params: CreateZonesParameters) -> dict:
-    """
-    Creates Zone elements based on the given parameters.
-    """
-
+    """Creates Zone elements based on the given parameters."""
     return conn_header.core.post_tapir_command(
-        command="CreateZones",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="CreateZones", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -572,5 +462,5 @@ register_tool_for_dispatch(
     name="elements_create_zones",
     title="CreateZones",
     description="Creates Zone elements based on the given parameters.",
-    params_model=CreateZonesParameters
+    params_model=CreateZonesParameters,
 )

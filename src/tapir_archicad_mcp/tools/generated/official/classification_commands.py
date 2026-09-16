@@ -8,16 +8,10 @@ from multiconn_archicad.models.official.commands import (
     GetDetailsOfClassificationItemsParameters,
 )
 
+
 def get_all_classification_systems(conn_header: ConnHeader) -> dict:
-    """
-    Returns the list of available classification systems.
-    """
-
-    return conn_header.core.post_command(
-        command="API.GetAllClassificationSystems",
-        parameters={}
-    )
-
+    """Returns the list of available classification systems."""
+    return conn_header.core.post_command(command="API.GetAllClassificationSystems", parameters={})
 
 
 register_tool_for_dispatch(
@@ -25,20 +19,16 @@ register_tool_for_dispatch(
     name="classifications_get_all_classification_systems",
     title="GetAllClassificationSystems",
     description="Returns the list of available classification systems.",
-    params_model=None
+    params_model=None,
 )
 
 
 def get_all_classifications_in_system(conn_header: ConnHeader, params: GetAllClassificationsInSystemParameters) -> dict:
-    """
-    Returns the tree of classifications in the given classification system.
-    """
-
+    """Returns the tree of classifications in the given classification system."""
     return conn_header.core.post_command(
         command="API.GetAllClassificationsInSystem",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
     )
-
 
 
 register_tool_for_dispatch(
@@ -46,20 +36,18 @@ register_tool_for_dispatch(
     name="classifications_get_all_classifications_in_system",
     title="GetAllClassificationsInSystem",
     description="Returns the tree of classifications in the given classification system.",
-    params_model=GetAllClassificationsInSystemParameters
+    params_model=GetAllClassificationsInSystemParameters,
 )
 
 
-def get_classification_item_availability(conn_header: ConnHeader, params: GetClassificationItemAvailabilityParameters) -> dict:
-    """
-    Returns the ids of property definitions available for a given classification item.
-    """
-
+def get_classification_item_availability(
+    conn_header: ConnHeader, params: GetClassificationItemAvailabilityParameters
+) -> dict:
+    """Returns the ids of property definitions available for a given classification item."""
     return conn_header.core.post_command(
         command="API.GetClassificationItemAvailability",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
     )
-
 
 
 register_tool_for_dispatch(
@@ -67,20 +55,13 @@ register_tool_for_dispatch(
     name="classifications_get_classification_item_availability",
     title="GetClassificationItemAvailability",
     description="Returns the ids of property definitions available for a given classification item.",
-    params_model=GetClassificationItemAvailabilityParameters
+    params_model=GetClassificationItemAvailabilityParameters,
 )
 
 
 def get_classification_system_ids(conn_header: ConnHeader) -> dict:
-    """
-    Returns the list of available classification systems.
-    """
-
-    return conn_header.core.post_command(
-        command="API.GetClassificationSystemIds",
-        parameters={}
-    )
-
+    """Returns the list of available classification systems."""
+    return conn_header.core.post_command(command="API.GetClassificationSystemIds", parameters={})
 
 
 register_tool_for_dispatch(
@@ -88,20 +69,16 @@ register_tool_for_dispatch(
     name="classifications_get_classification_system_ids",
     title="GetClassificationSystemIds",
     description="Returns the list of available classification systems.",
-    params_model=None
+    params_model=None,
 )
 
 
 def get_classification_systems(conn_header: ConnHeader, params: GetClassificationSystemsParameters) -> dict:
-    """
-    Returns the details of classification systems identified by their GUIDs.
-    """
-
+    """Returns the details of classification systems identified by their GUIDs."""
     return conn_header.core.post_command(
         command="API.GetClassificationSystems",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
     )
-
 
 
 register_tool_for_dispatch(
@@ -109,20 +86,18 @@ register_tool_for_dispatch(
     name="classifications_get_classification_systems",
     title="GetClassificationSystems",
     description="Returns the details of classification systems identified by their GUIDs.",
-    params_model=GetClassificationSystemsParameters
+    params_model=GetClassificationSystemsParameters,
 )
 
 
-def get_details_of_classification_items(conn_header: ConnHeader, params: GetDetailsOfClassificationItemsParameters) -> dict:
-    """
-    Returns the details of classification items.
-    """
-
+def get_details_of_classification_items(
+    conn_header: ConnHeader, params: GetDetailsOfClassificationItemsParameters
+) -> dict:
+    """Returns the details of classification items."""
     return conn_header.core.post_command(
         command="API.GetDetailsOfClassificationItems",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
     )
-
 
 
 register_tool_for_dispatch(
@@ -130,5 +105,5 @@ register_tool_for_dispatch(
     name="classifications_get_details_of_classification_items",
     title="GetDetailsOfClassificationItems",
     description="Returns the details of classification items.",
-    params_model=GetDetailsOfClassificationItemsParameters
+    params_model=GetDetailsOfClassificationItemsParameters,
 )

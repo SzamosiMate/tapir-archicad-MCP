@@ -14,16 +14,15 @@ from multiconn_archicad.models.tapir.commands import (
     UpdateFavoritesFromElementsParameters,
 )
 
-def apply_favorites_to_element_defaults(conn_header: ConnHeader, params: ApplyFavoritesToElementDefaultsParameters) -> dict:
-    """
-    Apply the given favorites to element defaults.
-    """
 
+def apply_favorites_to_element_defaults(
+    conn_header: ConnHeader, params: ApplyFavoritesToElementDefaultsParameters
+) -> dict:
+    """Apply the given favorites to element defaults."""
     return conn_header.core.post_tapir_command(
         command="ApplyFavoritesToElementDefaults",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
     )
-
 
 
 register_tool_for_dispatch(
@@ -31,41 +30,45 @@ register_tool_for_dispatch(
     name="favorites_apply_favorites_to_element_defaults",
     title="ApplyFavoritesToElementDefaults",
     description="Apply the given favorites to element defaults.",
-    params_model=ApplyFavoritesToElementDefaultsParameters
+    params_model=ApplyFavoritesToElementDefaultsParameters,
 )
 
 
 def apply_favorites_to_elements(conn_header: ConnHeader, params: ApplyFavoritesToElementsParameters) -> dict:
     """
-    Apply the given favorites to existing elements. Only settings-type parameters are changed - geometry (position, floor, and dimensions such as a Wall's height) is left untouched, so applying a Favorite never moves or resizes the target element. By default settings, classifications, categories and properties are all applied; each can be opted out of individually.
+    Apply the given favorites to existing elements. Only settings-type parameters are changed - geometry (position,
+    floor, and dimensions such as a Wall's height) is left untouched, so applying a Favorite never moves or resizes the
+    target element. For the hierarchical types (Stair, Railing, Curtain Wall) the settings of the sub-elements are not
+    applied, because they are inseparable from the Favorite's own geometry. By default settings, classifications,
+    categories and properties are all applied; each can be opted out of individually.
     """
-
     return conn_header.core.post_tapir_command(
-        command="ApplyFavoritesToElements",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="ApplyFavoritesToElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
     apply_favorites_to_elements,
     name="favorites_apply_favorites_to_elements",
     title="ApplyFavoritesToElements",
-    description="Apply the given favorites to existing elements. Only settings-type parameters are changed - geometry (position, floor, and dimensions such as a Wall's height) is left untouched, so applying a Favorite never moves or resizes the target element. By default settings, classifications, categories and properties are all applied; each can be opted out of individually.",
-    params_model=ApplyFavoritesToElementsParameters
+    description=(
+        "Apply the given favorites to existing elements. Only settings-type parameters are changed - geometry "
+        "(position, floor, and dimensions such as a Wall's height) is left untouched, so applying a Favorite never "
+        "moves or resizes the target element. For the hierarchical types (Stair, Railing, Curtain Wall) the settings "
+        "of the sub-elements are not applied, because they are inseparable from the Favorite's own geometry. By "
+        "default settings, classifications, categories and properties are all applied; each can be opted out of "
+        "individually."
+    ),
+    params_model=ApplyFavoritesToElementsParameters,
 )
 
 
 def create_favorites_from_elements(conn_header: ConnHeader, params: CreateFavoritesFromElementsParameters) -> dict:
-    """
-    Create favorites from the given elements.
-    """
-
+    """Create favorites from the given elements."""
     return conn_header.core.post_tapir_command(
         command="CreateFavoritesFromElements",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
     )
-
 
 
 register_tool_for_dispatch(
@@ -73,20 +76,15 @@ register_tool_for_dispatch(
     name="favorites_create_favorites_from_elements",
     title="CreateFavoritesFromElements",
     description="Create favorites from the given elements.",
-    params_model=CreateFavoritesFromElementsParameters
+    params_model=CreateFavoritesFromElementsParameters,
 )
 
 
 def delete_favorites(conn_header: ConnHeader, params: DeleteFavoritesParameters) -> dict:
-    """
-    Delete existing favorites.
-    """
-
+    """Delete existing favorites."""
     return conn_header.core.post_tapir_command(
-        command="DeleteFavorites",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="DeleteFavorites", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -94,20 +92,15 @@ register_tool_for_dispatch(
     name="favorites_delete_favorites",
     title="DeleteFavorites",
     description="Delete existing favorites.",
-    params_model=DeleteFavoritesParameters
+    params_model=DeleteFavoritesParameters,
 )
 
 
 def export_favorites(conn_header: ConnHeader, params: ExportFavoritesParameters) -> dict:
-    """
-    Export the project's Favorites to a .prefs file or folder.
-    """
-
+    """Export the project's Favorites to a .prefs file or folder."""
     return conn_header.core.post_tapir_command(
-        command="ExportFavorites",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="ExportFavorites", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -115,20 +108,15 @@ register_tool_for_dispatch(
     name="favorites_export_favorites",
     title="ExportFavorites",
     description="Export the project's Favorites to a .prefs file or folder.",
-    params_model=ExportFavoritesParameters
+    params_model=ExportFavoritesParameters,
 )
 
 
 def get_favorite_preview_image(conn_header: ConnHeader, params: GetFavoritePreviewImageParameters) -> dict:
-    """
-    Returns the preview image of the given favorite.
-    """
-
+    """Returns the preview image of the given favorite."""
     return conn_header.core.post_tapir_command(
-        command="GetFavoritePreviewImage",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="GetFavoritePreviewImage", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -136,20 +124,15 @@ register_tool_for_dispatch(
     name="favorites_get_favorite_preview_image",
     title="GetFavoritePreviewImage",
     description="Returns the preview image of the given favorite.",
-    params_model=GetFavoritePreviewImageParameters
+    params_model=GetFavoritePreviewImageParameters,
 )
 
 
 def get_favorites_by_type(conn_header: ConnHeader, params: GetFavoritesByTypeParameters) -> dict:
-    """
-    Returns a list of the names of all favorites with the given element type
-    """
-
+    """Returns a list of the names of all favorites with the given element type"""
     return conn_header.core.post_tapir_command(
-        command="GetFavoritesByType",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="GetFavoritesByType", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -157,20 +140,15 @@ register_tool_for_dispatch(
     name="favorites_get_favorites_by_type",
     title="GetFavoritesByType",
     description="Returns a list of the names of all favorites with the given element type",
-    params_model=GetFavoritesByTypeParameters
+    params_model=GetFavoritesByTypeParameters,
 )
 
 
 def import_favorites(conn_header: ConnHeader, params: ImportFavoritesParameters) -> dict:
-    """
-    Import Favorites from a .prefs file or folder into the current project.
-    """
-
+    """Import Favorites from a .prefs file or folder into the current project."""
     return conn_header.core.post_tapir_command(
-        command="ImportFavorites",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="ImportFavorites", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -178,20 +156,15 @@ register_tool_for_dispatch(
     name="favorites_import_favorites",
     title="ImportFavorites",
     description="Import Favorites from a .prefs file or folder into the current project.",
-    params_model=ImportFavoritesParameters
+    params_model=ImportFavoritesParameters,
 )
 
 
 def rename_favorites(conn_header: ConnHeader, params: RenameFavoritesParameters) -> dict:
-    """
-    Rename existing favorites.
-    """
-
+    """Rename existing favorites."""
     return conn_header.core.post_tapir_command(
-        command="RenameFavorites",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="RenameFavorites", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -199,20 +172,16 @@ register_tool_for_dispatch(
     name="favorites_rename_favorites",
     title="RenameFavorites",
     description="Rename existing favorites.",
-    params_model=RenameFavoritesParameters
+    params_model=RenameFavoritesParameters,
 )
 
 
 def update_favorites_from_elements(conn_header: ConnHeader, params: UpdateFavoritesFromElementsParameters) -> dict:
-    """
-    Update existing favorites from the given elements.
-    """
-
+    """Update existing favorites from the given elements."""
     return conn_header.core.post_tapir_command(
         command="UpdateFavoritesFromElements",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
     )
-
 
 
 register_tool_for_dispatch(
@@ -220,5 +189,5 @@ register_tool_for_dispatch(
     name="favorites_update_favorites_from_elements",
     title="UpdateFavoritesFromElements",
     description="Update existing favorites from the given elements.",
-    params_model=UpdateFavoritesFromElementsParameters
+    params_model=UpdateFavoritesFromElementsParameters,
 )
