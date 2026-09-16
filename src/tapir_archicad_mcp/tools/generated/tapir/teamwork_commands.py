@@ -6,16 +6,12 @@ from multiconn_archicad.models.tapir.commands import (
     ReserveElementsParameters,
 )
 
+
 def release_elements(conn_header: ConnHeader, params: ReleaseElementsParameters) -> dict:
-    """
-    Releases elements in Teamwork mode.
-    """
-
+    """Releases elements in Teamwork mode."""
     return conn_header.core.post_tapir_command(
-        command="ReleaseElements",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="ReleaseElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -23,20 +19,15 @@ register_tool_for_dispatch(
     name="teamwork_release_elements",
     title="ReleaseElements",
     description="Releases elements in Teamwork mode.",
-    params_model=ReleaseElementsParameters
+    params_model=ReleaseElementsParameters,
 )
 
 
 def reserve_elements(conn_header: ConnHeader, params: ReserveElementsParameters) -> dict:
-    """
-    Reserves elements in Teamwork mode.
-    """
-
+    """Reserves elements in Teamwork mode."""
     return conn_header.core.post_tapir_command(
-        command="ReserveElements",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="ReserveElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -44,20 +35,13 @@ register_tool_for_dispatch(
     name="teamwork_reserve_elements",
     title="ReserveElements",
     description="Reserves elements in Teamwork mode.",
-    params_model=ReserveElementsParameters
+    params_model=ReserveElementsParameters,
 )
 
 
 def teamwork_receive(conn_header: ConnHeader) -> dict:
-    """
-    Performs a receive operation on the currently opened Teamwork project.
-    """
-
-    return conn_header.core.post_tapir_command(
-        command="TeamworkReceive",
-        parameters={}
-    )
-
+    """Performs a receive operation on the currently opened Teamwork project."""
+    return conn_header.core.post_tapir_command(command="TeamworkReceive", parameters={})
 
 
 register_tool_for_dispatch(
@@ -65,20 +49,13 @@ register_tool_for_dispatch(
     name="teamwork_teamwork_receive",
     title="TeamworkReceive",
     description="Performs a receive operation on the currently opened Teamwork project.",
-    params_model=None
+    params_model=None,
 )
 
 
 def teamwork_send(conn_header: ConnHeader) -> dict:
-    """
-    Performs a send operation on the currently opened Teamwork project.
-    """
-
-    return conn_header.core.post_tapir_command(
-        command="TeamworkSend",
-        parameters={}
-    )
-
+    """Performs a send operation on the currently opened Teamwork project."""
+    return conn_header.core.post_tapir_command(command="TeamworkSend", parameters={})
 
 
 register_tool_for_dispatch(
@@ -86,5 +63,5 @@ register_tool_for_dispatch(
     name="teamwork_teamwork_send",
     title="TeamworkSend",
     description="Performs a send operation on the currently opened Teamwork project.",
-    params_model=None
+    params_model=None,
 )

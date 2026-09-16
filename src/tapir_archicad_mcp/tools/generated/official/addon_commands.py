@@ -5,16 +5,13 @@ from multiconn_archicad.models.official.commands import (
     IsAddOnCommandAvailableParameters,
 )
 
-def is_add_on_command_available(conn_header: ConnHeader, params: IsAddOnCommandAvailableParameters) -> dict:
-    """
-    Checks if the command is available or not.
-    """
 
+def is_add_on_command_available(conn_header: ConnHeader, params: IsAddOnCommandAvailableParameters) -> dict:
+    """Checks if the command is available or not."""
     return conn_header.core.post_command(
         command="API.IsAddOnCommandAvailable",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
     )
-
 
 
 register_tool_for_dispatch(
@@ -22,5 +19,5 @@ register_tool_for_dispatch(
     name="dev_is_add_on_command_available",
     title="IsAddOnCommandAvailable",
     description="Checks if the command is available or not.",
-    params_model=IsAddOnCommandAvailableParameters
+    params_model=IsAddOnCommandAvailableParameters,
 )

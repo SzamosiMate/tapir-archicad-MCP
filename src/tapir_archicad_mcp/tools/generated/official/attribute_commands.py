@@ -13,58 +13,58 @@ from multiconn_archicad.models.official.commands import (
     RenameAttributeFoldersParameters,
 )
 
+
 def create_attribute_folders(conn_header: ConnHeader, params: CreateAttributeFoldersParameters) -> dict:
     """
-    Creates attribute folders. To create a folder, its full path has to be provided. The command will create all folders along the path, if they do not exist.
+    Creates attribute folders. To create a folder, its full path has to be provided. The command will create all folders
+    along the path, if they do not exist.
     """
-
     return conn_header.core.post_command(
         command="API.CreateAttributeFolders",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
     )
-
 
 
 register_tool_for_dispatch(
     create_attribute_folders,
     name="attributes_create_attribute_folders",
     title="CreateAttributeFolders",
-    description="Creates attribute folders. To create a folder, its full path has to be provided. The command will create all folders along the path, if they do not exist.",
-    params_model=CreateAttributeFoldersParameters
+    description=(
+        "Creates attribute folders. To create a folder, its full path has to be provided. The command will create all "
+        "folders along the path, if they do not exist."
+    ),
+    params_model=CreateAttributeFoldersParameters,
 )
 
 
 def delete_attribute_folders(conn_header: ConnHeader, params: DeleteAttributeFoldersParameters) -> dict:
     """
-    Deletes attribute folders and all the deletable attributes and folders it contains. To delete a folder, its identifier has to be provided.
+    Deletes attribute folders and all the deletable attributes and folders it contains. To delete a folder, its
+    identifier has to be provided.
     """
-
     return conn_header.core.post_command(
         command="API.DeleteAttributeFolders",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
     )
-
 
 
 register_tool_for_dispatch(
     delete_attribute_folders,
     name="attributes_delete_attribute_folders",
     title="DeleteAttributeFolders",
-    description="Deletes attribute folders and all the deletable attributes and folders it contains. To delete a folder, its identifier has to be provided.",
-    params_model=DeleteAttributeFoldersParameters
+    description=(
+        "Deletes attribute folders and all the deletable attributes and folders it contains. To delete a folder, its "
+        "identifier has to be provided."
+    ),
+    params_model=DeleteAttributeFoldersParameters,
 )
 
 
 def delete_attributes(conn_header: ConnHeader, params: DeleteAttributesParameters) -> dict:
-    """
-    Deletes attributes.
-    """
-
+    """Deletes attributes."""
     return conn_header.core.post_command(
-        command="API.DeleteAttributes",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="API.DeleteAttributes", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -72,20 +72,13 @@ register_tool_for_dispatch(
     name="attributes_delete_attributes",
     title="DeleteAttributes",
     description="Deletes attributes.",
-    params_model=DeleteAttributesParameters
+    params_model=DeleteAttributesParameters,
 )
 
 
 def get_active_pen_tables(conn_header: ConnHeader) -> dict:
-    """
-    Returns the model view and layout book pen table identifiers.
-    """
-
-    return conn_header.core.post_command(
-        command="API.GetActivePenTables",
-        parameters={}
-    )
-
+    """Returns the model view and layout book pen table identifiers."""
+    return conn_header.core.post_command(command="API.GetActivePenTables", parameters={})
 
 
 register_tool_for_dispatch(
@@ -93,41 +86,38 @@ register_tool_for_dispatch(
     name="attributes_get_active_pen_tables",
     title="GetActivePenTables",
     description="Returns the model view and layout book pen table identifiers.",
-    params_model=None
+    params_model=None,
 )
 
 
 def get_attribute_folder_structure(conn_header: ConnHeader, params: GetAttributeFolderStructureParameters) -> dict:
     """
-    Returns the detailed folder structure for the attributes of a given type. If the path is not given, the root folder will be returned
+    Returns the detailed folder structure for the attributes of a given type. If the path is not given, the root folder
+    will be returned
     """
-
     return conn_header.core.post_command(
         command="API.GetAttributeFolderStructure",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
     )
-
 
 
 register_tool_for_dispatch(
     get_attribute_folder_structure,
     name="attributes_get_attribute_folder_structure",
     title="GetAttributeFolderStructure",
-    description="Returns the detailed folder structure for the attributes of a given type. If the path is not given, the root folder will be returned",
-    params_model=GetAttributeFolderStructureParameters
+    description=(
+        "Returns the detailed folder structure for the attributes of a given type. If the path is not given, the root "
+        "folder will be returned"
+    ),
+    params_model=GetAttributeFolderStructureParameters,
 )
 
 
 def get_attribute_folders(conn_header: ConnHeader, params: GetAttributeFoldersParameters) -> dict:
-    """
-    Returns the detailed attribute folders identified by their Ids.
-    """
-
+    """Returns the detailed attribute folders identified by their Ids."""
     return conn_header.core.post_command(
-        command="API.GetAttributeFolders",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="API.GetAttributeFolders", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -135,20 +125,15 @@ register_tool_for_dispatch(
     name="attributes_get_attribute_folders",
     title="GetAttributeFolders",
     description="Returns the detailed attribute folders identified by their Ids.",
-    params_model=GetAttributeFoldersParameters
+    params_model=GetAttributeFoldersParameters,
 )
 
 
 def get_attributes_indices(conn_header: ConnHeader, params: GetAttributesIndicesParameters) -> dict:
-    """
-    Returns the requested indices and guids of attributes.
-    """
-
+    """Returns the requested indices and guids of attributes."""
     return conn_header.core.post_command(
-        command="API.GetAttributesIndices",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="API.GetAttributesIndices", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -156,20 +141,16 @@ register_tool_for_dispatch(
     name="attributes_get_attributes_indices",
     title="GetAttributesIndices",
     description="Returns the requested indices and guids of attributes.",
-    params_model=GetAttributesIndicesParameters
+    params_model=GetAttributesIndicesParameters,
 )
 
 
 def get_profile_attribute_preview(conn_header: ConnHeader, params: GetProfileAttributePreviewParameters) -> dict:
-    """
-    Returns the preview image of each requested profile attribute in a base64 string format.
-    """
-
+    """Returns the preview image of each requested profile attribute in a base64 string format."""
     return conn_header.core.post_command(
         command="API.GetProfileAttributePreview",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
     )
-
 
 
 register_tool_for_dispatch(
@@ -177,20 +158,16 @@ register_tool_for_dispatch(
     name="attributes_get_profile_attribute_preview",
     title="GetProfileAttributePreview",
     description="Returns the preview image of each requested profile attribute in a base64 string format.",
-    params_model=GetProfileAttributePreviewParameters
+    params_model=GetProfileAttributePreviewParameters,
 )
 
 
 def move_attributes_and_folders(conn_header: ConnHeader, params: MoveAttributesAndFoldersParameters) -> dict:
-    """
-    Moves attributes and attribute folders.
-    """
-
+    """Moves attributes and attribute folders."""
     return conn_header.core.post_command(
         command="API.MoveAttributesAndFolders",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
     )
-
 
 
 register_tool_for_dispatch(
@@ -198,20 +175,16 @@ register_tool_for_dispatch(
     name="attributes_move_attributes_and_folders",
     title="MoveAttributesAndFolders",
     description="Moves attributes and attribute folders.",
-    params_model=MoveAttributesAndFoldersParameters
+    params_model=MoveAttributesAndFoldersParameters,
 )
 
 
 def rename_attribute_folders(conn_header: ConnHeader, params: RenameAttributeFoldersParameters) -> dict:
-    """
-    Rename attribute folder.
-    """
-
+    """Rename attribute folder."""
     return conn_header.core.post_command(
         command="API.RenameAttributeFolders",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
     )
-
 
 
 register_tool_for_dispatch(
@@ -219,5 +192,5 @@ register_tool_for_dispatch(
     name="attributes_rename_attribute_folders",
     title="RenameAttributeFolders",
     description="Rename attribute folder.",
-    params_model=RenameAttributeFoldersParameters
+    params_model=RenameAttributeFoldersParameters,
 )

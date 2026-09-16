@@ -6,18 +6,19 @@ from multiconn_archicad.models.official.commands import (
     GetTypesOfElementsParameters,
 )
 
+
 def get_elements_by_classification(conn_header: ConnHeader, params: GetElementsByClassificationParameters) -> dict:
     """
     Returns the identifier of every element with the given classification identifier.
-        This response is paginated. If 'next_page_token' is returned, call archicad_call_tool
-        again with the same arguments and page_token set to that token to get the next page
-        of results.
-    """
 
+    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
+    and page_token set to that token to get the next page of results.
+    """
     return conn_header.core.post_command(
         command="API.GetElementsByClassification",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
     )
+
 
 register_tool_for_dispatch(
     get_elements_by_classification,
@@ -25,20 +26,15 @@ register_tool_for_dispatch(
     title="GetElementsByClassification",
     description="Returns the identifier of every element with the given classification identifier.",
     params_model=GetElementsByClassificationParameters,
-    pagination_field="elements"
+    pagination_field="elements",
 )
 
 
 def get_types_of_elements(conn_header: ConnHeader, params: GetTypesOfElementsParameters) -> dict:
-    """
-    Returns the types of the given elements.
-    """
-
+    """Returns the types of the given elements."""
     return conn_header.core.post_command(
-        command="API.GetTypesOfElements",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="API.GetTypesOfElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -46,6 +42,5 @@ register_tool_for_dispatch(
     name="elements_get_types_of_elements",
     title="GetTypesOfElements",
     description="Returns the types of the given elements.",
-    params_model=GetTypesOfElementsParameters
+    params_model=GetTypesOfElementsParameters,
 )
-

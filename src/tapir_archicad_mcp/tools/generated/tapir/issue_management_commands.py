@@ -13,16 +13,12 @@ from multiconn_archicad.models.tapir.commands import (
     ImportIssuesFromBCFParameters,
 )
 
+
 def add_comment_to_issue(conn_header: ConnHeader, params: AddCommentToIssueParameters) -> dict:
-    """
-    Adds a new comment to the specified issue.
-    """
-
+    """Adds a new comment to the specified issue."""
     return conn_header.core.post_tapir_command(
-        command="AddCommentToIssue",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="AddCommentToIssue", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -30,20 +26,15 @@ register_tool_for_dispatch(
     name="issues_add_comment_to_issue",
     title="AddCommentToIssue",
     description="Adds a new comment to the specified issue.",
-    params_model=AddCommentToIssueParameters
+    params_model=AddCommentToIssueParameters,
 )
 
 
 def attach_elements_to_issue(conn_header: ConnHeader, params: AttachElementsToIssueParameters) -> dict:
-    """
-    Attaches elements to the specified issue.
-    """
-
+    """Attaches elements to the specified issue."""
     return conn_header.core.post_tapir_command(
-        command="AttachElementsToIssue",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="AttachElementsToIssue", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -51,20 +42,15 @@ register_tool_for_dispatch(
     name="issues_attach_elements_to_issue",
     title="AttachElementsToIssue",
     description="Attaches elements to the specified issue.",
-    params_model=AttachElementsToIssueParameters
+    params_model=AttachElementsToIssueParameters,
 )
 
 
 def create_issue(conn_header: ConnHeader, params: CreateIssueParameters) -> dict:
-    """
-    Creates a new issue.
-    """
-
+    """Creates a new issue."""
     return conn_header.core.post_tapir_command(
-        command="CreateIssue",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="CreateIssue", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -72,20 +58,15 @@ register_tool_for_dispatch(
     name="issues_create_issue",
     title="CreateIssue",
     description="Creates a new issue.",
-    params_model=CreateIssueParameters
+    params_model=CreateIssueParameters,
 )
 
 
 def delete_issue(conn_header: ConnHeader, params: DeleteIssueParameters) -> dict:
-    """
-    Deletes the specified issue.
-    """
-
+    """Deletes the specified issue."""
     return conn_header.core.post_tapir_command(
-        command="DeleteIssue",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="DeleteIssue", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -93,20 +74,15 @@ register_tool_for_dispatch(
     name="issues_delete_issue",
     title="DeleteIssue",
     description="Deletes the specified issue.",
-    params_model=DeleteIssueParameters
+    params_model=DeleteIssueParameters,
 )
 
 
 def detach_elements_from_issue(conn_header: ConnHeader, params: DetachElementsFromIssueParameters) -> dict:
-    """
-    Detaches elements from the specified issue.
-    """
-
+    """Detaches elements from the specified issue."""
     return conn_header.core.post_tapir_command(
-        command="DetachElementsFromIssue",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="DetachElementsFromIssue", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -114,20 +90,15 @@ register_tool_for_dispatch(
     name="issues_detach_elements_from_issue",
     title="DetachElementsFromIssue",
     description="Detaches elements from the specified issue.",
-    params_model=DetachElementsFromIssueParameters
+    params_model=DetachElementsFromIssueParameters,
 )
 
 
 def export_issues_to_bcf(conn_header: ConnHeader, params: ExportIssuesToBCFParameters) -> dict:
-    """
-    Exports specified issues to a BCF file.
-    """
-
+    """Exports specified issues to a BCF file."""
     return conn_header.core.post_tapir_command(
-        command="ExportIssuesToBCF",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="ExportIssuesToBCF", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -135,20 +106,15 @@ register_tool_for_dispatch(
     name="issues_export_issues_to_bcf",
     title="ExportIssuesToBCF",
     description="Exports specified issues to a BCF file.",
-    params_model=ExportIssuesToBCFParameters
+    params_model=ExportIssuesToBCFParameters,
 )
 
 
 def get_comments_from_issue(conn_header: ConnHeader, params: GetCommentsFromIssueParameters) -> dict:
-    """
-    Retrieves comments information from the specified issue.
-    """
-
+    """Retrieves comments information from the specified issue."""
     return conn_header.core.post_tapir_command(
-        command="GetCommentsFromIssue",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="GetCommentsFromIssue", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -156,20 +122,16 @@ register_tool_for_dispatch(
     name="issues_get_comments_from_issue",
     title="GetCommentsFromIssue",
     description="Retrieves comments information from the specified issue.",
-    params_model=GetCommentsFromIssueParameters
+    params_model=GetCommentsFromIssueParameters,
 )
 
 
 def get_elements_attached_to_issue(conn_header: ConnHeader, params: GetElementsAttachedToIssueParameters) -> dict:
-    """
-    Retrieves attached elements of the specified issue, filtered by attachment type.
-    """
-
+    """Retrieves attached elements of the specified issue, filtered by attachment type."""
     return conn_header.core.post_tapir_command(
         command="GetElementsAttachedToIssue",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
     )
-
 
 
 register_tool_for_dispatch(
@@ -177,22 +139,19 @@ register_tool_for_dispatch(
     name="issues_get_elements_attached_to_issue",
     title="GetElementsAttachedToIssue",
     description="Retrieves attached elements of the specified issue, filtered by attachment type.",
-    params_model=GetElementsAttachedToIssueParameters
+    params_model=GetElementsAttachedToIssueParameters,
 )
 
 
 def get_issues(conn_header: ConnHeader) -> dict:
     """
     Retrieves information about existing issues.
-        This response is paginated. If 'next_page_token' is returned, call archicad_call_tool
-        again with the same arguments and page_token set to that token to get the next page
-        of results.
-    """
 
-    return conn_header.core.post_tapir_command(
-        command="GetIssues",
-        parameters={}
-    )
+    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
+    and page_token set to that token to get the next page of results.
+    """
+    return conn_header.core.post_tapir_command(command="GetIssues", parameters={})
+
 
 register_tool_for_dispatch(
     get_issues,
@@ -200,20 +159,15 @@ register_tool_for_dispatch(
     title="GetIssues",
     description="Retrieves information about existing issues.",
     params_model=None,
-    pagination_field="issues"
+    pagination_field="issues",
 )
 
 
 def import_issues_from_bcf(conn_header: ConnHeader, params: ImportIssuesFromBCFParameters) -> dict:
-    """
-    Imports issues from the specified BCF file.
-    """
-
+    """Imports issues from the specified BCF file."""
     return conn_header.core.post_tapir_command(
-        command="ImportIssuesFromBCF",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="ImportIssuesFromBCF", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -221,6 +175,5 @@ register_tool_for_dispatch(
     name="issues_import_issues_from_bcf",
     title="ImportIssuesFromBCF",
     description="Imports issues from the specified BCF file.",
-    params_model=ImportIssuesFromBCFParameters
+    params_model=ImportIssuesFromBCFParameters,
 )
-

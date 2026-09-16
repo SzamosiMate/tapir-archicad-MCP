@@ -8,16 +8,12 @@ from multiconn_archicad.models.official.commands import (
     SetLayoutSettingsParameters,
 )
 
+
 def create_layout(conn_header: ConnHeader, params: CreateLayoutParameters) -> dict:
-    """
-    Creates a new layout.
-    """
-
+    """Creates a new layout."""
     return conn_header.core.post_command(
-        command="API.CreateLayout",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="API.CreateLayout", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -25,20 +21,15 @@ register_tool_for_dispatch(
     name="layout_create_layout",
     title="CreateLayout",
     description="Creates a new layout.",
-    params_model=CreateLayoutParameters
+    params_model=CreateLayoutParameters,
 )
 
 
 def create_layout_subset(conn_header: ConnHeader, params: CreateLayoutSubsetParameters) -> dict:
-    """
-    Creates a new layout subset.
-    """
-
+    """Creates a new layout subset."""
     return conn_header.core.post_command(
-        command="API.CreateLayoutSubset",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="API.CreateLayoutSubset", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -46,20 +37,15 @@ register_tool_for_dispatch(
     name="layout_create_layout_subset",
     title="CreateLayoutSubset",
     description="Creates a new layout subset.",
-    params_model=CreateLayoutSubsetParameters
+    params_model=CreateLayoutSubsetParameters,
 )
 
 
 def get_layout_settings(conn_header: ConnHeader, params: GetLayoutSettingsParameters) -> dict:
-    """
-    Returns the parameters (settings) of the given layout.
-    """
-
+    """Returns the parameters (settings) of the given layout."""
     return conn_header.core.post_command(
-        command="API.GetLayoutSettings",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="API.GetLayoutSettings", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -67,20 +53,15 @@ register_tool_for_dispatch(
     name="layout_get_layout_settings",
     title="GetLayoutSettings",
     description="Returns the parameters (settings) of the given layout.",
-    params_model=GetLayoutSettingsParameters
+    params_model=GetLayoutSettingsParameters,
 )
 
 
 def set_layout_settings(conn_header: ConnHeader, params: SetLayoutSettingsParameters) -> dict:
-    """
-    Sets the parameters (settings) of the given layout.
-    """
-
+    """Sets the parameters (settings) of the given layout."""
     return conn_header.core.post_command(
-        command="API.SetLayoutSettings",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="API.SetLayoutSettings", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -88,5 +69,5 @@ register_tool_for_dispatch(
     name="layout_set_layout_settings",
     title="SetLayoutSettings",
     description="Sets the parameters (settings) of the given layout.",
-    params_model=SetLayoutSettingsParameters
+    params_model=SetLayoutSettingsParameters,
 )

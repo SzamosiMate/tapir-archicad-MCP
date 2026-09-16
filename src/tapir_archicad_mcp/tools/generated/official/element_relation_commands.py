@@ -5,22 +5,25 @@ from multiconn_archicad.models.official.commands import (
     GetElementsRelatedToZonesParameters,
 )
 
+
 def get_elements_related_to_zones(conn_header: ConnHeader, params: GetElementsRelatedToZonesParameters) -> dict:
     """
-    Returns related elements of the given zones. The related elements will be grouped by type. If multiple zones was given, then the order of the returned list is that of the given zones.
+    Returns related elements of the given zones. The related elements will be grouped by type. If multiple zones was
+    given, then the order of the returned list is that of the given zones.
     """
-
     return conn_header.core.post_command(
         command="API.GetElementsRelatedToZones",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
     )
-
 
 
 register_tool_for_dispatch(
     get_elements_related_to_zones,
     name="elements_get_elements_related_to_zones",
     title="GetElementsRelatedToZones",
-    description="Returns related elements of the given zones. The related elements will be grouped by type. If multiple zones was given, then the order of the returned list is that of the given zones.",
-    params_model=GetElementsRelatedToZonesParameters
+    description=(
+        "Returns related elements of the given zones. The related elements will be grouped by type. If multiple zones "
+        "was given, then the order of the returned list is that of the given zones."
+    ),
+    params_model=GetElementsRelatedToZonesParameters,
 )

@@ -6,16 +6,15 @@ from multiconn_archicad.models.tapir.commands import (
     GetRevisionChangesOfElementsParameters,
 )
 
-def get_current_revision_changes_of_layouts(conn_header: ConnHeader, params: GetCurrentRevisionChangesOfLayoutsParameters) -> dict:
-    """
-    Retrieves all changes belong to the last revision of the given layouts.
-    """
 
+def get_current_revision_changes_of_layouts(
+    conn_header: ConnHeader, params: GetCurrentRevisionChangesOfLayoutsParameters
+) -> dict:
+    """Retrieves all changes belong to the last revision of the given layouts."""
     return conn_header.core.post_tapir_command(
         command="GetCurrentRevisionChangesOfLayouts",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
     )
-
 
 
 register_tool_for_dispatch(
@@ -23,20 +22,13 @@ register_tool_for_dispatch(
     name="revisions_get_current_revision_changes_of_layouts",
     title="GetCurrentRevisionChangesOfLayouts",
     description="Retrieves all changes belong to the last revision of the given layouts.",
-    params_model=GetCurrentRevisionChangesOfLayoutsParameters
+    params_model=GetCurrentRevisionChangesOfLayoutsParameters,
 )
 
 
 def get_document_revisions(conn_header: ConnHeader) -> dict:
-    """
-    Retrieves all document revisions.
-    """
-
-    return conn_header.core.post_tapir_command(
-        command="GetDocumentRevisions",
-        parameters={}
-    )
-
+    """Retrieves all document revisions."""
+    return conn_header.core.post_tapir_command(command="GetDocumentRevisions", parameters={})
 
 
 register_tool_for_dispatch(
@@ -44,20 +36,13 @@ register_tool_for_dispatch(
     name="revisions_get_document_revisions",
     title="GetDocumentRevisions",
     description="Retrieves all document revisions.",
-    params_model=None
+    params_model=None,
 )
 
 
 def get_revision_changes(conn_header: ConnHeader) -> dict:
-    """
-    Retrieves all changes.
-    """
-
-    return conn_header.core.post_tapir_command(
-        command="GetRevisionChanges",
-        parameters={}
-    )
-
+    """Retrieves all changes."""
+    return conn_header.core.post_tapir_command(command="GetRevisionChanges", parameters={})
 
 
 register_tool_for_dispatch(
@@ -65,20 +50,16 @@ register_tool_for_dispatch(
     name="revisions_get_revision_changes",
     title="GetRevisionChanges",
     description="Retrieves all changes.",
-    params_model=None
+    params_model=None,
 )
 
 
 def get_revision_changes_of_elements(conn_header: ConnHeader, params: GetRevisionChangesOfElementsParameters) -> dict:
-    """
-    Retrieves the changes belong to the given elements.
-    """
-
+    """Retrieves the changes belong to the given elements."""
     return conn_header.core.post_tapir_command(
         command="GetRevisionChangesOfElements",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
     )
-
 
 
 register_tool_for_dispatch(
@@ -86,20 +67,13 @@ register_tool_for_dispatch(
     name="revisions_get_revision_changes_of_elements",
     title="GetRevisionChangesOfElements",
     description="Retrieves the changes belong to the given elements.",
-    params_model=GetRevisionChangesOfElementsParameters
+    params_model=GetRevisionChangesOfElementsParameters,
 )
 
 
 def get_revision_issues(conn_header: ConnHeader) -> dict:
-    """
-    Retrieves all issues.
-    """
-
-    return conn_header.core.post_tapir_command(
-        command="GetRevisionIssues",
-        parameters={}
-    )
-
+    """Retrieves all issues."""
+    return conn_header.core.post_tapir_command(command="GetRevisionIssues", parameters={})
 
 
 register_tool_for_dispatch(
@@ -107,5 +81,5 @@ register_tool_for_dispatch(
     name="revisions_get_revision_issues",
     title="GetRevisionIssues",
     description="Retrieves all issues.",
-    params_model=None
+    params_model=None,
 )

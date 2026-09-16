@@ -6,37 +6,38 @@ from multiconn_archicad.models.official.commands import (
     GetPropertyValuesOfElementComponentsParameters,
 )
 
+
 def get_components_of_elements(conn_header: ConnHeader, params: GetComponentsOfElementsParameters) -> dict:
     """
-    Returns the identifier of every component for a list of elements. The order of the returned list is the same as the given elements.
+    Returns the identifier of every component for a list of elements. The order of the returned list is the same as the
+    given elements.
     """
-
     return conn_header.core.post_command(
         command="API.GetComponentsOfElements",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
     )
-
 
 
 register_tool_for_dispatch(
     get_components_of_elements,
     name="components_get_components_of_elements",
     title="GetComponentsOfElements",
-    description="Returns the identifier of every component for a list of elements. The order of the returned list is the same as the given elements.",
-    params_model=GetComponentsOfElementsParameters
+    description=(
+        "Returns the identifier of every component for a list of elements. The order of the returned list is the same "
+        "as the given elements."
+    ),
+    params_model=GetComponentsOfElementsParameters,
 )
 
 
-def get_property_values_of_element_components(conn_header: ConnHeader, params: GetPropertyValuesOfElementComponentsParameters) -> dict:
-    """
-    Returns the property values of the components for the given property.
-    """
-
+def get_property_values_of_element_components(
+    conn_header: ConnHeader, params: GetPropertyValuesOfElementComponentsParameters
+) -> dict:
+    """Returns the property values of the components for the given property."""
     return conn_header.core.post_command(
         command="API.GetPropertyValuesOfElementComponents",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
     )
-
 
 
 register_tool_for_dispatch(
@@ -44,5 +45,5 @@ register_tool_for_dispatch(
     name="components_get_property_values_of_element_components",
     title="GetPropertyValuesOfElementComponents",
     description="Returns the property values of the components for the given property.",
-    params_model=GetPropertyValuesOfElementComponentsParameters
+    params_model=GetPropertyValuesOfElementComponentsParameters,
 )

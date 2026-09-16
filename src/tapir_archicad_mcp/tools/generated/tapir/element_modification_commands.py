@@ -5,26 +5,24 @@ from multiconn_archicad.models.tapir.commands import (
     ModifyBeamsParameters,
     ModifyColumnsParameters,
     ModifyDoorsParameters,
+    ModifyLabelsParameters,
     ModifyLampsParameters,
     ModifyMeshesParameters,
     ModifyMorphsParameters,
     ModifyObjectsParameters,
     ModifyRoofsParameters,
     ModifySlabsParameters,
+    ModifyTextsParameters,
     ModifyWallsParameters,
     ModifyWindowsParameters,
 )
 
+
 def modify_beams(conn_header: ConnHeader, params: ModifyBeamsParameters) -> dict:
-    """
-    Modifies Beam elements based on the given parameters.
-    """
-
+    """Modifies Beam elements based on the given parameters."""
     return conn_header.core.post_tapir_command(
-        command="ModifyBeams",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="ModifyBeams", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -32,20 +30,15 @@ register_tool_for_dispatch(
     name="elements_modify_beams",
     title="ModifyBeams",
     description="Modifies Beam elements based on the given parameters.",
-    params_model=ModifyBeamsParameters
+    params_model=ModifyBeamsParameters,
 )
 
 
 def modify_columns(conn_header: ConnHeader, params: ModifyColumnsParameters) -> dict:
-    """
-    Modifies Column elements based on the given parameters.
-    """
-
+    """Modifies Column elements based on the given parameters."""
     return conn_header.core.post_tapir_command(
-        command="ModifyColumns",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="ModifyColumns", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -53,20 +46,15 @@ register_tool_for_dispatch(
     name="elements_modify_columns",
     title="ModifyColumns",
     description="Modifies Column elements based on the given parameters.",
-    params_model=ModifyColumnsParameters
+    params_model=ModifyColumnsParameters,
 )
 
 
 def modify_doors(conn_header: ConnHeader, params: ModifyDoorsParameters) -> dict:
-    """
-    Modifies Door elements based on the given parameters.
-    """
-
+    """Modifies Door elements based on the given parameters."""
     return conn_header.core.post_tapir_command(
-        command="ModifyDoors",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="ModifyDoors", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -74,20 +62,31 @@ register_tool_for_dispatch(
     name="elements_modify_doors",
     title="ModifyDoors",
     description="Modifies Door elements based on the given parameters.",
-    params_model=ModifyDoorsParameters
+    params_model=ModifyDoorsParameters,
+)
+
+
+def modify_labels(conn_header: ConnHeader, params: ModifyLabelsParameters) -> dict:
+    """Modifies Label elements based on the given parameters."""
+    return conn_header.core.post_tapir_command(
+        command="ModifyLabels", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    modify_labels,
+    name="elements_modify_labels",
+    title="ModifyLabels",
+    description="Modifies Label elements based on the given parameters.",
+    params_model=ModifyLabelsParameters,
 )
 
 
 def modify_lamps(conn_header: ConnHeader, params: ModifyLampsParameters) -> dict:
-    """
-    Modifies Lamp elements based on the given parameters.
-    """
-
+    """Modifies Lamp elements based on the given parameters."""
     return conn_header.core.post_tapir_command(
-        command="ModifyLamps",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="ModifyLamps", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -95,20 +94,15 @@ register_tool_for_dispatch(
     name="elements_modify_lamps",
     title="ModifyLamps",
     description="Modifies Lamp elements based on the given parameters.",
-    params_model=ModifyLampsParameters
+    params_model=ModifyLampsParameters,
 )
 
 
 def modify_meshes(conn_header: ConnHeader, params: ModifyMeshesParameters) -> dict:
-    """
-    Modifies the attributes of Mesh elements based on the given parameters.
-    """
-
+    """Modifies the attributes of Mesh elements based on the given parameters."""
     return conn_header.core.post_tapir_command(
-        command="ModifyMeshes",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="ModifyMeshes", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -116,20 +110,15 @@ register_tool_for_dispatch(
     name="elements_modify_meshes",
     title="ModifyMeshes",
     description="Modifies the attributes of Mesh elements based on the given parameters.",
-    params_model=ModifyMeshesParameters
+    params_model=ModifyMeshesParameters,
 )
 
 
 def modify_morphs(conn_header: ConnHeader, params: ModifyMorphsParameters) -> dict:
-    """
-    Modifies Morph elements based on the given parameters.
-    """
-
+    """Modifies Morph elements based on the given parameters."""
     return conn_header.core.post_tapir_command(
-        command="ModifyMorphs",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="ModifyMorphs", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -137,20 +126,15 @@ register_tool_for_dispatch(
     name="elements_modify_morphs",
     title="ModifyMorphs",
     description="Modifies Morph elements based on the given parameters.",
-    params_model=ModifyMorphsParameters
+    params_model=ModifyMorphsParameters,
 )
 
 
 def modify_objects(conn_header: ConnHeader, params: ModifyObjectsParameters) -> dict:
-    """
-    Modifies Object elements based on the given parameters.
-    """
-
+    """Modifies Object elements based on the given parameters."""
     return conn_header.core.post_tapir_command(
-        command="ModifyObjects",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="ModifyObjects", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -158,20 +142,15 @@ register_tool_for_dispatch(
     name="elements_modify_objects",
     title="ModifyObjects",
     description="Modifies Object elements based on the given parameters.",
-    params_model=ModifyObjectsParameters
+    params_model=ModifyObjectsParameters,
 )
 
 
 def modify_roofs(conn_header: ConnHeader, params: ModifyRoofsParameters) -> dict:
-    """
-    Modifies multi-plane Roof elements based on the given parameters.
-    """
-
+    """Modifies multi-plane Roof elements based on the given parameters."""
     return conn_header.core.post_tapir_command(
-        command="ModifyRoofs",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="ModifyRoofs", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -179,20 +158,15 @@ register_tool_for_dispatch(
     name="elements_modify_roofs",
     title="ModifyRoofs",
     description="Modifies multi-plane Roof elements based on the given parameters.",
-    params_model=ModifyRoofsParameters
+    params_model=ModifyRoofsParameters,
 )
 
 
 def modify_slabs(conn_header: ConnHeader, params: ModifySlabsParameters) -> dict:
-    """
-    Modifies Slab elements based on the given parameters.
-    """
-
+    """Modifies Slab elements based on the given parameters."""
     return conn_header.core.post_tapir_command(
-        command="ModifySlabs",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="ModifySlabs", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -200,20 +174,31 @@ register_tool_for_dispatch(
     name="elements_modify_slabs",
     title="ModifySlabs",
     description="Modifies Slab elements based on the given parameters.",
-    params_model=ModifySlabsParameters
+    params_model=ModifySlabsParameters,
+)
+
+
+def modify_texts(conn_header: ConnHeader, params: ModifyTextsParameters) -> dict:
+    """Modifies standalone Text elements based on the given parameters."""
+    return conn_header.core.post_tapir_command(
+        command="ModifyTexts", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    modify_texts,
+    name="elements_modify_texts",
+    title="ModifyTexts",
+    description="Modifies standalone Text elements based on the given parameters.",
+    params_model=ModifyTextsParameters,
 )
 
 
 def modify_walls(conn_header: ConnHeader, params: ModifyWallsParameters) -> dict:
-    """
-    Modifies Wall elements based on the given parameters.
-    """
-
+    """Modifies Wall elements based on the given parameters."""
     return conn_header.core.post_tapir_command(
-        command="ModifyWalls",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="ModifyWalls", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -221,20 +206,15 @@ register_tool_for_dispatch(
     name="elements_modify_walls",
     title="ModifyWalls",
     description="Modifies Wall elements based on the given parameters.",
-    params_model=ModifyWallsParameters
+    params_model=ModifyWallsParameters,
 )
 
 
 def modify_windows(conn_header: ConnHeader, params: ModifyWindowsParameters) -> dict:
-    """
-    Modifies Window elements based on the given parameters.
-    """
-
+    """Modifies Window elements based on the given parameters."""
     return conn_header.core.post_tapir_command(
-        command="ModifyWindows",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="ModifyWindows", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -242,5 +222,5 @@ register_tool_for_dispatch(
     name="elements_modify_windows",
     title="ModifyWindows",
     description="Modifies Window elements based on the given parameters.",
-    params_model=ModifyWindowsParameters
+    params_model=ModifyWindowsParameters,
 )

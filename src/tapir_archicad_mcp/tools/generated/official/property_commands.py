@@ -11,104 +11,107 @@ from multiconn_archicad.models.official.commands import (
     GetPropertyIdsParameters,
 )
 
+
 def get_all_property_group_ids(conn_header: ConnHeader, params: GetAllPropertyGroupIdsParameters) -> dict:
     """
-    Returns the identifier of every property group in the current plan. The optional propertyType parameter can be used to filter the results based on the type of the property group (Built-in or User Defined).
+    Returns the identifier of every property group in the current plan. The optional propertyType parameter can be used
+    to filter the results based on the type of the property group (Built-in or User Defined).
     """
-
     return conn_header.core.post_command(
         command="API.GetAllPropertyGroupIds",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
     )
-
 
 
 register_tool_for_dispatch(
     get_all_property_group_ids,
     name="properties_get_all_property_group_ids",
     title="GetAllPropertyGroupIds",
-    description="Returns the identifier of every property group in the current plan. The optional propertyType parameter can be used to filter the results based on the type of the property group (Built-in or User Defined).",
-    params_model=GetAllPropertyGroupIdsParameters
+    description=(
+        "Returns the identifier of every property group in the current plan. The optional propertyType parameter can "
+        "be used to filter the results based on the type of the property group (Built-in or User Defined)."
+    ),
+    params_model=GetAllPropertyGroupIdsParameters,
 )
 
 
 def get_all_property_ids(conn_header: ConnHeader, params: GetAllPropertyIdsParameters) -> dict:
     """
-    Returns the identifier of every property in the current plan. The optional propertyType parameter can be used to filter the results based on the type of the property (Built-in or User Defined).
-        This response is paginated. If 'next_page_token' is returned, call archicad_call_tool
-        again with the same arguments and page_token set to that token to get the next page
-        of results.
-    """
+    Returns the identifier of every property in the current plan. The optional propertyType parameter can be used to
+    filter the results based on the type of the property (Built-in or User Defined).
 
+    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
+    and page_token set to that token to get the next page of results.
+    """
     return conn_header.core.post_command(
-        command="API.GetAllPropertyIds",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="API.GetAllPropertyIds", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
+
 
 register_tool_for_dispatch(
     get_all_property_ids,
     name="properties_get_all_property_ids",
     title="GetAllPropertyIds",
-    description="Returns the identifier of every property in the current plan. The optional propertyType parameter can be used to filter the results based on the type of the property (Built-in or User Defined).",
+    description=(
+        "Returns the identifier of every property in the current plan. The optional propertyType parameter can be used "
+        "to filter the results based on the type of the property (Built-in or User Defined)."
+    ),
     params_model=GetAllPropertyIdsParameters,
-    pagination_field="properties"
+    pagination_field="propertyIds",
 )
 
 
 def get_all_property_ids_of_elements(conn_header: ConnHeader, params: GetAllPropertyIdsOfElementsParameters) -> dict:
     """
-    Returns all property identifiers of the given elements. The optional propertyType parameter can be used to filter the results based on the type of the property (Built-in or User Defined).
+    Returns all property identifiers of the given elements. The optional propertyType parameter can be used to filter
+    the results based on the type of the property (Built-in or User Defined).
     """
-
     return conn_header.core.post_command(
         command="API.GetAllPropertyIdsOfElements",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
     )
-
 
 
 register_tool_for_dispatch(
     get_all_property_ids_of_elements,
     name="properties_get_all_property_ids_of_elements",
     title="GetAllPropertyIdsOfElements",
-    description="Returns all property identifiers of the given elements. The optional propertyType parameter can be used to filter the results based on the type of the property (Built-in or User Defined).",
-    params_model=GetAllPropertyIdsOfElementsParameters
+    description=(
+        "Returns all property identifiers of the given elements. The optional propertyType parameter can be used to "
+        "filter the results based on the type of the property (Built-in or User Defined)."
+    ),
+    params_model=GetAllPropertyIdsOfElementsParameters,
 )
 
 
 def get_all_property_names(conn_header: ConnHeader) -> dict:
     """
     Returns the human-readable names of available Property definitions for debug and development purposes.
-        This response is paginated. If 'next_page_token' is returned, call archicad_call_tool
-        again with the same arguments and page_token set to that token to get the next page
-        of results.
-    """
 
-    return conn_header.core.post_command(
-        command="API.GetAllPropertyNames",
-        parameters={}
-    )
+    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
+    and page_token set to that token to get the next page of results.
+    """
+    return conn_header.core.post_command(command="API.GetAllPropertyNames", parameters={})
+
 
 register_tool_for_dispatch(
     get_all_property_names,
     name="properties_get_all_property_names",
     title="GetAllPropertyNames",
-    description="Returns the human-readable names of available Property definitions for debug and development purposes.",
+    description=(
+        "Returns the human-readable names of available Property definitions for debug and development purposes."
+    ),
     params_model=None,
-    pagination_field="properties"
+    pagination_field="properties",
 )
 
 
 def get_details_of_properties(conn_header: ConnHeader, params: GetDetailsOfPropertiesParameters) -> dict:
-    """
-    Returns the details of property definitions.
-    """
-
+    """Returns the details of property definitions."""
     return conn_header.core.post_command(
         command="API.GetDetailsOfProperties",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
     )
-
 
 
 register_tool_for_dispatch(
@@ -116,20 +119,18 @@ register_tool_for_dispatch(
     name="properties_get_details_of_properties",
     title="GetDetailsOfProperties",
     description="Returns the details of property definitions.",
-    params_model=GetDetailsOfPropertiesParameters
+    params_model=GetDetailsOfPropertiesParameters,
 )
 
 
-def get_property_definition_availability(conn_header: ConnHeader, params: GetPropertyDefinitionAvailabilityParameters) -> dict:
-    """
-    Returns the ids of classification items a given property definition is available for.
-    """
-
+def get_property_definition_availability(
+    conn_header: ConnHeader, params: GetPropertyDefinitionAvailabilityParameters
+) -> dict:
+    """Returns the ids of classification items a given property definition is available for."""
     return conn_header.core.post_command(
         command="API.GetPropertyDefinitionAvailability",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
     )
-
 
 
 register_tool_for_dispatch(
@@ -137,20 +138,15 @@ register_tool_for_dispatch(
     name="properties_get_property_definition_availability",
     title="GetPropertyDefinitionAvailability",
     description="Returns the ids of classification items a given property definition is available for.",
-    params_model=GetPropertyDefinitionAvailabilityParameters
+    params_model=GetPropertyDefinitionAvailabilityParameters,
 )
 
 
 def get_property_groups(conn_header: ConnHeader, params: GetPropertyGroupsParameters) -> dict:
-    """
-    Returns the details of property groups.
-    """
-
+    """Returns the details of property groups."""
     return conn_header.core.post_command(
-        command="API.GetPropertyGroups",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="API.GetPropertyGroups", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -158,20 +154,15 @@ register_tool_for_dispatch(
     name="properties_get_property_groups",
     title="GetPropertyGroups",
     description="Returns the details of property groups.",
-    params_model=GetPropertyGroupsParameters
+    params_model=GetPropertyGroupsParameters,
 )
 
 
 def get_property_ids(conn_header: ConnHeader, params: GetPropertyIdsParameters) -> dict:
-    """
-    Returns the identifiers of property definitions for the requested property names.
-    """
-
+    """Returns the identifiers of property definitions for the requested property names."""
     return conn_header.core.post_command(
-        command="API.GetPropertyIds",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="API.GetPropertyIds", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -179,6 +170,5 @@ register_tool_for_dispatch(
     name="properties_get_property_ids",
     title="GetPropertyIds",
     description="Returns the identifiers of property definitions for the requested property names.",
-    params_model=GetPropertyIdsParameters
+    params_model=GetPropertyIdsParameters,
 )
-

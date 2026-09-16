@@ -16,16 +16,12 @@ from multiconn_archicad.models.official.commands import (
     MoveNavigatorItemParameters,
 )
 
+
 def delete_navigator_items(conn_header: ConnHeader, params: DeleteNavigatorItemsParameters) -> dict:
-    """
-    Deletes items from navigator tree.
-    """
-
+    """Deletes items from navigator tree."""
     return conn_header.core.post_command(
-        command="API.DeleteNavigatorItems",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="API.DeleteNavigatorItems", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -33,20 +29,18 @@ register_tool_for_dispatch(
     name="navigator_delete_navigator_items",
     title="DeleteNavigatorItems",
     description="Deletes items from navigator tree.",
-    params_model=DeleteNavigatorItemsParameters
+    params_model=DeleteNavigatorItemsParameters,
 )
 
 
-def get_built_in_container_navigator_items(conn_header: ConnHeader, params: GetBuiltInContainerNavigatorItemsParameters) -> dict:
-    """
-    Returns the details of the built-in container navigator items identified by their Ids.
-    """
-
+def get_built_in_container_navigator_items(
+    conn_header: ConnHeader, params: GetBuiltInContainerNavigatorItemsParameters
+) -> dict:
+    """Returns the details of the built-in container navigator items identified by their Ids."""
     return conn_header.core.post_command(
         command="API.GetBuiltInContainerNavigatorItems",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
     )
-
 
 
 register_tool_for_dispatch(
@@ -54,20 +48,16 @@ register_tool_for_dispatch(
     name="navigator_get_built_in_container_navigator_items",
     title="GetBuiltInContainerNavigatorItems",
     description="Returns the details of the built-in container navigator items identified by their Ids.",
-    params_model=GetBuiltInContainerNavigatorItemsParameters
+    params_model=GetBuiltInContainerNavigatorItemsParameters,
 )
 
 
 def get_detail_navigator_items(conn_header: ConnHeader, params: GetDetailNavigatorItemsParameters) -> dict:
-    """
-    Returns the details of the detail navigator items identified by their Ids.
-    """
-
+    """Returns the details of the detail navigator items identified by their Ids."""
     return conn_header.core.post_command(
         command="API.GetDetailNavigatorItems",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
     )
-
 
 
 register_tool_for_dispatch(
@@ -75,20 +65,16 @@ register_tool_for_dispatch(
     name="navigator_get_detail_navigator_items",
     title="GetDetailNavigatorItems",
     description="Returns the details of the detail navigator items identified by their Ids.",
-    params_model=GetDetailNavigatorItemsParameters
+    params_model=GetDetailNavigatorItemsParameters,
 )
 
 
 def get_document3_d_navigator_items(conn_header: ConnHeader, params: GetDocument3DNavigatorItemsParameters) -> dict:
-    """
-    Returns the details of the 3D document navigator items identified by their Ids.
-    """
-
+    """Returns the details of the 3D document navigator items identified by their Ids."""
     return conn_header.core.post_command(
         command="API.GetDocument3DNavigatorItems",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
     )
-
 
 
 register_tool_for_dispatch(
@@ -96,20 +82,16 @@ register_tool_for_dispatch(
     name="navigator_get_document3_d_navigator_items",
     title="GetDocument3DNavigatorItems",
     description="Returns the details of the 3D document navigator items identified by their Ids.",
-    params_model=GetDocument3DNavigatorItemsParameters
+    params_model=GetDocument3DNavigatorItemsParameters,
 )
 
 
 def get_elevation_navigator_items(conn_header: ConnHeader, params: GetElevationNavigatorItemsParameters) -> dict:
-    """
-    Returns the detailed elevation navigator items identified by their Ids.
-    """
-
+    """Returns the detailed elevation navigator items identified by their Ids."""
     return conn_header.core.post_command(
         command="API.GetElevationNavigatorItems",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
     )
-
 
 
 register_tool_for_dispatch(
@@ -117,20 +99,18 @@ register_tool_for_dispatch(
     name="navigator_get_elevation_navigator_items",
     title="GetElevationNavigatorItems",
     description="Returns the detailed elevation navigator items identified by their Ids.",
-    params_model=GetElevationNavigatorItemsParameters
+    params_model=GetElevationNavigatorItemsParameters,
 )
 
 
-def get_interior_elevation_navigator_items(conn_header: ConnHeader, params: GetInteriorElevationNavigatorItemsParameters) -> dict:
-    """
-    Returns the details of the interior elevation navigator items identified by their Ids.
-    """
-
+def get_interior_elevation_navigator_items(
+    conn_header: ConnHeader, params: GetInteriorElevationNavigatorItemsParameters
+) -> dict:
+    """Returns the details of the interior elevation navigator items identified by their Ids."""
     return conn_header.core.post_command(
         command="API.GetInteriorElevationNavigatorItems",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
     )
-
 
 
 register_tool_for_dispatch(
@@ -138,20 +118,15 @@ register_tool_for_dispatch(
     name="navigator_get_interior_elevation_navigator_items",
     title="GetInteriorElevationNavigatorItems",
     description="Returns the details of the interior elevation navigator items identified by their Ids.",
-    params_model=GetInteriorElevationNavigatorItemsParameters
+    params_model=GetInteriorElevationNavigatorItemsParameters,
 )
 
 
 def get_navigator_item_tree(conn_header: ConnHeader, params: GetNavigatorItemTreeParameters) -> dict:
-    """
-    Returns the tree of navigator items.
-    """
-
+    """Returns the tree of navigator items."""
     return conn_header.core.post_command(
-        command="API.GetNavigatorItemTree",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="API.GetNavigatorItemTree", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -159,41 +134,35 @@ register_tool_for_dispatch(
     name="navigator_get_navigator_item_tree",
     title="GetNavigatorItemTree",
     description="Returns the tree of navigator items.",
-    params_model=GetNavigatorItemTreeParameters
+    params_model=GetNavigatorItemTreeParameters,
 )
 
 
 def get_navigator_items_type(conn_header: ConnHeader, params: GetNavigatorItemsTypeParameters) -> dict:
     """
-    Returns all navigator item types based on the navigator item identifiers given. An error is returned for each identifier that is not found.
+    Returns all navigator item types based on the navigator item identifiers given. An error is returned for each
+    identifier that is not found.
     """
-
     return conn_header.core.post_command(
-        command="API.GetNavigatorItemsType",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="API.GetNavigatorItemsType", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
     get_navigator_items_type,
     name="navigator_get_navigator_items_type",
     title="GetNavigatorItemsType",
-    description="Returns all navigator item types based on the navigator item identifiers given. An error is returned for each identifier that is not found.",
-    params_model=GetNavigatorItemsTypeParameters
+    description=(
+        "Returns all navigator item types based on the navigator item identifiers given. An error is returned for each "
+        "identifier that is not found."
+    ),
+    params_model=GetNavigatorItemsTypeParameters,
 )
 
 
 def get_publisher_set_names(conn_header: ConnHeader) -> dict:
-    """
-    Returns the names of available publisher sets.
-    """
-
-    return conn_header.core.post_command(
-        command="API.GetPublisherSetNames",
-        parameters={}
-    )
-
+    """Returns the names of available publisher sets."""
+    return conn_header.core.post_command(command="API.GetPublisherSetNames", parameters={})
 
 
 register_tool_for_dispatch(
@@ -201,20 +170,16 @@ register_tool_for_dispatch(
     name="navigator_get_publisher_set_names",
     title="GetPublisherSetNames",
     description="Returns the names of available publisher sets.",
-    params_model=None
+    params_model=None,
 )
 
 
 def get_section_navigator_items(conn_header: ConnHeader, params: GetSectionNavigatorItemsParameters) -> dict:
-    """
-    Returns the details of the section navigator items identified by their Ids.
-    """
-
+    """Returns the details of the section navigator items identified by their Ids."""
     return conn_header.core.post_command(
         command="API.GetSectionNavigatorItems",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
     )
-
 
 
 register_tool_for_dispatch(
@@ -222,20 +187,16 @@ register_tool_for_dispatch(
     name="navigator_get_section_navigator_items",
     title="GetSectionNavigatorItems",
     description="Returns the details of the section navigator items identified by their Ids.",
-    params_model=GetSectionNavigatorItemsParameters
+    params_model=GetSectionNavigatorItemsParameters,
 )
 
 
 def get_story_navigator_items(conn_header: ConnHeader, params: GetStoryNavigatorItemsParameters) -> dict:
-    """
-    Returns the details of the story navigator items identified by their Ids.
-    """
-
+    """Returns the details of the story navigator items identified by their Ids."""
     return conn_header.core.post_command(
         command="API.GetStoryNavigatorItems",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
     )
-
 
 
 register_tool_for_dispatch(
@@ -243,20 +204,16 @@ register_tool_for_dispatch(
     name="navigator_get_story_navigator_items",
     title="GetStoryNavigatorItems",
     description="Returns the details of the story navigator items identified by their Ids.",
-    params_model=GetStoryNavigatorItemsParameters
+    params_model=GetStoryNavigatorItemsParameters,
 )
 
 
 def get_worksheet_navigator_items(conn_header: ConnHeader, params: GetWorksheetNavigatorItemsParameters) -> dict:
-    """
-    Returns the details of the worksheet navigator items identified by their Ids.
-    """
-
+    """Returns the details of the worksheet navigator items identified by their Ids."""
     return conn_header.core.post_command(
         command="API.GetWorksheetNavigatorItems",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
     )
-
 
 
 register_tool_for_dispatch(
@@ -264,26 +221,29 @@ register_tool_for_dispatch(
     name="navigator_get_worksheet_navigator_items",
     title="GetWorksheetNavigatorItems",
     description="Returns the details of the worksheet navigator items identified by their Ids.",
-    params_model=GetWorksheetNavigatorItemsParameters
+    params_model=GetWorksheetNavigatorItemsParameters,
 )
 
 
 def move_navigator_item(conn_header: ConnHeader, params: MoveNavigatorItemParameters) -> dict:
     """
-    Moves the given navigator item under the <i>parentNavigatorItemId</i> in the navigator tree. If <i>previousNavigatorItemId</i> is not given then inserts it at the first place under the new parent. If it is given then inserts it after this navigator item.
+    Moves the given navigator item under the <i>parentNavigatorItemId</i> in the navigator tree. If
+    <i>previousNavigatorItemId</i> is not given then inserts it at the first place under the new parent. If it is given
+    then inserts it after this navigator item.
     """
-
     return conn_header.core.post_command(
-        command="API.MoveNavigatorItem",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="API.MoveNavigatorItem", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
     move_navigator_item,
     name="navigator_move_navigator_item",
     title="MoveNavigatorItem",
-    description="Moves the given navigator item under the <i>parentNavigatorItemId</i> in the navigator tree. If <i>previousNavigatorItemId</i> is not given then inserts it at the first place under the new parent. If it is given then inserts it after this navigator item.",
-    params_model=MoveNavigatorItemParameters
+    description=(
+        "Moves the given navigator item under the <i>parentNavigatorItemId</i> in the navigator tree. If "
+        "<i>previousNavigatorItemId</i> is not given then inserts it at the first place under the new parent. If it is "
+        "given then inserts it after this navigator item."
+    ),
+    params_model=MoveNavigatorItemParameters,
 )

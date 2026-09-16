@@ -9,18 +9,18 @@ from multiconn_archicad.models.tapir.commands import (
     IFCFileOperationParameters,
 )
 
+
 def get_elements_by_ifc_ids(conn_header: ConnHeader, params: GetElementsByIFCIdsParameters) -> dict:
     """
     Retrieves the elements by the given IFC identifiers.
-        This response is paginated. If 'next_page_token' is returned, call archicad_call_tool
-        again with the same arguments and page_token set to that token to get the next page
-        of results.
-    """
 
+    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
+    and page_token set to that token to get the next page of results.
+    """
     return conn_header.core.post_tapir_command(
-        command="GetElementsByIFCIds",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="GetElementsByIFCIds", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
+
 
 register_tool_for_dispatch(
     get_elements_by_ifc_ids,
@@ -28,20 +28,15 @@ register_tool_for_dispatch(
     title="GetElementsByIFCIds",
     description="Retrieves the elements by the given IFC identifiers.",
     params_model=GetElementsByIFCIdsParameters,
-    pagination_field="elementsByIFCIds"
+    pagination_field="elementsByIFCIds",
 )
 
 
 def get_ifc_ids_of_elements(conn_header: ConnHeader, params: GetIFCIdsOfElementsParameters) -> dict:
-    """
-    Retrieves the IFC identifiers of the given elements.
-    """
-
+    """Retrieves the IFC identifiers of the given elements."""
     return conn_header.core.post_tapir_command(
-        command="GetIFCIdsOfElements",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="GetIFCIdsOfElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -49,20 +44,16 @@ register_tool_for_dispatch(
     name="ifc_get_ifc_ids_of_elements",
     title="GetIFCIdsOfElements",
     description="Retrieves the IFC identifiers of the given elements.",
-    params_model=GetIFCIdsOfElementsParameters
+    params_model=GetIFCIdsOfElementsParameters,
 )
 
 
 def get_ifc_properties_of_elements(conn_header: ConnHeader, params: GetIFCPropertiesOfElementsParameters) -> dict:
-    """
-    Retrieves the IFC properties of the given elements.
-    """
-
+    """Retrieves the IFC properties of the given elements."""
     return conn_header.core.post_tapir_command(
         command="GetIFCPropertiesOfElements",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
     )
-
 
 
 register_tool_for_dispatch(
@@ -70,20 +61,15 @@ register_tool_for_dispatch(
     name="ifc_get_ifc_properties_of_elements",
     title="GetIFCPropertiesOfElements",
     description="Retrieves the IFC properties of the given elements.",
-    params_model=GetIFCPropertiesOfElementsParameters
+    params_model=GetIFCPropertiesOfElementsParameters,
 )
 
 
 def get_ifc_type_of_elements(conn_header: ConnHeader, params: GetIFCTypeOfElementsParameters) -> dict:
-    """
-    Retrieves the IFC types of the given elements.
-    """
-
+    """Retrieves the IFC types of the given elements."""
     return conn_header.core.post_tapir_command(
-        command="GetIFCTypeOfElements",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="GetIFCTypeOfElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -91,20 +77,15 @@ register_tool_for_dispatch(
     name="ifc_get_ifc_type_of_elements",
     title="GetIFCTypeOfElements",
     description="Retrieves the IFC types of the given elements.",
-    params_model=GetIFCTypeOfElementsParameters
+    params_model=GetIFCTypeOfElementsParameters,
 )
 
 
 def ifc_file_operation(conn_header: ConnHeader, params: IFCFileOperationParameters) -> dict:
-    """
-    Executes an IFC file operation.
-    """
-
+    """Executes an IFC file operation."""
     return conn_header.core.post_tapir_command(
-        command="IFCFileOperation",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="IFCFileOperation", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -112,6 +93,5 @@ register_tool_for_dispatch(
     name="ifc_ifc_file_operation",
     title="IFCFileOperation",
     description="Executes an IFC file operation.",
-    params_model=IFCFileOperationParameters
+    params_model=IFCFileOperationParameters,
 )
-

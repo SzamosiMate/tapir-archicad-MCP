@@ -28,16 +28,12 @@ from multiconn_archicad.models.tapir.commands import (
     GetZoneCategoriesParameters,
 )
 
+
 def create_building_materials(conn_header: ConnHeader, params: CreateBuildingMaterialsParameters) -> dict:
-    """
-    Creates or overwrites Building Material attributes based on the given parameters.
-    """
-
+    """Creates or overwrites Building Material attributes based on the given parameters."""
     return conn_header.core.post_tapir_command(
-        command="CreateBuildingMaterials",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="CreateBuildingMaterials", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -45,20 +41,15 @@ register_tool_for_dispatch(
     name="attributes_create_building_materials",
     title="CreateBuildingMaterials",
     description="Creates or overwrites Building Material attributes based on the given parameters.",
-    params_model=CreateBuildingMaterialsParameters
+    params_model=CreateBuildingMaterialsParameters,
 )
 
 
 def create_composites(conn_header: ConnHeader, params: CreateCompositesParameters) -> dict:
-    """
-    Creates or overwrites Composite attributes based on the given parameters.
-    """
-
+    """Creates or overwrites Composite attributes based on the given parameters."""
     return conn_header.core.post_tapir_command(
-        command="CreateComposites",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="CreateComposites", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -66,20 +57,15 @@ register_tool_for_dispatch(
     name="attributes_create_composites",
     title="CreateComposites",
     description="Creates or overwrites Composite attributes based on the given parameters.",
-    params_model=CreateCompositesParameters
+    params_model=CreateCompositesParameters,
 )
 
 
 def create_fills(conn_header: ConnHeader, params: CreateFillsParameters) -> dict:
-    """
-    Creates or overwrites Fill attributes based on the given parameters.
-    """
-
+    """Creates or overwrites Fill attributes based on the given parameters."""
     return conn_header.core.post_tapir_command(
-        command="CreateFills",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="CreateFills", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -87,20 +73,15 @@ register_tool_for_dispatch(
     name="attributes_create_fills",
     title="CreateFills",
     description="Creates or overwrites Fill attributes based on the given parameters.",
-    params_model=CreateFillsParameters
+    params_model=CreateFillsParameters,
 )
 
 
 def create_layer_combinations(conn_header: ConnHeader, params: CreateLayerCombinationsParameters) -> dict:
-    """
-    Creates or overwrites Layer Combination attributes based on the given parameters.
-    """
-
+    """Creates or overwrites Layer Combination attributes based on the given parameters."""
     return conn_header.core.post_tapir_command(
-        command="CreateLayerCombinations",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="CreateLayerCombinations", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -108,20 +89,15 @@ register_tool_for_dispatch(
     name="attributes_create_layer_combinations",
     title="CreateLayerCombinations",
     description="Creates or overwrites Layer Combination attributes based on the given parameters.",
-    params_model=CreateLayerCombinationsParameters
+    params_model=CreateLayerCombinationsParameters,
 )
 
 
 def create_layers(conn_header: ConnHeader, params: CreateLayersParameters) -> dict:
-    """
-    Creates or overwrites Layer attributes based on the given parameters.
-    """
-
+    """Creates or overwrites Layer attributes based on the given parameters."""
     return conn_header.core.post_tapir_command(
-        command="CreateLayers",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="CreateLayers", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -129,20 +105,15 @@ register_tool_for_dispatch(
     name="attributes_create_layers",
     title="CreateLayers",
     description="Creates or overwrites Layer attributes based on the given parameters.",
-    params_model=CreateLayersParameters
+    params_model=CreateLayersParameters,
 )
 
 
 def create_lines(conn_header: ConnHeader, params: CreateLinesParameters) -> dict:
-    """
-    Creates or overwrites Line attributes based on the given parameters.
-    """
-
+    """Creates or overwrites Line attributes based on the given parameters."""
     return conn_header.core.post_tapir_command(
-        command="CreateLines",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="CreateLines", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -150,20 +121,15 @@ register_tool_for_dispatch(
     name="attributes_create_lines",
     title="CreateLines",
     description="Creates or overwrites Line attributes based on the given parameters.",
-    params_model=CreateLinesParameters
+    params_model=CreateLinesParameters,
 )
 
 
 def create_mep_systems(conn_header: ConnHeader, params: CreateMEPSystemsParameters) -> dict:
-    """
-    Creates or overwrites MEP System attributes based on the given parameters.
-    """
-
+    """Creates or overwrites MEP System attributes based on the given parameters."""
     return conn_header.core.post_tapir_command(
-        command="CreateMEPSystems",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="CreateMEPSystems", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -171,20 +137,15 @@ register_tool_for_dispatch(
     name="attributes_create_mep_systems",
     title="CreateMEPSystems",
     description="Creates or overwrites MEP System attributes based on the given parameters.",
-    params_model=CreateMEPSystemsParameters
+    params_model=CreateMEPSystemsParameters,
 )
 
 
 def create_pen_tables(conn_header: ConnHeader, params: CreatePenTablesParameters) -> dict:
-    """
-    Creates or overwrites Pen Table attributes based on the given parameters.
-    """
-
+    """Creates or overwrites Pen Table attributes based on the given parameters."""
     return conn_header.core.post_tapir_command(
-        command="CreatePenTables",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="CreatePenTables", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -192,7 +153,7 @@ register_tool_for_dispatch(
     name="attributes_create_pen_tables",
     title="CreatePenTables",
     description="Creates or overwrites Pen Table attributes based on the given parameters.",
-    params_model=CreatePenTablesParameters
+    params_model=CreatePenTablesParameters,
 )
 
 
@@ -200,33 +161,28 @@ def create_profiles(conn_header: ConnHeader, params: CreateProfilesParameters) -
     """
     Creates or overwrites Profile attributes as a copy of an existing Profile's geometry, based on the given parameters.
     """
-
     return conn_header.core.post_tapir_command(
-        command="CreateProfiles",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="CreateProfiles", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
     create_profiles,
     name="attributes_create_profiles",
     title="CreateProfiles",
-    description="Creates or overwrites Profile attributes as a copy of an existing Profile's geometry, based on the given parameters.",
-    params_model=CreateProfilesParameters
+    description=(
+        "Creates or overwrites Profile attributes as a copy of an existing Profile's geometry, based on the given "
+        "parameters."
+    ),
+    params_model=CreateProfilesParameters,
 )
 
 
 def create_surfaces(conn_header: ConnHeader, params: CreateSurfacesParameters) -> dict:
-    """
-    Creates or overwrites Surface attributes based on the given parameters.
-    """
-
+    """Creates or overwrites Surface attributes based on the given parameters."""
     return conn_header.core.post_tapir_command(
-        command="CreateSurfaces",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="CreateSurfaces", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -234,20 +190,15 @@ register_tool_for_dispatch(
     name="attributes_create_surfaces",
     title="CreateSurfaces",
     description="Creates or overwrites Surface attributes based on the given parameters.",
-    params_model=CreateSurfacesParameters
+    params_model=CreateSurfacesParameters,
 )
 
 
 def create_zone_categories(conn_header: ConnHeader, params: CreateZoneCategoriesParameters) -> dict:
-    """
-    Creates or overwrites Zone Category attributes based on the given parameters.
-    """
-
+    """Creates or overwrites Zone Category attributes based on the given parameters."""
     return conn_header.core.post_tapir_command(
-        command="CreateZoneCategories",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="CreateZoneCategories", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -255,22 +206,21 @@ register_tool_for_dispatch(
     name="attributes_create_zone_categories",
     title="CreateZoneCategories",
     description="Creates or overwrites Zone Category attributes based on the given parameters.",
-    params_model=CreateZoneCategoriesParameters
+    params_model=CreateZoneCategoriesParameters,
 )
 
 
 def get_attributes_by_type(conn_header: ConnHeader, params: GetAttributesByTypeParameters) -> dict:
     """
     Returns the details of every attribute of the given type.
-        This response is paginated. If 'next_page_token' is returned, call archicad_call_tool
-        again with the same arguments and page_token set to that token to get the next page
-        of results.
-    """
 
+    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
+    and page_token set to that token to get the next page of results.
+    """
     return conn_header.core.post_tapir_command(
-        command="GetAttributesByType",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="GetAttributesByType", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
+
 
 register_tool_for_dispatch(
     get_attributes_by_type,
@@ -278,20 +228,18 @@ register_tool_for_dispatch(
     title="GetAttributesByType",
     description="Returns the details of every attribute of the given type.",
     params_model=GetAttributesByTypeParameters,
-    pagination_field="attributes"
+    pagination_field="attributes",
 )
 
 
-def get_building_material_physical_properties(conn_header: ConnHeader, params: GetBuildingMaterialPhysicalPropertiesParameters) -> dict:
-    """
-    Retrieves the physical properties of the given Building Materials.
-    """
-
+def get_building_material_physical_properties(
+    conn_header: ConnHeader, params: GetBuildingMaterialPhysicalPropertiesParameters
+) -> dict:
+    """Retrieves the physical properties of the given Building Materials."""
     return conn_header.core.post_tapir_command(
         command="GetBuildingMaterialPhysicalProperties",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
     )
-
 
 
 register_tool_for_dispatch(
@@ -299,20 +247,15 @@ register_tool_for_dispatch(
     name="attributes_get_building_material_physical_properties",
     title="GetBuildingMaterialPhysicalProperties",
     description="Retrieves the physical properties of the given Building Materials.",
-    params_model=GetBuildingMaterialPhysicalPropertiesParameters
+    params_model=GetBuildingMaterialPhysicalPropertiesParameters,
 )
 
 
 def get_building_materials(conn_header: ConnHeader, params: GetBuildingMaterialsParameters) -> dict:
-    """
-    Returns the details of the given Building Material attributes.
-    """
-
+    """Returns the details of the given Building Material attributes."""
     return conn_header.core.post_tapir_command(
-        command="GetBuildingMaterials",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="GetBuildingMaterials", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -320,20 +263,15 @@ register_tool_for_dispatch(
     name="attributes_get_building_materials",
     title="GetBuildingMaterials",
     description="Returns the details of the given Building Material attributes.",
-    params_model=GetBuildingMaterialsParameters
+    params_model=GetBuildingMaterialsParameters,
 )
 
 
 def get_composites(conn_header: ConnHeader, params: GetCompositesParameters) -> dict:
-    """
-    Returns the details of the given Composite attributes.
-    """
-
+    """Returns the details of the given Composite attributes."""
     return conn_header.core.post_tapir_command(
-        command="GetComposites",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="GetComposites", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -341,20 +279,15 @@ register_tool_for_dispatch(
     name="attributes_get_composites",
     title="GetComposites",
     description="Returns the details of the given Composite attributes.",
-    params_model=GetCompositesParameters
+    params_model=GetCompositesParameters,
 )
 
 
 def get_fills(conn_header: ConnHeader, params: GetFillsParameters) -> dict:
-    """
-    Returns the details of the given Fill attributes.
-    """
-
+    """Returns the details of the given Fill attributes."""
     return conn_header.core.post_tapir_command(
-        command="GetFills",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="GetFills", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -362,20 +295,15 @@ register_tool_for_dispatch(
     name="attributes_get_fills",
     title="GetFills",
     description="Returns the details of the given Fill attributes.",
-    params_model=GetFillsParameters
+    params_model=GetFillsParameters,
 )
 
 
 def get_layer_combinations(conn_header: ConnHeader, params: GetLayerCombinationsParameters) -> dict:
-    """
-    Returns the details of layer combination attributes.
-    """
-
+    """Returns the details of layer combination attributes."""
     return conn_header.core.post_tapir_command(
-        command="GetLayerCombinations",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="GetLayerCombinations", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -383,20 +311,15 @@ register_tool_for_dispatch(
     name="attributes_get_layer_combinations",
     title="GetLayerCombinations",
     description="Returns the details of layer combination attributes.",
-    params_model=GetLayerCombinationsParameters
+    params_model=GetLayerCombinationsParameters,
 )
 
 
 def get_layers(conn_header: ConnHeader, params: GetLayersParameters) -> dict:
-    """
-    Returns the details of the given Layer attributes.
-    """
-
+    """Returns the details of the given Layer attributes."""
     return conn_header.core.post_tapir_command(
-        command="GetLayers",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="GetLayers", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -404,20 +327,15 @@ register_tool_for_dispatch(
     name="attributes_get_layers",
     title="GetLayers",
     description="Returns the details of the given Layer attributes.",
-    params_model=GetLayersParameters
+    params_model=GetLayersParameters,
 )
 
 
 def get_lines(conn_header: ConnHeader, params: GetLinesParameters) -> dict:
-    """
-    Returns the details of the given Line attributes.
-    """
-
+    """Returns the details of the given Line attributes."""
     return conn_header.core.post_tapir_command(
-        command="GetLines",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="GetLines", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -425,20 +343,15 @@ register_tool_for_dispatch(
     name="attributes_get_lines",
     title="GetLines",
     description="Returns the details of the given Line attributes.",
-    params_model=GetLinesParameters
+    params_model=GetLinesParameters,
 )
 
 
 def get_mep_systems(conn_header: ConnHeader, params: GetMEPSystemsParameters) -> dict:
-    """
-    Returns the details of the given MEP System attributes.
-    """
-
+    """Returns the details of the given MEP System attributes."""
     return conn_header.core.post_tapir_command(
-        command="GetMEPSystems",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="GetMEPSystems", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -446,20 +359,15 @@ register_tool_for_dispatch(
     name="attributes_get_mep_systems",
     title="GetMEPSystems",
     description="Returns the details of the given MEP System attributes.",
-    params_model=GetMEPSystemsParameters
+    params_model=GetMEPSystemsParameters,
 )
 
 
 def get_pen_tables(conn_header: ConnHeader, params: GetPenTablesParameters) -> dict:
-    """
-    Returns the details of the given Pen Table attributes.
-    """
-
+    """Returns the details of the given Pen Table attributes."""
     return conn_header.core.post_tapir_command(
-        command="GetPenTables",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="GetPenTables", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -467,20 +375,15 @@ register_tool_for_dispatch(
     name="attributes_get_pen_tables",
     title="GetPenTables",
     description="Returns the details of the given Pen Table attributes.",
-    params_model=GetPenTablesParameters
+    params_model=GetPenTablesParameters,
 )
 
 
 def get_profiles(conn_header: ConnHeader, params: GetProfilesParameters) -> dict:
-    """
-    Returns the details of the given Profile attributes.
-    """
-
+    """Returns the details of the given Profile attributes."""
     return conn_header.core.post_tapir_command(
-        command="GetProfiles",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="GetProfiles", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -488,20 +391,15 @@ register_tool_for_dispatch(
     name="attributes_get_profiles",
     title="GetProfiles",
     description="Returns the details of the given Profile attributes.",
-    params_model=GetProfilesParameters
+    params_model=GetProfilesParameters,
 )
 
 
 def get_surfaces(conn_header: ConnHeader, params: GetSurfacesParameters) -> dict:
-    """
-    Returns the details of the given Surface attributes.
-    """
-
+    """Returns the details of the given Surface attributes."""
     return conn_header.core.post_tapir_command(
-        command="GetSurfaces",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="GetSurfaces", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -509,20 +407,15 @@ register_tool_for_dispatch(
     name="attributes_get_surfaces",
     title="GetSurfaces",
     description="Returns the details of the given Surface attributes.",
-    params_model=GetSurfacesParameters
+    params_model=GetSurfacesParameters,
 )
 
 
 def get_zone_categories(conn_header: ConnHeader, params: GetZoneCategoriesParameters) -> dict:
-    """
-    Returns the details of the given Zone Category attributes.
-    """
-
+    """Returns the details of the given Zone Category attributes."""
     return conn_header.core.post_tapir_command(
-        command="GetZoneCategories",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="GetZoneCategories", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -530,6 +423,5 @@ register_tool_for_dispatch(
     name="attributes_get_zone_categories",
     title="GetZoneCategories",
     description="Returns the details of the given Zone Category attributes.",
-    params_model=GetZoneCategoriesParameters
+    params_model=GetZoneCategoriesParameters,
 )
-

@@ -27,37 +27,38 @@ from multiconn_archicad.models.tapir.commands import (
     UpdateDrawingsParameters,
 )
 
+
 def change_drawing_link(conn_header: ConnHeader, params: ChangeDrawingLinkParameters) -> dict:
     """
-    Relinks a Drawing to a different source navigator item. Archicad has no in-place relink API, so this recreates the Drawing against the new source and deletes the original - the returned elementId is a NEW guid, not the input one. The Drawing Title marker's own position is not preserved (undocumented Archicad limitation).
+    Relinks a Drawing to a different source navigator item. Archicad has no in-place relink API, so this recreates the
+    Drawing against the new source and deletes the original - the returned elementId is a NEW guid, not the input one.
+    The Drawing Title marker's own position is not preserved (undocumented Archicad limitation).
     """
-
     return conn_header.core.post_tapir_command(
-        command="ChangeDrawingLink",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="ChangeDrawingLink", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
     change_drawing_link,
     name="navigator_change_drawing_link",
     title="ChangeDrawingLink",
-    description="Relinks a Drawing to a different source navigator item. Archicad has no in-place relink API, so this recreates the Drawing against the new source and deletes the original - the returned elementId is a NEW guid, not the input one. The Drawing Title marker's own position is not preserved (undocumented Archicad limitation).",
-    params_model=ChangeDrawingLinkParameters
+    description=(
+        "Relinks a Drawing to a different source navigator item. Archicad has no in-place relink API, so this "
+        "recreates the Drawing against the new source and deletes the original - the returned elementId is a NEW guid, "
+        "not the input one. The Drawing Title marker's own position is not preserved (undocumented Archicad "
+        "limitation)."
+    ),
+    params_model=ChangeDrawingLinkParameters,
 )
 
 
 def clone_project_map_item_to_view_map(conn_header: ConnHeader, params: CloneProjectMapItemToViewMapParameters) -> dict:
-    """
-    Clones Project Map viewpoints into the View Map, optionally into a specified folder.
-    """
-
+    """Clones Project Map viewpoints into the View Map, optionally into a specified folder."""
     return conn_header.core.post_tapir_command(
         command="CloneProjectMapItemToViewMap",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
     )
-
 
 
 register_tool_for_dispatch(
@@ -65,20 +66,15 @@ register_tool_for_dispatch(
     name="navigator_clone_project_map_item_to_view_map",
     title="CloneProjectMapItemToViewMap",
     description="Clones Project Map viewpoints into the View Map, optionally into a specified folder.",
-    params_model=CloneProjectMapItemToViewMapParameters
+    params_model=CloneProjectMapItemToViewMapParameters,
 )
 
 
 def create_details(conn_header: ConnHeader, params: CreateDetailsParameters) -> dict:
-    """
-    Creates independent Detail databases.
-    """
-
+    """Creates independent Detail databases."""
     return conn_header.core.post_tapir_command(
-        command="CreateDetails",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="CreateDetails", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -86,20 +82,15 @@ register_tool_for_dispatch(
     name="navigator_create_details",
     title="CreateDetails",
     description="Creates independent Detail databases.",
-    params_model=CreateDetailsParameters
+    params_model=CreateDetailsParameters,
 )
 
 
 def create_drawings(conn_header: ConnHeader, params: CreateDrawingsParameters) -> dict:
-    """
-    Creates Drawing elements on the specified or active layout from navigator items.
-    """
-
+    """Creates Drawing elements on the specified or active layout from navigator items."""
     return conn_header.core.post_tapir_command(
-        command="CreateDrawings",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="CreateDrawings", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -107,41 +98,39 @@ register_tool_for_dispatch(
     name="navigator_create_drawings",
     title="CreateDrawings",
     description="Creates Drawing elements on the specified or active layout from navigator items.",
-    params_model=CreateDrawingsParameters
+    params_model=CreateDrawingsParameters,
 )
 
 
 def create_interior_elevations(conn_header: ConnHeader, params: CreateInteriorElevationsParameters) -> dict:
     """
-    Creates Interior Elevation elements on the floor plan. Every consecutive pair of the given points becomes one segment, each with its own viewpoint - feed it the corner points of a room to get an interior elevation of that room.
+    Creates Interior Elevation elements on the floor plan. Every consecutive pair of the given points becomes one
+    segment, each with its own viewpoint - feed it the corner points of a room to get an interior elevation of that
+    room.
     """
-
     return conn_header.core.post_tapir_command(
-        command="CreateInteriorElevations",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="CreateInteriorElevations", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
     create_interior_elevations,
     name="navigator_create_interior_elevations",
     title="CreateInteriorElevations",
-    description="Creates Interior Elevation elements on the floor plan. Every consecutive pair of the given points becomes one segment, each with its own viewpoint - feed it the corner points of a room to get an interior elevation of that room.",
-    params_model=CreateInteriorElevationsParameters
+    description=(
+        "Creates Interior Elevation elements on the floor plan. Every consecutive pair of the given points becomes one "
+        "segment, each with its own viewpoint - feed it the corner points of a room to get an interior elevation of "
+        "that room."
+    ),
+    params_model=CreateInteriorElevationsParameters,
 )
 
 
 def create_layout(conn_header: ConnHeader, params: CreateLayoutParameters) -> dict:
-    """
-    Creates Layouts and their backing master layouts.
-    """
-
+    """Creates Layouts and their backing master layouts."""
     return conn_header.core.post_tapir_command(
-        command="CreateLayout",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="CreateLayout", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -149,20 +138,15 @@ register_tool_for_dispatch(
     name="navigator_create_layout",
     title="CreateLayout",
     description="Creates Layouts and their backing master layouts.",
-    params_model=CreateLayoutParameters
+    params_model=CreateLayoutParameters,
 )
 
 
 def create_layout_subset(conn_header: ConnHeader, params: CreateLayoutSubsetParameters) -> dict:
-    """
-    Creates Layout Book subsets.
-    """
-
+    """Creates Layout Book subsets."""
     return conn_header.core.post_tapir_command(
-        command="CreateLayoutSubset",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="CreateLayoutSubset", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -170,20 +154,15 @@ register_tool_for_dispatch(
     name="navigator_create_layout_subset",
     title="CreateLayoutSubset",
     description="Creates Layout Book subsets.",
-    params_model=CreateLayoutSubsetParameters
+    params_model=CreateLayoutSubsetParameters,
 )
 
 
 def create_sections(conn_header: ConnHeader, params: CreateSectionsParameters) -> dict:
-    """
-    Creates Section elements on the floor plan.
-    """
-
+    """Creates Section elements on the floor plan."""
     return conn_header.core.post_tapir_command(
-        command="CreateSections",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="CreateSections", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -191,20 +170,15 @@ register_tool_for_dispatch(
     name="navigator_create_sections",
     title="CreateSections",
     description="Creates Section elements on the floor plan.",
-    params_model=CreateSectionsParameters
+    params_model=CreateSectionsParameters,
 )
 
 
 def create_view_map_folder(conn_header: ConnHeader, params: CreateViewMapFolderParameters) -> dict:
-    """
-    Creates a new folder in the View Map.
-    """
-
+    """Creates a new folder in the View Map."""
     return conn_header.core.post_tapir_command(
-        command="CreateViewMapFolder",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="CreateViewMapFolder", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -212,7 +186,7 @@ register_tool_for_dispatch(
     name="navigator_create_view_map_folder",
     title="CreateViewMapFolder",
     description="Creates a new folder in the View Map.",
-    params_model=CreateViewMapFolderParameters
+    params_model=CreateViewMapFolderParameters,
 )
 
 
@@ -220,33 +194,28 @@ def create_views_in_view_map(conn_header: ConnHeader, params: CreateViewsInViewM
     """
     Creates independent (non-clone) navigator views in the View Map by copying database and settings from source items.
     """
-
     return conn_header.core.post_tapir_command(
-        command="CreateViewsInViewMap",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="CreateViewsInViewMap", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
     create_views_in_view_map,
     name="navigator_create_views_in_view_map",
     title="CreateViewsInViewMap",
-    description="Creates independent (non-clone) navigator views in the View Map by copying database and settings from source items.",
-    params_model=CreateViewsInViewMapParameters
+    description=(
+        "Creates independent (non-clone) navigator views in the View Map by copying database and settings from source "
+        "items."
+    ),
+    params_model=CreateViewsInViewMapParameters,
 )
 
 
 def create_worksheets(conn_header: ConnHeader, params: CreateWorksheetsParameters) -> dict:
-    """
-    Creates independent Worksheet databases.
-    """
-
+    """Creates independent Worksheet databases."""
     return conn_header.core.post_tapir_command(
-        command="CreateWorksheets",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="CreateWorksheets", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -254,20 +223,15 @@ register_tool_for_dispatch(
     name="navigator_create_worksheets",
     title="CreateWorksheets",
     description="Creates independent Worksheet databases.",
-    params_model=CreateWorksheetsParameters
+    params_model=CreateWorksheetsParameters,
 )
 
 
 def fit_in_window(conn_header: ConnHeader, params: FitInWindowParameters) -> dict:
-    """
-    Zooms to the given elements or fits everything in the window.
-    """
-
+    """Zooms to the given elements or fits everything in the window."""
     return conn_header.core.post_tapir_command(
-        command="FitInWindow",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="FitInWindow", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -275,20 +239,18 @@ register_tool_for_dispatch(
     name="navigator_fit_in_window",
     title="FitInWindow",
     description="Zooms to the given elements or fits everything in the window.",
-    params_model=FitInWindowParameters
+    params_model=FitInWindowParameters,
 )
 
 
-def get_database_id_from_navigator_item_id(conn_header: ConnHeader, params: GetDatabaseIdFromNavigatorItemIdParameters) -> dict:
-    """
-    Gets the ID of the database associated with the supplied navigator item id
-    """
-
+def get_database_id_from_navigator_item_id(
+    conn_header: ConnHeader, params: GetDatabaseIdFromNavigatorItemIdParameters
+) -> dict:
+    """Gets the ID of the database associated with the supplied navigator item id"""
     return conn_header.core.post_tapir_command(
         command="GetDatabaseIdFromNavigatorItemId",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
     )
-
 
 
 register_tool_for_dispatch(
@@ -296,20 +258,13 @@ register_tool_for_dispatch(
     name="navigator_get_database_id_from_navigator_item_id",
     title="GetDatabaseIdFromNavigatorItemId",
     description="Gets the ID of the database associated with the supplied navigator item id",
-    params_model=GetDatabaseIdFromNavigatorItemIdParameters
+    params_model=GetDatabaseIdFromNavigatorItemIdParameters,
 )
 
 
 def get_layout_custom_scheme(conn_header: ConnHeader) -> dict:
-    """
-    Gets the Layout Info Panel custom field definitions (name and key) from Book Settings.
-    """
-
-    return conn_header.core.post_tapir_command(
-        command="GetLayoutCustomScheme",
-        parameters={}
-    )
-
+    """Gets the Layout Info Panel custom field definitions (name and key) from Book Settings."""
+    return conn_header.core.post_tapir_command(command="GetLayoutCustomScheme", parameters={})
 
 
 register_tool_for_dispatch(
@@ -317,20 +272,15 @@ register_tool_for_dispatch(
     name="navigator_get_layout_custom_scheme",
     title="GetLayoutCustomScheme",
     description="Gets the Layout Info Panel custom field definitions (name and key) from Book Settings.",
-    params_model=None
+    params_model=None,
 )
 
 
 def get_layout_settings(conn_header: ConnHeader, params: GetLayoutSettingsParameters) -> dict:
-    """
-    Gets settings of layouts, including Layout Info Panel custom data fields.
-    """
-
+    """Gets settings of layouts, including Layout Info Panel custom data fields."""
     return conn_header.core.post_tapir_command(
-        command="GetLayoutSettings",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="GetLayoutSettings", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -338,20 +288,13 @@ register_tool_for_dispatch(
     name="navigator_get_layout_settings",
     title="GetLayoutSettings",
     description="Gets settings of layouts, including Layout Info Panel custom data fields.",
-    params_model=GetLayoutSettingsParameters
+    params_model=GetLayoutSettingsParameters,
 )
 
 
 def get_model_view_options(conn_header: ConnHeader) -> dict:
-    """
-    Gets all model view options
-    """
-
-    return conn_header.core.post_tapir_command(
-        command="GetModelViewOptions",
-        parameters={}
-    )
-
+    """Gets all model view options"""
+    return conn_header.core.post_tapir_command(command="GetModelViewOptions", parameters={})
 
 
 register_tool_for_dispatch(
@@ -359,20 +302,15 @@ register_tool_for_dispatch(
     name="navigator_get_model_view_options",
     title="GetModelViewOptions",
     description="Gets all model view options",
-    params_model=None
+    params_model=None,
 )
 
 
 def get_view2_d_transformations(conn_header: ConnHeader, params: GetView2DTransformationsParameters) -> dict:
-    """
-    Get zoom and rotation of 2D views
-    """
-
+    """Get zoom and rotation of 2D views"""
     return conn_header.core.post_tapir_command(
-        command="GetView2DTransformations",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="GetView2DTransformations", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -380,20 +318,15 @@ register_tool_for_dispatch(
     name="navigator_get_view2_d_transformations",
     title="GetView2DTransformations",
     description="Get zoom and rotation of 2D views",
-    params_model=GetView2DTransformationsParameters
+    params_model=GetView2DTransformationsParameters,
 )
 
 
 def get_view_settings(conn_header: ConnHeader, params: GetViewSettingsParameters) -> dict:
-    """
-    Gets the view settings of navigator items
-    """
-
+    """Gets the view settings of navigator items"""
     return conn_header.core.post_tapir_command(
-        command="GetViewSettings",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="GetViewSettings", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -401,41 +334,33 @@ register_tool_for_dispatch(
     name="navigator_get_view_settings",
     title="GetViewSettings",
     description="Gets the view settings of navigator items",
-    params_model=GetViewSettingsParameters
+    params_model=GetViewSettingsParameters,
 )
 
 
 def publish_publisher_set(conn_header: ConnHeader, params: PublishPublisherSetParameters) -> dict:
-    """
-    Performs a publish operation on the currently opened project. Only the given publisher set will be published.
-    """
-
+    """Performs a publish operation on the currently opened project. Only the given publisher set will be published."""
     return conn_header.core.post_tapir_command(
-        command="PublishPublisherSet",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="PublishPublisherSet", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
     publish_publisher_set,
     name="navigator_publish_publisher_set",
     title="PublishPublisherSet",
-    description="Performs a publish operation on the currently opened project. Only the given publisher set will be published.",
-    params_model=PublishPublisherSetParameters
+    description=(
+        "Performs a publish operation on the currently opened project. Only the given publisher set will be published."
+    ),
+    params_model=PublishPublisherSetParameters,
 )
 
 
 def rename_navigator_item(conn_header: ConnHeader, params: RenameNavigatorItemParameters) -> dict:
-    """
-    Renames a navigator item or changes its ID.
-    """
-
+    """Renames a navigator item or changes its ID."""
     return conn_header.core.post_tapir_command(
-        command="RenameNavigatorItem",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="RenameNavigatorItem", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -443,20 +368,15 @@ register_tool_for_dispatch(
     name="navigator_rename_navigator_item",
     title="RenameNavigatorItem",
     description="Renames a navigator item or changes its ID.",
-    params_model=RenameNavigatorItemParameters
+    params_model=RenameNavigatorItemParameters,
 )
 
 
 def set3_d_cut_planes(conn_header: ConnHeader, params: Set3DCutPlanesParameters) -> dict:
-    """
-    Sets the 3D cut planes.
-    """
-
+    """Sets the 3D cut planes."""
     return conn_header.core.post_tapir_command(
-        command="Set3DCutPlanes",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="Set3DCutPlanes", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -464,20 +384,15 @@ register_tool_for_dispatch(
     name="navigator_set3_d_cut_planes",
     title="Set3DCutPlanes",
     description="Sets the 3D cut planes.",
-    params_model=Set3DCutPlanesParameters
+    params_model=Set3DCutPlanesParameters,
 )
 
 
 def set_layout_settings(conn_header: ConnHeader, params: SetLayoutSettingsParameters) -> dict:
-    """
-    Sets settings of layouts, including Layout Info Panel custom data fields.
-    """
-
+    """Sets settings of layouts, including Layout Info Panel custom data fields."""
     return conn_header.core.post_tapir_command(
-        command="SetLayoutSettings",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="SetLayoutSettings", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -485,20 +400,15 @@ register_tool_for_dispatch(
     name="navigator_set_layout_settings",
     title="SetLayoutSettings",
     description="Sets settings of layouts, including Layout Info Panel custom data fields.",
-    params_model=SetLayoutSettingsParameters
+    params_model=SetLayoutSettingsParameters,
 )
 
 
 def set_view_rotation(conn_header: ConnHeader, params: SetViewRotationParameters) -> dict:
-    """
-    Set the rotation angle of 2D views via their floor plan database.
-    """
-
+    """Set the rotation angle of 2D views via their floor plan database."""
     return conn_header.core.post_tapir_command(
-        command="SetViewRotation",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="SetViewRotation", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -506,20 +416,15 @@ register_tool_for_dispatch(
     name="navigator_set_view_rotation",
     title="SetViewRotation",
     description="Set the rotation angle of 2D views via their floor plan database.",
-    params_model=SetViewRotationParameters
+    params_model=SetViewRotationParameters,
 )
 
 
 def set_view_settings(conn_header: ConnHeader, params: SetViewSettingsParameters) -> dict:
-    """
-    Sets the view settings of navigator items
-    """
-
+    """Sets the view settings of navigator items"""
     return conn_header.core.post_tapir_command(
-        command="SetViewSettings",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="SetViewSettings", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -527,20 +432,15 @@ register_tool_for_dispatch(
     name="navigator_set_view_settings",
     title="SetViewSettings",
     description="Sets the view settings of navigator items",
-    params_model=SetViewSettingsParameters
+    params_model=SetViewSettingsParameters,
 )
 
 
 def update_drawings(conn_header: ConnHeader, params: UpdateDrawingsParameters) -> dict:
-    """
-    Performs a drawing update on the given elements.
-    """
-
+    """Performs a drawing update on the given elements."""
     return conn_header.core.post_tapir_command(
-        command="UpdateDrawings",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="UpdateDrawings", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
@@ -548,5 +448,5 @@ register_tool_for_dispatch(
     name="navigator_update_drawings",
     title="UpdateDrawings",
     description="Performs a drawing update on the given elements.",
-    params_model=UpdateDrawingsParameters
+    params_model=UpdateDrawingsParameters,
 )

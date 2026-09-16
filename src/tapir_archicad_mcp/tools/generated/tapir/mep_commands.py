@@ -12,24 +12,26 @@ from multiconn_archicad.models.tapir.commands import (
     ModifyMEPRoutingElementsParameters,
 )
 
+
 def connect_mep_elements(conn_header: ConnHeader, params: ConnectMEPElementsParameters) -> dict:
     """
-    Connects MEP routing elements to other MEP elements or routes. Merges routes, splits routes or creates branch elements as needed. Available from Archicad 28.
+    Connects MEP routing elements to other MEP elements or routes. Merges routes, splits routes or creates branch
+    elements as needed. Available from Archicad 28.
     """
-
     return conn_header.core.post_tapir_command(
-        command="ConnectMEPElements",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="ConnectMEPElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
     connect_mep_elements,
     name="mep_connect_mep_elements",
     title="ConnectMEPElements",
-    description="Connects MEP routing elements to other MEP elements or routes. Merges routes, splits routes or creates branch elements as needed. Available from Archicad 28.",
-    params_model=ConnectMEPElementsParameters
+    description=(
+        "Connects MEP routing elements to other MEP elements or routes. Merges routes, splits routes or creates branch "
+        "elements as needed. Available from Archicad 28."
+    ),
+    params_model=ConnectMEPElementsParameters,
 )
 
 
@@ -37,168 +39,176 @@ def create_mep_elements(conn_header: ConnHeader, params: CreateMEPElementsParame
     """
     Creates MEP elements (Terminal, Accessory, Equipment or Fitting) at the given positions. Available from Archicad 28.
     """
-
     return conn_header.core.post_tapir_command(
-        command="CreateMEPElements",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="CreateMEPElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
     create_mep_elements,
     name="mep_create_mep_elements",
     title="CreateMEPElements",
-    description="Creates MEP elements (Terminal, Accessory, Equipment or Fitting) at the given positions. Available from Archicad 28.",
-    params_model=CreateMEPElementsParameters
+    description=(
+        "Creates MEP elements (Terminal, Accessory, Equipment or Fitting) at the given positions. Available from "
+        "Archicad 28."
+    ),
+    params_model=CreateMEPElementsParameters,
 )
 
 
 def create_mep_routing_elements(conn_header: ConnHeader, params: CreateMEPRoutingElementsParameters) -> dict:
     """
-    Creates MEP routing elements (duct, pipe or cable carrier routes) along the given polylines with optional cross section data and MEP system. Available from Archicad 28.
+    Creates MEP routing elements (duct, pipe or cable carrier routes) along the given polylines with optional cross
+    section data and MEP system. Available from Archicad 28.
     """
-
     return conn_header.core.post_tapir_command(
-        command="CreateMEPRoutingElements",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="CreateMEPRoutingElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
     create_mep_routing_elements,
     name="mep_create_mep_routing_elements",
     title="CreateMEPRoutingElements",
-    description="Creates MEP routing elements (duct, pipe or cable carrier routes) along the given polylines with optional cross section data and MEP system. Available from Archicad 28.",
-    params_model=CreateMEPRoutingElementsParameters
+    description=(
+        "Creates MEP routing elements (duct, pipe or cable carrier routes) along the given polylines with optional "
+        "cross section data and MEP system. Available from Archicad 28."
+    ),
+    params_model=CreateMEPRoutingElementsParameters,
 )
 
 
 def get_mep_distribution_systems(conn_header: ConnHeader) -> dict:
     """
-    Retrieves the MEP distribution systems of the project with their domain, MEP system attribute and member elements. Available from Archicad 28.
+    Retrieves the MEP distribution systems of the project with their domain, MEP system attribute and member elements.
+    Available from Archicad 28.
     """
-
-    return conn_header.core.post_tapir_command(
-        command="GetMEPDistributionSystems",
-        parameters={}
-    )
-
+    return conn_header.core.post_tapir_command(command="GetMEPDistributionSystems", parameters={})
 
 
 register_tool_for_dispatch(
     get_mep_distribution_systems,
     name="mep_get_mep_distribution_systems",
     title="GetMEPDistributionSystems",
-    description="Retrieves the MEP distribution systems of the project with their domain, MEP system attribute and member elements. Available from Archicad 28.",
-    params_model=None
+    description=(
+        "Retrieves the MEP distribution systems of the project with their domain, MEP system attribute and member "
+        "elements. Available from Archicad 28."
+    ),
+    params_model=None,
 )
 
 
 def get_mep_elements(conn_header: ConnHeader, params: GetMEPElementsParameters) -> dict:
     """
-    Retrieves the MEP (Mechanical, Electrical, Plumbing) elements of the project, optionally filtered by type and domain. MEP elements are ordinary elements, so the generic element commands work on them as well (for example they can be deleted with the DeleteElements command). Available from Archicad 28.
-        This response is paginated. If 'next_page_token' is returned, call archicad_call_tool
-        again with the same arguments and page_token set to that token to get the next page
-        of results.
-    """
+    Retrieves the MEP (Mechanical, Electrical, Plumbing) elements of the project, optionally filtered by type and
+    domain. MEP elements are ordinary elements, so the generic element commands work on them as well (for example they
+    can be deleted with the DeleteElements command). Available from Archicad 28.
 
+    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
+    and page_token set to that token to get the next page of results.
+    """
     return conn_header.core.post_tapir_command(
-        command="GetMEPElements",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="GetMEPElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
+
 
 register_tool_for_dispatch(
     get_mep_elements,
     name="mep_get_mep_elements",
     title="GetMEPElements",
-    description="Retrieves the MEP (Mechanical, Electrical, Plumbing) elements of the project, optionally filtered by type and domain. MEP elements are ordinary elements, so the generic element commands work on them as well (for example they can be deleted with the DeleteElements command). Available from Archicad 28.",
+    description=(
+        "Retrieves the MEP (Mechanical, Electrical, Plumbing) elements of the project, optionally filtered by type and "
+        "domain. MEP elements are ordinary elements, so the generic element commands work on them as well (for example "
+        "they can be deleted with the DeleteElements command). Available from Archicad 28."
+    ),
     params_model=GetMEPElementsParameters,
-    pagination_field="elements"
+    pagination_field="elements",
 )
 
 
 def get_mep_ports(conn_header: ConnHeader, params: GetMEPPortsParameters) -> dict:
     """
-    Retrieves the ports of the given MEP elements including position, shape, size and connection status. Available from Archicad 28.
+    Retrieves the ports of the given MEP elements including position, shape, size and connection status. Available from
+    Archicad 28.
     """
-
     return conn_header.core.post_tapir_command(
-        command="GetMEPPorts",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="GetMEPPorts", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
     get_mep_ports,
     name="mep_get_mep_ports",
     title="GetMEPPorts",
-    description="Retrieves the ports of the given MEP elements including position, shape, size and connection status. Available from Archicad 28.",
-    params_model=GetMEPPortsParameters
+    description=(
+        "Retrieves the ports of the given MEP elements including position, shape, size and connection status. "
+        "Available from Archicad 28."
+    ),
+    params_model=GetMEPPortsParameters,
 )
 
 
 def get_mep_preference_tables(conn_header: ConnHeader, params: GetMEPPreferenceTablesParameters) -> dict:
     """
-    Gets the circular cross section preference tables (referenceId, diameter, description) of the Piping or Ventilation domain. Available from Archicad 28.
+    Gets the circular cross section preference tables (referenceId, diameter, description) of the Piping or Ventilation
+    domain. Available from Archicad 28.
     """
-
     return conn_header.core.post_tapir_command(
-        command="GetMEPPreferenceTables",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="GetMEPPreferenceTables", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
     get_mep_preference_tables,
     name="mep_get_mep_preference_tables",
     title="GetMEPPreferenceTables",
-    description="Gets the circular cross section preference tables (referenceId, diameter, description) of the Piping or Ventilation domain. Available from Archicad 28.",
-    params_model=GetMEPPreferenceTablesParameters
+    description=(
+        "Gets the circular cross section preference tables (referenceId, diameter, description) of the Piping or "
+        "Ventilation domain. Available from Archicad 28."
+    ),
+    params_model=GetMEPPreferenceTablesParameters,
 )
 
 
 def get_mep_routing_elements(conn_header: ConnHeader, params: GetMEPRoutingElementsParameters) -> dict:
     """
-    Retrieves the details of the given MEP routing elements: domain, MEP system, route polyline, segments with cross section data and nodes. Available from Archicad 28.
+    Retrieves the details of the given MEP routing elements: domain, MEP system, route polyline, segments with cross
+    section data and nodes. Available from Archicad 28.
     """
-
     return conn_header.core.post_tapir_command(
-        command="GetMEPRoutingElements",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="GetMEPRoutingElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
     get_mep_routing_elements,
     name="mep_get_mep_routing_elements",
     title="GetMEPRoutingElements",
-    description="Retrieves the details of the given MEP routing elements: domain, MEP system, route polyline, segments with cross section data and nodes. Available from Archicad 28.",
-    params_model=GetMEPRoutingElementsParameters
+    description=(
+        "Retrieves the details of the given MEP routing elements: domain, MEP system, route polyline, segments with "
+        "cross section data and nodes. Available from Archicad 28."
+    ),
+    params_model=GetMEPRoutingElementsParameters,
 )
 
 
 def modify_mep_routing_elements(conn_header: ConnHeader, params: ModifyMEPRoutingElementsParameters) -> dict:
     """
-    Modifies the given MEP routing elements: MEP system, cross section data of all segments and node positions. Available from Archicad 28.
+    Modifies the given MEP routing elements: MEP system, cross section data of all segments and node positions.
+    Available from Archicad 28.
     """
-
     return conn_header.core.post_tapir_command(
-        command="ModifyMEPRoutingElements",
-        parameters=params.model_dump(mode='json', by_alias=True, exclude_none=True)
+        command="ModifyMEPRoutingElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
-
 
 
 register_tool_for_dispatch(
     modify_mep_routing_elements,
     name="mep_modify_mep_routing_elements",
     title="ModifyMEPRoutingElements",
-    description="Modifies the given MEP routing elements: MEP system, cross section data of all segments and node positions. Available from Archicad 28.",
-    params_model=ModifyMEPRoutingElementsParameters
+    description=(
+        "Modifies the given MEP routing elements: MEP system, cross section data of all segments and node positions. "
+        "Available from Archicad 28."
+    ),
+    params_model=ModifyMEPRoutingElementsParameters,
 )
-
