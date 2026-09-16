@@ -7,8 +7,8 @@ from mcp.types import ToolAnnotations
 
 from tapir_archicad_mcp.app import mcp
 from tapir_archicad_mcp.context import multi_conn_instance
-from tapir_archicad_mcp.request_lifecycle import DispatchLifecycle
 from tapir_archicad_mcp.pagination import PaginationRequest, dispatch_paginated
+from tapir_archicad_mcp.request_lifecycle import DispatchLifecycle
 from tapir_archicad_mcp.tools.custom.models import (
     ReadyInstance,
     UnavailableInstance,
@@ -222,11 +222,8 @@ def archicad_get_command_schema(command_name: str) -> CommandSchema:
     ),
 )
 def archicad_call_tool(name: str, arguments: dict) -> dict:
-    with DispatchLifecycle(name) as lifecycle:
-        return _dispatch(name, arguments, lifecycle)
+    log.info(f"Executing archicad_call_tool for tool: {name}")
 
-
-def _dispatch(name: str, arguments: dict, lifecycle: DispatchLifecycle) -> dict:
     tool_entry = get_tool_entry(name)
     target_func = tool_entry.callable
 
@@ -237,7 +234,6 @@ def _dispatch(name: str, arguments: dict, lifecycle: DispatchLifecycle) -> dict:
         raise ValueError(f"Invalid arguments provided for tool '{name}'. Validation details: {e}") from e
 
     port = validated_arguments.port
-    lifecycle.bind_port(port)
     conn_header = _get_header(port)
 
     call_args: Dict[str, Any] = {"conn_header": conn_header}
@@ -246,10 +242,11 @@ def _dispatch(name: str, arguments: dict, lifecycle: DispatchLifecycle) -> dict:
         call_args["params"] = validated_arguments.params
 
     try:
-        if tool_entry.pagination_field is not None:
-            result = _call_paginated_tool(name, tool_entry, call_args, validated_arguments.page_token)
-        else:
-            result = target_func(**call_args)
+        with DispatchLifecycle(name, port):
+            if tool_entry.pagination_field is not None:
+                result = _call_paginated_tool(name, tool_entry, call_args, validated_arguments.page_token)
+            else:
+                result = target_func(**call_args)
 
         return {} if result is None else result
 
