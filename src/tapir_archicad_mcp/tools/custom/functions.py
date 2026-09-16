@@ -7,6 +7,7 @@ from mcp.types import ToolAnnotations
 
 from tapir_archicad_mcp.app import mcp
 from tapir_archicad_mcp.context import multi_conn_instance
+from tapir_archicad_mcp.request_lifecycle import DispatchLifecycle
 from tapir_archicad_mcp.pagination import PaginationRequest, dispatch_paginated
 from tapir_archicad_mcp.tools.custom.models import (
     ReadyInstance,
@@ -221,8 +222,11 @@ def archicad_get_command_schema(command_name: str) -> CommandSchema:
     ),
 )
 def archicad_call_tool(name: str, arguments: dict) -> dict:
-    log.info(f"Executing archicad_call_tool for tool: {name}")
+    with DispatchLifecycle(name) as lifecycle:
+        return _dispatch(name, arguments, lifecycle)
 
+
+def _dispatch(name: str, arguments: dict, lifecycle: DispatchLifecycle) -> dict:
     tool_entry = get_tool_entry(name)
     target_func = tool_entry.callable
 
@@ -233,6 +237,7 @@ def archicad_call_tool(name: str, arguments: dict) -> dict:
         raise ValueError(f"Invalid arguments provided for tool '{name}'. Validation details: {e}") from e
 
     port = validated_arguments.port
+    lifecycle.bind_port(port)
     conn_header = _get_header(port)
 
     call_args: Dict[str, Any] = {"conn_header": conn_header}
