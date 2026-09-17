@@ -8,6 +8,7 @@ from mcp.types import ToolAnnotations
 from tapir_archicad_mcp.app import mcp
 from tapir_archicad_mcp.context import multi_conn_instance
 from tapir_archicad_mcp.pagination import PaginationRequest, dispatch_paginated
+from tapir_archicad_mcp.request_lifecycle import DispatchLifecycle
 from tapir_archicad_mcp.tools.custom.models import (
     ReadyInstance,
     UnavailableInstance,
@@ -241,10 +242,11 @@ def archicad_call_tool(name: str, arguments: dict) -> dict:
         call_args["params"] = validated_arguments.params
 
     try:
-        if tool_entry.pagination_field is not None:
-            result = _call_paginated_tool(name, tool_entry, call_args, validated_arguments.page_token)
-        else:
-            result = target_func(**call_args)
+        with DispatchLifecycle(name, port):
+            if tool_entry.pagination_field is not None:
+                result = _call_paginated_tool(name, tool_entry, call_args, validated_arguments.page_token)
+            else:
+                result = target_func(**call_args)
 
         return {} if result is None else result
 
