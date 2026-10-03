@@ -1,10 +1,10 @@
-import tapir_archicad_mcp.model_configuration  # noqa: F401
-import logging
 import argparse
+import logging
 import os
 import sys
 from typing import Any
 
+import tapir_archicad_mcp.model_configuration  # noqa: F401
 from tapir_archicad_mcp.app import mcp
 from tapir_archicad_mcp.logging_config import setup_logging
 from tapir_archicad_mcp.middleware import BearerTokenMiddleware

@@ -1,34 +1,38 @@
-import logging
 import json
-from typing import Optional, Any, Dict
-from pydantic import ValidationError
+import logging
+from typing import Any
 
 from mcp.types import ToolAnnotations
+from multiconn_archicad import (
+    APIResponseError,
+    ConnHeader,
+    Port,
+    ProductInfo,
+    SoloProjectID,
+    TapirInfo,
+    TeamworkProjectID,
+)
+from multiconn_archicad.errors import AddOnCommandUnavailable
+from pydantic import ValidationError
 
 from tapir_archicad_mcp.app import mcp
 from tapir_archicad_mcp.context import multi_conn_instance
 from tapir_archicad_mcp.pagination import PaginationRequest, dispatch_paginated
 from tapir_archicad_mcp.request_lifecycle import DispatchLifecycle
 from tapir_archicad_mcp.tools.custom.models import (
-    ReadyInstance,
-    UnavailableInstance,
+    CommandOverview,
+    CommandSchema,
     DiscoveryResult,
     ProjectType,
-    CommandSchema,
-    CommandOverview,
+    ReadyInstance,
+    UnavailableInstance,
 )
-from tapir_archicad_mcp.tools.tool_registry import get_tool_entry, get_tool_input_schema, TOOL_DISCOVERY_CATALOG, ToolRegistryEntry
-
-from multiconn_archicad.conn_header import ConnHeader
-from multiconn_archicad.basic_types import (
-    Port,
-    TeamworkProjectID,
-    SoloProjectID,
-    ProductInfo,
-    TapirInfo,
-    APIResponseError,
+from tapir_archicad_mcp.tools.tool_registry import (
+    TOOL_DISCOVERY_CATALOG,
+    ToolRegistryEntry,
+    get_tool_entry,
+    get_tool_input_schema,
 )
-from multiconn_archicad.errors import AddOnCommandUnavailable
 
 log = logging.getLogger()
 
@@ -105,7 +109,7 @@ def _build_ready_instance(port: int, header: ConnHeader) -> ReadyInstance:
     """Builds a ready-to-use Archicad instance metadata model."""
     project_id = header.archicad_id
     project_type: ProjectType = "untitled"
-    project_path: Optional[str] = None
+    project_path: str | None = None
 
     if isinstance(project_id, TeamworkProjectID):
         project_type = "teamwork"
@@ -127,7 +131,7 @@ def _build_ready_instance(port: int, header: ConnHeader) -> ReadyInstance:
     )
 
 
-def _get_tapir_version_warning(tapir: TapirInfo) -> Optional[str]:
+def _get_tapir_version_warning(tapir: TapirInfo) -> str | None:
     """Generates a diagnostic warning if the installed Tapir version differs from supported."""
     if tapir.is_older:
         return (
@@ -236,7 +240,7 @@ def archicad_call_tool(name: str, arguments: dict) -> dict:
     port = validated_arguments.port
     conn_header = _get_header(port)
 
-    call_args: Dict[str, Any] = {"conn_header": conn_header}
+    call_args: dict[str, Any] = {"conn_header": conn_header}
 
     if tool_entry.params_model:
         call_args["params"] = validated_arguments.params

@@ -29,7 +29,7 @@ classifiers = [
 
 dependencies = [
     "mcp>=2,<3",
-    "multiconn-archicad==0.8.4",
+    "multiconn-archicad==0.9.1",
     "uvicorn>=0.35.0",
 ]
 

@@ -1,2 +1,1 @@
-from . import tapir
-from . import official
+from . import official, tapir

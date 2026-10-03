@@ -1,12 +1,11 @@
 # these are needed to ensure configuration happens before models are loaded
-import tapir_archicad_mcp.model_configuration  # noqa: F401
-
 from types import SimpleNamespace
-import pytest
 from unittest.mock import Mock
 
-from multiconn_archicad.basic_types import Port
-from multiconn_archicad.basic_types import ProductInfo, ArchicadLocation, SoloProjectID
+import pytest
+from multiconn_archicad import ArchicadLocation, Port, ProductInfo, SoloProjectID
+
+import tapir_archicad_mcp.model_configuration  # noqa: F401
 from tapir_archicad_mcp.context import multi_conn_instance
 
 

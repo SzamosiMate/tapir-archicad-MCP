@@ -1,7 +1,7 @@
 from typing import Any, Generic, TypeVar
 
 from mcp.server.mcpserver import MCPServer
-from multiconn_archicad.multi_conn import MultiConn
+from multiconn_archicad import MultiConn
 
 T = TypeVar("T")
 
