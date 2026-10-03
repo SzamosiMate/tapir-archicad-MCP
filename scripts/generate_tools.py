@@ -4,10 +4,9 @@ import re
 import urllib.request
 from pathlib import Path
 from textwrap import dedent, indent
-from typing import Set
 
 from format import format_docstring, format_string_literal, run_ruff_format
-from generator_config import TAPIR_CONFIG, OFFICIAL_CONFIG, ApiSourceConfig
+from generator_config import OFFICIAL_CONFIG, TAPIR_CONFIG, ApiSourceConfig
 
 log = logging.getLogger()
 
@@ -148,13 +147,14 @@ def generate_tool_files(grouped_commands: dict[str, list[dict]], config: ApiSour
 
         common_imports = [
             FILE_HEADER,
-            "from multiconn_archicad.conn_header import ConnHeader",
-            "from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch",
+            "from multiconn_archicad import ConnHeader",
         ]
-        if REGISTER_AS_MCP_TOOLS:
-            common_imports.append("from tapir_archicad_mcp.app import mcp")
         if imports_block:
             common_imports.append(imports_block)
+        if REGISTER_AS_MCP_TOOLS:
+            common_imports.append("from tapir_archicad_mcp.app import mcp")
+        common_imports.append("\nfrom tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch")
+
 
         file_content = ["\n".join(common_imports)]
         for cmd in sorted(commands, key=lambda x: x["name_camel"]):
@@ -175,7 +175,7 @@ def generate_init_file(config: ApiSourceConfig, module_names: set[str]):
     log.info(f"Generated __init__.py file at {init_path}")
 
 
-def run_generation_for_source(config: ApiSourceConfig) -> Set[str]:
+def run_generation_for_source(config: ApiSourceConfig) -> set[str]:
     log.info(f"--- Starting Generation for {config.name.upper()} ---")
 
     # 1. Fetch organized commands JSON and valid model names
@@ -217,7 +217,7 @@ def run_generation_for_source(config: ApiSourceConfig) -> Set[str]:
     prepare_output_directory(config.output_dir)
     generate_tool_files(grouped_commands, config, valid_model_names)
 
-    generated_modules = {group_name.replace(" ", "_").lower() for group_name in grouped_commands.keys()}
+    generated_modules = {group_name.replace(" ", "_").lower() for group_name in grouped_commands}
     generate_init_file(config, generated_modules)
 
     # 4. Format generated files with Ruff

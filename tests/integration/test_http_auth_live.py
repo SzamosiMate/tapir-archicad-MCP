@@ -1,9 +1,10 @@
-import pytest
 import asyncio
 import socket
-import httpx
-import uvicorn
 from unittest.mock import MagicMock
+
+import httpx
+import pytest
+import uvicorn
 
 from tapir_archicad_mcp.app import mcp
 from tapir_archicad_mcp.middleware import BearerTokenMiddleware

@@ -1,9 +1,10 @@
 import logging
+from collections.abc import Callable
 from types import UnionType
-from typing import Dict, Callable, Any, Type, Optional, Union
-from pydantic import BaseModel, ConfigDict, Field, create_model
+from typing import Any, Optional, Union
 
 from multiconn_archicad.constants import DEFAULT_PORT_RANGE
+from pydantic import BaseModel, ConfigDict, Field, create_model
 
 log = logging.getLogger(__name__)
 
@@ -18,16 +19,16 @@ class ToolRegistryEntry(BaseModel):
 
     callable: Callable
     params_model: ModelOrUnion = None
-    arguments_model: Type[BaseModel]
+    arguments_model: type[BaseModel]
     pagination_field: str | None = None
 
 
-TOOL_CALLABLE_REGISTRY: Dict[str, ToolRegistryEntry] = {}
+TOOL_CALLABLE_REGISTRY: dict[str, ToolRegistryEntry] = {}
 TOOL_DISCOVERY_CATALOG: dict[str, dict[str, Any]] = {}
 _TOOL_INPUT_SCHEMA_CACHE: dict[str, dict[str, Any]] = {}
 
 
-def _build_tool_arguments_model(name: str, params_model: ModelOrUnion, pagination_field: str | None) -> Type[BaseModel]:
+def _build_tool_arguments_model(name: str, params_model: ModelOrUnion, pagination_field: str | None) -> type[BaseModel]:
     """Build the runtime and discovery model for one command's arguments envelope."""
     fields: dict[str, tuple[Any, Any]] = {
         "port": (

@@ -1,9 +1,10 @@
+import secrets
+import time
+from collections.abc import Callable
 from copy import deepcopy
 from dataclasses import dataclass
 from threading import Lock
-from typing import Any, Callable
-import secrets
-import time
+from typing import Any
 
 CACHE_LIFETIME_SECONDS = 1200
 PAGE_SIZE = 100

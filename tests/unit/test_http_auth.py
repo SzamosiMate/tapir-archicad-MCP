@@ -1,7 +1,9 @@
 import sys
-import pytest
-import httpx
 from unittest.mock import MagicMock
+
+import httpx
+import pytest
+
 from tapir_archicad_mcp.middleware import BearerTokenMiddleware
 
 

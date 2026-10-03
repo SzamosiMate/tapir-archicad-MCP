@@ -1,9 +1,9 @@
 import pytest
-from tapir_archicad_mcp.tools.custom.functions import archicad_call_tool
+from multiconn_archicad import Port
+
 from tapir_archicad_mcp import pagination
 from tapir_archicad_mcp.context import multi_conn_instance
-from multiconn_archicad.basic_types import Port
-
+from tapir_archicad_mcp.tools.custom.functions import archicad_call_tool
 
 GUID = "12345678-1234-1234-1234-123456789012"
 

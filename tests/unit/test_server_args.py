@@ -1,6 +1,8 @@
 import sys
-import pytest
 from unittest.mock import MagicMock
+
+import pytest
+
 from tapir_archicad_mcp.app import mcp
 
 

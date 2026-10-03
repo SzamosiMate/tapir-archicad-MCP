@@ -2,7 +2,6 @@
 
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Dict, Set
 
 ROOT_DIR = Path(__file__).parent.parent
 ORGANIZED_COMMANDS_URL = "https://raw.githubusercontent.com/SzamosiMate/multiconn_archicad/refs/heads/main/code_generation/unified/temp_files/01_organized_commands.json"
@@ -15,10 +14,10 @@ class ApiSourceConfig:
     model_names_url: str
     output_dir: Path
     api_call_method: str
-    group_mapping: Dict[str, str]
+    group_mapping: dict[str, str]
     prefix_to_strip: str = ""
-    paginated_commands: Dict[str, str] = field(default_factory=dict)
-    commands_to_exclude: Set[str] = field(default_factory=set)
+    paginated_commands: dict[str, str] = field(default_factory=dict)
+    commands_to_exclude: set[str] = field(default_factory=set)
 
 
 TAPIR_CONFIG = ApiSourceConfig(

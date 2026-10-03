@@ -1,16 +1,15 @@
-import pytest
 import asyncio
 import json
 import socket
-import httpx
-import uvicorn
 from unittest.mock import MagicMock
+
+import httpx
+import pytest
+import uvicorn
 from mcp import Client, ClientSession
 from mcp.client.sse import sse_client
 
 from tapir_archicad_mcp.app import mcp
-
-
 
 
 def get_free_port() -> int:

@@ -1,5 +1,6 @@
-from typing import Literal, Optional, Any
-from pydantic import BaseModel, Field, ConfigDict
+from typing import Any, Literal
+
+from pydantic import BaseModel, ConfigDict, Field
 
 ProjectType = Literal["teamwork", "solo", "untitled"]
 UnavailableReason = Literal["missing_tapir", "unresponsive"]
@@ -24,12 +25,12 @@ class ReadyInstance(BaseModel):
         alias="tapirVersion",
         description="The version of the Tapir Add-On installed on this instance.",
     )
-    project_path: Optional[str] = Field(
+    project_path: str | None = Field(
         default=None,
         alias="projectPath",
         description="The full file path or teamwork server location of the project.",
     )
-    warning: Optional[str] = Field(
+    warning: str | None = Field(
         default=None,
         description="Warning regarding Tapir version differences (e.g., outdated or newer version).",
     )

@@ -1,2 +1,1 @@
-from . import custom
-from . import generated
+from . import custom, generated

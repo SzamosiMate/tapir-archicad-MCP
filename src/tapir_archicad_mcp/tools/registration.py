@@ -4,7 +4,3 @@ def register_all_tools():
     The act of importing them runs the @mcp.tool decorators within, which
     registers the tools with the central 'mcp' instance from app.py.
     """
-    from tapir_archicad_mcp.tools.custom import functions
-    from tapir_archicad_mcp.tools.generated import tapir
-    from tapir_archicad_mcp.tools.generated import official
-    pass

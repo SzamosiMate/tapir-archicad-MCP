@@ -1,10 +1,9 @@
 import json
 import logging
 import subprocess
+import tomllib
 from pathlib import Path
 from textwrap import wrap
-import tomllib
-
 
 log = logging.getLogger(__name__)
 
