@@ -1,15 +1,41 @@
 import argparse
 import logging
+import math
 import os
 import sys
 from typing import Any
 
 import tapir_archicad_mcp.model_configuration  # noqa: F401
 from tapir_archicad_mcp.app import mcp
+from tapir_archicad_mcp.jobs import JobSettings
 from tapir_archicad_mcp.logging_config import setup_logging
 from tapir_archicad_mcp.middleware import BearerTokenMiddleware
 
 setup_logging()
+
+
+def _finite_float(value: str, *, allow_zero: bool) -> float:
+    number = float(value)
+    if not math.isfinite(number) or number < 0 or (number == 0 and not allow_zero):
+        requirement = "nonnegative" if allow_zero else "positive"
+        raise argparse.ArgumentTypeError(f"Expected a finite {requirement} number.")
+    return number
+
+
+def _positive_float(value: str) -> float:
+    return _finite_float(value, allow_zero=False)
+
+
+def _nonnegative_float(value: str) -> float:
+    return _finite_float(value, allow_zero=True)
+
+
+def _positive_int(value: str) -> int:
+    number = int(value)
+    if number <= 0:
+        raise argparse.ArgumentTypeError("Expected a positive integer.")
+    return number
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run the Archicad Tapir MCP server.")
@@ -45,6 +71,21 @@ def parse_args() -> argparse.Namespace:
         default=os.getenv("TAPIR_MCP_TOKEN", None),
         help="Bearer token required for HTTP-based transports. Ignored for stdio.",
     )
+    parser.add_argument(
+        "--async-threshold-seconds", type=_positive_float,
+        default=os.getenv("TAPIR_MCP_ASYNC_THRESHOLD_SECONDS", "45"),
+        help="Maximum execution/poll wait before returning a running JobHandle (default: 45 seconds).",
+    )
+    parser.add_argument(
+        "--job-ttl-seconds", type=_nonnegative_float,
+        default=os.getenv("TAPIR_MCP_JOB_TTL_SECONDS", "86400"),
+        help="Completed-job and page lifetime after completion; 0 disables age expiry (default: 86400).",
+    )
+    parser.add_argument(
+        "--max-completed-jobs", type=_positive_int,
+        default=os.getenv("TAPIR_MCP_MAX_COMPLETED_JOBS", "128"),
+        help="Maximum retained completed/failed jobs; oldest are evicted with their pages (default: 128).",
+    )
     return parser.parse_args()
 
 
@@ -62,6 +103,13 @@ def sse_paths_from_mount_path(mount_path: str | None) -> dict[str, str]:
 
 def main():
     args = parse_args()
+    import tapir_archicad_mcp.app as app_module
+
+    app_module.job_settings = JobSettings(
+        async_threshold_seconds=args.async_threshold_seconds,
+        job_ttl_seconds=args.job_ttl_seconds,
+        max_completed_jobs=args.max_completed_jobs,
+    )
     sys.argv = [sys.argv[0]]
 
     logging.info(

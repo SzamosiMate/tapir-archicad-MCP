@@ -14,14 +14,13 @@ class DispatchLifecycle:
     connection lookup that precede it. Both lines carry the same short request
     id, so a start can be paired with its end when calls overlap.
 
-    A heartbeat can later be started on enter and stopped on exit of the same
-    object, tagging its pings with that id.
+    A job handle can identify the same dispatch across polling requests.
     """
 
-    def __init__(self, tool_name: str, port: int):
+    def __init__(self, tool_name: str, port: int, job_handle: str | None = None):
         self.tool_name = tool_name
         self.port = port
-        self.request_id = uuid.uuid4().hex[:8]
+        self.request_id = job_handle or uuid.uuid4().hex[:8]
 
     def __enter__(self) -> Self:
         log.info(f"[{self.request_id}] Request start: '{self.tool_name}' on port {self.port}")

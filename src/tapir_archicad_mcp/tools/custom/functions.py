@@ -1,7 +1,9 @@
+import asyncio
 import json
 import logging
 from typing import Any
 
+from mcp.server.mcpserver.exceptions import ToolError
 from mcp.types import ToolAnnotations
 from multiconn_archicad import (
     APIResponseError,
@@ -12,12 +14,13 @@ from multiconn_archicad import (
     TapirInfo,
     TeamworkProjectID,
 )
-from multiconn_archicad.errors import AddOnCommandUnavailable
+from multiconn_archicad.errors import AddOnCommandUnavailable, APIErrorBase
 from pydantic import ValidationError
 
 from tapir_archicad_mcp.app import mcp
-from tapir_archicad_mcp.context import multi_conn_instance
-from tapir_archicad_mcp.pagination import PaginationRequest, dispatch_paginated
+from tapir_archicad_mcp.context import job_store_instance, multi_conn_instance
+from tapir_archicad_mcp.jobs import JobStore
+from tapir_archicad_mcp.pagination import PaginationRequest, prepare_result
 from tapir_archicad_mcp.request_lifecycle import DispatchLifecycle
 from tapir_archicad_mcp.tools.custom.models import (
     CommandOverview,
@@ -196,7 +199,7 @@ def archicad_get_command_schema(command_name: str) -> CommandSchema:
     try:
         tool = TOOL_DISCOVERY_CATALOG[command_name]
     except KeyError:
-        raise ValueError(
+        raise ToolError(
             f"Command '{command_name}' not found. Please use 'archicad_list_commands' "
             f"to verify the exact spelling of the command name."
         ) from None
@@ -216,7 +219,10 @@ def archicad_get_command_schema(command_name: str) -> CommandSchema:
         "JSON structure required for the 'arguments' parameter. "
         "The 'arguments' dictionary MUST contain a 'port' number (obtained from 'discovery_list_active_archicads'). "
         "If a tool's response includes a 'next_page_token', call this same tool again with the same parameters "
-        "and add a 'page_token' key to the 'arguments' dictionary."
+        "and add a 'page_token' key to the 'arguments' dictionary. "
+        "Long executions return status='running' and a jobHandle; retrieve them with archicad_get_job. "
+        "If a response is lost or cancelled, list jobs with archicad_get_job() before retrying a write. "
+        "Cancelling this request does not cancel an admitted execution."
     ),
     annotations=ToolAnnotations(
         readOnlyHint=False,
@@ -225,18 +231,38 @@ def archicad_get_command_schema(command_name: str) -> CommandSchema:
         openWorldHint=True,
     ),
 )
-def archicad_call_tool(name: str, arguments: dict) -> dict:
+async def archicad_call_tool(name: str, arguments: dict) -> dict:
     log.info(f"Executing archicad_call_tool for tool: {name}")
 
     tool_entry = get_tool_entry(name)
-    target_func = tool_entry.callable
-
     try:
         validated_arguments = tool_entry.arguments_model.model_validate(arguments)
     except ValidationError as e:
         log.error(f"Validation error for arguments of {name}: {e}")
-        raise ValueError(f"Invalid arguments provided for tool '{name}'. Validation details: {e}") from e
+        raise ToolError(f"Invalid arguments provided for tool '{name}'. Validation details: {e}") from e
 
+    store = job_store_instance.get()
+    port = validated_arguments.port
+    if tool_entry.pagination_field is not None and validated_arguments.page_token is not None:
+        # Continuations read retained data and do not create execution jobs.
+        return await asyncio.to_thread(_read_cached_page, name, tool_entry, validated_arguments, store)
+    job = store.submit(
+        name, port, arguments,
+        lambda handle: _execute_tool(name, tool_entry, validated_arguments, handle),
+    )
+    await store.wait(job)
+    return store.initial_result(job)
+
+def _read_cached_page(name: str, tool_entry: ToolRegistryEntry, arguments: Any, store: JobStore) -> dict:
+    # MultiConn's public header properties can trigger discovery; keep that work
+    # off the event loop, and never redispatch the original command.
+    multi_conn = multi_conn_instance.get()
+    connection = multi_conn.open_port_headers.get(Port(arguments.port))
+    request = _pagination_request(name, tool_entry, arguments, connection)
+    return store.get_page(arguments.page_token, request)
+
+
+def _execute_tool(name: str, tool_entry: ToolRegistryEntry, validated_arguments: Any, job_handle: str) -> Any:
     port = validated_arguments.port
     conn_header = _get_header(port)
 
@@ -245,43 +271,71 @@ def archicad_call_tool(name: str, arguments: dict) -> dict:
     if tool_entry.params_model:
         call_args["params"] = validated_arguments.params
 
+    with DispatchLifecycle(name, port, job_handle):
+        result = _dispatch_command(name, tool_entry, call_args, port)
+    if tool_entry.pagination_field is None:
+        return result
+    request = _pagination_request(name, tool_entry, validated_arguments, conn_header)
+    return prepare_result(result, request, job_handle.removeprefix("job:"))
+
+
+def _dispatch_command(name: str, tool_entry: ToolRegistryEntry, call_args: dict, port: int) -> Any:
     try:
-        with DispatchLifecycle(name, port):
-            if tool_entry.pagination_field is not None:
-                result = _call_paginated_tool(name, tool_entry, call_args, validated_arguments.page_token)
-            else:
-                result = target_func(**call_args)
-
-        return {} if result is None else result
-
+        return tool_entry.callable(**call_args)
     except AddOnCommandUnavailable as e:
-        log.warning(f"AddOnCommandUnavailable for tool '{name}' on port {port}: {e}")
-        raise ValueError(
+        raise ToolError(
             f"Command '{name}' is not available in the installed Tapir Add-On on port {port}. "
             f"This indicates that the Tapir Add-On is outdated. "
             f"Please prompt the user to upgrade Tapir from https://github.com/ENZYME-APD/tapir-archicad-automation. "
             f"(Details: {e.message})"
         ) from e
+    except APIErrorBase as e:
+        raise ToolError(str(e)) from e
     except Exception as e:
         log.error(f"Error executing dispatched tool {name}: {e}")
         raise
 
-def _call_paginated_tool(
-    name: str, tool_entry: ToolRegistryEntry, call_args: dict, page_token: str | None,
-) -> dict | None:
-    params = call_args.get("params")
-    parameters = params.model_dump(mode="json", by_alias=True, exclude_none=True) if params is not None else {}
-    request = PaginationRequest(
-        connection=call_args["conn_header"], command=name,
-        parameters=json.dumps(parameters, sort_keys=True, separators=(",", ":")),
+
+def _pagination_request(
+    name: str, tool_entry: ToolRegistryEntry, arguments: Any, connection: ConnHeader | None,
+) -> PaginationRequest:
+    return PaginationRequest(
+        connection=connection, port=arguments.port, command=name,
+        parameters=_serialized_parameters(arguments.params if tool_entry.params_model else None),
         field=tool_entry.pagination_field,
     )
-    return dispatch_paginated(lambda: tool_entry.callable(**call_args), request, page_token)
+
+
+def _serialized_parameters(params: Any) -> str:
+    parameters = params.model_dump(mode="json", by_alias=True, exclude_none=True) if params is not None else {}
+    return json.dumps(parameters, sort_keys=True, separators=(",", ":"))
 
 
 def _get_header(port: int) -> ConnHeader:
-    multi_conn = multi_conn_instance.get()
-    target_port = Port(port)
-    if target_port not in multi_conn.active:
-        raise ValueError(f"Port {port} is not an active Archicad connection.")
-    return multi_conn.active[target_port]
+    try:
+        return multi_conn_instance.get().active[Port(port)]
+    except KeyError:
+        raise ToolError(f"Port {port} is not an active Archicad connection.") from None
+
+
+@mcp.tool(
+    name="archicad_get_job",
+    title="Get or List Archicad Jobs",
+    description=(
+        "With no job_handle, immediately lists all retained executions newest first, including fast, completed, "
+        "and failed jobs, with command, port, timestamps, and a short argumentsPreview. "
+        "Use this to recover after a lost response before retrying a write; similar calls may be ambiguous. "
+        "With a job_handle, waits up to the configured threshold and returns running, completed with result, "
+        "or failed with error. Polling never redispatches commands."
+    ),
+    annotations=ToolAnnotations(
+        readOnlyHint=True, destructiveHint=False, idempotentHint=True, openWorldHint=False,
+    ),
+)
+async def archicad_get_job(job_handle: str | None = None) -> dict:
+    store = job_store_instance.get()
+    if job_handle is None:
+        return store.list_jobs()
+    job = store.get(job_handle)
+    await store.wait(job)
+    return store.response(job)

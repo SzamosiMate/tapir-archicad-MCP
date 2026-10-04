@@ -79,6 +79,25 @@ You can customize the server via CLI flags or environment variables:
 | `--host` | `TAPIR_MCP_HOST` | `127.0.0.1` | Bind address for HTTP-based transports |
 | `--port` | `TAPIR_MCP_PORT` | `8000` | Bind port for HTTP-based transports |
 | `--token` | `TAPIR_MCP_TOKEN` | `None` | Optional Bearer token to secure HTTP endpoints |
+| `--async-threshold-seconds` | `TAPIR_MCP_ASYNC_THRESHOLD_SECONDS` | `45` | Seconds to wait before returning a running job handle |
+| `--job-ttl-seconds` | `TAPIR_MCP_JOB_TTL_SECONDS` | `86400` | Seconds to keep finished jobs; `0` disables time-based expiry |
+| `--max-completed-jobs` | `TAPIR_MCP_MAX_COMPLETED_JOBS` | `128` | Maximum number of finished jobs to keep |
+
+CLI flags override environment variables.
+
+## Long-running commands
+
+Commands normally return their result directly. If a command takes longer than 45 seconds, `archicad_call_tool` returns a job handle while execution continues:
+
+```json
+{"status": "running", "jobHandle": "job:83af21..."}
+```
+
+Call `archicad_get_job(job_handle="job:83af21...")` to check progress and retrieve the result. Repeat while the status is `running`; the final status is `completed` or `failed`. If your client times out sooner, lower `--async-threshold-seconds`.
+
+If a response is lost, call `archicad_get_job()` to list recent jobs before repeating a command that changes the project. Cancelling a request does not stop a command already started, and retrying it may duplicate changes.
+
+Jobs remain available across HTTP client reconnects while the server is running, but are lost on server restart. Retention defaults to 24 hours and a maximum of 128 finished jobs.
 
 ## Usage
 

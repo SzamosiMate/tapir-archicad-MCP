@@ -25,6 +25,9 @@ def _clear_http_env(monkeypatch):
         "TAPIR_MCP_STREAMABLE_HTTP_PATH",
         "TAPIR_MCP_MOUNT_PATH",
         "TAPIR_MCP_TOKEN",
+        "TAPIR_MCP_ASYNC_THRESHOLD_SECONDS",
+        "TAPIR_MCP_JOB_TTL_SECONDS",
+        "TAPIR_MCP_MAX_COMPLETED_JOBS",
     ):
         monkeypatch.delenv(name, raising=False)
 
@@ -134,3 +137,62 @@ def test_sse_paths_from_legacy_mount_path(mount_path, expected):
     from tapir_archicad_mcp.server import sse_paths_from_mount_path
 
     assert sse_paths_from_mount_path(mount_path) == expected
+
+
+def test_job_configuration_defaults_and_environment_cli_precedence(monkeypatch):
+    from tapir_archicad_mcp.server import parse_args
+
+    _clear_http_env(monkeypatch)
+    monkeypatch.setattr(sys, "argv", ["server.py"])
+    args = parse_args()
+    assert (args.async_threshold_seconds, args.job_ttl_seconds, args.max_completed_jobs) == (45, 86400, 128)
+    monkeypatch.setenv("TAPIR_MCP_ASYNC_THRESHOLD_SECONDS", "12.5")
+    monkeypatch.setenv("TAPIR_MCP_JOB_TTL_SECONDS", "3600")
+    monkeypatch.setenv("TAPIR_MCP_MAX_COMPLETED_JOBS", "20")
+    args = parse_args()
+    assert (args.async_threshold_seconds, args.job_ttl_seconds, args.max_completed_jobs) == (12.5, 3600, 20)
+    monkeypatch.setattr(sys, "argv", [
+        "server.py", "--async-threshold-seconds", "5", "--job-ttl-seconds", "0", "--max-completed-jobs", "2",
+    ])
+    args = parse_args()
+    assert (args.async_threshold_seconds, args.job_ttl_seconds, args.max_completed_jobs) == (5, 0, 2)
+
+
+@pytest.mark.parametrize("flag,value", [
+    ("--async-threshold-seconds", "0"), ("--async-threshold-seconds", "-1"),
+    ("--async-threshold-seconds", "nan"), ("--async-threshold-seconds", "inf"),
+    ("--async-threshold-seconds", "invalid"), ("--job-ttl-seconds", "-1"),
+    ("--job-ttl-seconds", "nan"), ("--job-ttl-seconds", "inf"),
+    ("--max-completed-jobs", "0"), ("--max-completed-jobs", "-1"),
+    ("--max-completed-jobs", "1.5"),
+])
+def test_invalid_job_configuration_fails_at_startup(monkeypatch, flag, value):
+    from tapir_archicad_mcp.server import parse_args
+
+    _clear_http_env(monkeypatch)
+    monkeypatch.setattr(sys, "argv", ["server.py", flag, value])
+    with pytest.raises(SystemExit) as error:
+        parse_args()
+    assert error.value.code == 2
+
+
+def test_invalid_environment_can_be_overridden_and_settings_reach_lifespan(monkeypatch, mock_server_run):
+    import tapir_archicad_mcp.app as app_module
+    from tapir_archicad_mcp.server import main
+
+    _clear_http_env(monkeypatch)
+    monkeypatch.setenv("TAPIR_MCP_JOB_TTL_SECONDS", "invalid")
+    monkeypatch.setattr(sys, "argv", ["server.py", "--job-ttl-seconds", "0", "--async-threshold-seconds", "3"])
+    main()
+    assert app_module.job_settings.job_ttl_seconds == 0
+    assert app_module.job_settings.async_threshold_seconds == 3
+
+
+def test_invalid_environment_is_rejected(monkeypatch):
+    from tapir_archicad_mcp.server import parse_args
+
+    _clear_http_env(monkeypatch)
+    monkeypatch.setenv("TAPIR_MCP_JOB_TTL_SECONDS", "nan")
+    monkeypatch.setattr(sys, "argv", ["server.py"])
+    with pytest.raises(SystemExit):
+        parse_args()
