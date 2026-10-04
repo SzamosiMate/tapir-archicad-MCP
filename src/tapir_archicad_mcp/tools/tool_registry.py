@@ -3,6 +3,7 @@ from collections.abc import Callable
 from types import UnionType
 from typing import Any, Optional, Union
 
+from mcp.server.mcpserver.exceptions import ToolError
 from multiconn_archicad.constants import DEFAULT_PORT_RANGE
 from pydantic import BaseModel, ConfigDict, Field, create_model
 
@@ -108,5 +109,5 @@ def get_tool_input_schema(name: str) -> dict[str, Any]:
 def get_tool_entry(name: str) -> ToolRegistryEntry:
     """Retrieves the registered function and its models."""
     if name not in TOOL_CALLABLE_REGISTRY:
-        raise ValueError(f"Tool '{name}' not found in registry.")
+        raise ToolError(f"Tool '{name}' not found in registry.")
     return TOOL_CALLABLE_REGISTRY[name]

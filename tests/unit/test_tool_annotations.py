@@ -8,6 +8,7 @@ READ_ONLY_TOOLS = {
     "discovery_list_active_archicads": True,
     "archicad_list_commands": False,
     "archicad_get_command_schema": False,
+    "archicad_get_job": False,
 }
 
 

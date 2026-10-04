@@ -5,6 +5,7 @@ from typing import Any
 from unittest.mock import Mock
 
 import pytest
+from mcp.server.mcpserver.exceptions import ToolError
 from multiconn_archicad import (
     APIResponseError,
     Port,
@@ -163,7 +164,8 @@ def test_reregistered_command_keeps_discovery_and_runtime_models_in_sync():
     assert set(discovery_schema["required"]) == {"port", "params"}
 
 
-def test_union_parameter_models_validate_and_dispatch(fake_archicad):
+@pytest.mark.asyncio
+async def test_union_parameter_models_validate_and_dispatch(fake_archicad):
     class FirstParams(BaseModel):
         first: int
 
@@ -184,7 +186,7 @@ def test_union_parameter_models_validate_and_dispatch(fake_archicad):
         params_model=FirstParams | SecondParams,
     )
 
-    result = archicad_call_tool(name, {"port": 19723, "params": {"second": "value"}})
+    result = await archicad_call_tool(name, {"port": 19723, "params": {"second": "value"}})
     schema = archicad_get_command_schema(name).input_schema
 
     assert result == {}
@@ -194,7 +196,7 @@ def test_union_parameter_models_validate_and_dispatch(fake_archicad):
 
 
 def test_archicad_get_command_schema_invalid(fake_archicad):
-    with pytest.raises(ValueError, match="not found. Please use 'archicad_list_commands'"):
+    with pytest.raises(ToolError, match="not found. Please use 'archicad_list_commands'"):
         archicad_get_command_schema("made_up_command_name")
 
 
@@ -287,10 +289,11 @@ def test_broken_instance_does_not_block_healthy_one(set_multi_conn):
     assert len(result.unavailable) == 1 and result.unavailable[0].reason == "unresponsive"
 
 
-def test_call_tool_intercepts_addon_unavailable(set_multi_conn):
+@pytest.mark.asyncio
+async def test_call_tool_intercepts_addon_unavailable(set_multi_conn):
     mock_func = Mock(side_effect=AddOnCommandUnavailable("Unknown Add-On command."))
     register_tool_for_dispatch(mock_func, name="test_cmd", title="T", description="D")
     set_multi_conn({19723: make_header()})
 
-    with pytest.raises(ValueError, match="not available in the installed Tapir Add-On"):
-        archicad_call_tool("test_cmd", {"port": 19723})
+    with pytest.raises(ToolError, match="not available in the installed Tapir Add-On"):
+        await archicad_call_tool("test_cmd", {"port": 19723})

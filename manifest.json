@@ -58,6 +58,10 @@
     {
       "name": "archicad_call_tool",
       "description": "Executes an Archicad API command against a target instance. Includes commands that modify the model, export files, and interact with Teamwork."
+    },
+    {
+      "name": "archicad_get_job",
+      "description": "Retrieves a running or finished execution by handle, or lists retained jobs to recover a lost response."
     }
   ],
   "compatibility": {

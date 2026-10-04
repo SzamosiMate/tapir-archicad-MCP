@@ -6,7 +6,23 @@ import pytest
 from multiconn_archicad import ArchicadLocation, Port, ProductInfo, SoloProjectID
 
 import tapir_archicad_mcp.model_configuration  # noqa: F401
-from tapir_archicad_mcp.context import multi_conn_instance
+from tapir_archicad_mcp.context import job_store_instance, multi_conn_instance
+from tapir_archicad_mcp.jobs import JobSettings, JobStore
+
+
+@pytest.fixture(autouse=True)
+def job_store(monkeypatch, job_clock):
+    monkeypatch.setattr("tapir_archicad_mcp.app.job_settings", JobSettings())
+    store = JobStore(clock=lambda: job_clock.now)
+    job_store_instance.set(store)
+    yield store
+    store.shutdown()
+    job_store_instance.clear()
+
+
+@pytest.fixture
+def job_clock():
+    return SimpleNamespace(now=1000.0)
 
 
 class FakeArchicad:
@@ -26,7 +42,6 @@ class FakeArchicad:
         self.product_info = ProductInfo(version=28, buildNumber=6003, languageCode="USA")
         self.archicad_location = ArchicadLocation(archicadLocation="/Applications/GRAPHISOFT/Archicad 28/ARCHICAD")
         self.archicad_id = SoloProjectID(projectName="FakeProject", projectPath="/path/to/fake_project.pln")
-
 
     def on_tapir_command(self, command: str, response: dict) -> None:
         """Registers the canned response returned for a Tapir command."""
@@ -53,10 +68,12 @@ def fake_archicad():
     register_all_tools()
 
     fake = FakeArchicad()
+    headers = {Port(fake.port): fake}
     multi_conn = SimpleNamespace(
         refresh=SimpleNamespace(all_ports=Mock()),
         connect=SimpleNamespace(all=Mock()),
-        active={Port(fake.port): fake},
+        active=headers,
+        open_port_headers=headers,
     )
 
     multi_conn_instance.set(multi_conn)
