@@ -6,6 +6,7 @@ from multiconn_archicad.models.tapir.commands import (
     GetIFCPropertiesOfElementsParameters,
     GetIFCTypeOfElementsParameters,
     IFCFileOperationParameters,
+    SetIFCPropertiesOfElementsParameters,
 )
 
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
@@ -121,4 +122,27 @@ register_tool_for_dispatch(
         "name the export translator to use."
     ),
     params_model=IFCFileOperationParameters,
+)
+
+
+def set_ifc_properties_of_elements(conn_header: ConnHeader, params: SetIFCPropertiesOfElementsParameters) -> dict:
+    """
+    Sets local IFC properties on elements by creating or modifying single value (IfcPropertySingleValue) properties in
+    the given property sets. Available only in Archicad 25, 26 and 27 for now.
+    """
+    return conn_header.core.post_tapir_command(
+        command="SetIFCPropertiesOfElements",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    set_ifc_properties_of_elements,
+    name="ifc_set_ifc_properties_of_elements",
+    title="SetIFCPropertiesOfElements",
+    description=(
+        "Sets local IFC properties on elements by creating or modifying single value (IfcPropertySingleValue) "
+        "properties in the given property sets. Available only in Archicad 25, 26 and 27 for now."
+    ),
+    params_model=SetIFCPropertiesOfElementsParameters,
 )
