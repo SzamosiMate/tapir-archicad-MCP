@@ -7,7 +7,6 @@ from multiconn_archicad.models.official.commands import (
     GetDocument3DNavigatorItemsParameters,
     GetElevationNavigatorItemsParameters,
     GetInteriorElevationNavigatorItemsParameters,
-    GetNavigatorItemTreeParameters,
     GetNavigatorItemsTypeParameters,
     GetSectionNavigatorItemsParameters,
     GetStoryNavigatorItemsParameters,
@@ -120,22 +119,6 @@ register_tool_for_dispatch(
     title="GetInteriorElevationNavigatorItems",
     description="Returns the details of the interior elevation navigator items identified by their Ids.",
     params_model=GetInteriorElevationNavigatorItemsParameters,
-)
-
-
-def get_navigator_item_tree(conn_header: ConnHeader, params: GetNavigatorItemTreeParameters) -> dict:
-    """Returns the tree of navigator items."""
-    return conn_header.core.post_command(
-        command="API.GetNavigatorItemTree", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
-    )
-
-
-register_tool_for_dispatch(
-    get_navigator_item_tree,
-    name="navigator_get_navigator_item_tree",
-    title="GetNavigatorItemTree",
-    description="Returns the tree of navigator items.",
-    params_model=GetNavigatorItemTreeParameters,
 )
 
 

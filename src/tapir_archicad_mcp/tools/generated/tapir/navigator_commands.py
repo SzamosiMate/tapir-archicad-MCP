@@ -15,6 +15,7 @@ from multiconn_archicad.models.tapir.commands import (
     FitInWindowParameters,
     GetDatabaseIdFromNavigatorItemIdParameters,
     GetLayoutSettingsParameters,
+    GetNavigatorItemTreeParameters,
     GetView2DTransformationsParameters,
     GetViewSettingsParameters,
     PublishPublisherSetParameters,
@@ -304,6 +305,22 @@ register_tool_for_dispatch(
     title="GetModelViewOptions",
     description="Gets all model view options",
     params_model=None,
+)
+
+
+def get_navigator_item_tree(conn_header: ConnHeader, params: GetNavigatorItemTreeParameters) -> dict:
+    """Returns the full navigator item tree for the specified map."""
+    return conn_header.core.post_tapir_command(
+        command="GetNavigatorItemTree", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    get_navigator_item_tree,
+    name="navigator_get_navigator_item_tree",
+    title="GetNavigatorItemTree",
+    description="Returns the full navigator item tree for the specified map.",
+    params_model=GetNavigatorItemTreeParameters,
 )
 
 

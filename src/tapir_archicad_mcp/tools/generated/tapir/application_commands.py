@@ -11,7 +11,10 @@ from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
 
 
 def change_window(conn_header: ConnHeader, params: ChangeWindowParameters) -> dict:
-    """Changes the current (active) window to the given window."""
+    """
+    Changes the current (active) window to the given window. With windowType 'FloorPlan' and a storyIndex it also
+    activates that story on the floor plan.
+    """
     return conn_header.core.post_tapir_command(
         command="ChangeWindow", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
@@ -21,7 +24,10 @@ register_tool_for_dispatch(
     change_window,
     name="app_change_window",
     title="ChangeWindow",
-    description="Changes the current (active) window to the given window.",
+    description=(
+        "Changes the current (active) window to the given window. With windowType 'FloorPlan' and a storyIndex it also "
+        "activates that story on the floor plan."
+    ),
     params_model=ChangeWindowParameters,
 )
 

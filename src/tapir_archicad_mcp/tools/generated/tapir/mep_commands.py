@@ -60,7 +60,7 @@ register_tool_for_dispatch(
 def create_mep_routing_elements(conn_header: ConnHeader, params: CreateMEPRoutingElementsParameters) -> dict:
     """
     Creates MEP routing elements (duct, pipe or cable carrier routes) along the given polylines with optional cross
-    section data and MEP system. Available from Archicad 28.
+    section data (shape, size, preference table and reference id) and MEP system. Available from Archicad 28.
     """
     return conn_header.core.post_tapir_command(
         command="CreateMEPRoutingElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -73,7 +73,8 @@ register_tool_for_dispatch(
     title="CreateMEPRoutingElements",
     description=(
         "Creates MEP routing elements (duct, pipe or cable carrier routes) along the given polylines with optional "
-        "cross section data and MEP system. Available from Archicad 28."
+        "cross section data (shape, size, preference table and reference id) and MEP system. Available from Archicad "
+        "28."
     ),
     params_model=CreateMEPRoutingElementsParameters,
 )
@@ -174,7 +175,7 @@ register_tool_for_dispatch(
 def get_mep_routing_elements(conn_header: ConnHeader, params: GetMEPRoutingElementsParameters) -> dict:
     """
     Retrieves the details of the given MEP routing elements: domain, MEP system, route polyline, segments with cross
-    section data and nodes. Available from Archicad 28.
+    section data (shape, size, preference table and reference id) and nodes. Available from Archicad 28.
     """
     return conn_header.core.post_tapir_command(
         command="GetMEPRoutingElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -187,7 +188,7 @@ register_tool_for_dispatch(
     title="GetMEPRoutingElements",
     description=(
         "Retrieves the details of the given MEP routing elements: domain, MEP system, route polyline, segments with "
-        "cross section data and nodes. Available from Archicad 28."
+        "cross section data (shape, size, preference table and reference id) and nodes. Available from Archicad 28."
     ),
     params_model=GetMEPRoutingElementsParameters,
 )
@@ -195,8 +196,8 @@ register_tool_for_dispatch(
 
 def modify_mep_routing_elements(conn_header: ConnHeader, params: ModifyMEPRoutingElementsParameters) -> dict:
     """
-    Modifies the given MEP routing elements: MEP system, cross section data of all segments and node positions.
-    Available from Archicad 28.
+    Modifies the given MEP routing elements: MEP system, cross section data (shape, size, preference table and reference
+    id) of all segments and node positions. Available from Archicad 28.
     """
     return conn_header.core.post_tapir_command(
         command="ModifyMEPRoutingElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -208,8 +209,8 @@ register_tool_for_dispatch(
     name="mep_modify_mep_routing_elements",
     title="ModifyMEPRoutingElements",
     description=(
-        "Modifies the given MEP routing elements: MEP system, cross section data of all segments and node positions. "
-        "Available from Archicad 28."
+        "Modifies the given MEP routing elements: MEP system, cross section data (shape, size, preference table and "
+        "reference id) of all segments and node positions. Available from Archicad 28."
     ),
     params_model=ModifyMEPRoutingElementsParameters,
 )

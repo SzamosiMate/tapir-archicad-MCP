@@ -61,7 +61,6 @@ TAPIR_CONFIG = ApiSourceConfig(
         "GenerateDocumentation", # command only for internal use
         "ShowScriptUI", # used in apps
         "GetScriptUIResult", # used in apps
-        "GetNavigatorItemTree", # result model missing from tapir documentation
         "DeleteAttributes",  # official has a simpler interface for the same functionality (works for MEP systems)
         "DeleteNavigatorItems",  # same parameters as the Official command
         "MoveNavigatorItem",  # same parameters as the Official command
@@ -104,33 +103,34 @@ OFFICIAL_CONFIG = ApiSourceConfig(
         "Basic Commands": "app",
     },
     commands_to_exclude={
-        "Get3DBoundingBoxes", # Tapir command works on subelements
-        "GetAllElements", # Tapir command works on more element types
-        "GetElementsByType", # Tapir command works on more element types
-        "GetSelectedElements", # Tapir command works on more element types
-        "GetClassificationsOfElements", # Tapir command works on subelements
-        "SetClassificationsOfElements", # Tapir command works on subelements
-        "SetPropertyValuesOfElements", # Tapir command works on subelements
-        "GetPropertyValuesOfElements", # Tapir command works on subelements
+        "Get3DBoundingBoxes",  # Tapir command works on subelements
+        "GetAllElements",  # Tapir command works on more element types
+        "GetElementsByType",  # Tapir command works on more element types
+        "GetSelectedElements",  # Tapir command works on more element types
+        "GetClassificationsOfElements",  # Tapir command works on subelements
+        "SetClassificationsOfElements",  # Tapir command works on subelements
+        "SetPropertyValuesOfElements",  # Tapir command works on subelements
+        "GetPropertyValuesOfElements",  # Tapir command works on subelements
         "GetAttributesByType",  # Tapir command returns additional index and name
         "IsAlive",  # not useful as tool
         "GetProductInfo",  # discovery_list_active_archicads covers this
-        "ExecuteAddOnCommand", # we handle it with namespaces
-        "GetBuildingMaterialAttributes", # Tapir returns index
-        "GetCompositeAttributes", # Tapir returns index
-        "GetFillAttributes", # Tapir returns index
-        "GetLayerAttributes", # Tapir returns index
-        "GetLayerCombinationAttributes", # Tapir returns index
-        "GetLineAttributes", # Tapir returns index
-        "GetPenTableAttributes", # Tapir returns index
-        "GetProfileAttributes", # Tapir returns index
-        "GetSurfaceAttributes", # Tapir returns index
-        "GetZoneCategoryAttributes", # Tapir returns index
-        "RenameNavigatorItem", # Tapir command takes flat parameters instead of a union
+        "ExecuteAddOnCommand",  # we handle it with namespaces
+        "GetBuildingMaterialAttributes",  # Tapir returns index
+        "GetCompositeAttributes",  # Tapir returns index
+        "GetFillAttributes",  # Tapir returns index
+        "GetLayerAttributes",  # Tapir returns index
+        "GetLayerCombinationAttributes",  # Tapir returns index
+        "GetLineAttributes",  # Tapir returns index
+        "GetPenTableAttributes",  # Tapir returns index
+        "GetProfileAttributes",  # Tapir returns index
+        "GetSurfaceAttributes",  # Tapir returns index
+        "GetZoneCategoryAttributes",  # Tapir returns index
+        "RenameNavigatorItem",  # Tapir command takes flat parameters instead of a union
+        "GetNavigatorItemTree",  # Tapir returns additional fields
     },
-    paginated_commands = {
+    paginated_commands={
         "GetElementsByClassification": "elements",
         "GetAllPropertyIds": "propertyIds",
         "GetAllPropertyNames": "properties",
-    }
+    },
 )

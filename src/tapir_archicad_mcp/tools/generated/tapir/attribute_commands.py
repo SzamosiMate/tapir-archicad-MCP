@@ -127,7 +127,10 @@ register_tool_for_dispatch(
 
 
 def create_mep_systems(conn_header: ConnHeader, params: CreateMEPSystemsParameters) -> dict:
-    """Creates or overwrites MEP System attributes based on the given parameters."""
+    """
+    Creates or overwrites MEP System attributes (domain, pens, fill, center line type, surface and insulation surface)
+    based on the given parameters.
+    """
     return conn_header.core.post_tapir_command(
         command="CreateMEPSystems", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
@@ -137,7 +140,10 @@ register_tool_for_dispatch(
     create_mep_systems,
     name="attributes_create_mep_systems",
     title="CreateMEPSystems",
-    description="Creates or overwrites MEP System attributes based on the given parameters.",
+    description=(
+        "Creates or overwrites MEP System attributes (domain, pens, fill, center line type, surface and insulation "
+        "surface) based on the given parameters."
+    ),
     params_model=CreateMEPSystemsParameters,
 )
 
@@ -349,7 +355,10 @@ register_tool_for_dispatch(
 
 
 def get_mep_systems(conn_header: ConnHeader, params: GetMEPSystemsParameters) -> dict:
-    """Returns the details of the given MEP System attributes."""
+    """
+    Returns the details of the given MEP System attributes (domain, pens, fill, center line type, surface and insulation
+    surface).
+    """
     return conn_header.core.post_tapir_command(
         command="GetMEPSystems", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
@@ -359,7 +368,10 @@ register_tool_for_dispatch(
     get_mep_systems,
     name="attributes_get_mep_systems",
     title="GetMEPSystems",
-    description="Returns the details of the given MEP System attributes.",
+    description=(
+        "Returns the details of the given MEP System attributes (domain, pens, fill, center line type, surface and "
+        "insulation surface)."
+    ),
     params_model=GetMEPSystemsParameters,
 )
 
