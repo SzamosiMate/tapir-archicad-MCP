@@ -2,6 +2,7 @@
 from multiconn_archicad import ConnHeader
 from multiconn_archicad.models.tapir.commands import (
     ChangeHotlinkInstancesParameters,
+    ChangeHotlinkNodesParameters,
     CreateHotlinkInstancesParameters,
     CreateHotlinkNodesParameters,
     CreateProjectInfoFieldsParameters,
@@ -16,6 +17,7 @@ from multiconn_archicad.models.tapir.commands import (
     SetGeoLocationParameters,
     SetProjectInfoFieldParameters,
     SetStoriesParameters,
+    UpdateHotlinksParameters,
 )
 
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
@@ -40,6 +42,28 @@ register_tool_for_dispatch(
         "RotateElements do not work on hotlink instances."
     ),
     params_model=ChangeHotlinkInstancesParameters,
+)
+
+
+def change_hotlink_nodes(conn_header: ConnHeader, params: ChangeHotlinkNodesParameters) -> dict:
+    """
+    Repoints hotlink module nodes at other source files, as the Hotlink Manager's Relink button does. Follow it with
+    UpdateHotlinks to re-read the content.
+    """
+    return conn_header.core.post_tapir_command(
+        command="ChangeHotlinkNodes", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    change_hotlink_nodes,
+    name="project_change_hotlink_nodes",
+    title="ChangeHotlinkNodes",
+    description=(
+        "Repoints hotlink module nodes at other source files, as the Hotlink Manager's Relink button does. Follow it "
+        "with UpdateHotlinks to re-read the content."
+    ),
+    params_model=ChangeHotlinkNodesParameters,
 )
 
 
@@ -233,7 +257,10 @@ register_tool_for_dispatch(
 
 
 def get_stories(conn_header: ConnHeader) -> dict:
-    """Retrieves information about the story sructure of the currently loaded project."""
+    """
+    Retrieves information about the story structure of the currently loaded project: index, floor id, name, level,
+    height and, from Archicad 28, the IFC GlobalId of each story.
+    """
     return conn_header.core.post_tapir_command(command="GetStories", parameters={})
 
 
@@ -241,7 +268,10 @@ register_tool_for_dispatch(
     get_stories,
     name="project_get_stories",
     title="GetStories",
-    description="Retrieves information about the story sructure of the currently loaded project.",
+    description=(
+        "Retrieves information about the story structure of the currently loaded project: index, floor id, name, "
+        "level, height and, from Archicad 28, the IFC GlobalId of each story."
+    ),
     params_model=None,
 )
 
@@ -385,4 +415,26 @@ register_tool_for_dispatch(
     title="SetStories",
     description="Sets the story sructure of the currently loaded project.",
     params_model=SetStoriesParameters,
+)
+
+
+def update_hotlinks(conn_header: ConnHeader, params: UpdateHotlinksParameters) -> dict:
+    """
+    Re-reads the source files of hotlink module nodes and refreshes their cached content in the project, as the Hotlink
+    Manager's Update button does.
+    """
+    return conn_header.core.post_tapir_command(
+        command="UpdateHotlinks", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    update_hotlinks,
+    name="project_update_hotlinks",
+    title="UpdateHotlinks",
+    description=(
+        "Re-reads the source files of hotlink module nodes and refreshes their cached content in the project, as the "
+        "Hotlink Manager's Update button does."
+    ),
+    params_model=UpdateHotlinksParameters,
 )
