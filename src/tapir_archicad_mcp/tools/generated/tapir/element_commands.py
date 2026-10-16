@@ -13,6 +13,7 @@ from multiconn_archicad.models.tapir.commands import (
     GetElementPreviewImageParameters,
     GetElementsByTypeParameters,
     GetGDLParametersOfElementsParameters,
+    GetMarkerParametersOfElementsParameters,
     GetRelationsOfElementsParameters,
     GetRoomImageParameters,
     GetSectionElementsParameters,
@@ -26,6 +27,7 @@ from multiconn_archicad.models.tapir.commands import (
     SetDetailsOfElementsParameters,
     SetElementNotificationClientParameters,
     SetGDLParametersOfElementsParameters,
+    SetMarkerParametersOfElementsParameters,
     UnlockElementsParameters,
     UpdateZonesParameters,
 )
@@ -277,6 +279,31 @@ register_tool_for_dispatch(
     description="Gets all the GDL parameters (name, type, value) of the given elements.",
     params_model=GetGDLParametersOfElementsParameters,
     pagination_field="gdlParametersOfElements",
+)
+
+
+def get_marker_parameters_of_elements(conn_header: ConnHeader, params: GetMarkerParametersOfElementsParameters) -> dict:
+    """
+    Gets the marker library part and the marker's GDL parameters (name, type, value) of the given Window and Door
+    elements. The marker is the stamp drawn next to the opening on the floor plan; its parameters are separate from the
+    opening's own GDL parameters, which GetGDLParametersOfElements returns.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetMarkerParametersOfElements",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    get_marker_parameters_of_elements,
+    name="elements_get_marker_parameters_of_elements",
+    title="GetMarkerParametersOfElements",
+    description=(
+        "Gets the marker library part and the marker's GDL parameters (name, type, value) of the given Window and Door "
+        "elements. The marker is the stamp drawn next to the opening on the floor plan; its parameters are separate "
+        "from the opening's own GDL parameters, which GetGDLParametersOfElements returns."
+    ),
+    params_model=GetMarkerParametersOfElementsParameters,
 )
 
 
@@ -546,6 +573,29 @@ register_tool_for_dispatch(
     title="SetGDLParametersOfElements",
     description="Sets the given GDL parameters of the given elements.",
     params_model=SetGDLParametersOfElementsParameters,
+)
+
+
+def set_marker_parameters_of_elements(conn_header: ConnHeader, params: SetMarkerParametersOfElementsParameters) -> dict:
+    """
+    Sets the given GDL parameters of the marker of the given Window and Door elements. The opening's own settings and
+    the other marker parameters are left as they are.
+    """
+    return conn_header.core.post_tapir_command(
+        command="SetMarkerParametersOfElements",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    set_marker_parameters_of_elements,
+    name="elements_set_marker_parameters_of_elements",
+    title="SetMarkerParametersOfElements",
+    description=(
+        "Sets the given GDL parameters of the marker of the given Window and Door elements. The opening's own settings "
+        "and the other marker parameters are left as they are."
+    ),
+    params_model=SetMarkerParametersOfElementsParameters,
 )
 
 
