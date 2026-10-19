@@ -1,0 +1,79 @@
+name: Publish release
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Published release tag to retry
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.event.release.tag_name || inputs.tag }}
+  cancel-in-progress: false
+
+env:
+  RELEASE_TAG: ${{ github.event.release.tag_name || inputs.tag }}
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: refs/tags/${{ env.RELEASE_TAG }}
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.13"
+      - name: Require a published GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: test "$(gh release view "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --json isDraft --jq .isDraft)" = false
+      - name: Require successful CI for the tagged commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          CI_URL=$(gh run list --repo "$GITHUB_REPOSITORY" --workflow test.yml \
+            --commit "$(git rev-parse HEAD)" --branch master --event push --limit 1 \
+            --json status,conclusion,url \
+            --jq '.[0] | select(.status == "completed" and .conclusion == "success") | .url')
+          if [[ -z "$CI_URL" ]]; then
+            echo "::error::The tagged commit needs a successful test.yml push run on master. Wait for CI or fix/rerun it, then rerun this release workflow."
+            exit 1
+          fi
+          echo "CI passed: $CI_URL"
+      - run: uv run --locked python scripts/release.py check --tag "$RELEASE_TAG"
+      - run: uv build --no-sources --no-create-gitignore
+      - run: uv tool run --from twine twine check dist/*
+      - name: Test wheel installation outside the checkout
+        run: |
+          WHEEL=$(find "$GITHUB_WORKSPACE/dist" -name '*.whl')
+          cd "$RUNNER_TEMP"
+          uv run --no-project --with "$WHEEL" python -I -c "import tapir_archicad_mcp.server; import os; from importlib.metadata import version; assert version('tapir-archicad-mcp') == os.environ['RELEASE_TAG'][1:]"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Build the MCPB and fixed-name download alias
+        run: |
+          npx --yes @anthropic-ai/mcpb@2.1.2 validate manifest.json
+          npx --yes @anthropic-ai/mcpb@2.1.2 pack . "dist/tapir-archicad-${RELEASE_TAG#v}.mcpb"
+          cp "dist/tapir-archicad-${RELEASE_TAG#v}.mcpb" dist/tapir-archicad.mcpb
+      - name: Publish Python distributions with PyPI Trusted Publishing
+        run: uv publish --trusted-publishing always --check-url https://pypi.org/simple dist/*.whl dist/*.tar.gz
+      - name: Attach the published files to GitHub
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "$RELEASE_TAG" dist/* --repo "$GITHUB_REPOSITORY" --clobber
