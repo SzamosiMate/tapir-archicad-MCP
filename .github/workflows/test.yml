@@ -1,0 +1,37 @@
+name: Continuous Integration
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-latest]
+        python-version: ["3.12", "3.13", "3.14"]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          enable-cache: true
+      - name: Install locked dependencies
+        run: uv sync --locked
+      - name: Check Python package and MCPB versions agree
+        run: >-
+          uv run --locked python -c
+          "import json, tomllib; from pathlib import Path;
+          assert tomllib.loads(Path('pyproject.toml').read_text())['project']['version']
+          == json.loads(Path('manifest.json').read_text())['version'],
+          'Python package and MCPB versions differ'"
+      - name: Run tests
+        run: uv run --locked pytest tests
