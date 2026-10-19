@@ -14,3 +14,4 @@ scripts/
 *.mcpb
 server/lib/
 server/venv/
+.agents/
