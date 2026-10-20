@@ -9,7 +9,6 @@ from tapir_archicad_mcp.tools.generated.tapir.element_creation_commands import *
 from tapir_archicad_mcp.tools.generated.tapir.element_grouping_commands import *
 from tapir_archicad_mcp.tools.generated.tapir.element_modification_commands import *
 from tapir_archicad_mcp.tools.generated.tapir.favorites_commands import *
-from tapir_archicad_mcp.tools.generated.tapir.graphic_override_commands import *
 from tapir_archicad_mcp.tools.generated.tapir.ifc_commands import *
 from tapir_archicad_mcp.tools.generated.tapir.issue_management_commands import *
 from tapir_archicad_mcp.tools.generated.tapir.keynote_commands import *
