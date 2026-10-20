@@ -7,11 +7,14 @@ from multiconn_archicad.models.tapir.commands import (
     CreateBeamsParameters,
     CreateCirclesParameters,
     CreateColumnsParameters,
+    CreateCurtainWallsParameters,
     CreateDoorsParameters,
+    CreateGridElementsParameters,
     CreateHatchesParameters,
     CreateHotspotsParameters,
     CreateLabelsParameters,
     CreateLampsParameters,
+    CreateLevelDimensionsParameters,
     CreateLineElementsParameters,
     CreateMeshesParameters,
     CreateMorphsParameters,
@@ -140,6 +143,30 @@ register_tool_for_dispatch(
 )
 
 
+def create_curtain_walls(conn_header: ConnHeader, params: CreateCurtainWallsParameters) -> dict:
+    """
+    Creates Curtain Wall elements along a reference polyline with a column (primary) and row (secondary) pattern. The
+    frame and panel classes come from the favorite or from the Curtain Wall tool defaults; the pattern cells can assign
+    them to the grid.
+    """
+    return conn_header.core.post_tapir_command(
+        command="CreateCurtainWalls", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    create_curtain_walls,
+    name="elements_create_curtain_walls",
+    title="CreateCurtainWalls",
+    description=(
+        "Creates Curtain Wall elements along a reference polyline with a column (primary) and row (secondary) pattern. "
+        "The frame and panel classes come from the favorite or from the Curtain Wall tool defaults; the pattern cells "
+        "can assign them to the grid."
+    ),
+    params_model=CreateCurtainWallsParameters,
+)
+
+
 def create_doors(conn_header: ConnHeader, params: CreateDoorsParameters) -> dict:
     """Creates Door elements in host walls based on the given parameters."""
     return conn_header.core.post_tapir_command(
@@ -153,6 +180,28 @@ register_tool_for_dispatch(
     title="CreateDoors",
     description="Creates Door elements in host walls based on the given parameters.",
     params_model=CreateDoorsParameters,
+)
+
+
+def create_grid_elements(conn_header: ConnHeader, params: CreateGridElementsParameters) -> dict:
+    """
+    Creates grid elements, the elements the Grid Tool places, from begin and end coordinates, with optional story, layer
+    and GDL parameters. Needs Archicad 26 or later.
+    """
+    return conn_header.core.post_tapir_command(
+        command="CreateGridElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    create_grid_elements,
+    name="elements_create_grid_elements",
+    title="CreateGridElements",
+    description=(
+        "Creates grid elements, the elements the Grid Tool places, from begin and end coordinates, with optional "
+        "story, layer and GDL parameters. Needs Archicad 26 or later."
+    ),
+    params_model=CreateGridElementsParameters,
 )
 
 
@@ -217,6 +266,30 @@ register_tool_for_dispatch(
     title="CreateLamps",
     description="Creates Lamp elements based on the given parameters.",
     params_model=CreateLampsParameters,
+)
+
+
+def create_level_dimensions(conn_header: ConnHeader, params: CreateLevelDimensionsParameters) -> dict:
+    """
+    Creates Level Dimension elements (the Level Dimension tool) based on the given parameters. With a parentElementId
+    the dimension is associative: it shows the height of the parent element (Mesh, Slab, Roof ...) at its position and
+    follows the element when it changes.
+    """
+    return conn_header.core.post_tapir_command(
+        command="CreateLevelDimensions", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    create_level_dimensions,
+    name="elements_create_level_dimensions",
+    title="CreateLevelDimensions",
+    description=(
+        "Creates Level Dimension elements (the Level Dimension tool) based on the given parameters. With a "
+        "parentElementId the dimension is associative: it shows the height of the parent element (Mesh, Slab, Roof "
+        "...) at its position and follows the element when it changes."
+    ),
+    params_model=CreateLevelDimensionsParameters,
 )
 
 

@@ -66,6 +66,7 @@ TAPIR_CONFIG = ApiSourceConfig(
         "Classification Commands": "classifications",
         "Property Commands": "properties",
         "Attribute Commands": "attributes",
+        "Graphic Override Commands": "attributes",
         "Favorites Commands": "favorites",
         "Library Commands": "library",
 
@@ -101,6 +102,17 @@ TAPIR_CONFIG = ApiSourceConfig(
         "GetAvailableLibraryParts": "libraryParts",
         "GetDetailsOfElements": "detailsOfElements",
         "GetGDLParametersOfElements": "gdlParametersOfElements",
+        "Get3DGeometryOfElements": "geometries3D",
+        "GetQuantitiesOfElements": "quantitiesOfElements",
+        "GetGridElements": "gridElements",
+        "GetGraphicOverrideCombinations": "graphicOverrideCombinations",
+        "GetGraphicOverrideRuleGroups": "graphicOverrideRuleGroups",
+        "GetGraphicOverrideRules": "graphicOverrideRules",
+        "GetGraphicalOverrideRules": "rules",
+        "GetElectricalCircuits": "electricalCircuits",
+        "GetElectricalDevices": "electricalDevices",
+        "GetElectricalPanels": "electricalPanels",
+        "GetMEPSystemGroups": "systemGroups",
     }
 )
 

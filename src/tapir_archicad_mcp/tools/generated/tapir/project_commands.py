@@ -13,7 +13,9 @@ from multiconn_archicad.models.tapir.commands import (
     PrintViewParameters,
     RebuildViewParameters,
     SaveAsModuleFileParameters,
+    SaveCurrentWindowAsImageParameters,
     SaveProjectAsArchiveParameters,
+    SaveProjectParameters,
     SetGeoLocationParameters,
     SetProjectInfoFieldParameters,
     SetStoriesParameters,
@@ -340,9 +342,33 @@ register_tool_for_dispatch(
 )
 
 
-def save_project(conn_header: ConnHeader) -> dict:
+def save_current_window_as_image(conn_header: ConnHeader, params: SaveCurrentWindowAsImageParameters) -> dict:
+    """
+    Saves what the current window shows as an image file (png, jpg, bmp, tiff or gif), as File > Save as does with a
+    picture format.
+    """
+    return conn_header.core.post_tapir_command(
+        command="SaveCurrentWindowAsImage", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    save_current_window_as_image,
+    name="project_save_current_window_as_image",
+    title="SaveCurrentWindowAsImage",
+    description=(
+        "Saves what the current window shows as an image file (png, jpg, bmp, tiff or gif), as File > Save as does "
+        "with a picture format."
+    ),
+    params_model=SaveCurrentWindowAsImageParameters,
+)
+
+
+def save_project(conn_header: ConnHeader, params: SaveProjectParameters) -> dict:
     """Saves the currently opened project."""
-    return conn_header.core.post_tapir_command(command="SaveProject", parameters={})
+    return conn_header.core.post_tapir_command(
+        command="SaveProject", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
 
 
 register_tool_for_dispatch(
@@ -350,7 +376,7 @@ register_tool_for_dispatch(
     name="project_save_project",
     title="SaveProject",
     description="Saves the currently opened project.",
-    params_model=None,
+    params_model=SaveProjectParameters,
 )
 
 

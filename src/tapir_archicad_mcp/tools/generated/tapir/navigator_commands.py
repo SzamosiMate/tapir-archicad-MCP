@@ -21,6 +21,8 @@ from multiconn_archicad.models.tapir.commands import (
     PublishPublisherSetParameters,
     RenameNavigatorItemParameters,
     Set3DCutPlanesParameters,
+    Set3DProjectionSettingsParameters,
+    SetActiveGraphicalOverrideCombinationParameters,
     SetLayoutSettingsParameters,
     SetViewRotationParameters,
     SetViewSettingsParameters,
@@ -56,7 +58,7 @@ register_tool_for_dispatch(
 
 
 def clone_project_map_item_to_view_map(conn_header: ConnHeader, params: CloneProjectMapItemToViewMapParameters) -> dict:
-    """Clones Project Map viewpoints into the View Map, optionally into a specified folder."""
+    """Clones Project Map viewpoints into a specified View Map folder."""
     return conn_header.core.post_tapir_command(
         command="CloneProjectMapItemToViewMap",
         parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
@@ -67,7 +69,7 @@ register_tool_for_dispatch(
     clone_project_map_item_to_view_map,
     name="navigator_clone_project_map_item_to_view_map",
     title="CloneProjectMapItemToViewMap",
-    description="Clones Project Map viewpoints into the View Map, optionally into a specified folder.",
+    description="Clones Project Map viewpoints into a specified View Map folder.",
     params_model=CloneProjectMapItemToViewMapParameters,
 )
 
@@ -194,7 +196,8 @@ register_tool_for_dispatch(
 
 def create_views_in_view_map(conn_header: ConnHeader, params: CreateViewsInViewMapParameters) -> dict:
     """
-    Creates independent (non-clone) navigator views in the View Map by copying database and settings from source items.
+    Creates independent (non-clone) navigator views in a specified View Map folder, by copying database and settings
+    from source items.
     """
     return conn_header.core.post_tapir_command(
         command="CreateViewsInViewMap", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -206,8 +209,8 @@ register_tool_for_dispatch(
     name="navigator_create_views_in_view_map",
     title="CreateViewsInViewMap",
     description=(
-        "Creates independent (non-clone) navigator views in the View Map by copying database and settings from source "
-        "items."
+        "Creates independent (non-clone) navigator views in a specified View Map folder, by copying database and "
+        "settings from source items."
     ),
     params_model=CreateViewsInViewMapParameters,
 )
@@ -242,6 +245,50 @@ register_tool_for_dispatch(
     title="FitInWindow",
     description="Zooms to the given elements or fits everything in the window.",
     params_model=FitInWindowParameters,
+)
+
+
+def get3_d_projection_settings(conn_header: ConnHeader) -> dict:
+    """
+    Gets the 3D projection settings of the 3D window: whether it is perspective or axonometric, the camera and target
+    position, view cone, roll angle, distance and azimuth of a perspective, or the transformation matrix of an
+    axonometry.
+    """
+    return conn_header.core.post_tapir_command(command="Get3DProjectionSettings", parameters={})
+
+
+register_tool_for_dispatch(
+    get3_d_projection_settings,
+    name="navigator_get3_d_projection_settings",
+    title="Get3DProjectionSettings",
+    description=(
+        "Gets the 3D projection settings of the 3D window: whether it is perspective or axonometric, the camera and "
+        "target position, view cone, roll angle, distance and azimuth of a perspective, or the transformation matrix "
+        "of an axonometry."
+    ),
+    params_model=None,
+)
+
+
+def get_active_graphical_override_combination(conn_header: ConnHeader) -> dict:
+    """
+    Gets the graphic override combination applied to the current window, with its id and name. The response is empty
+    when no combination is applied. This is the combination of the window itself, not the one stored in a saved view
+    (see GetViewSettings). Available from Archicad 30.
+    """
+    return conn_header.core.post_tapir_command(command="GetActiveGraphicalOverrideCombination", parameters={})
+
+
+register_tool_for_dispatch(
+    get_active_graphical_override_combination,
+    name="navigator_get_active_graphical_override_combination",
+    title="GetActiveGraphicalOverrideCombination",
+    description=(
+        "Gets the graphic override combination applied to the current window, with its id and name. The response is "
+        "empty when no combination is applied. This is the combination of the window itself, not the one stored in a "
+        "saved view (see GetViewSettings). Available from Archicad 30."
+    ),
+    params_model=None,
 )
 
 
@@ -375,7 +422,11 @@ register_tool_for_dispatch(
 
 
 def rename_navigator_item(conn_header: ConnHeader, params: RenameNavigatorItemParameters) -> dict:
-    """Renames a navigator item or changes its ID."""
+    """
+    Renames a navigator item or changes its ID. Fails when Archicad does not apply the new name (e.g. on Project Map
+    schedule items, which are named by their scheme). With customName false the item drops its custom name and follows
+    its Project Map source again.
+    """
     return conn_header.core.post_tapir_command(
         command="RenameNavigatorItem", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
@@ -385,7 +436,11 @@ register_tool_for_dispatch(
     rename_navigator_item,
     name="navigator_rename_navigator_item",
     title="RenameNavigatorItem",
-    description="Renames a navigator item or changes its ID.",
+    description=(
+        "Renames a navigator item or changes its ID. Fails when Archicad does not apply the new name (e.g. on Project "
+        "Map schedule items, which are named by their scheme). With customName false the item drops its custom name "
+        "and follows its Project Map source again."
+    ),
     params_model=RenameNavigatorItemParameters,
 )
 
@@ -403,6 +458,56 @@ register_tool_for_dispatch(
     title="Set3DCutPlanes",
     description="Sets the 3D cut planes.",
     params_model=Set3DCutPlanesParameters,
+)
+
+
+def set3_d_projection_settings(conn_header: ConnHeader, params: Set3DProjectionSettingsParameters) -> dict:
+    """
+    Sets a perspective projection for the 3D window. Every perspective parameter is required: read a known good set with
+    Get3DProjectionSettings and pass it back, with the values to change replaced.
+    """
+    return conn_header.core.post_tapir_command(
+        command="Set3DProjectionSettings", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    set3_d_projection_settings,
+    name="navigator_set3_d_projection_settings",
+    title="Set3DProjectionSettings",
+    description=(
+        "Sets a perspective projection for the 3D window. Every perspective parameter is required: read a known good "
+        "set with Get3DProjectionSettings and pass it back, with the values to change replaced."
+    ),
+    params_model=Set3DProjectionSettingsParameters,
+)
+
+
+def set_active_graphical_override_combination(
+    conn_header: ConnHeader, params: SetActiveGraphicalOverrideCombinationParameters
+) -> dict:
+    """
+    Applies a graphic override combination, given by id or by name, to the current window. The current window must be a
+    model window (floor plan, section, elevation, 3D, ...). To remove the overrides, apply the project's 'No Overrides'
+    combination. The saved view is not changed (see SetViewSettings for that). Available from Archicad 30.
+    """
+    return conn_header.core.post_tapir_command(
+        command="SetActiveGraphicalOverrideCombination",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    set_active_graphical_override_combination,
+    name="navigator_set_active_graphical_override_combination",
+    title="SetActiveGraphicalOverrideCombination",
+    description=(
+        "Applies a graphic override combination, given by id or by name, to the current window. The current window "
+        "must be a model window (floor plan, section, elevation, 3D, ...). To remove the overrides, apply the "
+        "project's 'No Overrides' combination. The saved view is not changed (see SetViewSettings for that). Available "
+        "from Archicad 30."
+    ),
+    params_model=SetActiveGraphicalOverrideCombinationParameters,
 )
 
 
