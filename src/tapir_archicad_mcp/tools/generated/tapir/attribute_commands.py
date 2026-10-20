@@ -4,6 +4,8 @@ from multiconn_archicad.models.tapir.commands import (
     CreateBuildingMaterialsParameters,
     CreateCompositesParameters,
     CreateFillsParameters,
+    CreateGraphicOverrideCombinationsParameters,
+    CreateGraphicOverrideRulesParameters,
     CreateLayerCombinationsParameters,
     CreateLayersParameters,
     CreateLinesParameters,
@@ -12,6 +14,9 @@ from multiconn_archicad.models.tapir.commands import (
     CreateProfilesParameters,
     CreateSurfacesParameters,
     CreateZoneCategoriesParameters,
+    DeleteGraphicOverrideCombinationsParameters,
+    DeleteGraphicOverrideRuleGroupsParameters,
+    DeleteGraphicOverrideRulesParameters,
     GetAttributesByTypeParameters,
     GetBuildingMaterialPhysicalPropertiesParameters,
     GetBuildingMaterialsParameters,
@@ -25,6 +30,7 @@ from multiconn_archicad.models.tapir.commands import (
     GetProfilesParameters,
     GetSurfacesParameters,
     GetZoneCategoriesParameters,
+    ModifyGraphicOverrideRulesParameters,
 )
 
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
@@ -75,6 +81,48 @@ register_tool_for_dispatch(
     title="CreateFills",
     description="Creates or overwrites Fill attributes based on the given parameters.",
     params_model=CreateFillsParameters,
+)
+
+
+def create_graphic_override_combinations(
+    conn_header: ConnHeader, params: CreateGraphicOverrideCombinationsParameters
+) -> dict:
+    """Creates graphic override combinations from existing rules. Available from Archicad 27."""
+    return conn_header.core.post_tapir_command(
+        command="CreateGraphicOverrideCombinations",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    create_graphic_override_combinations,
+    name="attributes_create_graphic_override_combinations",
+    title="CreateGraphicOverrideCombinations",
+    description="Creates graphic override combinations from existing rules. Available from Archicad 27.",
+    params_model=CreateGraphicOverrideCombinationsParameters,
+)
+
+
+def create_graphic_override_rules(conn_header: ConnHeader, params: CreateGraphicOverrideRulesParameters) -> dict:
+    """
+    Creates graphic override rules. The criterion is given as Archicad's criterion XML or as structured conditions. The
+    rule group is created when no rule group has the given name. Available from Archicad 27.
+    """
+    return conn_header.core.post_tapir_command(
+        command="CreateGraphicOverrideRules",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    create_graphic_override_rules,
+    name="attributes_create_graphic_override_rules",
+    title="CreateGraphicOverrideRules",
+    description=(
+        "Creates graphic override rules. The criterion is given as Archicad's criterion XML or as structured "
+        "conditions. The rule group is created when no rule group has the given name. Available from Archicad 27."
+    ),
+    params_model=CreateGraphicOverrideRulesParameters,
 )
 
 
@@ -217,6 +265,73 @@ register_tool_for_dispatch(
 )
 
 
+def delete_graphic_override_combinations(
+    conn_header: ConnHeader, params: DeleteGraphicOverrideCombinationsParameters
+) -> dict:
+    """Deletes graphic override combinations. Their rules are kept. Available from Archicad 27."""
+    return conn_header.core.post_tapir_command(
+        command="DeleteGraphicOverrideCombinations",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    delete_graphic_override_combinations,
+    name="attributes_delete_graphic_override_combinations",
+    title="DeleteGraphicOverrideCombinations",
+    description="Deletes graphic override combinations. Their rules are kept. Available from Archicad 27.",
+    params_model=DeleteGraphicOverrideCombinationsParameters,
+)
+
+
+def delete_graphic_override_rule_groups(
+    conn_header: ConnHeader, params: DeleteGraphicOverrideRuleGroupsParameters
+) -> dict:
+    """
+    Deletes graphic override rule groups, found by name. A group that still contains rules is kept unless its rules are
+    moved to another group or deleted with it. Available from Archicad 27.
+    """
+    return conn_header.core.post_tapir_command(
+        command="DeleteGraphicOverrideRuleGroups",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    delete_graphic_override_rule_groups,
+    name="attributes_delete_graphic_override_rule_groups",
+    title="DeleteGraphicOverrideRuleGroups",
+    description=(
+        "Deletes graphic override rule groups, found by name. A group that still contains rules is kept unless its "
+        "rules are moved to another group or deleted with it. Available from Archicad 27."
+    ),
+    params_model=DeleteGraphicOverrideRuleGroupsParameters,
+)
+
+
+def delete_graphic_override_rules(conn_header: ConnHeader, params: DeleteGraphicOverrideRulesParameters) -> dict:
+    """
+    Deletes graphic override rules. They are also removed from the combinations that contain them. Available from
+    Archicad 27.
+    """
+    return conn_header.core.post_tapir_command(
+        command="DeleteGraphicOverrideRules",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    delete_graphic_override_rules,
+    name="attributes_delete_graphic_override_rules",
+    title="DeleteGraphicOverrideRules",
+    description=(
+        "Deletes graphic override rules. They are also removed from the combinations that contain them. Available from "
+        "Archicad 27."
+    ),
+    params_model=DeleteGraphicOverrideRulesParameters,
+)
+
+
 def get_attributes_by_type(conn_header: ConnHeader, params: GetAttributesByTypeParameters) -> dict:
     """
     Returns the details of every attribute of the given type.
@@ -303,6 +418,76 @@ register_tool_for_dispatch(
     title="GetFills",
     description="Returns the details of the given Fill attributes.",
     params_model=GetFillsParameters,
+)
+
+
+def get_graphic_override_combinations(conn_header: ConnHeader) -> dict:
+    """
+    Gets all graphic override combinations of the project with the rules they contain. Available from Archicad 27.
+
+    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
+    and page_token set to that token to get the next page of results.
+    """
+    return conn_header.core.post_tapir_command(command="GetGraphicOverrideCombinations", parameters={})
+
+
+register_tool_for_dispatch(
+    get_graphic_override_combinations,
+    name="attributes_get_graphic_override_combinations",
+    title="GetGraphicOverrideCombinations",
+    description=(
+        "Gets all graphic override combinations of the project with the rules they contain. Available from Archicad 27."
+    ),
+    params_model=None,
+    pagination_field="graphicOverrideCombinations",
+)
+
+
+def get_graphic_override_rule_groups(conn_header: ConnHeader) -> dict:
+    """
+    Gets all graphic override rule groups of the project with the rules they contain, empty groups included. Available
+    from Archicad 27.
+
+    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
+    and page_token set to that token to get the next page of results.
+    """
+    return conn_header.core.post_tapir_command(command="GetGraphicOverrideRuleGroups", parameters={})
+
+
+register_tool_for_dispatch(
+    get_graphic_override_rule_groups,
+    name="attributes_get_graphic_override_rule_groups",
+    title="GetGraphicOverrideRuleGroups",
+    description=(
+        "Gets all graphic override rule groups of the project with the rules they contain, empty groups included. "
+        "Available from Archicad 27."
+    ),
+    params_model=None,
+    pagination_field="graphicOverrideRuleGroups",
+)
+
+
+def get_graphic_override_rules(conn_header: ConnHeader) -> dict:
+    """
+    Gets all graphic override rules of the project, with their rule group, criterion and style. Available from Archicad
+    27.
+
+    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
+    and page_token set to that token to get the next page of results.
+    """
+    return conn_header.core.post_tapir_command(command="GetGraphicOverrideRules", parameters={})
+
+
+register_tool_for_dispatch(
+    get_graphic_override_rules,
+    name="attributes_get_graphic_override_rules",
+    title="GetGraphicOverrideRules",
+    description=(
+        "Gets all graphic override rules of the project, with their rule group, criterion and style. Available from "
+        "Archicad 27."
+    ),
+    params_model=None,
+    pagination_field="graphicOverrideRules",
 )
 
 
@@ -437,4 +622,28 @@ register_tool_for_dispatch(
     title="GetZoneCategories",
     description="Returns the details of the given Zone Category attributes.",
     params_model=GetZoneCategoriesParameters,
+)
+
+
+def modify_graphic_override_rules(conn_header: ConnHeader, params: ModifyGraphicOverrideRulesParameters) -> dict:
+    """
+    Modifies the name, criterion or style of graphic override rules. The criterion is given as Archicad's criterion XML
+    or as structured conditions. A given style replaces the whole style of the rule. Available from Archicad 27.
+    """
+    return conn_header.core.post_tapir_command(
+        command="ModifyGraphicOverrideRules",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    modify_graphic_override_rules,
+    name="attributes_modify_graphic_override_rules",
+    title="ModifyGraphicOverrideRules",
+    description=(
+        "Modifies the name, criterion or style of graphic override rules. The criterion is given as Archicad's "
+        "criterion XML or as structured conditions. A given style replaces the whole style of the rule. Available from "
+        "Archicad 27."
+    ),
+    params_model=ModifyGraphicOverrideRulesParameters,
 )

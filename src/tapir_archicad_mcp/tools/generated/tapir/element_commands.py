@@ -5,6 +5,7 @@ from multiconn_archicad.models.tapir.commands import (
     DeleteElementsParameters,
     FilterElementsParameters,
     Get3DBoundingBoxesParameters,
+    Get3DGeometryOfElementsParameters,
     GetAllElementsParameters,
     GetCollisionsParameters,
     GetConnectedElementsParameters,
@@ -13,7 +14,10 @@ from multiconn_archicad.models.tapir.commands import (
     GetElementPreviewImageParameters,
     GetElementsByTypeParameters,
     GetGDLParametersOfElementsParameters,
+    GetGridElementDefaultsParameters,
+    GetGridElementsParameters,
     GetMarkerParametersOfElementsParameters,
+    GetQuantitiesOfElementsParameters,
     GetRelationsOfElementsParameters,
     GetRoomImageParameters,
     GetSectionElementsParameters,
@@ -108,6 +112,38 @@ register_tool_for_dispatch(
         "The output is the array of the bounding boxes respective to the input array of elements."
     ),
     params_model=Get3DBoundingBoxesParameters,
+)
+
+
+def get3_d_geometry_of_elements(conn_header: ConnHeader, params: Get3DGeometryOfElementsParameters) -> dict:
+    """
+    Gets the 3D geometry of elements as the solid bodies of their 3D model: a vertex list in world coordinates and the
+    planar faces (with their holes) referencing it, each face with its surface attribute when that is a project
+    attribute. The bodies of the subelements of a Stair, Railing or Curtain Wall are included. The output is aligned
+    with the input array of elements. The 3D model of the elements is generated as needed, so many elements can take a
+    while.
+
+    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
+    and page_token set to that token to get the next page of results.
+    """
+    return conn_header.core.post_tapir_command(
+        command="Get3DGeometryOfElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    get3_d_geometry_of_elements,
+    name="elements_get3_d_geometry_of_elements",
+    title="Get3DGeometryOfElements",
+    description=(
+        "Gets the 3D geometry of elements as the solid bodies of their 3D model: a vertex list in world coordinates "
+        "and the planar faces (with their holes) referencing it, each face with its surface attribute when that is a "
+        "project attribute. The bodies of the subelements of a Stair, Railing or Curtain Wall are included. The output "
+        "is aligned with the input array of elements. The 3D model of the elements is generated as needed, so many "
+        "elements can take a while."
+    ),
+    params_model=Get3DGeometryOfElementsParameters,
+    pagination_field="geometries3D",
 )
 
 
@@ -282,6 +318,54 @@ register_tool_for_dispatch(
 )
 
 
+def get_grid_element_defaults(conn_header: ConnHeader, params: GetGridElementDefaultsParameters) -> dict:
+    """
+    Returns the Grid Tool defaults: library part, size and GDL parameters of a new grid element. Needs Archicad 26 or
+    later.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetGridElementDefaults", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    get_grid_element_defaults,
+    name="elements_get_grid_element_defaults",
+    title="GetGridElementDefaults",
+    description=(
+        "Returns the Grid Tool defaults: library part, size and GDL parameters of a new grid element. Needs Archicad "
+        "26 or later."
+    ),
+    params_model=GetGridElementDefaultsParameters,
+)
+
+
+def get_grid_elements(conn_header: ConnHeader, params: GetGridElementsParameters) -> dict:
+    """
+    Lists the grid elements (placed with the Grid Tool or created by CreateGridElements) with their position, angle,
+    size, library part and optionally GDL parameters. Needs Archicad 26 or later.
+
+    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
+    and page_token set to that token to get the next page of results.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetGridElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    get_grid_elements,
+    name="elements_get_grid_elements",
+    title="GetGridElements",
+    description=(
+        "Lists the grid elements (placed with the Grid Tool or created by CreateGridElements) with their position, "
+        "angle, size, library part and optionally GDL parameters. Needs Archicad 26 or later."
+    ),
+    params_model=GetGridElementsParameters,
+    pagination_field="gridElements",
+)
+
+
 def get_marker_parameters_of_elements(conn_header: ConnHeader, params: GetMarkerParametersOfElementsParameters) -> dict:
     """
     Gets the marker library part and the marker's GDL parameters (name, type, value) of the given Window and Door
@@ -304,6 +388,36 @@ register_tool_for_dispatch(
         "from the opening's own GDL parameters, which GetGDLParametersOfElements returns."
     ),
     params_model=GetMarkerParametersOfElementsParameters,
+)
+
+
+def get_quantities_of_elements(conn_header: ConnHeader, params: GetQuantitiesOfElementsParameters) -> dict:
+    """
+    Gets the quantities of the given elements calculated by Archicad (volumes, surfaces, lengths etc.), together with
+    the volume and projected area per building material (one item per skin of composite and complex profile elements,
+    one item for basic elements). Supported types: Wall, Column, Beam, Slab, Roof, Shell, Morph, Zone, ColumnSegment,
+    BeamSegment. Use the optional minOpeningSize parameter to control the conditional values.
+
+    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
+    and page_token set to that token to get the next page of results.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetQuantitiesOfElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    get_quantities_of_elements,
+    name="elements_get_quantities_of_elements",
+    title="GetQuantitiesOfElements",
+    description=(
+        "Gets the quantities of the given elements calculated by Archicad (volumes, surfaces, lengths etc.), together "
+        "with the volume and projected area per building material (one item per skin of composite and complex profile "
+        "elements, one item for basic elements). Supported types: Wall, Column, Beam, Slab, Roof, Shell, Morph, Zone, "
+        "ColumnSegment, BeamSegment. Use the optional minOpeningSize parameter to control the conditional values."
+    ),
+    params_model=GetQuantitiesOfElementsParameters,
+    pagination_field="quantitiesOfElements",
 )
 
 
@@ -476,7 +590,11 @@ register_tool_for_dispatch(
 
 
 def move_elements(conn_header: ConnHeader, params: MoveElementsParameters) -> dict:
-    """Moves elements with a given vector."""
+    """
+    Moves elements with a given vector. An element that cannot be edited (its layer is hidden or locked, it is locked,
+    or it is not available in teamwork) gets a failed execution result naming the reason instead of being skipped
+    silently.
+    """
     return conn_header.core.post_tapir_command(
         command="MoveElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
@@ -486,7 +604,11 @@ register_tool_for_dispatch(
     move_elements,
     name="elements_move_elements",
     title="MoveElements",
-    description="Moves elements with a given vector.",
+    description=(
+        "Moves elements with a given vector. An element that cannot be edited (its layer is hidden or locked, it is "
+        "locked, or it is not available in teamwork) gets a failed execution result naming the reason instead of being "
+        "skipped silently."
+    ),
     params_model=MoveElementsParameters,
 )
 
@@ -511,7 +633,11 @@ register_tool_for_dispatch(
 
 
 def rotate_elements(conn_header: ConnHeader, params: RotateElementsParameters) -> dict:
-    """Rotates elements around a reference point."""
+    """
+    Rotates elements around a reference point. An element that cannot be edited (its layer is hidden or locked, it is
+    locked, or it is not available in teamwork) gets a failed execution result naming the reason instead of being
+    skipped silently.
+    """
     return conn_header.core.post_tapir_command(
         command="RotateElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
@@ -521,7 +647,11 @@ register_tool_for_dispatch(
     rotate_elements,
     name="elements_rotate_elements",
     title="RotateElements",
-    description="Rotates elements around a reference point.",
+    description=(
+        "Rotates elements around a reference point. An element that cannot be edited (its layer is hidden or locked, "
+        "it is locked, or it is not available in teamwork) gets a failed execution result naming the reason instead of "
+        "being skipped silently."
+    ),
     params_model=RotateElementsParameters,
 )
 

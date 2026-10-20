@@ -4,10 +4,16 @@ from multiconn_archicad.models.tapir.commands import (
     CreateDesignOptionCombinationsParameters,
     CreateDesignOptionSetsParameters,
     CreateDesignOptionsParameters,
+    DeleteDesignOptionCombinationsParameters,
+    DeleteDesignOptionSetsParameters,
+    DeleteDesignOptionsParameters,
     GetDesignOptionForElementsParameters,
     GetElementsOfDesignOptionsParameters,
     MoveDesignOptionsToAnotherSetParameters,
     MoveElementsToDesignOptionsParameters,
+    RenameDesignOptionCombinationsParameters,
+    RenameDesignOptionSetsParameters,
+    RenameDesignOptionsParameters,
     SetActiveDesignOptionsInCombinationsParameters,
 )
 
@@ -62,6 +68,57 @@ register_tool_for_dispatch(
     title="CreateDesignOptions",
     description="Creates new design options with the given parameters. Available from Archicad 29.",
     params_model=CreateDesignOptionsParameters,
+)
+
+
+def delete_design_option_combinations(
+    conn_header: ConnHeader, params: DeleteDesignOptionCombinationsParameters
+) -> dict:
+    """Deletes the given design option combinations. Available from Archicad 29."""
+    return conn_header.core.post_tapir_command(
+        command="DeleteDesignOptionCombinations",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    delete_design_option_combinations,
+    name="design_options_delete_design_option_combinations",
+    title="DeleteDesignOptionCombinations",
+    description="Deletes the given design option combinations. Available from Archicad 29.",
+    params_model=DeleteDesignOptionCombinationsParameters,
+)
+
+
+def delete_design_option_sets(conn_header: ConnHeader, params: DeleteDesignOptionSetsParameters) -> dict:
+    """Deletes the given design option sets. Available from Archicad 29."""
+    return conn_header.core.post_tapir_command(
+        command="DeleteDesignOptionSets", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    delete_design_option_sets,
+    name="design_options_delete_design_option_sets",
+    title="DeleteDesignOptionSets",
+    description="Deletes the given design option sets. Available from Archicad 29.",
+    params_model=DeleteDesignOptionSetsParameters,
+)
+
+
+def delete_design_options(conn_header: ConnHeader, params: DeleteDesignOptionsParameters) -> dict:
+    """Deletes the given design options. Available from Archicad 29."""
+    return conn_header.core.post_tapir_command(
+        command="DeleteDesignOptions", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    delete_design_options,
+    name="design_options_delete_design_options",
+    title="DeleteDesignOptions",
+    description="Deletes the given design options. Available from Archicad 29.",
+    params_model=DeleteDesignOptionsParameters,
 )
 
 
@@ -180,6 +237,57 @@ register_tool_for_dispatch(
         "from any design options and move it to the main model. Available from Archicad 29."
     ),
     params_model=MoveElementsToDesignOptionsParameters,
+)
+
+
+def rename_design_option_combinations(
+    conn_header: ConnHeader, params: RenameDesignOptionCombinationsParameters
+) -> dict:
+    """Changes the name of the given design option combinations. Available from Archicad 29."""
+    return conn_header.core.post_tapir_command(
+        command="RenameDesignOptionCombinations",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    rename_design_option_combinations,
+    name="design_options_rename_design_option_combinations",
+    title="RenameDesignOptionCombinations",
+    description="Changes the name of the given design option combinations. Available from Archicad 29.",
+    params_model=RenameDesignOptionCombinationsParameters,
+)
+
+
+def rename_design_option_sets(conn_header: ConnHeader, params: RenameDesignOptionSetsParameters) -> dict:
+    """Changes the name of the given design option sets. Available from Archicad 29."""
+    return conn_header.core.post_tapir_command(
+        command="RenameDesignOptionSets", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    rename_design_option_sets,
+    name="design_options_rename_design_option_sets",
+    title="RenameDesignOptionSets",
+    description="Changes the name of the given design option sets. Available from Archicad 29.",
+    params_model=RenameDesignOptionSetsParameters,
+)
+
+
+def rename_design_options(conn_header: ConnHeader, params: RenameDesignOptionsParameters) -> dict:
+    """Changes the name and/or the string id of the given design options. Available from Archicad 29."""
+    return conn_header.core.post_tapir_command(
+        command="RenameDesignOptions", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    rename_design_options,
+    name="design_options_rename_design_options",
+    title="RenameDesignOptions",
+    description="Changes the name and/or the string id of the given design options. Available from Archicad 29.",
+    params_model=RenameDesignOptionsParameters,
 )
 
 

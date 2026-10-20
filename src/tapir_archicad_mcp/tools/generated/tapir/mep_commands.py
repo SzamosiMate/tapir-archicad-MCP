@@ -2,12 +2,26 @@
 from multiconn_archicad import ConnHeader
 from multiconn_archicad.models.tapir.commands import (
     ConnectMEPElementsParameters,
+    ConnectToElectricalCircuitsParameters,
+    CreateElectricalCircuitsParameters,
+    CreateElectricalDevicesParameters,
+    CreateElectricalPanelsParameters,
     CreateMEPElementsParameters,
+    CreateMEPPhysicalSystemsParameters,
     CreateMEPRoutingElementsParameters,
+    CreateMEPSystemGroupsParameters,
+    DeleteElectricalCircuitsParameters,
+    GetElectricalCircuitsParameters,
+    GetElectricalDevicesParameters,
+    GetElectricalPanelsParameters,
     GetMEPElementsParameters,
     GetMEPPortsParameters,
     GetMEPPreferenceTablesParameters,
     GetMEPRoutingElementsParameters,
+    ModifyElectricalCircuitsParameters,
+    ModifyElectricalDevicesParameters,
+    ModifyElectricalPanelsParameters,
+    ModifyElectricalProjectSettingsParameters,
     ModifyMEPRoutingElementsParameters,
 )
 
@@ -36,6 +50,93 @@ register_tool_for_dispatch(
 )
 
 
+def connect_to_electrical_circuits(conn_header: ConnHeader, params: ConnectToElectricalCircuitsParameters) -> dict:
+    """Connects electrical devices, or panels as sub-panels, to electrical circuits. Available from Archicad 30."""
+    return conn_header.core.post_tapir_command(
+        command="ConnectToElectricalCircuits",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    connect_to_electrical_circuits,
+    name="mep_connect_to_electrical_circuits",
+    title="ConnectToElectricalCircuits",
+    description=(
+        "Connects electrical devices, or panels as sub-panels, to electrical circuits. Available from Archicad 30."
+    ),
+    params_model=ConnectToElectricalCircuitsParameters,
+)
+
+
+def create_electrical_circuits(conn_header: ConnHeader, params: CreateElectricalCircuitsParameters) -> dict:
+    """
+    Adds new circuits to electrical panels, optionally with the given description, voltage, wiring type and used phases.
+    Available from Archicad 30.
+    """
+    return conn_header.core.post_tapir_command(
+        command="CreateElectricalCircuits", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    create_electrical_circuits,
+    name="mep_create_electrical_circuits",
+    title="CreateElectricalCircuits",
+    description=(
+        "Adds new circuits to electrical panels, optionally with the given description, voltage, wiring type and used "
+        "phases. Available from Archicad 30."
+    ),
+    params_model=CreateElectricalCircuitsParameters,
+)
+
+
+def create_electrical_devices(conn_header: ConnHeader, params: CreateElectricalDevicesParameters) -> dict:
+    """
+    Places electrical devices with the default settings of the Electrical Device tool, optionally with the given library
+    part, size, rotation, mirroring, apparent power and load classification, and connects them to a circuit. Available
+    from Archicad 30.
+    """
+    return conn_header.core.post_tapir_command(
+        command="CreateElectricalDevices", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    create_electrical_devices,
+    name="mep_create_electrical_devices",
+    title="CreateElectricalDevices",
+    description=(
+        "Places electrical devices with the default settings of the Electrical Device tool, optionally with the given "
+        "library part, size, rotation, mirroring, apparent power and load classification, and connects them to a "
+        "circuit. Available from Archicad 30."
+    ),
+    params_model=CreateElectricalDevicesParameters,
+)
+
+
+def create_electrical_panels(conn_header: ConnHeader, params: CreateElectricalPanelsParameters) -> dict:
+    """
+    Places electrical panels with the default settings of the Electrical Panel tool, optionally with the given library
+    part, size, rotation, mirroring, panel name and circuit naming. Available from Archicad 30.
+    """
+    return conn_header.core.post_tapir_command(
+        command="CreateElectricalPanels", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    create_electrical_panels,
+    name="mep_create_electrical_panels",
+    title="CreateElectricalPanels",
+    description=(
+        "Places electrical panels with the default settings of the Electrical Panel tool, optionally with the given "
+        "library part, size, rotation, mirroring, panel name and circuit naming. Available from Archicad 30."
+    ),
+    params_model=CreateElectricalPanelsParameters,
+)
+
+
 def create_mep_elements(conn_header: ConnHeader, params: CreateMEPElementsParameters) -> dict:
     """
     Creates MEP elements (Terminal, Accessory, Equipment or Fitting) at the given positions. Available from Archicad 28.
@@ -57,10 +158,33 @@ register_tool_for_dispatch(
 )
 
 
+def create_mep_physical_systems(conn_header: ConnHeader, params: CreateMEPPhysicalSystemsParameters) -> dict:
+    """
+    Creates physical systems in MEP system groups, optionally with a root element and an MEP system as their category.
+    Available from Archicad 29.
+    """
+    return conn_header.core.post_tapir_command(
+        command="CreateMEPPhysicalSystems", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    create_mep_physical_systems,
+    name="mep_create_mep_physical_systems",
+    title="CreateMEPPhysicalSystems",
+    description=(
+        "Creates physical systems in MEP system groups, optionally with a root element and an MEP system as their "
+        "category. Available from Archicad 29."
+    ),
+    params_model=CreateMEPPhysicalSystemsParameters,
+)
+
+
 def create_mep_routing_elements(conn_header: ConnHeader, params: CreateMEPRoutingElementsParameters) -> dict:
     """
     Creates MEP routing elements (duct, pipe or cable carrier routes) along the given polylines with optional cross
-    section data (shape, size, preference table and reference id) and MEP system. Available from Archicad 28.
+    section data (shape, size, preference table and reference id), MEP system and layer (also set on the segments,
+    elbows and transitions). Available from Archicad 28.
     """
     return conn_header.core.post_tapir_command(
         command="CreateMEPRoutingElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -73,10 +197,145 @@ register_tool_for_dispatch(
     title="CreateMEPRoutingElements",
     description=(
         "Creates MEP routing elements (duct, pipe or cable carrier routes) along the given polylines with optional "
-        "cross section data (shape, size, preference table and reference id) and MEP system. Available from Archicad "
-        "28."
+        "cross section data (shape, size, preference table and reference id), MEP system and layer (also set on the "
+        "segments, elbows and transitions). Available from Archicad 28."
     ),
     params_model=CreateMEPRoutingElementsParameters,
+)
+
+
+def create_mep_system_groups(conn_header: ConnHeader, params: CreateMEPSystemGroupsParameters) -> dict:
+    """Creates MEP system groups. Available from Archicad 29."""
+    return conn_header.core.post_tapir_command(
+        command="CreateMEPSystemGroups", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    create_mep_system_groups,
+    name="mep_create_mep_system_groups",
+    title="CreateMEPSystemGroups",
+    description="Creates MEP system groups. Available from Archicad 29.",
+    params_model=CreateMEPSystemGroupsParameters,
+)
+
+
+def delete_electrical_circuits(conn_header: ConnHeader, params: DeleteElectricalCircuitsParameters) -> dict:
+    """Removes electrical circuits from their panels. Available from Archicad 30."""
+    return conn_header.core.post_tapir_command(
+        command="DeleteElectricalCircuits", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    delete_electrical_circuits,
+    name="mep_delete_electrical_circuits",
+    title="DeleteElectricalCircuits",
+    description="Removes electrical circuits from their panels. Available from Archicad 30.",
+    params_model=DeleteElectricalCircuitsParameters,
+)
+
+
+def get_electrical_circuits(conn_header: ConnHeader, params: GetElectricalCircuitsParameters) -> dict:
+    """
+    Gets the given electrical circuits, the circuits of the given panels, or every circuit of the project: name,
+    description, owner panel, connected devices and panels, voltage, phases, wiring type, loads, voltage drop and
+    estimated cable length. Available from Archicad 30.
+
+    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
+    and page_token set to that token to get the next page of results.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetElectricalCircuits", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    get_electrical_circuits,
+    name="mep_get_electrical_circuits",
+    title="GetElectricalCircuits",
+    description=(
+        "Gets the given electrical circuits, the circuits of the given panels, or every circuit of the project: name, "
+        "description, owner panel, connected devices and panels, voltage, phases, wiring type, loads, voltage drop and "
+        "estimated cable length. Available from Archicad 30."
+    ),
+    params_model=GetElectricalCircuitsParameters,
+    pagination_field="electricalCircuits",
+)
+
+
+def get_electrical_devices(conn_header: ConnHeader, params: GetElectricalDevicesParameters) -> dict:
+    """
+    Gets the electrical devices (lights, sockets and other consumers) of the project or the given ones: parent circuit,
+    placement, apparent power, load classification, demand load and directly connected MEP elements. Available from
+    Archicad 30.
+
+    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
+    and page_token set to that token to get the next page of results.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetElectricalDevices", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    get_electrical_devices,
+    name="mep_get_electrical_devices",
+    title="GetElectricalDevices",
+    description=(
+        "Gets the electrical devices (lights, sockets and other consumers) of the project or the given ones: parent "
+        "circuit, placement, apparent power, load classification, demand load and directly connected MEP elements. "
+        "Available from Archicad 30."
+    ),
+    params_model=GetElectricalDevicesParameters,
+    pagination_field="electricalDevices",
+)
+
+
+def get_electrical_panels(conn_header: ConnHeader, params: GetElectricalPanelsParameters) -> dict:
+    """
+    Gets the electrical panels (distribution boards) of the project or the given ones: name, circuit naming, circuits,
+    parent circuit, placement and the connected and demand loads in total and per phase. Available from Archicad 30.
+
+    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
+    and page_token set to that token to get the next page of results.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetElectricalPanels", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    get_electrical_panels,
+    name="mep_get_electrical_panels",
+    title="GetElectricalPanels",
+    description=(
+        "Gets the electrical panels (distribution boards) of the project or the given ones: name, circuit naming, "
+        "circuits, parent circuit, placement and the connected and demand loads in total and per phase. Available from "
+        "Archicad 30."
+    ),
+    params_model=GetElectricalPanelsParameters,
+    pagination_field="electricalPanels",
+)
+
+
+def get_electrical_project_settings(conn_header: ConnHeader) -> dict:
+    """
+    Gets the electrical project settings: the default voltage, the wiring types with their cross-sectional area and the
+    load classifications with their demand factor. Available from Archicad 30.
+    """
+    return conn_header.core.post_tapir_command(command="GetElectricalProjectSettings", parameters={})
+
+
+register_tool_for_dispatch(
+    get_electrical_project_settings,
+    name="mep_get_electrical_project_settings",
+    title="GetElectricalProjectSettings",
+    description=(
+        "Gets the electrical project settings: the default voltage, the wiring types with their cross-sectional area "
+        "and the load classifications with their demand factor. Available from Archicad 30."
+    ),
+    params_model=None,
 )
 
 
@@ -152,8 +411,9 @@ register_tool_for_dispatch(
 
 def get_mep_preference_tables(conn_header: ConnHeader, params: GetMEPPreferenceTablesParameters) -> dict:
     """
-    Gets the circular cross section preference tables (referenceId, diameter, description) of the Piping or Ventilation
-    domain. Available from Archicad 28.
+    Gets the circular cross section preference tables (referenceId, diameter, description) and the reference set of the
+    Piping or Ventilation domain, optionally with the elbow, branch and transition preference tables. The angle set and
+    the transition tables are available from Archicad 29. Available from Archicad 28.
     """
     return conn_header.core.post_tapir_command(
         command="GetMEPPreferenceTables", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -165,8 +425,9 @@ register_tool_for_dispatch(
     name="mep_get_mep_preference_tables",
     title="GetMEPPreferenceTables",
     description=(
-        "Gets the circular cross section preference tables (referenceId, diameter, description) of the Piping or "
-        "Ventilation domain. Available from Archicad 28."
+        "Gets the circular cross section preference tables (referenceId, diameter, description) and the reference set "
+        "of the Piping or Ventilation domain, optionally with the elbow, branch and transition preference tables. The "
+        "angle set and the transition tables are available from Archicad 29. Available from Archicad 28."
     ),
     params_model=GetMEPPreferenceTablesParameters,
 )
@@ -191,6 +452,120 @@ register_tool_for_dispatch(
         "cross section data (shape, size, preference table and reference id) and nodes. Available from Archicad 28."
     ),
     params_model=GetMEPRoutingElementsParameters,
+)
+
+
+def get_mep_system_groups(conn_header: ConnHeader) -> dict:
+    """
+    Gets the MEP system groups of the project with their physical systems: name, root element and MEP system. Available
+    from Archicad 29.
+
+    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
+    and page_token set to that token to get the next page of results.
+    """
+    return conn_header.core.post_tapir_command(command="GetMEPSystemGroups", parameters={})
+
+
+register_tool_for_dispatch(
+    get_mep_system_groups,
+    name="mep_get_mep_system_groups",
+    title="GetMEPSystemGroups",
+    description=(
+        "Gets the MEP system groups of the project with their physical systems: name, root element and MEP system. "
+        "Available from Archicad 29."
+    ),
+    params_model=None,
+    pagination_field="systemGroups",
+)
+
+
+def modify_electrical_circuits(conn_header: ConnHeader, params: ModifyElectricalCircuitsParameters) -> dict:
+    """
+    Modifies the description, voltage, wiring type and used phases of electrical circuits. Available from Archicad 30.
+    """
+    return conn_header.core.post_tapir_command(
+        command="ModifyElectricalCircuits", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    modify_electrical_circuits,
+    name="mep_modify_electrical_circuits",
+    title="ModifyElectricalCircuits",
+    description=(
+        "Modifies the description, voltage, wiring type and used phases of electrical circuits. Available from "
+        "Archicad 30."
+    ),
+    params_model=ModifyElectricalCircuitsParameters,
+)
+
+
+def modify_electrical_devices(conn_header: ConnHeader, params: ModifyElectricalDevicesParameters) -> dict:
+    """
+    Modifies the apparent power, load classification and placement (anchor point, orientation, rotation, mirroring,
+    library part, size) of electrical devices. Available from Archicad 30.
+    """
+    return conn_header.core.post_tapir_command(
+        command="ModifyElectricalDevices", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    modify_electrical_devices,
+    name="mep_modify_electrical_devices",
+    title="ModifyElectricalDevices",
+    description=(
+        "Modifies the apparent power, load classification and placement (anchor point, orientation, rotation, "
+        "mirroring, library part, size) of electrical devices. Available from Archicad 30."
+    ),
+    params_model=ModifyElectricalDevicesParameters,
+)
+
+
+def modify_electrical_panels(conn_header: ConnHeader, params: ModifyElectricalPanelsParameters) -> dict:
+    """
+    Modifies the name, circuit naming and placement (anchor point, orientation, rotation, mirroring, library part, size)
+    of electrical panels. Available from Archicad 30.
+    """
+    return conn_header.core.post_tapir_command(
+        command="ModifyElectricalPanels", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    modify_electrical_panels,
+    name="mep_modify_electrical_panels",
+    title="ModifyElectricalPanels",
+    description=(
+        "Modifies the name, circuit naming and placement (anchor point, orientation, rotation, mirroring, library "
+        "part, size) of electrical panels. Available from Archicad 30."
+    ),
+    params_model=ModifyElectricalPanelsParameters,
+)
+
+
+def modify_electrical_project_settings(
+    conn_header: ConnHeader, params: ModifyElectricalProjectSettingsParameters
+) -> dict:
+    """
+    Modifies the electrical project settings: sets the default voltage and adds or removes wiring types and load
+    classifications. Available from Archicad 30.
+    """
+    return conn_header.core.post_tapir_command(
+        command="ModifyElectricalProjectSettings",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    modify_electrical_project_settings,
+    name="mep_modify_electrical_project_settings",
+    title="ModifyElectricalProjectSettings",
+    description=(
+        "Modifies the electrical project settings: sets the default voltage and adds or removes wiring types and load "
+        "classifications. Available from Archicad 30."
+    ),
+    params_model=ModifyElectricalProjectSettingsParameters,
 )
 
 
