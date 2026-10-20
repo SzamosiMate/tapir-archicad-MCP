@@ -89,6 +89,9 @@ TAPIR_CONFIG = ApiSourceConfig(
         "DeleteAttributes",  # official has a simpler interface for the same functionality (works for MEP systems)
         "DeleteNavigatorItems",  # same parameters as the Official command
         "MoveNavigatorItem",  # same parameters as the Official command
+        "GetGraphicalOverrideRules", # Duplicate command in 1.7.2
+        "CreateGraphicalOverrideRule", # Duplicate command in 1.7.2
+        "CreateGraphicalOverrideCombination", # Duplicate command in 1.7.2
     },
     paginated_commands={
         "GetAllElements": "elements",
