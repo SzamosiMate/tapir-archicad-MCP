@@ -234,6 +234,15 @@ def archicad_get_command_schema(command_name: str) -> CommandSchema:
 async def archicad_call_tool(name: str, arguments: dict) -> dict:
     log.info(f"Executing archicad_call_tool for tool: {name}")
 
+    if "targetSetId" in arguments and arguments["targetSetId"] is not None:
+        arguments = dict(arguments)
+        target_set_id = arguments.pop("targetSetId")
+        if "params" in arguments and isinstance(arguments["params"], dict):
+            arguments["params"] = dict(arguments["params"])
+            arguments["params"].setdefault("targetSetId", target_set_id)
+        elif "params" not in arguments:
+            arguments["params"] = {"targetSetId": target_set_id}
+
     tool_entry = get_tool_entry(name)
     try:
         validated_arguments = tool_entry.arguments_model.model_validate(arguments)
@@ -252,6 +261,7 @@ async def archicad_call_tool(name: str, arguments: dict) -> dict:
     )
     await store.wait(job)
     return store.initial_result(job)
+
 
 def _read_cached_page(name: str, tool_entry: ToolRegistryEntry, arguments: Any, store: JobStore) -> dict:
     # MultiConn's public header properties can trigger discovery; keep that work

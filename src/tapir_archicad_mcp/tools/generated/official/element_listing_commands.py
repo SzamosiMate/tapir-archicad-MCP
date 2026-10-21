@@ -5,20 +5,27 @@ from multiconn_archicad.models.official.commands import (
     GetTypesOfElementsParameters,
 )
 
+from tapir_archicad_mcp.result_registry import ResultRegistry
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
 
 
 def get_elements_by_classification(conn_header: ConnHeader, params: GetElementsByClassificationParameters) -> dict:
     """
-    Returns the identifier of every element with the given classification identifier.
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
+    Returns the identifier of every element with the given classification identifier as a virtual set receipt (setId, count, elementType).
     """
-    return conn_header.core.post_command(
+    raw_result = conn_header.core.post_command(
         command="API.GetElementsByClassification",
         parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
     )
+    if isinstance(raw_result, dict) and "elements" in raw_result:
+        elements = raw_result["elements"]
+        set_id = ResultRegistry.register(elements, element_type="Classified")
+        return {
+            "setId": set_id,
+            "count": len(elements),
+            "elementType": "Classified",
+        }
+    return raw_result
 
 
 register_tool_for_dispatch(

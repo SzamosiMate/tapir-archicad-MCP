@@ -74,3 +74,92 @@ class CommandSchema(BaseModel):
 
     name: str = Field(description="The name of the command.")
     input_schema: dict[str, Any] = Field(description="The JSON schema outlining the required arguments for archicad_call_tool.")
+
+
+class SetReceipt(BaseModel):
+    """Compact summary receipt returned by element queries instead of raw GUID arrays."""
+
+    model_config = ConfigDict(populate_by_name=True)
+
+    set_id: str = Field(alias="setId", description="Opaque token handle referencing the stored element set.")
+    count: int = Field(description="The number of elements in the set.")
+    element_type: str = Field(alias="elementType", description="The type or category of elements in the set.")
+
+
+class HighlightElementsInput(BaseModel):
+    """Parameters for highlighting elements, supporting targetSetId or explicit elements."""
+
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    target_set_id: str | None = Field(
+        default=None,
+        alias="targetSetId",
+        description="Optional target set ID handle referencing an active element collection in ResultRegistry.",
+    )
+    elements: list[Any] | None = Field(
+        default=None,
+        description="Explicit list of element IDs to highlight (alternative to targetSetId).",
+    )
+    highlighted_colors: list[Any] | None = Field(
+        default=None,
+        alias="highlightedColors",
+        description="Colors used for highlighted elements.",
+    )
+    wireframe_3d: bool | None = Field(
+        default=None,
+        alias="wireframe3D",
+        description="If true, non-highlighted elements will appear as wireframe in 3D.",
+    )
+    non_highlighted_color: Any | None = Field(
+        default=None,
+        alias="nonHighlightedColor",
+        description="Color used for non-highlighted elements.",
+    )
+
+
+class DeleteElementsInput(BaseModel):
+    """Parameters for deleting elements, supporting targetSetId or explicit elements."""
+
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    target_set_id: str | None = Field(
+        default=None,
+        alias="targetSetId",
+        description="Optional target set ID handle referencing an active element collection in ResultRegistry.",
+    )
+    elements: list[Any] | None = Field(
+        default=None,
+        description="Explicit list of element IDs to delete (alternative to targetSetId).",
+    )
+
+
+class SetPropertyValuesOfElementsInput(BaseModel):
+    """Parameters for setting element property values, supporting targetSetId or explicit elementPropertyValues."""
+
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    target_set_id: str | None = Field(
+        default=None,
+        alias="targetSetId",
+        description="Optional target set ID handle referencing an active element collection in ResultRegistry.",
+    )
+    element_property_values: list[Any] | None = Field(
+        default=None,
+        alias="elementPropertyValues",
+        description="Explicit list of element property values to set.",
+    )
+    property_id: Any | None = Field(
+        default=None,
+        alias="propertyId",
+        description="Property ID to set across all elements in targetSetId.",
+    )
+    property_value: Any | None = Field(
+        default=None,
+        alias="propertyValue",
+        description="Property value to set across all elements in targetSetId.",
+    )
+    property_values: list[Any] | None = Field(
+        default=None,
+        alias="propertyValues",
+        description="List of property values to set across all elements in targetSetId.",
+    )
