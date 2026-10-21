@@ -152,8 +152,9 @@ def _get_tapir_version_warning(tapir: TapirInfo) -> str | None:
 
 @mcp.tool(
     name="archicad_list_commands",
-    title="List Available Archicad Commands",
+    title="List Available Archicad Commands [DEPRECATED]",
     description=(
+        "[DEPRECATED: Prefer polymorphic meta-verbs 'archicad_query' and 'archicad_mutate'] "
         "Returns a comprehensive list of all available Archicad API commands and brief descriptions. "
         "STEP 1: Use this tool FIRST to search for the right command name for your task. "
         "Do NOT guess or hallucinate command names. "
@@ -180,8 +181,9 @@ def archicad_list_commands() -> list[CommandOverview]:
 
 @mcp.tool(
     name="archicad_get_command_schema",
-    title="Get Archicad Command Schema",
+    title="Get Archicad Command Schema [DEPRECATED]",
     description=(
+        "[DEPRECATED: Prefer polymorphic meta-verbs 'archicad_query' and 'archicad_mutate'] "
         "Retrieves the exact JSON schema (required arguments) for a specific Archicad command. "
         "Provide the exact 'command_name' obtained from 'archicad_list_commands'. "
         "CRITICAL: You MUST call this tool before executing 'archicad_call_tool' to ensure you provide "
@@ -212,8 +214,9 @@ def archicad_get_command_schema(command_name: str) -> CommandSchema:
 
 @mcp.tool(
     name="archicad_call_tool",
-    title="Execute Archicad API Command",
+    title="Execute Archicad API Command [DEPRECATED]",
     description=(
+        "[DEPRECATED: Prefer polymorphic meta-verbs 'archicad_query' and 'archicad_mutate'] "
         "Executes a specific Archicad API command by its 'name'. "
         "CRITICAL WORKFLOW: You MUST use 'archicad_get_command_schema' first to understand the exact "
         "JSON structure required for the 'arguments' parameter. "
