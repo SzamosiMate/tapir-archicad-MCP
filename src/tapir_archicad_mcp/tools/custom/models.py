@@ -162,6 +162,9 @@ class SetPropertyValuesOfElementsInput(BaseModel):
         default=None,
         alias="propertyValues",
         description="List of property values to set across all elements in targetSetId.",
+    )
+
+
 class GetDetailsOfElementsInput(BaseModel):
     """Parameters for GetDetailsOfElements with optional field projection."""
 
