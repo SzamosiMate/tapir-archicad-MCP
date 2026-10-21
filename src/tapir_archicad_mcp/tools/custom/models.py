@@ -162,4 +162,30 @@ class SetPropertyValuesOfElementsInput(BaseModel):
         default=None,
         alias="propertyValues",
         description="List of property values to set across all elements in targetSetId.",
+class GetDetailsOfElementsInput(BaseModel):
+    """Parameters for GetDetailsOfElements with optional field projection."""
+
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    elements: list[Any] = Field(
+        description="A list of elements.",
+    )
+    fields: list[str] | None = Field(
+        default=None,
+        description="Optional filter for fields to return for each element (client-side projection).",
+    )
+
+
+class GetDetailsOfPropertiesInput(BaseModel):
+    """Parameters for GetDetailsOfProperties with optional field projection."""
+
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    property_ids: list[Any] = Field(
+        alias="propertyIds",
+        description="A list of property identifiers.",
+    )
+    fields: list[str] | None = Field(
+        default=None,
+        description="Optional filter for fields to return for each property.",
     )

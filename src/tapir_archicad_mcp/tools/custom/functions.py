@@ -243,6 +243,15 @@ async def archicad_call_tool(name: str, arguments: dict) -> dict:
         elif "params" not in arguments:
             arguments["params"] = {"targetSetId": target_set_id}
 
+    if "fields" in arguments and arguments["fields"] is not None:
+        arguments = dict(arguments)
+        fields_arg = arguments.pop("fields")
+        if "params" in arguments and isinstance(arguments["params"], dict):
+            arguments["params"] = dict(arguments["params"])
+            arguments["params"].setdefault("fields", fields_arg)
+        elif "params" not in arguments:
+            arguments["params"] = {"fields": fields_arg}
+
     tool_entry = get_tool_entry(name)
     try:
         validated_arguments = tool_entry.arguments_model.model_validate(arguments)
