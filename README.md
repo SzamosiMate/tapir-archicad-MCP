@@ -30,11 +30,12 @@ Follow these steps to get the server running and connected to an MCP client like
 
 ### 2. Configure Your AI Client
 
-Open your client's `config.json` file and add the following configuration. This command works across operating systems:
+Open your client's `config.json` file and add the configuration. This configuration works across operating systems:
 
 -   **macOS:** `~/Library/Application Support/Claude/claude_desktop_config.json`
 -   **Windows:** `%APDATA%\Claude\claude_desktop_config.json`
 
+**Standard deployment (via `uvx`):**
 ```json
 {
   "mcpServers": {
@@ -49,6 +50,20 @@ Open your client's `config.json` file and add the following configuration. This 
   }
 }
 ```
+
+**Local development deployment (`pip install -e .`):**
+```json
+{
+  "mcpServers": {
+    "ArchicadTapir": {
+      "command": "archicad-server",
+      "args": []
+    }
+  }
+}
+```
+
+A complete boilerplate configuration snippet is also provided in [`claude_desktop_config.example.json`](claude_desktop_config.example.json).
 
 ### 3. One-click install (optional)
 

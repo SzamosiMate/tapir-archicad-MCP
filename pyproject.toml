@@ -39,6 +39,10 @@ Homepage = "https://github.com/SzamosiMate/tapir-archicad-MCP"
 
 [project.scripts]
 archicad-server = "tapir_archicad_mcp.server:main"
+tapir-archicad-mcp = "tapir_archicad_mcp.server:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/tapir_archicad_mcp"]
 
 [dependency-groups]
 dev = [

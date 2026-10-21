@@ -1,0 +1,20 @@
+{
+  "mcpServers": {
+    "ArchicadTapir": {
+      "command": "uvx",
+      "args": [
+        "--from",
+        "tapir-archicad-mcp",
+        "archicad-server"
+      ]
+    },
+    "ArchicadTapirLocal": {
+      "command": "archicad-server",
+      "args": [],
+      "env": {
+        "TAPIR_MCP_HOST": "127.0.0.1",
+        "TAPIR_MCP_PORT": "8000"
+      }
+    }
+  }
+}

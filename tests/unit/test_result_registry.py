@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import time
+
 import pytest
 from mcp.server.mcpserver.exceptions import ToolError
 from pydantic import BaseModel, Field
@@ -12,8 +14,10 @@ from tapir_archicad_mcp.tools.custom.functions import archicad_call_tool
 def clean_storage():
     """Ensure ResultRegistry is clean before and after each test."""
     ResultRegistry.clear()
+    ResultRegistry.reset_limits()
     yield
     ResultRegistry.clear()
+    ResultRegistry.reset_limits()
 
 
 class DummyElem(BaseModel):
@@ -261,3 +265,96 @@ async def test_mutation_set_property_values_with_invalid_target_set_id(fake_arch
                 },
             },
         )
+
+
+def test_result_registry_lru_eviction_at_capacity_cap():
+    """Verifies that oldest sets are evicted once the default 50 set capacity cap is exceeded."""
+    assert ResultRegistry.MAX_CAPACITY == 50
+
+    # Register 50 sets
+    set_ids = [
+        ResultRegistry.register([{"elementId": {"guid": f"elem-{i}"}}], element_type="Wall")
+        for i in range(50)
+    ]
+    assert len(STORAGE_SETS) == 50
+    assert ResultRegistry.has("set_walls_01")
+    assert ResultRegistry.has("set_walls_50")
+    assert set_ids[0] == "set_walls_01"
+
+    # Register the 51st set -> set_walls_01 should be evicted
+    set_51 = ResultRegistry.register([{"elementId": {"guid": "elem-51"}}], element_type="Wall")
+    assert set_51 == "set_walls_51"
+    assert len(STORAGE_SETS) == 50
+    assert not ResultRegistry.has("set_walls_01")
+    assert ResultRegistry.has("set_walls_02")
+    assert ResultRegistry.has("set_walls_51")
+
+    # Accessing evicted set raises KeyError
+    with pytest.raises(KeyError, match="not found or expired"):
+        ResultRegistry.get("set_walls_01")
+
+
+def test_result_registry_lru_access_updates_order():
+    """Verifies that accessing a set via get() marks it as recently used, sparing it from eviction."""
+    ResultRegistry.set_capacity(3)
+
+    set1 = ResultRegistry.register([{"elementId": {"guid": "elem-1"}}], element_type="Wall")
+    set2 = ResultRegistry.register([{"elementId": {"guid": "elem-2"}}], element_type="Column")
+    set3 = ResultRegistry.register([{"elementId": {"guid": "elem-3"}}], element_type="Beam")
+
+    assert len(STORAGE_SETS) == 3
+
+    # Access set1 to mark it as most recently used (LRU order becomes: set2, set3, set1)
+    retrieved = ResultRegistry.get(set1)
+    assert len(retrieved) == 1
+
+    # Register set4 -> set2 should be evicted (as least recently used) instead of set1
+    set4 = ResultRegistry.register([{"elementId": {"guid": "elem-4"}}], element_type="Slab")
+
+    assert len(STORAGE_SETS) == 3
+    assert ResultRegistry.has(set1)
+    assert not ResultRegistry.has(set2)
+    assert ResultRegistry.has(set3)
+    assert ResultRegistry.has(set4)
+
+
+def test_result_registry_ttl_expiration():
+    """Verifies that expired sets are purged when TTL is configured."""
+    ResultRegistry.set_ttl(0.05)  # 50ms TTL
+
+    set_id = ResultRegistry.register([{"elementId": {"guid": "elem-ttl"}}], element_type="Zone")
+    assert ResultRegistry.has(set_id)
+    assert len(ResultRegistry.get(set_id)) == 1
+
+    # Sleep past TTL
+    time.sleep(0.08)
+
+    assert not ResultRegistry.has(set_id)
+    with pytest.raises(KeyError, match="not found or expired"):
+        ResultRegistry.get(set_id)
+    with pytest.raises(ToolError, match="not found or expired"):
+        ResultRegistry.get_or_tool_error(set_id)
+
+
+def test_result_registry_set_capacity_triggers_immediate_eviction():
+    """Verifies that lowering capacity immediately evicts excess least recently used sets."""
+    set1 = ResultRegistry.register([{"elementId": {"guid": "1"}}], element_type="Wall")
+    set2 = ResultRegistry.register([{"elementId": {"guid": "2"}}], element_type="Wall")
+    set3 = ResultRegistry.register([{"elementId": {"guid": "3"}}], element_type="Wall")
+    set4 = ResultRegistry.register([{"elementId": {"guid": "4"}}], element_type="Wall")
+
+    assert len(STORAGE_SETS) == 4
+
+    ResultRegistry.set_capacity(2)
+
+    assert len(STORAGE_SETS) == 2
+    assert not ResultRegistry.has(set1)
+    assert not ResultRegistry.has(set2)
+    assert ResultRegistry.has(set3)
+    assert ResultRegistry.has(set4)
+
+
+def test_result_registry_invalid_capacity():
+    """Verifies that setting a capacity less than 1 raises ValueError."""
+    with pytest.raises(ValueError, match="at least 1"):
+        ResultRegistry.set_capacity(0)
