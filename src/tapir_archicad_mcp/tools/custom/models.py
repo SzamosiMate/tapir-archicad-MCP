@@ -74,3 +74,32 @@ class CommandSchema(BaseModel):
 
     name: str = Field(description="The name of the command.")
     input_schema: dict[str, Any] = Field(description="The JSON schema outlining the required arguments for archicad_call_tool.")
+
+
+class GetDetailsOfElementsInput(BaseModel):
+    """Parameters for GetDetailsOfElements with optional field projection."""
+
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    elements: list[Any] = Field(
+        description="A list of elements.",
+    )
+    fields: list[str] | None = Field(
+        default=None,
+        description="Optional filter for fields to return for each element (client-side projection).",
+    )
+
+
+class GetDetailsOfPropertiesInput(BaseModel):
+    """Parameters for GetDetailsOfProperties with optional field projection."""
+
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    property_ids: list[Any] = Field(
+        alias="propertyIds",
+        description="A list of property identifiers.",
+    )
+    fields: list[str] | None = Field(
+        default=None,
+        description="Optional filter for fields to return for each property.",
+    )
