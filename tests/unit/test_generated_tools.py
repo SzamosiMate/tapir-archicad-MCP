@@ -302,9 +302,10 @@ async def test_raw_archicad_error_payload_is_preserved(fake_archicad):
 
 async def test_unknown_port_is_rejected(fake_archicad):
     """Targeting a port that is not active must fail with a clear error."""
-    with pytest.raises(ToolError, match=r"less than 19744 at port"):
+    with pytest.raises(ToolError, match="at port") as raised:
         await archicad_call_tool("elements_get_selected_elements", {"port": 19999})
 
+    assert "19999" not in str(raised.value)
     assert fake_archicad.calls == []
 
 
