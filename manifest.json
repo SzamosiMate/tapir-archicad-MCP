@@ -1,27 +1,27 @@
 {
   "manifest_version": "0.4",
-  "name": "tapir-archicad",
-  "display_name": "Archicad (Tapir)",
+  "name": "caracara-archicad",
+  "display_name": "Archicad (Caracara)",
   "version": "0.6.6",
   "description": "Drive a running Archicad instance through the Tapir add-on and Archicad's JSON API.",
   "long_description": "Local MCP server for a running Archicad session. Discovers active instances, lists available Archicad API commands, retrieves each command's schema, and executes them.\n\nThis can create, modify, and delete elements; open, close, and save projects; export files (IFC, BCF, favorites); and send or receive Teamwork. Project names, paths, and model data are sent to the MCP client. Requires Archicad open on this machine, and the Tapir Archicad Add-On for the full command set.",
   "author": {
-    "name": "SzamosiMate",
-    "email": "szamimate@yahoo.com",
-    "url": "https://github.com/SzamosiMate"
+    "name": "parikshit99 (original by SzamosiMate)",
+    "url": "https://github.com/parikshit99/caracara-archicad"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/SzamosiMate/tapir-archicad-MCP.git"
+    "url": "https://github.com/parikshit99/caracara-archicad.git"
   },
-  "homepage": "https://github.com/SzamosiMate/tapir-archicad-MCP",
-  "documentation": "https://pypi.org/project/tapir-archicad-mcp/",
-  "support": "https://github.com/SzamosiMate/tapir-archicad-MCP/issues",
+  "homepage": "https://github.com/parikshit99/caracara-archicad",
+  "documentation": "https://github.com/parikshit99/caracara-archicad#readme",
+  "support": "https://github.com/parikshit99/caracara-archicad/issues",
   "icon": "icon.png",
   "license": "MIT",
   "keywords": [
     "archicad",
     "bim",
+    "caracara",
     "tapir",
     "aec",
     "openbim",
@@ -29,7 +29,7 @@
   ],
   "server": {
     "type": "uv",
-    "entry_point": "src/tapir_archicad_mcp/server.py",
+    "entry_point": "src/caracara_archicad_mcp/server.py",
     "mcp_config": {
       "command": "uv",
       "args": [
@@ -37,7 +37,7 @@
         "--frozen",
         "--directory",
         "${__dirname}",
-        "archicad-server"
+        "caracara-server"
       ],
       "env": {}
     }

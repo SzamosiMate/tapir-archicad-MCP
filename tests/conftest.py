@@ -5,14 +5,14 @@ from unittest.mock import Mock
 import pytest
 from multiconn_archicad import ArchicadLocation, Port, ProductInfo, SoloProjectID
 
-import tapir_archicad_mcp.model_configuration  # noqa: F401
-from tapir_archicad_mcp.context import job_store_instance, multi_conn_instance
-from tapir_archicad_mcp.jobs import JobSettings, JobStore
+import caracara_archicad_mcp.model_configuration  # noqa: F401
+from caracara_archicad_mcp.context import job_store_instance, multi_conn_instance
+from caracara_archicad_mcp.jobs import JobSettings, JobStore
 
 
 @pytest.fixture(autouse=True)
 def job_store(monkeypatch, job_clock):
-    monkeypatch.setattr("tapir_archicad_mcp.app.job_settings", JobSettings())
+    monkeypatch.setattr("caracara_archicad_mcp.app.job_settings", JobSettings())
     store = JobStore(clock=lambda: job_clock.now)
     job_store_instance.set(store)
     yield store
@@ -63,7 +63,7 @@ def fake_archicad():
     Provides a FakeArchicad wired into the multi_conn_instance ContextVar
     and ensures all generated tools are registered for dispatch.
     """
-    from tapir_archicad_mcp.tools.registration import register_all_tools
+    from caracara_archicad_mcp.tools.registration import register_all_tools
 
     register_all_tools()
 

@@ -1,19 +1,19 @@
 {
   "mcpServers": {
-    "ArchicadTapir": {
+    "ArchicadCaracara": {
       "command": "uvx",
       "args": [
         "--from",
-        "tapir-archicad-mcp",
-        "archicad-server"
+        "caracara-archicad-mcp",
+        "caracara-server"
       ]
     },
-    "ArchicadTapirLocal": {
-      "command": "archicad-server",
+    "ArchicadCaracaraLocal": {
+      "command": "caracara-server",
       "args": [],
       "env": {
-        "TAPIR_MCP_HOST": "127.0.0.1",
-        "TAPIR_MCP_PORT": "8000"
+        "CARACARA_MCP_HOST": "127.0.0.1",
+        "CARACARA_MCP_PORT": "8000"
       }
     }
   }

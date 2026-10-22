@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import pytest
 
-from tapir_archicad_mcp.field_masking import project_element, prune_payload
-from tapir_archicad_mcp.tools.custom.functions import archicad_call_tool
+from caracara_archicad_mcp.field_masking import project_element, prune_payload
+from caracara_archicad_mcp.tools.custom.functions import archicad_call_tool
 
 
 def test_project_element_strips_polygon_vertices_and_internal_memos():

@@ -9,7 +9,7 @@ import uvicorn
 from mcp import Client, ClientSession
 from mcp.client.sse import sse_client
 
-from tapir_archicad_mcp.app import mcp
+from caracara_archicad_mcp.app import mcp
 
 
 def get_free_port() -> int:
@@ -28,7 +28,7 @@ def mock_heavy_dependencies(monkeypatch):
     fake_multi_conn = MagicMock()
     fake_multi_conn.active = {}
     fake_multi_conn.open_port_headers = {}
-    monkeypatch.setattr("tapir_archicad_mcp.app.MultiConn", lambda: fake_multi_conn)
+    monkeypatch.setattr("caracara_archicad_mcp.app.MultiConn", lambda: fake_multi_conn)
 
 
 @pytest.mark.asyncio

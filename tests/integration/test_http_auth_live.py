@@ -6,8 +6,8 @@ import httpx
 import pytest
 import uvicorn
 
-from tapir_archicad_mcp.app import mcp
-from tapir_archicad_mcp.middleware import BearerTokenMiddleware
+from caracara_archicad_mcp.app import mcp
+from caracara_archicad_mcp.middleware import BearerTokenMiddleware
 
 
 def get_free_port() -> int:
@@ -29,7 +29,7 @@ async def serve_until_started(server: uvicorn.Server) -> asyncio.Task:
 def mock_heavy_dependencies(monkeypatch):
     fake_multi_conn = MagicMock()
     fake_multi_conn.active = {}
-    monkeypatch.setattr("tapir_archicad_mcp.app.MultiConn", lambda: fake_multi_conn)
+    monkeypatch.setattr("caracara_archicad_mcp.app.MultiConn", lambda: fake_multi_conn)
 
 
 @pytest.mark.asyncio

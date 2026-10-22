@@ -20,19 +20,19 @@ from multiconn_archicad.constants import SUPPORTED_TAPIR_VERSION
 from multiconn_archicad.errors import AddOnCommandUnavailable
 from pydantic import BaseModel
 
-from tapir_archicad_mcp.context import multi_conn_instance
-from tapir_archicad_mcp.tools.custom.functions import (
+from caracara_archicad_mcp.context import multi_conn_instance
+from caracara_archicad_mcp.tools.custom.functions import (
     archicad_call_tool,
     archicad_get_command_schema,
     archicad_list_commands,
     list_active_archicads,
 )
-from tapir_archicad_mcp.tools.custom.models import (
+from caracara_archicad_mcp.tools.custom.models import (
     CommandOverview,
     CommandSchema,
     DiscoveryResult,
 )
-from tapir_archicad_mcp.tools.tool_registry import get_tool_entry, register_tool_for_dispatch
+from caracara_archicad_mcp.tools.tool_registry import get_tool_entry, register_tool_for_dispatch
 
 # ============================================================================
 # Helpers & Fixtures

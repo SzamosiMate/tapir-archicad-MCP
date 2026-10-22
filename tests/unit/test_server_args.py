@@ -3,7 +3,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from tapir_archicad_mcp.app import mcp
+from caracara_archicad_mcp.app import mcp
 
 
 @pytest.fixture(autouse=True)
@@ -18,18 +18,19 @@ def mock_server_run(monkeypatch):
 
 
 def _clear_http_env(monkeypatch):
-    """Removes every TAPIR_MCP_* override so defaults apply."""
-    for name in (
-        "TAPIR_MCP_HOST",
-        "TAPIR_MCP_PORT",
-        "TAPIR_MCP_STREAMABLE_HTTP_PATH",
-        "TAPIR_MCP_MOUNT_PATH",
-        "TAPIR_MCP_TOKEN",
-        "TAPIR_MCP_ASYNC_THRESHOLD_SECONDS",
-        "TAPIR_MCP_JOB_TTL_SECONDS",
-        "TAPIR_MCP_MAX_COMPLETED_JOBS",
-    ):
-        monkeypatch.delenv(name, raising=False)
+    """Removes every CARACARA_MCP_* and TAPIR_MCP_* override so defaults apply."""
+    for prefix in ("CARACARA_MCP_", "TAPIR_MCP_"):
+        for name in (
+            "HOST",
+            "PORT",
+            "STREAMABLE_HTTP_PATH",
+            "MOUNT_PATH",
+            "TOKEN",
+            "ASYNC_THRESHOLD_SECONDS",
+            "JOB_TTL_SECONDS",
+            "MAX_COMPLETED_JOBS",
+        ):
+            monkeypatch.delenv(f"{prefix}{name}", raising=False)
 
 
 def test_server_defaults_configuration(monkeypatch, mock_server_run):
@@ -43,7 +44,7 @@ def test_server_defaults_configuration(monkeypatch, mock_server_run):
     monkeypatch.setattr(sys, "argv", ["server.py"])
 
     # Run main entrypoint
-    from tapir_archicad_mcp.server import main
+    from caracara_archicad_mcp.server import main
     main()
 
     mock_server_run.assert_called_once_with(transport="stdio")
@@ -57,7 +58,7 @@ def test_http_transport_defaults_configuration(monkeypatch, mock_server_run):
     _clear_http_env(monkeypatch)
     monkeypatch.setattr(sys, "argv", ["server.py", "--transport", "streamable-http"])
 
-    from tapir_archicad_mcp.server import main
+    from caracara_archicad_mcp.server import main
     main()
 
     mock_server_run.assert_called_once_with(
@@ -77,7 +78,7 @@ def test_server_env_fallback_configuration(monkeypatch, mock_server_run):
 
     monkeypatch.setattr(sys, "argv", ["server.py", "--transport", "streamable-http"])
 
-    from tapir_archicad_mcp.server import main
+    from caracara_archicad_mcp.server import main
     main()
 
     mock_server_run.assert_called_once_with(
@@ -111,7 +112,7 @@ def test_server_cli_override_configuration(monkeypatch, mock_server_run):
         ]
     )
 
-    from tapir_archicad_mcp.server import main
+    from caracara_archicad_mcp.server import main
     main()
 
     # Assert CLI overrides took precedence over ENVs
@@ -134,13 +135,13 @@ def test_server_cli_override_configuration(monkeypatch, mock_server_run):
     ],
 )
 def test_sse_paths_from_legacy_mount_path(mount_path, expected):
-    from tapir_archicad_mcp.server import sse_paths_from_mount_path
+    from caracara_archicad_mcp.server import sse_paths_from_mount_path
 
     assert sse_paths_from_mount_path(mount_path) == expected
 
 
 def test_job_configuration_defaults_and_environment_cli_precedence(monkeypatch):
-    from tapir_archicad_mcp.server import parse_args
+    from caracara_archicad_mcp.server import parse_args
 
     _clear_http_env(monkeypatch)
     monkeypatch.setattr(sys, "argv", ["server.py"])
@@ -167,7 +168,7 @@ def test_job_configuration_defaults_and_environment_cli_precedence(monkeypatch):
     ("--max-completed-jobs", "1.5"),
 ])
 def test_invalid_job_configuration_fails_at_startup(monkeypatch, flag, value):
-    from tapir_archicad_mcp.server import parse_args
+    from caracara_archicad_mcp.server import parse_args
 
     _clear_http_env(monkeypatch)
     monkeypatch.setattr(sys, "argv", ["server.py", flag, value])
@@ -177,8 +178,8 @@ def test_invalid_job_configuration_fails_at_startup(monkeypatch, flag, value):
 
 
 def test_invalid_environment_can_be_overridden_and_settings_reach_lifespan(monkeypatch, mock_server_run):
-    import tapir_archicad_mcp.app as app_module
-    from tapir_archicad_mcp.server import main
+    import caracara_archicad_mcp.app as app_module
+    from caracara_archicad_mcp.server import main
 
     _clear_http_env(monkeypatch)
     monkeypatch.setenv("TAPIR_MCP_JOB_TTL_SECONDS", "invalid")
@@ -189,10 +190,28 @@ def test_invalid_environment_can_be_overridden_and_settings_reach_lifespan(monke
 
 
 def test_invalid_environment_is_rejected(monkeypatch):
-    from tapir_archicad_mcp.server import parse_args
+    from caracara_archicad_mcp.server import parse_args
 
     _clear_http_env(monkeypatch)
     monkeypatch.setenv("TAPIR_MCP_JOB_TTL_SECONDS", "nan")
     monkeypatch.setattr(sys, "argv", ["server.py"])
     with pytest.raises(SystemExit):
         parse_args()
+
+
+def test_server_caracara_env_precedence(monkeypatch, mock_server_run):
+    """Tests that CARACARA_MCP_* overrides TAPIR_MCP_*."""
+    _clear_http_env(monkeypatch)
+    monkeypatch.setenv("TAPIR_MCP_HOST", "10.0.0.1")
+    monkeypatch.setenv("CARACARA_MCP_HOST", "10.0.0.2")
+    monkeypatch.setenv("TAPIR_MCP_PORT", "8000")
+    monkeypatch.setenv("CARACARA_MCP_PORT", "9000")
+
+    monkeypatch.setattr(sys, "argv", ["server.py", "--transport", "streamable-http"])
+
+    from caracara_archicad_mcp.server import main
+    main()
+
+    mock_server_run.assert_called_once_with(
+        transport="streamable-http", host="10.0.0.2", port=9000, streamable_http_path="/mcp"
+    )

@@ -4,7 +4,7 @@ import logging
 
 import pytest
 
-from tapir_archicad_mcp.request_lifecycle import DispatchLifecycle
+from caracara_archicad_mcp.request_lifecycle import DispatchLifecycle
 
 
 def test_start_and_end_are_logged_with_the_same_request_id(caplog):

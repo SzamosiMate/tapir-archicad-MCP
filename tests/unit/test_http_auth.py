@@ -4,7 +4,7 @@ from unittest.mock import MagicMock
 import httpx
 import pytest
 
-from tapir_archicad_mcp.middleware import BearerTokenMiddleware
+from caracara_archicad_mcp.middleware import BearerTokenMiddleware
 
 
 async def plain_app(scope, receive, send):
@@ -72,7 +72,7 @@ def mock_run_targets(monkeypatch):
     """
     import uvicorn
 
-    from tapir_archicad_mcp.app import mcp
+    from caracara_archicad_mcp.app import mcp
 
     mock_mcp_run = MagicMock()
     mock_uvicorn_run = MagicMock()
@@ -95,7 +95,7 @@ def test_http_transport_with_token_wraps_app(monkeypatch, mock_run_targets):
         ["server.py", "--transport", "streamable-http", "--token", "secret"],
     )
 
-    from tapir_archicad_mcp.server import main
+    from caracara_archicad_mcp.server import main
     main()
 
     mock_mcp_run.assert_not_called()
@@ -113,7 +113,7 @@ def test_token_env_fallback(monkeypatch, mock_run_targets):
     monkeypatch.setenv("TAPIR_MCP_TOKEN", "env-secret")
     monkeypatch.setattr(sys, "argv", ["server.py", "--transport", "sse"])
 
-    from tapir_archicad_mcp.server import main
+    from caracara_archicad_mcp.server import main
     main()
 
     mock_mcp_run.assert_not_called()
@@ -123,7 +123,7 @@ def test_token_env_fallback(monkeypatch, mock_run_targets):
 
 
 def test_sse_token_transport_preserves_legacy_mount_path(monkeypatch, mock_run_targets):
-    from tapir_archicad_mcp.app import mcp
+    from caracara_archicad_mcp.app import mcp
 
     mock_sse_app = MagicMock(return_value=plain_app)
     monkeypatch.setattr(mcp, "sse_app", mock_sse_app)
@@ -133,7 +133,7 @@ def test_sse_token_transport_preserves_legacy_mount_path(monkeypatch, mock_run_t
         ["server.py", "--transport", "sse", "--mount-path", "/archicad", "--token", "secret"],
     )
 
-    from tapir_archicad_mcp.server import main
+    from caracara_archicad_mcp.server import main
     main()
 
     mock_sse_app.assert_called_once_with(
@@ -151,7 +151,7 @@ def test_stdio_transport_ignores_token(monkeypatch, mock_run_targets):
     mock_mcp_run, mock_uvicorn_run = mock_run_targets
     monkeypatch.setattr(sys, "argv", ["server.py", "--token", "secret"])
 
-    from tapir_archicad_mcp.server import main
+    from caracara_archicad_mcp.server import main
     main()
 
     mock_mcp_run.assert_called_once_with(transport="stdio")
@@ -167,7 +167,7 @@ def test_http_transport_without_token_stays_unwrapped(monkeypatch, mock_run_targ
     monkeypatch.delenv("TAPIR_MCP_TOKEN", raising=False)
     monkeypatch.setattr(sys, "argv", ["server.py", "--transport", "streamable-http"])
 
-    from tapir_archicad_mcp.server import main
+    from caracara_archicad_mcp.server import main
     main()
 
     mock_mcp_run.assert_called_once_with(

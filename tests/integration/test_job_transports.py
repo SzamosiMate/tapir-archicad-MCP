@@ -17,11 +17,11 @@ from mcp.client.stdio import StdioServerParameters, stdio_client
 from mcp.client.streamable_http import streamable_http_client
 from multiconn_archicad.errors import AddOnCommandUnavailable, APIConnectionError, TapirCommandError
 
-from tapir_archicad_mcp.app import mcp
-from tapir_archicad_mcp.context import job_store_instance
-from tapir_archicad_mcp.jobs import JobSettings, JobStore
-from tapir_archicad_mcp.middleware import BearerTokenMiddleware
-from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
+from caracara_archicad_mcp.app import mcp
+from caracara_archicad_mcp.context import job_store_instance
+from caracara_archicad_mcp.jobs import JobSettings, JobStore
+from caracara_archicad_mcp.middleware import BearerTokenMiddleware
+from caracara_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
 
 COMMAND = "test_job_transport_command"
 ARGUMENTS = {"name": COMMAND, "arguments": {"port": 19723}}
@@ -54,8 +54,8 @@ def worker(monkeypatch):
 
     register_tool_for_dispatch(execute, name=COMMAND, title="Test", description="Test-only blocking command")
     fake = SimpleNamespace(active={19723: object()}, open_port_headers={})
-    monkeypatch.setattr("tapir_archicad_mcp.app.MultiConn", lambda: fake)
-    monkeypatch.setattr("tapir_archicad_mcp.app.job_settings", JobSettings(async_threshold_seconds=0.5))
+    monkeypatch.setattr("caracara_archicad_mcp.app.MultiConn", lambda: fake)
+    monkeypatch.setattr("caracara_archicad_mcp.app.job_settings", JobSettings(async_threshold_seconds=0.5))
     yield entered, release, calls
     release.set()
 
@@ -157,7 +157,7 @@ async def test_cancelled_execution_and_poll_recover_over_http(worker, transport)
 @pytest.mark.parametrize("token", [None, "test-secret"])
 async def test_jobs_survive_other_clients_and_reconnect_with_no_clients(worker, monkeypatch, transport, token):
     entered, release, calls = worker
-    monkeypatch.setattr("tapir_archicad_mcp.app.job_settings", JobSettings(async_threshold_seconds=0.01))
+    monkeypatch.setattr("caracara_archicad_mcp.app.job_settings", JobSettings(async_threshold_seconds=0.01))
     async with live_server(transport, token) as url:
         try:
             async with connect_session(url, transport, token) as first:
@@ -195,10 +195,10 @@ async def test_expected_job_errors_reach_http_clients(worker, monkeypatch, trans
     _, release, calls = worker
     now = [1.0]
     monkeypatch.setattr(
-        "tapir_archicad_mcp.app.job_settings", JobSettings(async_threshold_seconds=0.01, job_ttl_seconds=1)
+        "caracara_archicad_mcp.app.job_settings", JobSettings(async_threshold_seconds=0.01, job_ttl_seconds=1)
     )
     monkeypatch.setattr(
-        "tapir_archicad_mcp.app.JobStore",
+        "caracara_archicad_mcp.app.JobStore",
         lambda settings: JobStore(settings, max_workers=1, clock=lambda: now[0]),
     )
     async with live_session(transport) as session:
@@ -271,7 +271,7 @@ async def test_immediate_errors_expose_expected_messages_and_hide_unexpected_det
 @pytest.mark.asyncio
 async def test_slow_promotion_and_concurrent_polls_dispatch_once_through_mcp_client(worker, monkeypatch):
     entered, release, calls = worker
-    monkeypatch.setattr("tapir_archicad_mcp.app.job_settings", JobSettings(async_threshold_seconds=0.01))
+    monkeypatch.setattr("caracara_archicad_mcp.app.job_settings", JobSettings(async_threshold_seconds=0.01))
     async with Client(mcp) as client:
         try:
             promoted = payload(await client.call_tool("archicad_call_tool", arguments=ARGUMENTS))
@@ -289,10 +289,10 @@ async def test_slow_promotion_and_concurrent_polls_dispatch_once_through_mcp_cli
 STDIO_SERVER = """
 from threading import Event
 from types import SimpleNamespace
-import tapir_archicad_mcp.model_configuration
-import tapir_archicad_mcp.app as app
-from tapir_archicad_mcp.jobs import JobSettings
-from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
+import caracara_archicad_mcp.model_configuration
+import caracara_archicad_mcp.app as app
+from caracara_archicad_mcp.jobs import JobSettings
+from caracara_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
 
 release = Event()
 calls = []

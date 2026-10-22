@@ -3,9 +3,9 @@ from __future__ import annotations
 import pytest
 from mcp.server.mcpserver.exceptions import ToolError
 
-from tapir_archicad_mcp.app import mcp
-from tapir_archicad_mcp.result_registry import ResultRegistry
-from tapir_archicad_mcp.tools.custom.meta_verbs import archicad_mutate, archicad_query
+from caracara_archicad_mcp.app import mcp
+from caracara_archicad_mcp.result_registry import ResultRegistry
+from caracara_archicad_mcp.tools.custom.meta_verbs import archicad_mutate, archicad_query
 
 
 @pytest.fixture(autouse=True)

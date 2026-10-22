@@ -3,8 +3,8 @@ from __future__ import annotations
 import pytest
 from mcp.server.mcpserver.exceptions import ToolError
 
-from tapir_archicad_mcp.result_registry import ResultRegistry
-from tapir_archicad_mcp.script_sandbox import run_script
+from caracara_archicad_mcp.result_registry import ResultRegistry
+from caracara_archicad_mcp.script_sandbox import run_script
 
 
 @pytest.fixture(autouse=True)

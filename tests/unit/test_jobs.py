@@ -8,9 +8,9 @@ import pytest
 from mcp.server.mcpserver.exceptions import ToolError
 from multiconn_archicad.errors import APIConnectionError, TapirCommandError
 
-from tapir_archicad_mcp.context import multi_conn_instance
-from tapir_archicad_mcp.jobs import JobSettings, JobStore, arguments_preview
-from tapir_archicad_mcp.tools.custom.functions import archicad_call_tool, archicad_get_job
+from caracara_archicad_mcp.context import multi_conn_instance
+from caracara_archicad_mcp.jobs import JobSettings, JobStore, arguments_preview
+from caracara_archicad_mcp.tools.custom.functions import archicad_call_tool, archicad_get_job
 
 
 @pytest.fixture
