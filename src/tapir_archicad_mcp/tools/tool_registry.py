@@ -22,6 +22,8 @@ class ToolRegistryEntry(BaseModel):
     params_model: ModelOrUnion = None
     arguments_model: type[BaseModel]
     pagination_field: str | None = None
+    image_field: str | None = None
+    image_list_field: str | None = None
 
 
 TOOL_CALLABLE_REGISTRY: dict[str, ToolRegistryEntry] = {}
@@ -66,6 +68,8 @@ def register_tool_for_dispatch(
     description: str,
     params_model: ModelOrUnion = None,
     pagination_field: str | None = None,
+    image_field: str | None = None,
+    image_list_field: str | None = None,
 ):
     """
     Orchestrates the registration of a tool, populating both the internal
@@ -80,6 +84,8 @@ def register_tool_for_dispatch(
         params_model=params_model,
         arguments_model=arguments_model,
         pagination_field=pagination_field,
+        image_field=image_field,
+        image_list_field=image_list_field,
     )
 
     TOOL_DISCOVERY_CATALOG[name] = {

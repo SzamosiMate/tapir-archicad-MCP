@@ -160,6 +160,7 @@ register_tool_for_dispatch(
     title="GetProfileAttributePreview",
     description="Returns the preview image of each requested profile attribute in a base64 string format.",
     params_model=GetProfileAttributePreviewParameters,
+    image_list_field="previewImages",
 )
 
 

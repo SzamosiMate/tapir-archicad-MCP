@@ -41,6 +41,8 @@ class ApiSourceConfig:
     group_mapping: dict[str, str]
     prefix_to_strip: str = ""
     paginated_commands: dict[str, str] = field(default_factory=dict)
+    image_fields: dict[str, str] = field(default_factory=dict)
+    image_lists: dict[str, str] = field(default_factory=dict)
     commands_to_exclude: set[str] = field(default_factory=set)
 
 
@@ -116,7 +118,12 @@ TAPIR_CONFIG = ApiSourceConfig(
         "GetElectricalDevices": "electricalDevices",
         "GetElectricalPanels": "electricalPanels",
         "GetMEPSystemGroups": "systemGroups",
-    }
+    },
+    image_fields={
+        "GetElementPreviewImage": "previewImage",
+        "GetFavoritePreviewImage": "previewImage",
+        "GetRoomImage": "roomImage",
+    },
 )
 
 
@@ -171,5 +178,8 @@ OFFICIAL_CONFIG = ApiSourceConfig(
         "GetElementsByClassification": "elements",
         "GetAllPropertyIds": "propertyIds",
         "GetAllPropertyNames": "properties",
+    },
+    image_lists={
+        "GetProfileAttributePreview": "previewImages",
     },
 )
