@@ -266,6 +266,7 @@ register_tool_for_dispatch(
     title="GetElementPreviewImage",
     description="Returns the preview image of the given element.",
     params_model=GetElementPreviewImageParameters,
+    image_field="previewImage",
 )
 
 
@@ -459,6 +460,7 @@ register_tool_for_dispatch(
     title="GetRoomImage",
     description="Returns the room image of the given zone.",
     params_model=GetRoomImageParameters,
+    image_field="roomImage",
 )
 
 

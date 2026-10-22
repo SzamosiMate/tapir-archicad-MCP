@@ -126,6 +126,7 @@ register_tool_for_dispatch(
     title="GetFavoritePreviewImage",
     description="Returns the preview image of the given favorite.",
     params_model=GetFavoritePreviewImageParameters,
+    image_field="previewImage",
 )
 
 
