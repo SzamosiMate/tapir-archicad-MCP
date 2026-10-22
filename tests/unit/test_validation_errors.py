@@ -56,7 +56,7 @@ def test_more_than_max_types_adds_a_tail_line():
     lines = _lines(format_validation_error("elements_create_walls", error, max_types=2))
 
     assert len(lines) == 5
-    assert lines[3] == "...and 1 more error type."
+    assert lines[3] == "…and 1 more error type."
 
 
 def test_locations_are_listed_without_ellipsis_when_they_fit():
@@ -69,6 +69,29 @@ def test_input_values_are_not_echoed():
     error = _error({"walls": [{"begCoordinate": {"x": 0, "y": 0}, "height": "secret-123"}]})
 
     assert "secret-123" not in format_validation_error("elements_create_walls", error)
+
+
+def test_root_level_error_has_no_location():
+    class Strict(BaseModel):
+        x: int
+
+    with pytest.raises(ValidationError) as raised:
+        Strict.model_validate("not a dict")
+
+    lines = _lines(format_validation_error("tool", raised.value))
+    assert lines[0] == "Invalid arguments provided for tool 'tool': 1 error of 1 type."
+    assert lines[1] == "- model_type (1): Input should be a valid dictionary or instance of Strict"
+
+
+def test_long_key_names_are_shortened():
+    long_key = "k" * 300
+
+    lines = _lines(
+        format_validation_error("tool", _error({"walls": [{"begCoordinate": {"x": 0, "y": 0}, long_key: 1}]}))
+    )
+
+    assert long_key not in lines[1]
+    assert lines[1].endswith("walls.0." + "k" * (80 - len("walls.0.") - 1) + "…")
 
 
 def test_schema_hint_is_the_last_line():
