@@ -239,8 +239,9 @@ async def archicad_call_tool(name: str, arguments: dict) -> dict:
     try:
         validated_arguments = tool_entry.arguments_model.model_validate(arguments)
     except ValidationError as e:
-        log.error(f"Validation error for arguments of {name}: {e}")
-        raise ToolError(format_validation_error(name, e)) from e
+        message = format_validation_error(name, e)
+        log.error(message)
+        raise ToolError(message) from e
 
     store = job_store_instance.get()
     port = validated_arguments.port
