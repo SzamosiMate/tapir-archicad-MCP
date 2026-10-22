@@ -15,7 +15,7 @@ def format_validation_error(
     the same way. Locations name the failing fields (including unexpected keys) but
     never their values; both locations and messages are shortened.
     """
-    errors = error.errors(include_input=False, include_url=False)
+    errors = error.errors(include_input=False, include_url=False, include_context=False)
     groups: dict[str, list[dict]] = {}
     for item in errors:
         groups.setdefault(item["type"], []).append(item)
@@ -38,7 +38,9 @@ def format_validation_error(
 
 
 def _location(loc: tuple) -> str:
-    return _shorten(".".join(str(part) for part in loc), MAX_LOCATION_CHARS)
+    # Unexpected keys come from the caller; escape control characters so a key cannot add lines.
+    path = ".".join(str(part) for part in loc).encode("unicode_escape").decode("ascii")
+    return _shorten(path, MAX_LOCATION_CHARS)
 
 
 def _shorten(text: str, limit: int) -> str:

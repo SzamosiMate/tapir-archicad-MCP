@@ -270,7 +270,7 @@ async def test_nested_command_parameter_extras_are_rejected_before_transport(fak
     assert fake_archicad.calls == []
 
 
-async def test_bulk_validation_error_is_grouped_and_omits_input(fake_archicad):
+async def test_bulk_validation_error_is_grouped_and_omits_input(fake_archicad, caplog):
     slabs = [{"level": "secret-level"} for _ in range(500)]
 
     with pytest.raises(ToolError) as raised:
@@ -278,6 +278,7 @@ async def test_bulk_validation_error_is_grouped_and_omits_input(fake_archicad):
 
     message = str(raised.value)
     assert "secret-level" not in message
+    assert "secret-level" not in caplog.text
     assert len(message.splitlines()) <= 8
     assert fake_archicad.calls == []
 

@@ -94,6 +94,16 @@ def test_long_key_names_are_shortened():
     assert lines[1].endswith("walls.0." + "k" * (80 - len("walls.0.") - 1) + "…")
 
 
+def test_control_characters_in_keys_cannot_add_lines():
+    error = _error({"walls": [{"begCoordinate": {"x": 0, "y": 0}, "x\n- fake (1): injected": 1}]})
+
+    lines = _lines(format_validation_error("tool", error))
+
+    assert len(lines) == 3
+    assert "- fake" not in lines[2]
+    assert "\\n" in lines[1]
+
+
 def test_schema_hint_is_the_last_line():
     lines = _lines(format_validation_error("elements_create_walls", _error({"walls": [{}]})))
 
