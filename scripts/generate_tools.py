@@ -122,6 +122,12 @@ def _generate_tool_function_code(command: dict, valid_model_names: set[str], con
             f',\n    pagination_field="{config.paginated_commands[command_name_camel]}"'
         )
 
+    image_registration_arg = ""
+    if command_name_camel in config.image_fields:
+        image_registration_arg = f',\n    image_field="{config.image_fields[command_name_camel]}"'
+    elif command_name_camel in config.image_lists:
+        image_registration_arg = f',\n    image_list_field="{config.image_lists[command_name_camel]}"'
+
     function_code = f'''{decorator}def {command_name_snake}(conn_header: ConnHeader{param_signature}) -> {return_annotation}:
 {indent(docstring, "    ")}
 {indent(call_block, "    ")}
@@ -132,7 +138,7 @@ def _generate_tool_function_code(command: dict, valid_model_names: set[str], con
     name="{tool_name}",
     title="{command_name_camel}",
     description={dispatch_desc},
-    params_model={param_reg_arg}{pagination_registration_arg}
+    params_model={param_reg_arg}{pagination_registration_arg}{image_registration_arg}
 )
 """
     return f"{function_code}\n{registration_call}".strip() + "\n"

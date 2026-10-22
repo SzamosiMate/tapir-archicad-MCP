@@ -42,3 +42,23 @@ def test_mismatched_installed_models_fail_before_generation(tmp_path, monkeypatc
 def test_floating_dependencies_cannot_select_generator_metadata(tmp_path, dependency):
     with pytest.raises(ValueError, match="exact"):
         config.get_multiconn_version(project_file(tmp_path, dependency))
+
+
+@pytest.mark.parametrize("source", [config.TAPIR_CONFIG, config.OFFICIAL_CONFIG])
+def test_generator_config_image_commands_exist(source):
+    from tapir_archicad_mcp.tools.registration import register_all_tools
+    from tapir_archicad_mcp.tools.tool_registry import TOOL_CALLABLE_REGISTRY, TOOL_DISCOVERY_CATALOG
+
+    register_all_tools()
+    configured = {**source.image_fields, **source.image_lists}
+    registered = {
+        TOOL_DISCOVERY_CATALOG[name]["title"]: entry
+        for name, entry in TOOL_CALLABLE_REGISTRY.items()
+        if TOOL_DISCOVERY_CATALOG[name]["title"] in configured
+    }
+
+    assert registered.keys() == configured.keys()
+    for title, field in source.image_fields.items():
+        assert registered[title].image_field == field
+    for title, field in source.image_lists.items():
+        assert registered[title].image_list_field == field
