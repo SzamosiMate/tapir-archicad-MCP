@@ -1,10 +1,10 @@
 import asyncio
 import json
 import logging
-from typing import Any
+from typing import Annotated, Any
 
 from mcp.server.mcpserver.exceptions import ToolError
-from mcp.types import ToolAnnotations
+from mcp.types import CallToolResult, ToolAnnotations
 from multiconn_archicad import (
     APIResponseError,
     ConnHeader,
@@ -19,6 +19,7 @@ from pydantic import ValidationError
 
 from tapir_archicad_mcp.app import mcp
 from tapir_archicad_mcp.context import job_store_instance, multi_conn_instance
+from tapir_archicad_mcp.images import build_image_result, extract_images, to_tool_result
 from tapir_archicad_mcp.jobs import JobStore
 from tapir_archicad_mcp.pagination import PaginationRequest, prepare_result
 from tapir_archicad_mcp.request_lifecycle import DispatchLifecycle
@@ -232,7 +233,7 @@ def archicad_get_command_schema(command_name: str) -> CommandSchema:
         openWorldHint=True,
     ),
 )
-async def archicad_call_tool(name: str, arguments: dict) -> dict:
+async def archicad_call_tool(name: str, arguments: dict) -> Annotated[CallToolResult, dict]:
     log.info(f"Executing archicad_call_tool for tool: {name}")
 
     tool_entry = get_tool_entry(name)
@@ -253,7 +254,7 @@ async def archicad_call_tool(name: str, arguments: dict) -> dict:
         lambda handle: _execute_tool(name, tool_entry, validated_arguments, handle),
     )
     await store.wait(job)
-    return store.initial_result(job)
+    return to_tool_result(tool_entry, store.initial_result(job))
 
 def _read_cached_page(name: str, tool_entry: ToolRegistryEntry, arguments: Any, store: JobStore) -> dict:
     # MultiConn's public header properties can trigger discovery; keep that work
@@ -334,10 +335,12 @@ def _get_header(port: int) -> ConnHeader:
         readOnlyHint=True, destructiveHint=False, idempotentHint=True, openWorldHint=False,
     ),
 )
-async def archicad_get_job(job_handle: str | None = None) -> dict:
+async def archicad_get_job(job_handle: str | None = None) -> Annotated[CallToolResult, dict]:
     store = job_store_instance.get()
     if job_handle is None:
         return store.list_jobs()
     job = store.get(job_handle)
     await store.wait(job)
-    return store.response(job)
+    response = store.response(job)
+    stripped, images = extract_images(get_tool_entry(job.command), response.get("result"))
+    return build_image_result({**response, "result": stripped}, images) if images else response
