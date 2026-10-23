@@ -221,6 +221,8 @@ def archicad_get_command_schema(command_name: str) -> CommandSchema:
         "The 'arguments' dictionary MUST contain a 'port' number (obtained from 'discovery_list_active_archicads'). "
         "If a tool's response includes a 'next_page_token', call this same tool again with the same parameters "
         "and add a 'page_token' key to the 'arguments' dictionary. "
+        "Paged lists also return 'envelope' with the list's total, the number returned on this page, "
+        "and 'truncated' (true while more pages follow). "
         "Long executions return status='running' and a jobHandle; retrieve them with archicad_get_job. "
         "If a response is lost or cancelled, list jobs with archicad_get_job() before retrying a write. "
         "Cancelling this request does not cancel an admitted execution."
