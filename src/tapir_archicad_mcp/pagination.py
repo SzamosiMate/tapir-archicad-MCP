@@ -31,8 +31,10 @@ class PaginationSnapshot:
         items = self.response[field]
         response[field] = deepcopy(items[offset : offset + PAGE_SIZE])
         response.pop("next_page_token", None)
-        if offset + PAGE_SIZE < len(items):
+        truncated = offset + PAGE_SIZE < len(items)
+        if truncated:
             response["next_page_token"] = f"{self.token}:{offset + PAGE_SIZE}"
+        response["envelope"] = _envelope(field, len(items), len(response[field]), truncated)
         return response
 
     def continuation(self, request: PaginationRequest, raw_offset: str) -> dict:
@@ -57,10 +59,16 @@ class PaginationSnapshot:
         return offset
 
 
+def _envelope(field: str, total: int, returned: int, truncated: bool) -> dict:
+    """Counts for a paged list; truncated means more pages follow."""
+    return {field: {"total": total, "returned": returned, "truncated": truncated}}
+
+
 def prepare_result(response: Any, request: PaginationRequest, token: str) -> Any:
     if not isinstance(response, dict) or not isinstance(response.get(request.field), list):
         return response
-    if len(response[request.field]) <= PAGE_SIZE:
-        return response
+    count = len(response[request.field])
+    if count <= PAGE_SIZE:
+        return {**response, "envelope": _envelope(request.field, count, count, False)}
     # The snapshot is the only retained full copy. Jobs render page one on demand.
     return PaginationSnapshot(request, deepcopy(response), token)

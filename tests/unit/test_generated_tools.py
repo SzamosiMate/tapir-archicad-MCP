@@ -4,7 +4,7 @@ from multiconn_archicad import Port
 
 from tapir_archicad_mcp.context import multi_conn_instance
 from tapir_archicad_mcp.jobs import JobSettings
-from tapir_archicad_mcp.tools.custom.functions import archicad_call_tool
+from tapir_archicad_mcp.tools.custom.functions import archicad_call_tool, archicad_get_job
 
 GUID = "12345678-1234-1234-1234-123456789012"
 pytestmark = pytest.mark.asyncio
@@ -237,6 +237,58 @@ async def test_response_of_page_size_or_less_is_returned_without_pagination(fake
 
     assert len(result["elements"]) == 100
     assert "next_page_token" not in result
+    assert result["envelope"] == {"elements": {"total": 100, "returned": 100, "truncated": False}}
+
+
+async def test_first_page_reports_total_and_truncated(fake_archicad):
+    fake_archicad.on_tapir_command("GetSelectedElements", {"elements": _elements(250)})
+
+    first_page = await archicad_call_tool(
+        "elements_get_selected_elements", {"port": fake_archicad.port}
+    )
+
+    assert first_page["envelope"] == {"elements": {"total": 250, "returned": 100, "truncated": True}}
+    handle = (await archicad_get_job())["jobs"][0]["jobHandle"]
+    assert (await archicad_get_job(handle))["result"]["envelope"] == first_page["envelope"]
+
+
+async def test_last_page_is_not_truncated(fake_archicad):
+    fake_archicad.on_tapir_command("GetSelectedElements", {"elements": _elements(250)})
+    page = await archicad_call_tool(
+        "elements_get_selected_elements", {"port": fake_archicad.port}
+    )
+
+    envelopes = []
+    for _ in range(2):
+        page = await archicad_call_tool(
+            "elements_get_selected_elements",
+            {"port": fake_archicad.port, "page_token": page["next_page_token"]},
+        )
+        envelopes.append(page["envelope"])
+
+    assert envelopes[0] == {"elements": {"total": 250, "returned": 100, "truncated": True}}
+    assert len(page["elements"]) == 50
+    assert page["envelope"] == {"elements": {"total": 250, "returned": 50, "truncated": False}}
+    assert "next_page_token" not in page
+
+
+async def test_short_list_fits_one_page(fake_archicad):
+    fake_archicad.on_tapir_command("GetSelectedElements", {"elements": _elements(30)})
+
+    result = await archicad_call_tool(
+        "elements_get_selected_elements", {"port": fake_archicad.port}
+    )
+
+    assert result["envelope"] == {"elements": {"total": 30, "returned": 30, "truncated": False}}
+    assert "next_page_token" not in result
+
+
+async def test_unpaginated_commands_have_no_envelope(fake_archicad):
+    fake_archicad.on_tapir_command("GetAddOnVersion", {"version": "1.7.2"})
+
+    result = await archicad_call_tool("app_get_add_on_version", {"port": fake_archicad.port})
+
+    assert result == {"version": "1.7.2"}
 
 
 async def test_generated_create_tool_dispatches_params_and_preserves_raw_result(fake_archicad):
