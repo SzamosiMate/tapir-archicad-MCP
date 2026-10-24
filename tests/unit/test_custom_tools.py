@@ -20,9 +20,9 @@ from multiconn_archicad.constants import SUPPORTED_TAPIR_VERSION
 from multiconn_archicad.errors import AddOnCommandUnavailable
 from pydantic import BaseModel
 
+from payloads import archicad_call_tool
 from tapir_archicad_mcp.context import multi_conn_instance
 from tapir_archicad_mcp.tools.custom.functions import (
-    archicad_call_tool,
     archicad_get_command_schema,
     archicad_list_commands,
     list_active_archicads,

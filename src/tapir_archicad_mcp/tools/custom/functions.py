@@ -19,7 +19,7 @@ from pydantic import ValidationError
 
 from tapir_archicad_mcp.app import mcp
 from tapir_archicad_mcp.context import job_store_instance, multi_conn_instance
-from tapir_archicad_mcp.images import build_image_result, extract_images, to_tool_result
+from tapir_archicad_mcp.images import build_result, extract_images, to_tool_result
 from tapir_archicad_mcp.jobs import JobStore
 from tapir_archicad_mcp.pagination import PaginationRequest, prepare_result
 from tapir_archicad_mcp.request_lifecycle import DispatchLifecycle
@@ -248,7 +248,7 @@ async def archicad_call_tool(name: str, arguments: dict) -> Annotated[CallToolRe
     port = validated_arguments.port
     if tool_entry.pagination_field is not None and validated_arguments.page_token is not None:
         # Continuations read retained data and do not create execution jobs.
-        return await asyncio.to_thread(_read_cached_page, name, tool_entry, validated_arguments, store)
+        return build_result(await asyncio.to_thread(_read_cached_page, name, tool_entry, validated_arguments, store))
     job = store.submit(
         name, port, arguments,
         lambda handle: _execute_tool(name, tool_entry, validated_arguments, handle),
@@ -338,9 +338,11 @@ def _get_header(port: int) -> ConnHeader:
 async def archicad_get_job(job_handle: str | None = None) -> Annotated[CallToolResult, dict]:
     store = job_store_instance.get()
     if job_handle is None:
-        return store.list_jobs()
+        return build_result(store.list_jobs())
     job = store.get(job_handle)
     await store.wait(job)
     response = store.response(job)
     stripped, images = extract_images(get_tool_entry(job.command), response.get("result"))
-    return build_image_result({**response, "result": stripped}, images) if images else response
+    if images:
+        response = {**response, "result": stripped}
+    return build_result(response, images)
