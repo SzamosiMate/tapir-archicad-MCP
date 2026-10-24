@@ -237,7 +237,7 @@ async def test_response_of_page_size_or_less_is_returned_without_pagination(fake
 
     assert len(result["elements"]) == 100
     assert "next_page_token" not in result
-    assert result["envelope"] == {"elements": {"total": 100, "returned": 100, "truncated": False}}
+    assert result["pagination"] == {"total": 100, "returned": 100, "truncated": False}
 
 
 async def test_first_page_reports_total_and_truncated(fake_archicad):
@@ -247,9 +247,9 @@ async def test_first_page_reports_total_and_truncated(fake_archicad):
         "elements_get_selected_elements", {"port": fake_archicad.port}
     )
 
-    assert first_page["envelope"] == {"elements": {"total": 250, "returned": 100, "truncated": True}}
+    assert first_page["pagination"] == {"total": 250, "returned": 100, "truncated": True}
     handle = (await archicad_get_job())["jobs"][0]["jobHandle"]
-    assert (await archicad_get_job(handle))["result"]["envelope"] == first_page["envelope"]
+    assert (await archicad_get_job(handle))["result"]["pagination"] == first_page["pagination"]
 
 
 async def test_last_page_is_not_truncated(fake_archicad):
@@ -258,17 +258,17 @@ async def test_last_page_is_not_truncated(fake_archicad):
         "elements_get_selected_elements", {"port": fake_archicad.port}
     )
 
-    envelopes = []
+    paginations = []
     for _ in range(2):
         page = await archicad_call_tool(
             "elements_get_selected_elements",
             {"port": fake_archicad.port, "page_token": page["next_page_token"]},
         )
-        envelopes.append(page["envelope"])
+        paginations.append(page["pagination"])
 
-    assert envelopes[0] == {"elements": {"total": 250, "returned": 100, "truncated": True}}
+    assert paginations[0] == {"total": 250, "returned": 100, "truncated": True}
     assert len(page["elements"]) == 50
-    assert page["envelope"] == {"elements": {"total": 250, "returned": 50, "truncated": False}}
+    assert page["pagination"] == {"total": 250, "returned": 50, "truncated": False}
     assert "next_page_token" not in page
 
 
@@ -279,11 +279,11 @@ async def test_short_list_fits_one_page(fake_archicad):
         "elements_get_selected_elements", {"port": fake_archicad.port}
     )
 
-    assert result["envelope"] == {"elements": {"total": 30, "returned": 30, "truncated": False}}
+    assert result["pagination"] == {"total": 30, "returned": 30, "truncated": False}
     assert "next_page_token" not in result
 
 
-async def test_unpaginated_commands_have_no_envelope(fake_archicad):
+async def test_unpaginated_commands_have_no_pagination(fake_archicad):
     fake_archicad.on_tapir_command("GetAddOnVersion", {"version": "1.7.2"})
 
     result = await archicad_call_tool("app_get_add_on_version", {"port": fake_archicad.port})
