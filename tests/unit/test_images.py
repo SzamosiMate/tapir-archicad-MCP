@@ -80,18 +80,34 @@ async def test_profile_previews_keep_errors_and_number_images(fake_archicad):
     }
 
 
-async def test_non_image_results_are_unchanged(fake_archicad):
-    fake_archicad.on_tapir_command("GetAddOnVersion", {"version": "1.7.2"})
+async def test_non_image_results_are_call_tool_results_with_the_same_content(fake_archicad):
+    fake_archicad.on_tapir_command("GetAddOnVersion", {"version": "1.7.2", "name": "Wand Ä"})
 
     result = await archicad_call_tool("app_get_add_on_version", {"port": 19723})
 
-    assert result == {"version": "1.7.2"}
+    assert isinstance(result, CallToolResult)
+    assert [block.type for block in result.content] == ["text"]
+    assert result.content[0].text == json.dumps({"version": "1.7.2", "name": "Wand Ä"}, indent=2, ensure_ascii=False)
+    assert result.structured_content == {"version": "1.7.2", "name": "Wand Ä"}
+
+
+async def test_every_branch_of_the_job_tools_returns_a_call_tool_result(fake_archicad):
+    fake_archicad.on_tapir_command("GetAddOnVersion", {"version": "1.7.2"})
+    await archicad_call_tool("app_get_add_on_version", {"port": 19723})
+
+    listed = await archicad_get_job()
+    handle = listed.structured_content["jobs"][0]["jobHandle"]
+    completed = await archicad_get_job(handle)
+
+    assert isinstance(listed, CallToolResult)
+    assert isinstance(completed, CallToolResult)
+    assert completed.structured_content["result"] == {"version": "1.7.2"}
 
 
 async def test_job_result_of_an_image_command_is_image_content(fake_archicad):
     fake_archicad.on_tapir_command("GetElementPreviewImage", {"previewImage": PNG_B64})
     await archicad_call_tool("elements_get_element_preview_image", PREVIEW_ARGS)
-    handle = (await archicad_get_job())["jobs"][0]["jobHandle"]
+    handle = (await archicad_get_job()).structured_content["jobs"][0]["jobHandle"]
 
     result = await archicad_get_job(handle)
 
@@ -108,13 +124,17 @@ async def test_job_result_of_an_image_command_is_image_content(fake_archicad):
         {"previewImage": "not an image"},
         {"previewImage": base64.b64encode(b"GIF89a").decode()},
         {"previewImage": ""},
+        {"previewImage": "Wand Ä"},
         {"status": "running", "jobHandle": "job:1"},
     ],
 )
 async def test_results_without_a_png_or_jpeg_pass_through(fake_archicad, result):
     entry = get_tool_entry("elements_get_element_preview_image")
 
-    assert to_tool_result(entry, result) == result
+    converted = to_tool_result(entry, result)
+
+    assert [block.type for block in converted.content] == ["text"]
+    assert converted.structured_content == result
 
 
 @pytest.mark.parametrize(
@@ -124,7 +144,10 @@ async def test_results_without_a_png_or_jpeg_pass_through(fake_archicad, result)
 async def test_profile_previews_without_images_pass_through(fake_archicad, previews):
     entry = get_tool_entry("attributes_get_profile_attribute_preview")
 
-    assert to_tool_result(entry, {"previewImages": previews}) == {"previewImages": previews}
+    converted = to_tool_result(entry, {"previewImages": previews})
+
+    assert [block.type for block in converted.content] == ["text"]
+    assert converted.structured_content == {"previewImages": previews}
 
 
 async def test_text_block_keeps_non_ascii_characters(snapshot_command):
@@ -136,9 +159,10 @@ async def test_text_block_keeps_non_ascii_characters(snapshot_command):
 async def test_failed_image_job_stays_a_plain_response(fake_archicad):
     with pytest.raises(RuntimeError, match="unexpected Tapir command"):
         await archicad_call_tool("elements_get_element_preview_image", PREVIEW_ARGS)
-    handle = (await archicad_get_job())["jobs"][0]["jobHandle"]
+    handle = (await archicad_get_job()).structured_content["jobs"][0]["jobHandle"]
 
     result = await archicad_get_job(handle)
 
-    assert result["status"] == "failed"
-    assert "error" in result
+    assert isinstance(result, CallToolResult)
+    assert result.structured_content["status"] == "failed"
+    assert "error" in result.structured_content

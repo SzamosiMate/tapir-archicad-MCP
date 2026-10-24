@@ -3,10 +3,10 @@
 from __future__ import annotations
 
 import base64
-import binascii
-import json
+from collections.abc import Sequence
 from typing import TYPE_CHECKING, Any
 
+import pydantic_core
 from mcp.types import CallToolResult, ImageContent, TextContent
 
 if TYPE_CHECKING:
@@ -24,7 +24,8 @@ def _image_content(data: Any) -> ImageContent | None:
         return None
     try:
         head = base64.b64decode(data, validate=True)[:8]
-    except binascii.Error:
+    except ValueError:
+        # Not base64 at all, or text with non-ASCII characters. binascii.Error is a ValueError too.
         return None
     if head.startswith(b"\x89PNG\r\n\x1a\n"):
         return ImageContent(type="image", data=data, mime_type="image/png")
@@ -59,15 +60,19 @@ def extract_images(entry: ToolRegistryEntry, result: Any) -> tuple[Any, list[Ima
     return result, []
 
 
-def build_image_result(stripped: Any, images: list[ImageContent]) -> CallToolResult:
-    """The JSON as text and structured content, followed by one image block per image."""
+def build_result(payload: Any, images: Sequence[ImageContent] = ()) -> CallToolResult:
+    """The JSON as text and structured content, followed by one image block per image.
+
+    Text and structured content are made the way the MCP SDK makes them from a returned dict.
+    """
+    text = pydantic_core.to_json(payload, fallback=str, indent=2).decode()
     return CallToolResult(
-        content=[TextContent(type="text", text=json.dumps(stripped, indent=2, ensure_ascii=False)), *images],
-        structured_content=stripped,
+        content=[TextContent(type="text", text=text), *images],
+        structured_content=pydantic_core.to_jsonable_python(payload, fallback=str),
     )
 
 
-def to_tool_result(entry: ToolRegistryEntry, result: Any) -> Any:
-    """Wrap an image command's result as a CallToolResult with image content; other results pass through."""
+def to_tool_result(entry: ToolRegistryEntry, result: Any) -> CallToolResult:
+    """Wrap a command's result as a CallToolResult; an image command's images become image content."""
     stripped, images = extract_images(entry, result)
-    return build_image_result(stripped, images) if images else result
+    return build_result(stripped, images)
