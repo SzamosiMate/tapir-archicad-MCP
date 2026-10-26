@@ -3,11 +3,12 @@
 from __future__ import annotations
 
 import base64
+import json
 from collections.abc import Sequence
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
-import pydantic_core
 from mcp.types import CallToolResult, ImageContent, TextContent
+from pydantic import JsonValue
 
 if TYPE_CHECKING:
     # The tools package imports this module while it loads.
@@ -18,7 +19,7 @@ def _reference(number: int) -> str:
     return f"returned as MCP image content #{number}"
 
 
-def _image_content(data: Any) -> ImageContent | None:
+def _image_content(data: JsonValue) -> ImageContent | None:
     # The image commands offer png and jpg. Anything else stays in the JSON, so a client never gets a broken image.
     if not isinstance(data, str):
         return None
@@ -34,11 +35,10 @@ def _image_content(data: Any) -> ImageContent | None:
     return None
 
 
-def extract_images(entry: ToolRegistryEntry, result: Any) -> tuple[Any, list[ImageContent]]:
+def extract_images(
+    entry: ToolRegistryEntry, result: dict[str, JsonValue]
+) -> tuple[dict[str, JsonValue], list[ImageContent]]:
     """Split an image command's result into the JSON without the images and the image blocks, in order."""
-    if not isinstance(result, dict):
-        return result, []
-
     field = entry.image_field
     if field is not None and (image := _image_content(result.get(field))) is not None:
         return {**result, field: _reference(1)}, [image]
@@ -60,19 +60,16 @@ def extract_images(entry: ToolRegistryEntry, result: Any) -> tuple[Any, list[Ima
     return result, []
 
 
-def build_result(payload: Any, images: Sequence[ImageContent] = ()) -> CallToolResult:
-    """The JSON as text and structured content, followed by one image block per image.
-
-    Text and structured content are made the way the MCP SDK makes them from a returned dict.
-    """
-    text = pydantic_core.to_json(payload, fallback=str, indent=2).decode()
+def build_result(payload: dict[str, JsonValue], images: Sequence[ImageContent] = ()) -> CallToolResult:
+    """Render a JSON object as text and structured content, followed by its image blocks."""
+    text = json.dumps(payload, ensure_ascii=False, indent=2, allow_nan=False)
     return CallToolResult(
         content=[TextContent(type="text", text=text), *images],
-        structured_content=pydantic_core.to_jsonable_python(payload, fallback=str),
+        structured_content=payload,
     )
 
 
-def to_tool_result(entry: ToolRegistryEntry, result: Any) -> CallToolResult:
+def to_tool_result(entry: ToolRegistryEntry, result: dict[str, JsonValue]) -> CallToolResult:
     """Wrap a command's result as a CallToolResult; an image command's images become image content."""
     stripped, images = extract_images(entry, result)
     return build_result(stripped, images)
