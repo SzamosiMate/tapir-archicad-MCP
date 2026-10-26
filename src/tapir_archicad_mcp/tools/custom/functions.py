@@ -342,7 +342,7 @@ async def archicad_get_job(job_handle: str | None = None) -> Annotated[CallToolR
     job = store.get(job_handle)
     await store.wait(job)
     response = store.response(job)
-    stripped, images = extract_images(get_tool_entry(job.command), response.get("result"))
+    stripped, images = extract_images(get_tool_entry(job.command), response.get("result", {}))
     if images:
         response = {**response, "result": stripped}
     return build_result(response, images)
