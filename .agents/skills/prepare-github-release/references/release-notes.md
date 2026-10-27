@@ -7,26 +7,36 @@ different release.
 
 ## Style
 
-- Start with a short, factual summary of this release's main changes. A release
-  may focus on library APIs, connections, utilities/results, transports,
-  authentication, jobs, packaging, performance, fixes, or a mixture. Mention
-  Tapir versions only when a Tapir update is actually part of the release.
-- Organize substantial changes under a few meaningful topic headings, such as
-  `Utilities API`, `Connection lifecycle`, `HTTP transports`, or `Fixes`. Include
-  only sections that have substance. A small fix release can be a short paragraph
-  and a few bullets. Do not force command sections onto a non-command release.
-- When new commands are added, use a two-column `Command | Description` table. Put the
-  exact command name in backticks and describe the action it enables in one
-  sentence. Group commands only when that makes a long list easier to read.
-- Describe changed behavior in plain, complete bullets. Do not prefix every
-  bullet with a bold title, category label, or repeated command heading.
+- Start with a short, factual summary of what agents and users gain. Give new
+  MCP functionality and meaningful behavior improvements the most prominence.
+  In a mixed release, lead with those features, then summarize the generated
+  command update. Mention Tapir versions only when an update is part of the release.
+- Give substantial features a few meaningful topic headings with short paragraphs
+  or bullets explaining the behavior and its benefit. Keep descriptions concise;
+  prominence comes from ordering and headings, not extra length. A small fix
+  release can be a short paragraph and a few bullets. Do not force a fixed set
+  of sections onto every release.
+- For 40 or fewer newly exposed commands, use a two-column `Command | Description`
+  table with exact command names in backticks and one-sentence descriptions.
+  Group by domain only when helpful.
+- For more than 40 newly exposed commands, summarize additions by capability or
+  domain in a short list, with verified command counts where useful. Do not list
+  every command or split the inventory into multiple tables to evade the limit.
+- Keep generator configuration and maintainer workflow details secondary. Include
+  them only when they explain a concrete user-facing outcome; omit mapping,
+  exclusion and internal-review inventories.
+- Describe changed behavior in plain, complete prose. Do not prefix every bullet
+  with a bold title, category label, or repeated command heading.
 - No emojis, decorative symbols, marketing language, or claims such as
   "seamlessly", "robust", or "fully compatible" without concrete evidence.
 - Avoid repeating a table's entries in a second feature list. Describe parameter
   changes separately only when the additional detail helps callers.
-- Use backticks for identifiers and parameter names. State actual compatibility
-  limits where relevant. For breaking changes, explain the old behavior, the
-  new behavior, and the concrete caller migration.
+- Use backticks for identifiers and parameter names. State material compatibility
+  limits, such as Archicad version restrictions, where relevant.
+- Do not include caller-migration sections, tool-rename catalogues or instructions
+  to update saved tool arguments. MCP agents retrieve current tool descriptions
+  and schemas. Describe material behavior changes and user-required setup actions
+  only when needed to understand or use the release.
 - Do not add a redundant release title inside the body. The GitHub release title
   follows the existing `vVERSION Release` convention. Do not add an installation
   section, test-count section, or horizontal separators by default.
@@ -57,9 +67,10 @@ different release.
 - For generated MCP commands, use the underlying Tapir/Official command names,
   matching the recent command tables. Use registered names such as
   `archicad_get_job` for MCP-specific tools; include a generated tool's registered
-  name only when it helps explain a naming change or calling requirement.
-- Verify additions against the previous release. Do not label an existing
-  command as new merely because its generated definition changed.
+  name only when needed to explain a user-facing feature.
+- Verify newly exposed commands against the previous release, including restored
+  commands. Tool renames, changed generated definitions and replacement
+  implementations behind existing public names are not new command additions.
 - Use release notes, upstream descriptions and reports as supporting context;
   use the actual package diff to establish what this release delivers. Do not
   claim live Archicad validation from mock-based tests, or infer upstream runtime
