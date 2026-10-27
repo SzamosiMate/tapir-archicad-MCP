@@ -2,14 +2,11 @@
 from multiconn_archicad import ConnHeader
 from multiconn_archicad.models.tapir.commands import (
     ChangeDrawingLinkParameters,
-    CloneProjectMapItemToViewMapParameters,
     CreateDetailsParameters,
     CreateDrawingsParameters,
     CreateInteriorElevationsParameters,
     CreateLayoutParameters,
-    CreateLayoutSubsetParameters,
     CreateSectionsParameters,
-    CreateViewMapFolderParameters,
     CreateViewsInViewMapParameters,
     CreateWorksheetsParameters,
     FitInWindowParameters,
@@ -54,23 +51,6 @@ register_tool_for_dispatch(
         "limitation)."
     ),
     params_model=ChangeDrawingLinkParameters,
-)
-
-
-def clone_project_map_item_to_view_map(conn_header: ConnHeader, params: CloneProjectMapItemToViewMapParameters) -> dict:
-    """Clones Project Map viewpoints into a specified View Map folder."""
-    return conn_header.core.post_tapir_command(
-        command="CloneProjectMapItemToViewMap",
-        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
-    )
-
-
-register_tool_for_dispatch(
-    clone_project_map_item_to_view_map,
-    name="navigator_clone_project_map_item_to_view_map",
-    title="CloneProjectMapItemToViewMap",
-    description="Clones Project Map viewpoints into a specified View Map folder.",
-    params_model=CloneProjectMapItemToViewMapParameters,
 )
 
 
@@ -146,22 +126,6 @@ register_tool_for_dispatch(
 )
 
 
-def create_layout_subset(conn_header: ConnHeader, params: CreateLayoutSubsetParameters) -> dict:
-    """Creates Layout Book subsets."""
-    return conn_header.core.post_tapir_command(
-        command="CreateLayoutSubset", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
-    )
-
-
-register_tool_for_dispatch(
-    create_layout_subset,
-    name="navigator_create_layout_subset",
-    title="CreateLayoutSubset",
-    description="Creates Layout Book subsets.",
-    params_model=CreateLayoutSubsetParameters,
-)
-
-
 def create_sections(conn_header: ConnHeader, params: CreateSectionsParameters) -> dict:
     """Creates Section elements on the floor plan."""
     return conn_header.core.post_tapir_command(
@@ -175,22 +139,6 @@ register_tool_for_dispatch(
     title="CreateSections",
     description="Creates Section elements on the floor plan.",
     params_model=CreateSectionsParameters,
-)
-
-
-def create_view_map_folder(conn_header: ConnHeader, params: CreateViewMapFolderParameters) -> dict:
-    """Creates a new folder in the View Map."""
-    return conn_header.core.post_tapir_command(
-        command="CreateViewMapFolder", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
-    )
-
-
-register_tool_for_dispatch(
-    create_view_map_folder,
-    name="navigator_create_view_map_folder",
-    title="CreateViewMapFolder",
-    description="Creates a new folder in the View Map.",
-    params_model=CreateViewMapFolderParameters,
 )
 
 

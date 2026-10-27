@@ -437,6 +437,9 @@ def get_mep_routing_elements(conn_header: ConnHeader, params: GetMEPRoutingEleme
     """
     Retrieves the details of the given MEP routing elements: domain, MEP system, route polyline, segments with cross
     section data (shape, size, preference table and reference id) and nodes. Available from Archicad 28.
+
+    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
+    and page_token set to that token to get the next page of results.
     """
     return conn_header.core.post_tapir_command(
         command="GetMEPRoutingElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -452,6 +455,7 @@ register_tool_for_dispatch(
         "cross section data (shape, size, preference table and reference id) and nodes. Available from Archicad 28."
     ),
     params_model=GetMEPRoutingElementsParameters,
+    pagination_field="routingElements",
 )
 
 

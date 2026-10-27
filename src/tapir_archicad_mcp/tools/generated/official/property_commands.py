@@ -108,7 +108,12 @@ register_tool_for_dispatch(
 
 
 def get_details_of_properties(conn_header: ConnHeader, params: GetDetailsOfPropertiesParameters) -> dict:
-    """Returns the details of property definitions."""
+    """
+    Returns the details of property definitions.
+
+    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
+    and page_token set to that token to get the next page of results.
+    """
     return conn_header.core.post_command(
         command="API.GetDetailsOfProperties",
         parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
@@ -121,6 +126,7 @@ register_tool_for_dispatch(
     title="GetDetailsOfProperties",
     description="Returns the details of property definitions.",
     params_model=GetDetailsOfPropertiesParameters,
+    pagination_field="propertyDefinitions",
 )
 
 

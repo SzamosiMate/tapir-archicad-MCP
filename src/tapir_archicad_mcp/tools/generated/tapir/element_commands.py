@@ -9,7 +9,6 @@ from multiconn_archicad.models.tapir.commands import (
     GetAllElementsParameters,
     GetCollisionsParameters,
     GetConnectedElementsParameters,
-    GetDetailsOfElementsParameters,
     GetDimensionDataParameters,
     GetElementPreviewImageParameters,
     GetElementsByTypeParameters,
@@ -172,7 +171,12 @@ register_tool_for_dispatch(
 
 
 def get_collisions(conn_header: ConnHeader, params: GetCollisionsParameters) -> dict:
-    """Detect collisions between the given two groups of elements."""
+    """
+    Detect collisions between the given two groups of elements.
+
+    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
+    and page_token set to that token to get the next page of results.
+    """
     return conn_header.core.post_tapir_command(
         command="GetCollisions", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
@@ -184,6 +188,7 @@ register_tool_for_dispatch(
     title="GetCollisions",
     description="Detect collisions between the given two groups of elements.",
     params_model=GetCollisionsParameters,
+    pagination_field="collisions",
 )
 
 
@@ -208,32 +213,6 @@ register_tool_for_dispatch(
         "risers, treads and structures of a Stair, or the posts, rails and panels of a Railing."
     ),
     params_model=GetConnectedElementsParameters,
-)
-
-
-def get_details_of_elements(conn_header: ConnHeader, params: GetDetailsOfElementsParameters) -> dict:
-    """
-    Gets the details of the given elements (geometry parameters etc). Use the optional fields parameter to return only
-    the fields you need and skip the computation of the others (for example floorPlanPolygons).
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
-    """
-    return conn_header.core.post_tapir_command(
-        command="GetDetailsOfElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
-    )
-
-
-register_tool_for_dispatch(
-    get_details_of_elements,
-    name="elements_get_details_of_elements",
-    title="GetDetailsOfElements",
-    description=(
-        "Gets the details of the given elements (geometry parameters etc). Use the optional fields parameter to return "
-        "only the fields you need and skip the computation of the others (for example floorPlanPolygons)."
-    ),
-    params_model=GetDetailsOfElementsParameters,
-    pagination_field="detailsOfElements",
 )
 
 
@@ -427,6 +406,9 @@ def get_relations_of_elements(conn_header: ConnHeader, params: GetRelationsOfEle
     Gets the type-specific relations of the given elements: endpoint and reference line connections of walls, beams and
     beam segments, boundary elements and boundary sections of zones, the zones on the two sides of windows, doors,
     skylights and curtain wall panels, and the zones connected to roofs and shells. Available from Archicad 26.
+
+    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
+    and page_token set to that token to get the next page of results.
     """
     return conn_header.core.post_tapir_command(
         command="GetRelationsOfElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -444,6 +426,7 @@ register_tool_for_dispatch(
         "from Archicad 26."
     ),
     params_model=GetRelationsOfElementsParameters,
+    pagination_field="relations",
 )
 
 

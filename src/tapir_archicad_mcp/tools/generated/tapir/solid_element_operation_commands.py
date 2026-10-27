@@ -21,7 +21,7 @@ def create_solid_element_links(conn_header: ConnHeader, params: CreateSolidEleme
 
 register_tool_for_dispatch(
     create_solid_element_links,
-    name="solid_ops__create_solid_element_links",
+    name="solid_ops_create_solid_element_links",
     title="CreateSolidElementLinks",
     description="Creates solid element operation links between target and operator elements.",
     params_model=CreateSolidElementLinksParameters,
@@ -37,7 +37,7 @@ def get_element_trims(conn_header: ConnHeader, params: GetElementTrimsParameters
 
 register_tool_for_dispatch(
     get_element_trims,
-    name="solid_ops__get_element_trims",
+    name="solid_ops_get_element_trims",
     title="GetElementTrims",
     description=("Which roofs and shells trim each queried element, with the trim type, and which elements it trims."),
     params_model=GetElementTrimsParameters,
@@ -53,7 +53,7 @@ def get_solid_element_links(conn_header: ConnHeader, params: GetSolidElementLink
 
 register_tool_for_dispatch(
     get_solid_element_links,
-    name="solid_ops__get_solid_element_links",
+    name="solid_ops_get_solid_element_links",
     title="GetSolidElementLinks",
     description=(
         "Returns solid element operation links for each queried element, grouped by role (target or operator)."
@@ -71,7 +71,7 @@ def remove_element_trims(conn_header: ConnHeader, params: RemoveElementTrimsPara
 
 register_tool_for_dispatch(
     remove_element_trims,
-    name="solid_ops__remove_element_trims",
+    name="solid_ops_remove_element_trims",
     title="RemoveElementTrims",
     description="Removes the trim between an element and the roof or shell trimming it.",
     params_model=RemoveElementTrimsParameters,
@@ -87,7 +87,7 @@ def remove_solid_element_links(conn_header: ConnHeader, params: RemoveSolidEleme
 
 register_tool_for_dispatch(
     remove_solid_element_links,
-    name="solid_ops__remove_solid_element_links",
+    name="solid_ops_remove_solid_element_links",
     title="RemoveSolidElementLinks",
     description="Removes solid element operation links between target and operator elements.",
     params_model=RemoveSolidElementLinksParameters,
@@ -106,7 +106,7 @@ def trim_elements(conn_header: ConnHeader, params: TrimElementsParameters) -> di
 
 register_tool_for_dispatch(
     trim_elements,
-    name="solid_ops__trim_elements",
+    name="solid_ops_trim_elements",
     title="TrimElements",
     description=(
         "Trims construction elements with a roof or shell: the roofs and shells in the list, or one given trimming "

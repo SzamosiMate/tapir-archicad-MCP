@@ -69,20 +69,6 @@ register_tool_for_dispatch(
 )
 
 
-def close_project(conn_header: ConnHeader) -> dict:
-    """Closes the currently opened project."""
-    return conn_header.core.post_tapir_command(command="CloseProject", parameters={})
-
-
-register_tool_for_dispatch(
-    close_project,
-    name="project_close_project",
-    title="CloseProject",
-    description="Closes the currently opened project.",
-    params_model=None,
-)
-
-
 def create_hotlink_instances(conn_header: ConnHeader, params: CreateHotlinkInstancesParameters) -> dict:
     """Places instances of hotlink module nodes at an origin, rotation and mirroring."""
     return conn_header.core.post_tapir_command(
@@ -240,6 +226,20 @@ register_tool_for_dispatch(
         "Gets the file system locations (path) of the hotlink modules. The hotlinks can have tree hierarchy in the "
         "project."
     ),
+    params_model=None,
+)
+
+
+def get_project_info(conn_header: ConnHeader) -> dict:
+    """Retrieves information about the currently loaded project."""
+    return conn_header.core.post_tapir_command(command="GetProjectInfo", parameters={})
+
+
+register_tool_for_dispatch(
+    get_project_info,
+    name="project_get_project_info",
+    title="GetProjectInfo",
+    description="Retrieves information about the currently loaded project.",
     params_model=None,
 )
 

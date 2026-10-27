@@ -7,7 +7,13 @@ from multiconn_archicad.models.official.commands import (
     GetAttributeFolderStructureParameters,
     GetAttributeFoldersParameters,
     GetAttributesIndicesParameters,
+    GetCompositeAttributesParameters,
+    GetFillAttributesParameters,
+    GetLayerAttributesParameters,
+    GetLineAttributesParameters,
+    GetPenTableAttributesParameters,
     GetProfileAttributePreviewParameters,
+    GetZoneCategoryAttributesParameters,
     MoveAttributesAndFoldersParameters,
     RenameAttributeFoldersParameters,
 )
@@ -146,6 +152,87 @@ register_tool_for_dispatch(
 )
 
 
+def get_composite_attributes(conn_header: ConnHeader, params: GetCompositeAttributesParameters) -> dict:
+    """Returns the detailed composite attributes identified by their GUIDs."""
+    return conn_header.core.post_command(
+        command="API.GetCompositeAttributes",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    get_composite_attributes,
+    name="attributes_get_composite_attributes",
+    title="GetCompositeAttributes",
+    description="Returns the detailed composite attributes identified by their GUIDs.",
+    params_model=GetCompositeAttributesParameters,
+)
+
+
+def get_fill_attributes(conn_header: ConnHeader, params: GetFillAttributesParameters) -> dict:
+    """Returns the detailed fill attributes identified by their GUIDs."""
+    return conn_header.core.post_command(
+        command="API.GetFillAttributes", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    get_fill_attributes,
+    name="attributes_get_fill_attributes",
+    title="GetFillAttributes",
+    description="Returns the detailed fill attributes identified by their GUIDs.",
+    params_model=GetFillAttributesParameters,
+)
+
+
+def get_layer_attributes(conn_header: ConnHeader, params: GetLayerAttributesParameters) -> dict:
+    """Returns the detailed layer attributes identified by their GUIDs."""
+    return conn_header.core.post_command(
+        command="API.GetLayerAttributes", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    get_layer_attributes,
+    name="attributes_get_layer_attributes",
+    title="GetLayerAttributes",
+    description="Returns the detailed layer attributes identified by their GUIDs.",
+    params_model=GetLayerAttributesParameters,
+)
+
+
+def get_line_attributes(conn_header: ConnHeader, params: GetLineAttributesParameters) -> dict:
+    """Returns the detailed line attributes identified by their GUIDs."""
+    return conn_header.core.post_command(
+        command="API.GetLineAttributes", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    get_line_attributes,
+    name="attributes_get_line_attributes",
+    title="GetLineAttributes",
+    description="Returns the detailed line attributes identified by their GUIDs.",
+    params_model=GetLineAttributesParameters,
+)
+
+
+def get_pen_table_attributes(conn_header: ConnHeader, params: GetPenTableAttributesParameters) -> dict:
+    """Returns the detailed pen table attributes (including their pens) identified by their GUIDs."""
+    return conn_header.core.post_command(
+        command="API.GetPenTableAttributes", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    get_pen_table_attributes,
+    name="attributes_get_pen_table_attributes",
+    title="GetPenTableAttributes",
+    description="Returns the detailed pen table attributes (including their pens) identified by their GUIDs.",
+    params_model=GetPenTableAttributesParameters,
+)
+
+
 def get_profile_attribute_preview(conn_header: ConnHeader, params: GetProfileAttributePreviewParameters) -> dict:
     """Returns the preview image of each requested profile attribute in a base64 string format."""
     return conn_header.core.post_command(
@@ -161,6 +248,23 @@ register_tool_for_dispatch(
     description="Returns the preview image of each requested profile attribute in a base64 string format.",
     params_model=GetProfileAttributePreviewParameters,
     image_list_field="previewImages",
+)
+
+
+def get_zone_category_attributes(conn_header: ConnHeader, params: GetZoneCategoryAttributesParameters) -> dict:
+    """Returns the detailed zone category attributes identified by their GUIDs."""
+    return conn_header.core.post_command(
+        command="API.GetZoneCategoryAttributes",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    get_zone_category_attributes,
+    name="attributes_get_zone_category_attributes",
+    title="GetZoneCategoryAttributes",
+    description="Returns the detailed zone category attributes identified by their GUIDs.",
+    params_model=GetZoneCategoryAttributesParameters,
 )
 
 
