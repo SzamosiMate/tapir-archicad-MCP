@@ -20,16 +20,11 @@ from multiconn_archicad.models.tapir.commands import (
     GetAttributesByTypeParameters,
     GetBuildingMaterialPhysicalPropertiesParameters,
     GetBuildingMaterialsParameters,
-    GetCompositesParameters,
     GetFillsParameters,
     GetLayerCombinationsParameters,
-    GetLayersParameters,
-    GetLinesParameters,
     GetMEPSystemsParameters,
-    GetPenTablesParameters,
     GetProfilesParameters,
     GetSurfacesParameters,
-    GetZoneCategoriesParameters,
     ModifyGraphicOverrideRulesParameters,
 )
 
@@ -389,22 +384,6 @@ register_tool_for_dispatch(
 )
 
 
-def get_composites(conn_header: ConnHeader, params: GetCompositesParameters) -> dict:
-    """Returns the details of the given Composite attributes."""
-    return conn_header.core.post_tapir_command(
-        command="GetComposites", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
-    )
-
-
-register_tool_for_dispatch(
-    get_composites,
-    name="attributes_get_composites",
-    title="GetComposites",
-    description="Returns the details of the given Composite attributes.",
-    params_model=GetCompositesParameters,
-)
-
-
 def get_fills(conn_header: ConnHeader, params: GetFillsParameters) -> dict:
     """Returns the details of the given Fill attributes."""
     return conn_header.core.post_tapir_command(
@@ -507,38 +486,6 @@ register_tool_for_dispatch(
 )
 
 
-def get_layers(conn_header: ConnHeader, params: GetLayersParameters) -> dict:
-    """Returns the details of the given Layer attributes."""
-    return conn_header.core.post_tapir_command(
-        command="GetLayers", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
-    )
-
-
-register_tool_for_dispatch(
-    get_layers,
-    name="attributes_get_layers",
-    title="GetLayers",
-    description="Returns the details of the given Layer attributes.",
-    params_model=GetLayersParameters,
-)
-
-
-def get_lines(conn_header: ConnHeader, params: GetLinesParameters) -> dict:
-    """Returns the details of the given Line attributes."""
-    return conn_header.core.post_tapir_command(
-        command="GetLines", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
-    )
-
-
-register_tool_for_dispatch(
-    get_lines,
-    name="attributes_get_lines",
-    title="GetLines",
-    description="Returns the details of the given Line attributes.",
-    params_model=GetLinesParameters,
-)
-
-
 def get_mep_systems(conn_header: ConnHeader, params: GetMEPSystemsParameters) -> dict:
     """
     Returns the details of the given MEP System attributes (domain, pens, fill, center line type, surface and insulation
@@ -558,22 +505,6 @@ register_tool_for_dispatch(
         "insulation surface)."
     ),
     params_model=GetMEPSystemsParameters,
-)
-
-
-def get_pen_tables(conn_header: ConnHeader, params: GetPenTablesParameters) -> dict:
-    """Returns the details of the given Pen Table attributes."""
-    return conn_header.core.post_tapir_command(
-        command="GetPenTables", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
-    )
-
-
-register_tool_for_dispatch(
-    get_pen_tables,
-    name="attributes_get_pen_tables",
-    title="GetPenTables",
-    description="Returns the details of the given Pen Table attributes.",
-    params_model=GetPenTablesParameters,
 )
 
 
@@ -606,22 +537,6 @@ register_tool_for_dispatch(
     title="GetSurfaces",
     description="Returns the details of the given Surface attributes.",
     params_model=GetSurfacesParameters,
-)
-
-
-def get_zone_categories(conn_header: ConnHeader, params: GetZoneCategoriesParameters) -> dict:
-    """Returns the details of the given Zone Category attributes."""
-    return conn_header.core.post_tapir_command(
-        command="GetZoneCategories", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
-    )
-
-
-register_tool_for_dispatch(
-    get_zone_categories,
-    name="attributes_get_zone_categories",
-    title="GetZoneCategories",
-    description="Returns the details of the given Zone Category attributes.",
-    params_model=GetZoneCategoriesParameters,
 )
 
 

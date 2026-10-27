@@ -34,7 +34,12 @@ register_tool_for_dispatch(
 def get_property_values_of_element_components(
     conn_header: ConnHeader, params: GetPropertyValuesOfElementComponentsParameters
 ) -> dict:
-    """Returns the property values of the components for the given property."""
+    """
+    Returns the property values of the components for the given property.
+
+    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
+    and page_token set to that token to get the next page of results.
+    """
     return conn_header.core.post_command(
         command="API.GetPropertyValuesOfElementComponents",
         parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
@@ -47,4 +52,5 @@ register_tool_for_dispatch(
     title="GetPropertyValuesOfElementComponents",
     description="Returns the property values of the components for the given property.",
     params_model=GetPropertyValuesOfElementComponentsParameters,
+    pagination_field="propertyValuesForElementComponents",
 )

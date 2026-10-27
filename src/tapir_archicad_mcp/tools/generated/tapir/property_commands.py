@@ -122,6 +122,9 @@ def get_property_values_of_elements(conn_header: ConnHeader, params: GetProperty
     """
     Returns the property values of the elements for the given property. It works for subelements of hierarchal elements
     also.
+
+    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
+    and page_token set to that token to get the next page of results.
     """
     return conn_header.core.post_tapir_command(
         command="GetPropertyValuesOfElements",
@@ -138,6 +141,7 @@ register_tool_for_dispatch(
         "elements also."
     ),
     params_model=GetPropertyValuesOfElementsParameters,
+    pagination_field="propertyValuesForElements",
 )
 
 

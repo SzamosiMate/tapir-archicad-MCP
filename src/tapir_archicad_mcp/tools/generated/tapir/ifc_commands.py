@@ -71,7 +71,12 @@ register_tool_for_dispatch(
 
 
 def get_ifc_properties_of_elements(conn_header: ConnHeader, params: GetIFCPropertiesOfElementsParameters) -> dict:
-    """Retrieves the IFC properties of the given elements."""
+    """
+    Retrieves the IFC properties of the given elements.
+
+    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
+    and page_token set to that token to get the next page of results.
+    """
     return conn_header.core.post_tapir_command(
         command="GetIFCPropertiesOfElements",
         parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
@@ -84,6 +89,7 @@ register_tool_for_dispatch(
     title="GetIFCPropertiesOfElements",
     description="Retrieves the IFC properties of the given elements.",
     params_model=GetIFCPropertiesOfElementsParameters,
+    pagination_field="elementIFCProperties",
 )
 
 

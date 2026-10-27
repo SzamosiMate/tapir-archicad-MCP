@@ -46,6 +46,20 @@ register_tool_for_dispatch(
 )
 
 
+def get_archicad_location(conn_header: ConnHeader) -> dict:
+    """Retrieves the location of the currently running Archicad executable."""
+    return conn_header.core.post_tapir_command(command="GetArchicadLocation", parameters={})
+
+
+register_tool_for_dispatch(
+    get_archicad_location,
+    name="app_get_archicad_location",
+    title="GetArchicadLocation",
+    description="Retrieves the location of the currently running Archicad executable.",
+    params_model=None,
+)
+
+
 def get_current_window_type(conn_header: ConnHeader) -> dict:
     """Returns the type of the current (active) window."""
     return conn_header.core.post_tapir_command(command="GetCurrentWindowType", parameters={})
