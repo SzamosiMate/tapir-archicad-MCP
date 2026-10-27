@@ -1,10 +1,10 @@
 import pytest
 from mcp.server.mcpserver.exceptions import ToolError
 from multiconn_archicad import Port
+from payloads import archicad_call_tool, archicad_get_job
 
 from tapir_archicad_mcp.context import multi_conn_instance
 from tapir_archicad_mcp.jobs import JobSettings
-from payloads import archicad_call_tool, archicad_get_job
 
 GUID = "12345678-1234-1234-1234-123456789012"
 pytestmark = pytest.mark.asyncio
@@ -37,6 +37,49 @@ async def test_generated_read_tool_dispatches_and_preserves_raw_result(fake_arch
     assert result["elements"] == [{"elementId": {"guid": GUID}}]
     assert result["futureField"] == {"value": None}
     assert fake_archicad.calls[0][0] == "GetSelectedElements"
+
+@pytest.mark.parametrize(
+    ("name", "command", "params", "response"),
+    [
+        (
+            "attributes_create_attribute_folders",
+            "CreateAttributeFolders",
+            {"attributeFolders": [{"attributeType": "MEPSystem", "path": ["Services"]}]},
+            {"executionResults": [{"success": True}]},
+        ),
+        (
+            "attributes_move_attributes_and_folders",
+            "MoveAttributesAndFolders",
+            {"attributeIds": [{"attributeId": {"guid": GUID}}], "targetFolder": {"attributeType": "Layer", "path": []}},
+            {"attributeExecutionResults": [{"success": True}], "folderExecutionResults": []},
+        ),
+    ],
+)
+async def test_attribute_folder_tools_use_tapir_contracts(fake_archicad, name, command, params, response):
+    fake_archicad.on_tapir_command(command, response)
+
+    result = await archicad_call_tool(name, {"port": fake_archicad.port, "params": params})
+
+    assert result == response
+    assert fake_archicad.calls == [(command, params)]
+
+
+async def test_element_details_pages_raw_results_without_reexecuting(fake_archicad):
+    details = [{"details": {"height": index}} for index in range(101)]
+    details[-1] = {"error": {"code": 1, "message": "Cannot read element"}}
+    fake_archicad.on_tapir_command("GetDetailsOfElements", {"detailsOfElements": details})
+    arguments = {"port": fake_archicad.port, "params": {"elements": [{"elementId": {"guid": GUID}}]}}
+
+    first_page = await archicad_call_tool("elements_get_details_of_elements", arguments)
+    last_page = await archicad_call_tool(
+        "elements_get_details_of_elements", {**arguments, "page_token": first_page["next_page_token"]}
+    )
+
+    assert first_page["detailsOfElements"] == details[:100]
+    assert last_page["detailsOfElements"] == details[100:]
+    assert last_page["pagination"] == {"total": 101, "returned": 1, "truncated": False}
+    assert fake_archicad.calls == [("GetDetailsOfElements", arguments["params"])]
+
 
 async def test_paginated_read_tool_returns_pages_from_one_transport_snapshot(fake_archicad):
     fake_archicad.on_tapir_command(

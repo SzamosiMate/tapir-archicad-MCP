@@ -58,6 +58,19 @@ async def test_png_and_jpeg_mime_types(fake_archicad, data, mime_type):
     assert result.content[1].mime_type == mime_type
 
 
+async def test_current_view_image_dispatches_and_preserves_dimensions(fake_archicad):
+    fake_archicad.on_tapir_command("GetCurrentViewImage", {"image": PNG_B64, "width": 1, "height": 1})
+
+    result = await archicad_call_tool(
+        "project_get_current_view_image", {"port": fake_archicad.port, "params": {}}
+    )
+
+    assert fake_archicad.calls == [("GetCurrentViewImage", {})]
+    assert result.content[1].data == PNG_B64
+    assert result.structured_content == {"image": "returned as MCP image content #1", "width": 1, "height": 1}
+    assert PNG_B64 not in result.content[0].text
+
+
 async def test_profile_previews_keep_errors_and_number_images(fake_archicad):
     result = {
         "previewImages": [

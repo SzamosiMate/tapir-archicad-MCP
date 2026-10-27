@@ -2,8 +2,13 @@
 from multiconn_archicad import ConnHeader
 from multiconn_archicad.models.tapir.commands import (
     ChangeWindowParameters,
+    GetContainingDatabasesParameters,
+    GetElementFromUserParameters,
     GetPointFromUserParameters,
     GetSpecialFoldersParameters,
+    Set3DCutawayStatusParameters,
+    SetCurrentWindowDrawingScaleParameters,
+    SetDialogAutoCloseParameters,
     ShowAlertParameters,
 )
 
@@ -12,8 +17,8 @@ from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
 
 def change_window(conn_header: ConnHeader, params: ChangeWindowParameters) -> dict:
     """
-    Changes the current (active) window to the given window. With windowType 'FloorPlan' and a storyIndex it also
-    activates that story on the floor plan.
+    Changes the current (active) window to the given window. A databaseId on its own is enough; the window type is taken
+    from the database. With windowType 'FloorPlan' and a storyIndex it also activates that story on the floor plan.
     """
     return conn_header.core.post_tapir_command(
         command="ChangeWindow", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -25,10 +30,31 @@ register_tool_for_dispatch(
     name="app_change_window",
     title="ChangeWindow",
     description=(
-        "Changes the current (active) window to the given window. With windowType 'FloorPlan' and a storyIndex it also "
-        "activates that story on the floor plan."
+        "Changes the current (active) window to the given window. A databaseId on its own is enough; the window type "
+        "is taken from the database. With windowType 'FloorPlan' and a storyIndex it also activates that story on the "
+        "floor plan."
     ),
     params_model=ChangeWindowParameters,
+)
+
+
+def get3_d_cutaway_status(conn_header: ConnHeader) -> dict:
+    """
+    Returns whether 3D Cutaway is on and whether the cutting planes are shown in the 3D window. In Archicad 25-27 the 3D
+    window may need to be open.
+    """
+    return conn_header.core.post_tapir_command(command="Get3DCutawayStatus", parameters={})
+
+
+register_tool_for_dispatch(
+    get3_d_cutaway_status,
+    name="app_get3_d_cutaway_status",
+    title="Get3DCutawayStatus",
+    description=(
+        "Returns whether 3D Cutaway is on and whether the cutting planes are shown in the 3D window. In Archicad 25-27 "
+        "the 3D window may need to be open."
+    ),
+    params_model=None,
 )
 
 
@@ -60,6 +86,74 @@ register_tool_for_dispatch(
 )
 
 
+def get_archicad_release_info(conn_header: ConnHeader) -> dict:
+    """
+    Retrieves the main version, release version and build number of the running Archicad, with the caption of its
+    window.
+    """
+    return conn_header.core.post_tapir_command(command="GetArchicadReleaseInfo", parameters={})
+
+
+register_tool_for_dispatch(
+    get_archicad_release_info,
+    name="app_get_archicad_release_info",
+    title="GetArchicadReleaseInfo",
+    description=(
+        "Retrieves the main version, release version and build number of the running Archicad, with the caption of its "
+        "window."
+    ),
+    params_model=None,
+)
+
+
+def get_containing_databases(conn_header: ConnHeader, params: GetContainingDatabasesParameters) -> dict:
+    """
+    Returns the database (window type, database id and name) that contains each of the given elements, from any
+    database, not only the current one. Pass the windowType and databaseId to ChangeWindow to open it, for example to
+    find an element placed on a layout.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetContainingDatabases", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    get_containing_databases,
+    name="app_get_containing_databases",
+    title="GetContainingDatabases",
+    description=(
+        "Returns the database (window type, database id and name) that contains each of the given elements, from any "
+        "database, not only the current one. Pass the windowType and databaseId to ChangeWindow to open it, for "
+        "example to find an element placed on a layout."
+    ),
+    params_model=GetContainingDatabasesParameters,
+)
+
+
+def get_current_window_drawing_scale(conn_header: ConnHeader) -> dict:
+    """
+    Returns the drawing scale of the current (active) window, the scale shown in the bottom bar, as its denominator:
+    100.0 for 1:100, 20.0 for 1:20. Unlike GetViewSettings it needs no saved view. It reads the scale of the current
+    database: the floor plan, a section, elevation, interior elevation, detail, worksheet or 3D document window, each of
+    which has its own. Layouts always return 1.0.
+    """
+    return conn_header.core.post_tapir_command(command="GetCurrentWindowDrawingScale", parameters={})
+
+
+register_tool_for_dispatch(
+    get_current_window_drawing_scale,
+    name="app_get_current_window_drawing_scale",
+    title="GetCurrentWindowDrawingScale",
+    description=(
+        "Returns the drawing scale of the current (active) window, the scale shown in the bottom bar, as its "
+        "denominator: 100.0 for 1:100, 20.0 for 1:20. Unlike GetViewSettings it needs no saved view. It reads the "
+        "scale of the current database: the floor plan, a section, elevation, interior elevation, detail, worksheet or "
+        "3D document window, each of which has its own. Layouts always return 1.0."
+    ),
+    params_model=None,
+)
+
+
 def get_current_window_type(conn_header: ConnHeader) -> dict:
     """Returns the type of the current (active) window."""
     return conn_header.core.post_tapir_command(command="GetCurrentWindowType", parameters={})
@@ -71,6 +165,31 @@ register_tool_for_dispatch(
     title="GetCurrentWindowType",
     description="Returns the type of the current (active) window.",
     params_model=None,
+)
+
+
+def get_element_from_user(conn_header: ConnHeader, params: GetElementFromUserParameters) -> dict:
+    """
+    Asks the designer to click an element in the current window and returns its id, its type and the clicked point. A
+    click on empty space or on an element of a type not asked for asks again. Archicad waits for the click or for
+    Escape, and every other JSON command queues behind this one until then; cancelling returns cancelled.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetElementFromUser", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    get_element_from_user,
+    name="app_get_element_from_user",
+    title="GetElementFromUser",
+    description=(
+        "Asks the designer to click an element in the current window and returns its id, its type and the clicked "
+        "point. A click on empty space or on an element of a type not asked for asks again. Archicad waits for the "
+        "click or for Escape, and every other JSON command queues behind this one until then; cancelling returns "
+        "cancelled."
+    ),
+    params_model=GetElementFromUserParameters,
 )
 
 
@@ -94,6 +213,48 @@ register_tool_for_dispatch(
         "cancelled."
     ),
     params_model=GetPointFromUserParameters,
+)
+
+
+def get_printer_info(conn_header: ConnHeader) -> dict:
+    """
+    Retrieves Archicad's current print settings: the print area, grid, fixed text size and scale (the settings PrintView
+    takes).
+    """
+    return conn_header.core.post_tapir_command(command="GetPrinterInfo", parameters={})
+
+
+register_tool_for_dispatch(
+    get_printer_info,
+    name="app_get_printer_info",
+    title="GetPrinterInfo",
+    description=(
+        "Retrieves Archicad's current print settings: the print area, grid, fixed text size and scale (the settings "
+        "PrintView takes)."
+    ),
+    params_model=None,
+)
+
+
+def get_product_version_info(conn_header: ConnHeader) -> dict:
+    """
+    Retrieves the version information of the running Archicad: build number, language code, product family and version
+    text, plus the product name, product type and main/update/hotfix versions from Archicad 29. Requires Archicad 28 or
+    later.
+    """
+    return conn_header.core.post_tapir_command(command="GetProductVersionInfo", parameters={})
+
+
+register_tool_for_dispatch(
+    get_product_version_info,
+    name="app_get_product_version_info",
+    title="GetProductVersionInfo",
+    description=(
+        "Retrieves the version information of the running Archicad: build number, language code, product family and "
+        "version text, plus the product name, product type and main/update/hotfix versions from Archicad 29. Requires "
+        "Archicad 28 or later."
+    ),
+    params_model=None,
 )
 
 
@@ -130,6 +291,81 @@ register_tool_for_dispatch(
     title="GetUserGSID",
     description="Get the current registered User-GSID and OrganizationsID. Requires Archicad 27 or later.",
     params_model=None,
+)
+
+
+def set3_d_cutaway_status(conn_header: ConnHeader, params: Set3DCutawayStatusParameters) -> dict:
+    """
+    Turns 3D Cutaway on or off and shows or hides the cutting planes in the 3D window. In Archicad 25-27 the 3D window
+    may need to be open.
+    """
+    return conn_header.core.post_tapir_command(
+        command="Set3DCutawayStatus", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    set3_d_cutaway_status,
+    name="app_set3_d_cutaway_status",
+    title="Set3DCutawayStatus",
+    description=(
+        "Turns 3D Cutaway on or off and shows or hides the cutting planes in the 3D window. In Archicad 25-27 the 3D "
+        "window may need to be open."
+    ),
+    params_model=Set3DCutawayStatusParameters,
+)
+
+
+def set_current_window_drawing_scale(conn_header: ConnHeader, params: SetCurrentWindowDrawingScaleParameters) -> dict:
+    """
+    Changes the drawing scale of the current (active) window, the scale shown in the bottom bar, to the given
+    denominator: 100 for 1:100. It changes the scale of the current database: the floor plan, a section, elevation,
+    interior elevation, detail, worksheet or 3D document window, each of which has its own. Layouts are always 1:1 and
+    are rejected. The scale must be between 1 and 30000. The change is undoable.
+    """
+    return conn_header.core.post_tapir_command(
+        command="SetCurrentWindowDrawingScale",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    set_current_window_drawing_scale,
+    name="app_set_current_window_drawing_scale",
+    title="SetCurrentWindowDrawingScale",
+    description=(
+        "Changes the drawing scale of the current (active) window, the scale shown in the bottom bar, to the given "
+        "denominator: 100 for 1:100. It changes the scale of the current database: the floor plan, a section, "
+        "elevation, interior elevation, detail, worksheet or 3D document window, each of which has its own. Layouts "
+        "are always 1:1 and are rejected. The scale must be between 1 and 30000. The change is undoable."
+    ),
+    params_model=SetCurrentWindowDrawingScaleParameters,
+)
+
+
+def set_dialog_auto_close(conn_header: ConnHeader, params: SetDialogAutoCloseParameters) -> dict:
+    """
+    Turns the dialog auto close on or off. While it is on, Archicad closes the dialogs it would show with their default
+    button instead of waiting for the user, so automation is not blocked by them. To have it on already while Archicad
+    opens a project (before any command can be sent), set the TAPIR_DIALOG_AUTOCLOSE environment variable to true for
+    the Archicad process before starting it.
+    """
+    return conn_header.core.post_tapir_command(
+        command="SetDialogAutoClose", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    set_dialog_auto_close,
+    name="app_set_dialog_auto_close",
+    title="SetDialogAutoClose",
+    description=(
+        "Turns the dialog auto close on or off. While it is on, Archicad closes the dialogs it would show with their "
+        "default button instead of waiting for the user, so automation is not blocked by them. To have it on already "
+        "while Archicad opens a project (before any command can be sent), set the TAPIR_DIALOG_AUTOCLOSE environment "
+        "variable to true for the Archicad process before starting it."
+    ),
+    params_model=SetDialogAutoCloseParameters,
 )
 
 

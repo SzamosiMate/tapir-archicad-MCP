@@ -2,9 +2,12 @@
 from multiconn_archicad import ConnHeader
 from multiconn_archicad.models.tapir.commands import (
     CreateGroupsParameters,
+    GetElementSetsOfElementsParameters,
     GetElementsOfGroupsParameters,
     GetGroupsOfElementsParameters,
+    GetUserDataOfGroupsParameters,
     SetSuspendGroupsModeParameters,
+    UngroupElementsParameters,
 )
 
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
@@ -23,6 +26,32 @@ register_tool_for_dispatch(
     title="CreateGroups",
     description="Creates groups of the passed elements",
     params_model=CreateGroupsParameters,
+)
+
+
+def get_element_sets_of_elements(conn_header: ConnHeader, params: GetElementSetsOfElementsParameters) -> dict:
+    """
+    Gets the element sets that contain each given element. Only element sets created by the Tapir Add-On are examined;
+    sets created by other add-ons are not found.
+
+    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
+    and page_token set to that token to get the next page of results.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetElementSetsOfElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    get_element_sets_of_elements,
+    name="grouping_get_element_sets_of_elements",
+    title="GetElementSetsOfElements",
+    description=(
+        "Gets the element sets that contain each given element. Only element sets created by the Tapir Add-On are "
+        "examined; sets created by other add-ons are not found."
+    ),
+    params_model=GetElementSetsOfElementsParameters,
+    pagination_field="elementSetsOfElements",
 )
 
 
@@ -78,6 +107,32 @@ register_tool_for_dispatch(
 )
 
 
+def get_user_data_of_groups(conn_header: ConnHeader, params: GetUserDataOfGroupsParameters) -> dict:
+    """
+    Gets the user data an add-on attached to each given group: its version, platform sign, flags and bytes (base64
+    encoded). Returns an error for groups that have no user data.
+
+    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
+    and page_token set to that token to get the next page of results.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetUserDataOfGroups", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    get_user_data_of_groups,
+    name="grouping_get_user_data_of_groups",
+    title="GetUserDataOfGroups",
+    description=(
+        "Gets the user data an add-on attached to each given group: its version, platform sign, flags and bytes "
+        "(base64 encoded). Returns an error for groups that have no user data."
+    ),
+    params_model=GetUserDataOfGroupsParameters,
+    pagination_field="userDataOfGroups",
+)
+
+
 def set_suspend_groups_mode(conn_header: ConnHeader, params: SetSuspendGroupsModeParameters) -> dict:
     """
     Turns the Suspend Groups mode on or off. Suspend groups to perform operations on elements that are part of a group;
@@ -97,4 +152,28 @@ register_tool_for_dispatch(
         "group; remember to restore the previous state afterwards."
     ),
     params_model=SetSuspendGroupsModeParameters,
+)
+
+
+def ungroup_elements(conn_header: ConnHeader, params: UngroupElementsParameters) -> dict:
+    """
+    Ungroups the given groups one level, like Edit > Grouping > Ungroup: each group is dissolved, the elements and
+    subgroups it directly contains stay. A group nested in another group is reported as failed; ungroup the containing
+    group first. Returns an execution result per group.
+    """
+    return conn_header.core.post_tapir_command(
+        command="UngroupElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    ungroup_elements,
+    name="grouping_ungroup_elements",
+    title="UngroupElements",
+    description=(
+        "Ungroups the given groups one level, like Edit > Grouping > Ungroup: each group is dissolved, the elements "
+        "and subgroups it directly contains stay. A group nested in another group is reported as failed; ungroup the "
+        "containing group first. Returns an execution result per group."
+    ),
+    params_model=UngroupElementsParameters,
 )

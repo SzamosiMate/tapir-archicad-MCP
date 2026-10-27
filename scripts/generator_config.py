@@ -75,6 +75,8 @@ TAPIR_CONFIG = ApiSourceConfig(
         # Project & App structure
         "Application Commands": "app",
         "Project Commands": "project",
+        "Project Data Commands": "project_data",
+        "Analytical Commands": "analytical",
         "Navigator Commands": "navigator",
         "Issue Management Commands": "issues",
         "Revision Management Commands": "revisions",
@@ -84,10 +86,13 @@ TAPIR_CONFIG = ApiSourceConfig(
     commands_to_exclude={
         "QuitArchicad",  # Can lose unsaved work; easy to quit manually
         "CloseProject",  # Can lose unsaved work; easy to close manually
+        "NewProject",  # Discards unsaved work; use the application UI
         "GenerateDocumentation",  # Internal use only
         "ShowScriptUI",  # Application UI workflow
         "GetScriptUIResult",  # Companion to ShowScriptUI
         "DeleteAttributes",  # Official deletes by GUID without a type argument
+        "DeleteAttributeFolders",  # Same deletion; prefer Official
+        "RenameAttributeFolders",  # Same rename; prefer Official
         "DeleteNavigatorItems",  # Same contract; prefer Official
         "MoveNavigatorItem",  # Same operation; prefer Official
         "CloneProjectMapItemToViewMap",  # Only adds batching; prefer Official
@@ -101,7 +106,6 @@ TAPIR_CONFIG = ApiSourceConfig(
         "GetLines",  # Same line details; index available elsewhere
         "GetPenTables",  # Pen data, index and active tables available elsewhere
         "GetZoneCategories",  # Same category details; index available elsewhere
-        "GetDetailsOfElements",  # CurtainWallDetails requires undeclared begCoordinate
         "GetCurrentRevisionChangesOfLayouts",  # Malformed revision response schema
         "GetRevisionChangesOfElements",  # Bad response schema and element GUID lookup
     },
@@ -131,11 +135,35 @@ TAPIR_CONFIG = ApiSourceConfig(
         "GetElectricalDevices": "electricalDevices",
         "GetElectricalPanels": "electricalPanels",
         "GetMEPSystemGroups": "systemGroups",
+        "GetDetailsOfElements": "detailsOfElements",
+        "GetHotlinks": "hotlinks",
+        "GetMarkerParametersOfElements": "markerParametersOfElements",
+        "GetSubelementsOfHierarchicalElements": "subelements",
+        "GetAllFavorites": "favorites",
+        "GetCategoryValuesOfElements": "categoryValuesOfElements",
+        "GetDatabases": "databases",
+        "GetElementSetsOfElements": "elementSetsOfElements",
+        "GetElementsInDrawOrder": "elements",
+        "GetFavoriteSettings": "favoriteSettings",
+        "GetGraphicOverrideRulesByName": "graphicOverrideRules",
+        "GetHotlinkProxyElementTable": "proxyElementTables",
+        "GetIFCAttributesOfElements": "elementIFCAttributes",
+        "GetLinksOfElements": "linksOfElements",
+        "GetOpeningDetails": "openings",
+        "GetOpeningFloorPlanParameters": "openings",
+        "GetProjectData": "values",
+        "GetProjectDataKeys": "keys",
+        "GetPropertyDefinitionsOfAttributes": "propertyDefinitionsOfAttributes",
+        "GetSurfaceQuantitiesOfElements": "surfaceQuantitiesOfElements",
+        "GetUserDataOfGroups": "userDataOfGroups",
+        "GetZoneReductions": "reductionsOfZones",
+        "TriangulatePolygonsOfElements": "triangulations",
     },
     image_fields={
         "GetElementPreviewImage": "previewImage",
         "GetFavoritePreviewImage": "previewImage",
         "GetRoomImage": "roomImage",
+        "GetCurrentViewImage": "image",
     },
 )
 
@@ -173,6 +201,8 @@ OFFICIAL_CONFIG = ApiSourceConfig(
         "GetAttributesByType",  # Tapir adds names, indices and MEP/operation types
         "IsAlive",  # not useful as tool
         "ExecuteAddOnCommand",  # we handle it with namespaces
+        "CreateAttributeFolders",  # Tapir accepts MEP/operation folder types
+        "MoveAttributesAndFolders",  # Tapir returns per-item move results
         "GetBuildingMaterialAttributes",  # Tapir adds manufacturer, fill and display details
         "GetLayerCombinationAttributes",  # Tapir returns combination-specific layer states
         "GetProfileAttributes",  # Tapir adds skins, edges and outlines

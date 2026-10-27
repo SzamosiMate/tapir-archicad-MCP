@@ -26,8 +26,8 @@ from multiconn_archicad.models.tapir.commands import (
     CreateSplinesParameters,
     CreateStairsParameters,
     CreateTextsParameters,
-    CreateWallThicknessDimensionsParameters,
     CreateWallsParameters,
+    CreateWallThicknessDimensionsParameters,
     CreateWindowsParameters,
     CreateZonesParameters,
 )
@@ -52,7 +52,10 @@ register_tool_for_dispatch(
 
 
 def create_associative_dimensions(conn_header: ConnHeader, params: CreateAssociativeDimensionsParameters) -> dict:
-    """Creates associative linear dimensions from explicit witness point references."""
+    """
+    Creates associative linear dimensions from explicit witness point references. A witness point can also be static,
+    given by its coordinate instead of an element.
+    """
     return conn_header.core.post_tapir_command(
         command="CreateAssociativeDimensions",
         parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
@@ -63,7 +66,10 @@ register_tool_for_dispatch(
     create_associative_dimensions,
     name="elements_create_associative_dimensions",
     title="CreateAssociativeDimensions",
-    description="Creates associative linear dimensions from explicit witness point references.",
+    description=(
+        "Creates associative linear dimensions from explicit witness point references. A witness point can also be "
+        "static, given by its coordinate instead of an element."
+    ),
     params_model=CreateAssociativeDimensionsParameters,
 )
 

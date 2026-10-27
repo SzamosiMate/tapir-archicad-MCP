@@ -2,10 +2,13 @@
 from multiconn_archicad import ConnHeader
 from multiconn_archicad.models.tapir.commands import (
     GetElementsByIFCIdsParameters,
+    GetIFCAttributesOfElementsParameters,
     GetIFCIdsOfElementsParameters,
     GetIFCPropertiesOfElementsParameters,
     GetIFCTypeOfElementsParameters,
     IFCFileOperationParameters,
+    RemoveIFCPropertiesOfElementsParameters,
+    SetIFCAttributesOfElementsParameters,
     SetIFCPropertiesOfElementsParameters,
 )
 
@@ -31,6 +34,35 @@ register_tool_for_dispatch(
     description="Retrieves the elements by the given IFC identifiers.",
     params_model=GetElementsByIFCIdsParameters,
     pagination_field="elementsByIFCIds",
+)
+
+
+def get_ifc_attributes_of_elements(conn_header: ConnHeader, params: GetIFCAttributesOfElementsParameters) -> dict:
+    """
+    Retrieves the IFC attributes (Name, Description, ObjectType, Tag, PredefinedType, LongName, ...) of the given
+    elements, subelements included: the name, the IFC value type and the value of each attribute. On Archicad 25, 26 and
+    27 storedOnly returns only the attributes stored on the elements.
+
+    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
+    and page_token set to that token to get the next page of results.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetIFCAttributesOfElements",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    get_ifc_attributes_of_elements,
+    name="ifc_get_ifc_attributes_of_elements",
+    title="GetIFCAttributesOfElements",
+    description=(
+        "Retrieves the IFC attributes (Name, Description, ObjectType, Tag, PredefinedType, LongName, ...) of the given "
+        "elements, subelements included: the name, the IFC value type and the value of each attribute. On Archicad 25, "
+        "26 and 27 storedOnly returns only the attributes stored on the elements."
+    ),
+    params_model=GetIFCAttributesOfElementsParameters,
+    pagination_field="elementIFCAttributes",
 )
 
 
@@ -128,6 +160,54 @@ register_tool_for_dispatch(
         "name the export translator to use."
     ),
     params_model=IFCFileOperationParameters,
+)
+
+
+def remove_ifc_properties_of_elements(conn_header: ConnHeader, params: RemoveIFCPropertiesOfElementsParameters) -> dict:
+    """
+    Removes local IFC properties, given by property set and property name, from elements. Available only in Archicad 25,
+    26 and 27 for now.
+    """
+    return conn_header.core.post_tapir_command(
+        command="RemoveIFCPropertiesOfElements",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    remove_ifc_properties_of_elements,
+    name="ifc_remove_ifc_properties_of_elements",
+    title="RemoveIFCPropertiesOfElements",
+    description=(
+        "Removes local IFC properties, given by property set and property name, from elements. Available only in "
+        "Archicad 25, 26 and 27 for now."
+    ),
+    params_model=RemoveIFCPropertiesOfElementsParameters,
+)
+
+
+def set_ifc_attributes_of_elements(conn_header: ConnHeader, params: SetIFCAttributesOfElementsParameters) -> dict:
+    """
+    Sets the values of IFC attributes (Name, Description, ObjectType, Tag, ...) of elements. The attribute must be one
+    GetIFCAttributesOfElements returns for the element; its IFC value type is kept. Available only in Archicad 25, 26
+    and 27 for now.
+    """
+    return conn_header.core.post_tapir_command(
+        command="SetIFCAttributesOfElements",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    set_ifc_attributes_of_elements,
+    name="ifc_set_ifc_attributes_of_elements",
+    title="SetIFCAttributesOfElements",
+    description=(
+        "Sets the values of IFC attributes (Name, Description, ObjectType, Tag, ...) of elements. The attribute must "
+        "be one GetIFCAttributesOfElements returns for the element; its IFC value type is kept. Available only in "
+        "Archicad 25, 26 and 27 for now."
+    ),
+    params_model=SetIFCAttributesOfElementsParameters,
 )
 
 
