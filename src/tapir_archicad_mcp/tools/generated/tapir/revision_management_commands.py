@@ -18,6 +18,26 @@ register_tool_for_dispatch(
 )
 
 
+def get_revision_change_custom_scheme(conn_header: ConnHeader) -> dict:
+    """
+    Retrieves the custom fields of changes (the change custom scheme): the key and the name of each field. The keys are
+    the customSchemeKey values in the customSchemeData of changes.
+    """
+    return conn_header.core.post_tapir_command(command="GetRevisionChangeCustomScheme", parameters={})
+
+
+register_tool_for_dispatch(
+    get_revision_change_custom_scheme,
+    name="revisions_get_revision_change_custom_scheme",
+    title="GetRevisionChangeCustomScheme",
+    description=(
+        "Retrieves the custom fields of changes (the change custom scheme): the key and the name of each field. The "
+        "keys are the customSchemeKey values in the customSchemeData of changes."
+    ),
+    params_model=None,
+)
+
+
 def get_revision_changes(conn_header: ConnHeader) -> dict:
     """Retrieves all changes."""
     return conn_header.core.post_tapir_command(command="GetRevisionChanges", parameters={})

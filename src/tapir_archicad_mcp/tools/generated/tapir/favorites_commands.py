@@ -6,8 +6,10 @@ from multiconn_archicad.models.tapir.commands import (
     CreateFavoritesFromElementsParameters,
     DeleteFavoritesParameters,
     ExportFavoritesParameters,
+    GetAllFavoritesParameters,
     GetFavoritePreviewImageParameters,
     GetFavoritesByTypeParameters,
+    GetFavoriteSettingsParameters,
     ImportFavoritesParameters,
     RenameFavoritesParameters,
     UpdateFavoritesFromElementsParameters,
@@ -41,7 +43,10 @@ def apply_favorites_to_elements(conn_header: ConnHeader, params: ApplyFavoritesT
     floor, and dimensions such as a Wall's height) is left untouched, so applying a Favorite never moves or resizes the
     target element. For the hierarchical types (Stair, Railing, Curtain Wall) the settings of the sub-elements are not
     applied, because they are inseparable from the Favorite's own geometry. By default settings, classifications,
-    categories and properties are all applied; each can be opted out of individually.
+    categories and properties are all applied; each can be opted out of individually. keepFields lists fields of the
+    target (its ID, layer, an opening's width, height and sill height, a Wall's reference line location, height and top
+    link) that are copied back after the Favorite has been applied, so that e.g. only the library part or the wall type
+    changes.
     """
     return conn_header.core.post_tapir_command(
         command="ApplyFavoritesToElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -58,7 +63,9 @@ register_tool_for_dispatch(
         "moves or resizes the target element. For the hierarchical types (Stair, Railing, Curtain Wall) the settings "
         "of the sub-elements are not applied, because they are inseparable from the Favorite's own geometry. By "
         "default settings, classifications, categories and properties are all applied; each can be opted out of "
-        "individually."
+        "individually. keepFields lists fields of the target (its ID, layer, an opening's width, height and sill "
+        "height, a Wall's reference line location, height and top link) that are copied back after the Favorite has "
+        "been applied, so that e.g. only the library part or the wall type changes."
     ),
     params_model=ApplyFavoritesToElementsParameters,
 )
@@ -98,7 +105,10 @@ register_tool_for_dispatch(
 
 
 def export_favorites(conn_header: ConnHeader, params: ExportFavoritesParameters) -> dict:
-    """Export the project's Favorites to a .prefs file or folder."""
+    """
+    Export the project's Favorites to a .prefs file or folder. From Archicad 29 they can also be exported to a folder of
+    Favorite files (xml format) or to a legacy .prf file (legacyPRF format).
+    """
     return conn_header.core.post_tapir_command(
         command="ExportFavorites", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
@@ -108,8 +118,37 @@ register_tool_for_dispatch(
     export_favorites,
     name="favorites_export_favorites",
     title="ExportFavorites",
-    description="Export the project's Favorites to a .prefs file or folder.",
+    description=(
+        "Export the project's Favorites to a .prefs file or folder. From Archicad 29 they can also be exported to a "
+        "folder of Favorite files (xml format) or to a legacy .prf file (legacyPRF format)."
+    ),
     params_model=ExportFavoritesParameters,
+)
+
+
+def get_all_favorites(conn_header: ConnHeader, params: GetAllFavoritesParameters) -> dict:
+    """
+    Returns every Favorite of the project, or only those of the given element type, with its name and element type.
+    Available from Archicad 29.
+
+    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
+    and page_token set to that token to get the next page of results.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetAllFavorites", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    get_all_favorites,
+    name="favorites_get_all_favorites",
+    title="GetAllFavorites",
+    description=(
+        "Returns every Favorite of the project, or only those of the given element type, with its name and element "
+        "type. Available from Archicad 29."
+    ),
+    params_model=GetAllFavoritesParameters,
+    pagination_field="favorites",
 )
 
 
@@ -127,6 +166,36 @@ register_tool_for_dispatch(
     description="Returns the preview image of the given favorite.",
     params_model=GetFavoritePreviewImageParameters,
     image_field="previewImage",
+)
+
+
+def get_favorite_settings(conn_header: ConnHeader, params: GetFavoriteSettingsParameters) -> dict:
+    """
+    Reads the stored settings of the given favorites without applying them or placing an element: the element type, the
+    folder, the library part and GDL parameters, the marker (library part and parameters) of Window and Door favorites,
+    and the sub-elements. A favorite without a marker has no marker field, which is not an error. The other settings of
+    the element (pens, layer, structure, etc.) are not returned.
+
+    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
+    and page_token set to that token to get the next page of results.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetFavoriteSettings", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    get_favorite_settings,
+    name="favorites_get_favorite_settings",
+    title="GetFavoriteSettings",
+    description=(
+        "Reads the stored settings of the given favorites without applying them or placing an element: the element "
+        "type, the folder, the library part and GDL parameters, the marker (library part and parameters) of Window and "
+        "Door favorites, and the sub-elements. A favorite without a marker has no marker field, which is not an error. "
+        "The other settings of the element (pens, layer, structure, etc.) are not returned."
+    ),
+    params_model=GetFavoriteSettingsParameters,
+    pagination_field="favoriteSettings",
 )
 
 

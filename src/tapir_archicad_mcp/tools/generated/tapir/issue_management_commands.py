@@ -10,6 +10,7 @@ from multiconn_archicad.models.tapir.commands import (
     GetCommentsFromIssueParameters,
     GetElementsAttachedToIssueParameters,
     ImportIssuesFromBCFParameters,
+    ImportMarkupsFromPDFParameters,
 )
 
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
@@ -177,4 +178,27 @@ register_tool_for_dispatch(
     title="ImportIssuesFromBCF",
     description="Imports issues from the specified BCF file.",
     params_model=ImportIssuesFromBCFParameters,
+)
+
+
+def import_markups_from_pdf(conn_header: ConnHeader, params: ImportMarkupsFromPDFParameters) -> dict:
+    """
+    Imports the markups of the specified PDF file as issues, like Issue Manager > Import PDF markups, without any dialog
+    and without opening the Issue Manager palette, and reports the issues it created. Available from Archicad 29.
+    """
+    return conn_header.core.post_tapir_command(
+        command="ImportMarkupsFromPDF", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    import_markups_from_pdf,
+    name="issues_import_markups_from_pdf",
+    title="ImportMarkupsFromPDF",
+    description=(
+        "Imports the markups of the specified PDF file as issues, like Issue Manager > Import PDF markups, without any "
+        "dialog and without opening the Issue Manager palette, and reports the issues it created. Available from "
+        "Archicad 29."
+    ),
+    params_model=ImportMarkupsFromPDFParameters,
 )

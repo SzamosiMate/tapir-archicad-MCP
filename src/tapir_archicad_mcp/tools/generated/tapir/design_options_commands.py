@@ -4,9 +4,11 @@ from multiconn_archicad.models.tapir.commands import (
     CreateDesignOptionCombinationsParameters,
     CreateDesignOptionSetsParameters,
     CreateDesignOptionsParameters,
+    DeactivateDesignOptionsInCombinationsParameters,
     DeleteDesignOptionCombinationsParameters,
     DeleteDesignOptionSetsParameters,
     DeleteDesignOptionsParameters,
+    DuplicateDesignOptionCombinationsParameters,
     GetDesignOptionForElementsParameters,
     GetElementsOfDesignOptionsParameters,
     MoveDesignOptionsToAnotherSetParameters,
@@ -71,6 +73,31 @@ register_tool_for_dispatch(
 )
 
 
+def deactivate_design_options_in_combinations(
+    conn_header: ConnHeader, params: DeactivateDesignOptionsInCombinationsParameters
+) -> dict:
+    """
+    Turns off the given design options in the given combinations, leaving their other options as they are. Available
+    from Archicad 29.
+    """
+    return conn_header.core.post_tapir_command(
+        command="DeactivateDesignOptionsInCombinations",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    deactivate_design_options_in_combinations,
+    name="design_options_deactivate_design_options_in_combinations",
+    title="DeactivateDesignOptionsInCombinations",
+    description=(
+        "Turns off the given design options in the given combinations, leaving their other options as they are. "
+        "Available from Archicad 29."
+    ),
+    params_model=DeactivateDesignOptionsInCombinationsParameters,
+)
+
+
 def delete_design_option_combinations(
     conn_header: ConnHeader, params: DeleteDesignOptionCombinationsParameters
 ) -> dict:
@@ -122,6 +149,31 @@ register_tool_for_dispatch(
 )
 
 
+def duplicate_design_option_combinations(
+    conn_header: ConnHeader, params: DuplicateDesignOptionCombinationsParameters
+) -> dict:
+    """
+    Duplicates the given design option combinations and returns the identifiers of the new combinations. Available from
+    Archicad 29.
+    """
+    return conn_header.core.post_tapir_command(
+        command="DuplicateDesignOptionCombinations",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    duplicate_design_option_combinations,
+    name="design_options_duplicate_design_option_combinations",
+    title="DuplicateDesignOptionCombinations",
+    description=(
+        "Duplicates the given design option combinations and returns the identifiers of the new combinations. "
+        "Available from Archicad 29."
+    ),
+    params_model=DuplicateDesignOptionCombinationsParameters,
+)
+
+
 def get_design_option_combinations(conn_header: ConnHeader) -> dict:
     """Retrieves information about existing design option combinations."""
     return conn_header.core.post_tapir_command(command="GetDesignOptionCombinations", parameters={})
@@ -154,7 +206,10 @@ register_tool_for_dispatch(
 
 
 def get_design_option_sets(conn_header: ConnHeader) -> dict:
-    """Retrieves information about existing design option sets. Available from Archicad 29."""
+    """
+    Retrieves information about existing design option sets, and in Teamwork projects the Teamwork identifier of the
+    design options. Available from Archicad 29.
+    """
     return conn_header.core.post_tapir_command(command="GetDesignOptionSets", parameters={})
 
 
@@ -162,7 +217,10 @@ register_tool_for_dispatch(
     get_design_option_sets,
     name="design_options_get_design_option_sets",
     title="GetDesignOptionSets",
-    description="Retrieves information about existing design option sets. Available from Archicad 29.",
+    description=(
+        "Retrieves information about existing design option sets, and in Teamwork projects the Teamwork identifier of "
+        "the design options. Available from Archicad 29."
+    ),
     params_model=None,
 )
 

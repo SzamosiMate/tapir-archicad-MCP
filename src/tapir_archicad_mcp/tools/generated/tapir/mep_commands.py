@@ -11,6 +11,7 @@ from multiconn_archicad.models.tapir.commands import (
     CreateMEPRoutingElementsParameters,
     CreateMEPSystemGroupsParameters,
     DeleteElectricalCircuitsParameters,
+    DeleteMEPPhysicalSystemsParameters,
     GetElectricalCircuitsParameters,
     GetElectricalDevicesParameters,
     GetElectricalPanelsParameters,
@@ -22,7 +23,9 @@ from multiconn_archicad.models.tapir.commands import (
     ModifyElectricalDevicesParameters,
     ModifyElectricalPanelsParameters,
     ModifyElectricalProjectSettingsParameters,
+    ModifyMEPPhysicalSystemsParameters,
     ModifyMEPRoutingElementsParameters,
+    ModifyMEPSystemGroupsParameters,
 )
 
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
@@ -236,6 +239,28 @@ register_tool_for_dispatch(
 )
 
 
+def delete_mep_physical_systems(conn_header: ConnHeader, params: DeleteMEPPhysicalSystemsParameters) -> dict:
+    """
+    Removes MEP physical systems from their system groups. Their member elements are not deleted. Available from
+    Archicad 29.
+    """
+    return conn_header.core.post_tapir_command(
+        command="DeleteMEPPhysicalSystems", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    delete_mep_physical_systems,
+    name="mep_delete_mep_physical_systems",
+    title="DeleteMEPPhysicalSystems",
+    description=(
+        "Removes MEP physical systems from their system groups. Their member elements are not deleted. Available from "
+        "Archicad 29."
+    ),
+    params_model=DeleteMEPPhysicalSystemsParameters,
+)
+
+
 def get_electrical_circuits(conn_header: ConnHeader, params: GetElectricalCircuitsParameters) -> dict:
     """
     Gets the given electrical circuits, the circuits of the given panels, or every circuit of the project: name,
@@ -435,8 +460,11 @@ register_tool_for_dispatch(
 
 def get_mep_routing_elements(conn_header: ConnHeader, params: GetMEPRoutingElementsParameters) -> dict:
     """
-    Retrieves the details of the given MEP routing elements: domain, MEP system, route polyline, segments with cross
-    section data (shape, size, preference table and reference id) and nodes. Available from Archicad 28.
+    Retrieves the details of the given MEP routing elements: domain, MEP system, offset from the home story, branch
+    preference table, the ports logically connected at the route's beginning and end, route polyline, segments with
+    cross section data (shape, size, preference table and reference id), begin and end nodes, anchor, reference line
+    offsets, wall thickness, flange size and rigid segments, and nodes with their incoming and outgoing segments, elbows
+    and transitions. Available from Archicad 28.
 
     This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
     and page_token set to that token to get the next page of results.
@@ -451,8 +479,11 @@ register_tool_for_dispatch(
     name="mep_get_mep_routing_elements",
     title="GetMEPRoutingElements",
     description=(
-        "Retrieves the details of the given MEP routing elements: domain, MEP system, route polyline, segments with "
-        "cross section data (shape, size, preference table and reference id) and nodes. Available from Archicad 28."
+        "Retrieves the details of the given MEP routing elements: domain, MEP system, offset from the home story, "
+        "branch preference table, the ports logically connected at the route's beginning and end, route polyline, "
+        "segments with cross section data (shape, size, preference table and reference id), begin and end nodes, "
+        "anchor, reference line offsets, wall thickness, flange size and rigid segments, and nodes with their incoming "
+        "and outgoing segments, elbows and transitions. Available from Archicad 28."
     ),
     params_model=GetMEPRoutingElementsParameters,
     pagination_field="routingElements",
@@ -461,8 +492,8 @@ register_tool_for_dispatch(
 
 def get_mep_system_groups(conn_header: ConnHeader) -> dict:
     """
-    Gets the MEP system groups of the project with their physical systems: name, root element and MEP system. Available
-    from Archicad 29.
+    Gets the MEP system groups of the project with their physical systems: name, editable flag, root element and MEP
+    system. Available from Archicad 29.
 
     This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
     and page_token set to that token to get the next page of results.
@@ -475,8 +506,8 @@ register_tool_for_dispatch(
     name="mep_get_mep_system_groups",
     title="GetMEPSystemGroups",
     description=(
-        "Gets the MEP system groups of the project with their physical systems: name, root element and MEP system. "
-        "Available from Archicad 29."
+        "Gets the MEP system groups of the project with their physical systems: name, editable flag, root element and "
+        "MEP system. Available from Archicad 29."
     ),
     params_model=None,
     pagination_field="systemGroups",
@@ -573,10 +604,33 @@ register_tool_for_dispatch(
 )
 
 
+def modify_mep_physical_systems(conn_header: ConnHeader, params: ModifyMEPPhysicalSystemsParameters) -> dict:
+    """
+    Modifies MEP physical systems: name, root element and the MEP system used as their category. Only the given fields
+    are changed. Available from Archicad 29.
+    """
+    return conn_header.core.post_tapir_command(
+        command="ModifyMEPPhysicalSystems", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    modify_mep_physical_systems,
+    name="mep_modify_mep_physical_systems",
+    title="ModifyMEPPhysicalSystems",
+    description=(
+        "Modifies MEP physical systems: name, root element and the MEP system used as their category. Only the given "
+        "fields are changed. Available from Archicad 29."
+    ),
+    params_model=ModifyMEPPhysicalSystemsParameters,
+)
+
+
 def modify_mep_routing_elements(conn_header: ConnHeader, params: ModifyMEPRoutingElementsParameters) -> dict:
     """
-    Modifies the given MEP routing elements: MEP system, cross section data (shape, size, preference table and reference
-    id) of all segments and node positions. Available from Archicad 28.
+    Modifies the given MEP routing elements: MEP system, branch preference table, cross section data (shape, size,
+    preference table and reference id), anchor, reference line offsets, wall thickness and flange size of all segments,
+    and node positions. Available from Archicad 28.
     """
     return conn_header.core.post_tapir_command(
         command="ModifyMEPRoutingElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -588,8 +642,25 @@ register_tool_for_dispatch(
     name="mep_modify_mep_routing_elements",
     title="ModifyMEPRoutingElements",
     description=(
-        "Modifies the given MEP routing elements: MEP system, cross section data (shape, size, preference table and "
-        "reference id) of all segments and node positions. Available from Archicad 28."
+        "Modifies the given MEP routing elements: MEP system, branch preference table, cross section data (shape, "
+        "size, preference table and reference id), anchor, reference line offsets, wall thickness and flange size of "
+        "all segments, and node positions. Available from Archicad 28."
     ),
     params_model=ModifyMEPRoutingElementsParameters,
+)
+
+
+def modify_mep_system_groups(conn_header: ConnHeader, params: ModifyMEPSystemGroupsParameters) -> dict:
+    """Renames MEP system groups. Available from Archicad 29."""
+    return conn_header.core.post_tapir_command(
+        command="ModifyMEPSystemGroups", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    modify_mep_system_groups,
+    name="mep_modify_mep_system_groups",
+    title="ModifyMEPSystemGroups",
+    description="Renames MEP system groups. Available from Archicad 29.",
+    params_model=ModifyMEPSystemGroupsParameters,
 )

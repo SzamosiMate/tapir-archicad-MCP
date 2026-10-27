@@ -2,6 +2,8 @@
 from multiconn_archicad import ConnHeader
 from multiconn_archicad.models.tapir.commands import (
     GetLockableObjectSetStatusParameters,
+    GetReservationStatusOfElementsParameters,
+    GrantElementsParameters,
     ReleaseElementsParameters,
     ReleaseLockableObjectSetParameters,
     ReserveElementsParameters,
@@ -27,6 +29,74 @@ register_tool_for_dispatch(
         "Returns the Teamwork reservation status of a non-element lockable object set and the users who hold it."
     ),
     params_model=GetLockableObjectSetStatusParameters,
+)
+
+
+def get_reservation_status_of_elements(
+    conn_header: ConnHeader, params: GetReservationStatusOfElementsParameters
+) -> dict:
+    """
+    Returns the Teamwork reservation status of elements without reserving them: whether each element is free, reserved
+    by the current user or reserved by another user, with the reserving user and the element's owner.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetReservationStatusOfElements",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    get_reservation_status_of_elements,
+    name="teamwork_get_reservation_status_of_elements",
+    title="GetReservationStatusOfElements",
+    description=(
+        "Returns the Teamwork reservation status of elements without reserving them: whether each element is free, "
+        "reserved by the current user or reserved by another user, with the reserving user and the element's owner."
+    ),
+    params_model=GetReservationStatusOfElementsParameters,
+)
+
+
+def get_teamwork_status(conn_header: ConnHeader) -> dict:
+    """
+    Returns whether the opened project is a Teamwork project and is online, the members of the shared project and who
+    has reserved the Hotlink and XRef management. Works in a solo project too, then isShared and isOnline are false.
+    """
+    return conn_header.core.post_tapir_command(command="GetTeamworkStatus", parameters={})
+
+
+register_tool_for_dispatch(
+    get_teamwork_status,
+    name="teamwork_get_teamwork_status",
+    title="GetTeamworkStatus",
+    description=(
+        "Returns whether the opened project is a Teamwork project and is online, the members of the shared project and "
+        "who has reserved the Hotlink and XRef management. Works in a solo project too, then isShared and isOnline are "
+        "false."
+    ),
+    params_model=None,
+)
+
+
+def grant_elements(conn_header: ConnHeader, params: GrantElementsParameters) -> dict:
+    """
+    Hands over the reservation of elements to another Teamwork user, given by user id, without a dialog. Available from
+    Archicad 27.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GrantElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    grant_elements,
+    name="teamwork_grant_elements",
+    title="GrantElements",
+    description=(
+        "Hands over the reservation of elements to another Teamwork user, given by user id, without a dialog. "
+        "Available from Archicad 27."
+    ),
+    params_model=GrantElementsParameters,
 )
 
 

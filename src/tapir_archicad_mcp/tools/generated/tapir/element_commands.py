@@ -2,35 +2,62 @@
 from multiconn_archicad import ConnHeader
 from multiconn_archicad.models.tapir.commands import (
     ChangeSelectionOfElementsParameters,
+    ConvertRevealOffsetsParameters,
     DeleteElementsParameters,
     FilterElementsParameters,
     Get3DBoundingBoxesParameters,
     Get3DGeometryOfElementsParameters,
     GetAllElementsParameters,
+    GetCategoryValuesOfElementsParameters,
     GetCollisionsParameters,
     GetConnectedElementsParameters,
+    GetDetailsOfElementsParameters,
     GetDimensionDataParameters,
+    GetElementAtCoordinateParameters,
     GetElementPreviewImageParameters,
     GetElementsByTypeParameters,
+    GetElementsInDrawOrderParameters,
+    GetElementTypeNamesParameters,
     GetGDLParametersOfElementsParameters,
     GetGridElementDefaultsParameters,
     GetGridElementsParameters,
+    GetHierarchicalElementOwnersParameters,
+    GetLinksOfElementsParameters,
     GetMarkerParametersOfElementsParameters,
+    GetOpeningDefaultParameters,
+    GetOpeningDetailsParameters,
+    GetOpeningFloorPlanParametersParameters,
+    GetOpeningTransformationsParameters,
     GetQuantitiesOfElementsParameters,
     GetRelationsOfElementsParameters,
     GetRoomImageParameters,
     GetSectionElementsParameters,
     GetSubelementsOfHierarchicalElementsParameters,
+    GetSurfaceQuantitiesOfElementsParameters,
     GetZoneBoundariesParameters,
+    GetZoneReductionsParameters,
     HighlightElementsParameters,
+    LinkElementsParameters,
     LockElementsParameters,
+    MeasureTextsParameters,
+    MirrorElementsParameters,
     MoveElementsParameters,
+    RegularizePolygonsParameters,
+    RegularizePolylinesParameters,
     RemoveElementNotificationClientParameters,
     RotateElementsParameters,
+    RunParameterScriptOfElementsParameters,
+    SetCategoryValuesOfElementsParameters,
     SetDetailsOfElementsParameters,
     SetElementNotificationClientParameters,
     SetGDLParametersOfElementsParameters,
     SetMarkerParametersOfElementsParameters,
+    SetOpeningDetailsParameters,
+    SetOpeningFloorPlanParametersParameters,
+    SetZoneLabelingSettingsParameters,
+    SolveStairBaselineParameters,
+    TriangulatePolygonsOfElementsParameters,
+    UnlinkElementsParameters,
     UnlockElementsParameters,
     UpdateZonesParameters,
 )
@@ -54,9 +81,38 @@ register_tool_for_dispatch(
 )
 
 
+def convert_reveal_offsets(conn_header: ConnHeader, params: ConvertRevealOffsetsParameters) -> dict:
+    """
+    Converts the reveal depth offset of windows and doors placed in walls between the two references Archicad uses:
+    measured from the core skin of a composite wall, or from the wall side. Give exactly one of coreOffset or sideOffset
+    per opening; both values are returned. For walls with a basic structure the two values are equal. The output is
+    aligned with the input array of openings. Available from Archicad 27.
+    """
+    return conn_header.core.post_tapir_command(
+        command="ConvertRevealOffsets", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    convert_reveal_offsets,
+    name="elements_convert_reveal_offsets",
+    title="ConvertRevealOffsets",
+    description=(
+        "Converts the reveal depth offset of windows and doors placed in walls between the two references Archicad "
+        "uses: measured from the core skin of a composite wall, or from the wall side. Give exactly one of coreOffset "
+        "or sideOffset per opening; both values are returned. For walls with a basic structure the two values are "
+        "equal. The output is aligned with the input array of openings. Available from Archicad 27."
+    ),
+    params_model=ConvertRevealOffsetsParameters,
+)
+
+
 def delete_elements(conn_header: ConnHeader, params: DeleteElementsParameters) -> dict:
     """
-    Deletes elements. Returns an execution result for each input element: an element that could not be deleted (for
+    Deletes elements. The zones of the call are deleted before all the other elements, so an automatic zone deleted
+    together with its bounding walls is gone before its boundary is; deleting the boundary of an automatic zone without
+    the zone itself can open Archicad's modal 'No closed polygon found' dialog, which blocks the command until someone
+    clicks it in Archicad. Returns an execution result for each input element: an element that could not be deleted (for
     example because its layer is locked) gets a failed execution result instead of being skipped silently.
     """
     return conn_header.core.post_tapir_command(
@@ -69,15 +125,37 @@ register_tool_for_dispatch(
     name="elements_delete_elements",
     title="DeleteElements",
     description=(
-        "Deletes elements. Returns an execution result for each input element: an element that could not be deleted "
-        "(for example because its layer is locked) gets a failed execution result instead of being skipped silently."
+        "Deletes elements. The zones of the call are deleted before all the other elements, so an automatic zone "
+        "deleted together with its bounding walls is gone before its boundary is; deleting the boundary of an "
+        "automatic zone without the zone itself can open Archicad's modal 'No closed polygon found' dialog, which "
+        "blocks the command until someone clicks it in Archicad. Returns an execution result for each input element: "
+        "an element that could not be deleted (for example because its layer is locked) gets a failed execution result "
+        "instead of being skipped silently."
     ),
     params_model=DeleteElementsParameters,
 )
 
 
+def delete_selected_elements(conn_header: ConnHeader) -> dict:
+    """Deletes the currently selected elements in one undo step, the same as pressing the Delete key."""
+    return conn_header.core.post_tapir_command(command="DeleteSelectedElements", parameters={})
+
+
+register_tool_for_dispatch(
+    delete_selected_elements,
+    name="elements_delete_selected_elements",
+    title="DeleteSelectedElements",
+    description="Deletes the currently selected elements in one undo step, the same as pressing the Delete key.",
+    params_model=None,
+)
+
+
 def filter_elements(conn_header: ConnHeader, params: FilterElementsParameters) -> dict:
-    """Tests an elements by the given criterias."""
+    """
+    Keeps the elements that match all the given criteria: Archicad's flag filters (filters), layer (layerIndices), home
+    story (floorIndices) and element type (elementTypes). Within one criterion any of the listed values matches; an
+    omitted criterion does not filter.
+    """
     return conn_header.core.post_tapir_command(
         command="FilterElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
@@ -87,7 +165,11 @@ register_tool_for_dispatch(
     filter_elements,
     name="elements_filter_elements",
     title="FilterElements",
-    description="Tests an elements by the given criterias.",
+    description=(
+        "Keeps the elements that match all the given criteria: Archicad's flag filters (filters), layer "
+        "(layerIndices), home story (floorIndices) and element type (elementTypes). Within one criterion any of the "
+        "listed values matches; an omitted criterion does not filter."
+    ),
     params_model=FilterElementsParameters,
 )
 
@@ -118,9 +200,9 @@ def get3_d_geometry_of_elements(conn_header: ConnHeader, params: Get3DGeometryOf
     """
     Gets the 3D geometry of elements as the solid bodies of their 3D model: a vertex list in world coordinates and the
     planar faces (with their holes) referencing it, each face with its surface attribute when that is a project
-    attribute. The bodies of the subelements of a Stair, Railing or Curtain Wall are included. The output is aligned
-    with the input array of elements. The 3D model of the elements is generated as needed, so many elements can take a
-    while.
+    attribute. The bodies of the subelements of a Stair, Railing or Curtain Wall, and of the segments of a Column or
+    Beam, are included. The output is aligned with the input array of elements. The 3D model of the elements is
+    generated as needed, so many elements can take a while.
 
     This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
     and page_token set to that token to get the next page of results.
@@ -137,9 +219,9 @@ register_tool_for_dispatch(
     description=(
         "Gets the 3D geometry of elements as the solid bodies of their 3D model: a vertex list in world coordinates "
         "and the planar faces (with their holes) referencing it, each face with its surface attribute when that is a "
-        "project attribute. The bodies of the subelements of a Stair, Railing or Curtain Wall are included. The output "
-        "is aligned with the input array of elements. The 3D model of the elements is generated as needed, so many "
-        "elements can take a while."
+        "project attribute. The bodies of the subelements of a Stair, Railing or Curtain Wall, and of the segments of "
+        "a Column or Beam, are included. The output is aligned with the input array of elements. The 3D model of the "
+        "elements is generated as needed, so many elements can take a while."
     ),
     params_model=Get3DGeometryOfElementsParameters,
     pagination_field="geometries3D",
@@ -148,7 +230,9 @@ register_tool_for_dispatch(
 
 def get_all_elements(conn_header: ConnHeader, params: GetAllElementsParameters) -> dict:
     """
-    Returns the identifier of all elements on the plan. Use the optional filter parameter for filtering.
+    Returns the identifier of all elements on the plan. Use the optional filter parameter for filtering. Objects that
+    belong to another element (zone stamps, the parts of stairs and railings) are left out unless the
+    IncludeSubElemObjects filter is given.
 
     This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
     and page_token set to that token to get the next page of results.
@@ -163,10 +247,42 @@ register_tool_for_dispatch(
     name="elements_get_all_elements",
     title="GetAllElements",
     description=(
-        "Returns the identifier of all elements on the plan. Use the optional filter parameter for filtering."
+        "Returns the identifier of all elements on the plan. Use the optional filter parameter for filtering. Objects "
+        "that belong to another element (zone stamps, the parts of stairs and railings) are left out unless the "
+        "IncludeSubElemObjects filter is given."
     ),
     params_model=GetAllElementsParameters,
     pagination_field="elements",
+)
+
+
+def get_category_values_of_elements(conn_header: ConnHeader, params: GetCategoryValuesOfElementsParameters) -> dict:
+    """
+    Gets the category values (Structural Function, Position, Renovation Status ...) of the given elements, optionally
+    only for the given category types. An element that has none of the requested categories (an annotation, for example)
+    gets an error item. The names are localized: use the type and the categoryValueId in scripts.
+
+    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
+    and page_token set to that token to get the next page of results.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetCategoryValuesOfElements",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    get_category_values_of_elements,
+    name="elements_get_category_values_of_elements",
+    title="GetCategoryValuesOfElements",
+    description=(
+        "Gets the category values (Structural Function, Position, Renovation Status ...) of the given elements, "
+        "optionally only for the given category types. An element that has none of the requested categories (an "
+        "annotation, for example) gets an error item. The names are localized: use the type and the categoryValueId in "
+        "scripts."
+    ),
+    params_model=GetCategoryValuesOfElementsParameters,
+    pagination_field="categoryValuesOfElements",
 )
 
 
@@ -216,6 +332,32 @@ register_tool_for_dispatch(
 )
 
 
+def get_details_of_elements(conn_header: ConnHeader, params: GetDetailsOfElementsParameters) -> dict:
+    """
+    Gets the details of the given elements (geometry parameters etc). Use the optional fields parameter to return only
+    the fields you need and skip the computation of the others (for example floorPlanPolygons).
+
+    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
+    and page_token set to that token to get the next page of results.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetDetailsOfElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    get_details_of_elements,
+    name="elements_get_details_of_elements",
+    title="GetDetailsOfElements",
+    description=(
+        "Gets the details of the given elements (geometry parameters etc). Use the optional fields parameter to return "
+        "only the fields you need and skip the computation of the others (for example floorPlanPolygons)."
+    ),
+    params_model=GetDetailsOfElementsParameters,
+    pagination_field="detailsOfElements",
+)
+
+
 def get_dimension_data(conn_header: ConnHeader, params: GetDimensionDataParameters) -> dict:
     """Gets witness point data (coordinates, measured values) from existing dimension chains."""
     return conn_header.core.post_tapir_command(
@@ -229,6 +371,56 @@ register_tool_for_dispatch(
     title="GetDimensionData",
     description="Gets witness point data (coordinates, measured values) from existing dimension chains.",
     params_model=GetDimensionDataParameters,
+)
+
+
+def get_element_at_coordinate(conn_header: ConnHeader, params: GetElementAtCoordinateParameters) -> dict:
+    """
+    Finds the element of the given polygonal type (for example Slab, Roof, Mesh, Zone or Hatch) at a coordinate of the
+    floor plan of the current database, the way a click there would. Use the optional filters parameter (the values of
+    FilterElements) to consider only, for example, the elements visible by layer, and the optional z parameter to give
+    the elevation of the point. Returns found: false when there is no such element. Useful together with
+    GetPointFromUser.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetElementAtCoordinate", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    get_element_at_coordinate,
+    name="elements_get_element_at_coordinate",
+    title="GetElementAtCoordinate",
+    description=(
+        "Finds the element of the given polygonal type (for example Slab, Roof, Mesh, Zone or Hatch) at a coordinate "
+        "of the floor plan of the current database, the way a click there would. Use the optional filters parameter "
+        "(the values of FilterElements) to consider only, for example, the elements visible by layer, and the optional "
+        "z parameter to give the elevation of the point. Returns found: false when there is no such element. Useful "
+        "together with GetPointFromUser."
+    ),
+    params_model=GetElementAtCoordinateParameters,
+)
+
+
+def get_element_categories(conn_header: ConnHeader) -> dict:
+    """
+    Lists the element categories of the project (Structural Function, Position, Renovation Status, Renovation Filter
+    and, in the German version, BRI) with their possible values. The names of the categories and values are localized:
+    identify a category by its type and a value by its categoryValueId, never by name.
+    """
+    return conn_header.core.post_tapir_command(command="GetElementCategories", parameters={})
+
+
+register_tool_for_dispatch(
+    get_element_categories,
+    name="elements_get_element_categories",
+    title="GetElementCategories",
+    description=(
+        "Lists the element categories of the project (Structural Function, Position, Renovation Status, Renovation "
+        "Filter and, in the German version, BRI) with their possible values. The names of the categories and values "
+        "are localized: identify a category by its type and a value by its categoryValueId, never by name."
+    ),
+    params_model=None,
 )
 
 
@@ -249,10 +441,34 @@ register_tool_for_dispatch(
 )
 
 
+def get_element_type_names(conn_header: ConnHeader, params: GetElementTypeNamesParameters) -> dict:
+    """
+    Gets the localized names of the given element types, as the running Archicad shows them (for example 'Wand' for Wall
+    in German Archicad). The output is aligned with the input array of element types. Available from Archicad 27.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetElementTypeNames", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    get_element_type_names,
+    name="elements_get_element_type_names",
+    title="GetElementTypeNames",
+    description=(
+        "Gets the localized names of the given element types, as the running Archicad shows them (for example 'Wand' "
+        "for Wall in German Archicad). The output is aligned with the input array of element types. Available from "
+        "Archicad 27."
+    ),
+    params_model=GetElementTypeNamesParameters,
+)
+
+
 def get_elements_by_type(conn_header: ConnHeader, params: GetElementsByTypeParameters) -> dict:
     """
     Returns the identifier of every element of the given type on the plan. It works for any type. Use the optional
-    filter parameter for filtering.
+    filter parameter for filtering. Objects that belong to another element (zone stamps, the parts of stairs and
+    railings) are left out unless the IncludeSubElemObjects filter is given.
 
     This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
     and page_token set to that token to get the next page of results.
@@ -268,9 +484,41 @@ register_tool_for_dispatch(
     title="GetElementsByType",
     description=(
         "Returns the identifier of every element of the given type on the plan. It works for any type. Use the "
-        "optional filter parameter for filtering."
+        "optional filter parameter for filtering. Objects that belong to another element (zone stamps, the parts of "
+        "stairs and railings) are left out unless the IncludeSubElemObjects filter is given."
     ),
     params_model=GetElementsByTypeParameters,
+    pagination_field="elements",
+)
+
+
+def get_elements_in_draw_order(conn_header: ConnHeader, params: GetElementsInDrawOrderParameters) -> dict:
+    """
+    Returns the identifier of every element of the current database, or of the given databases, in Archicad's drawing
+    order (the order set by Bring to Front and Send to Back), as ACAPI_DrawOrder_DrawOrderGetNext walks it. Use the
+    optional elementType and filters parameters for filtering. Objects that belong to another element (zone stamps, the
+    parts of stairs and railings) are left out unless the IncludeSubElemObjects filter is given.
+
+    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
+    and page_token set to that token to get the next page of results.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetElementsInDrawOrder", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    get_elements_in_draw_order,
+    name="elements_get_elements_in_draw_order",
+    title="GetElementsInDrawOrder",
+    description=(
+        "Returns the identifier of every element of the current database, or of the given databases, in Archicad's "
+        "drawing order (the order set by Bring to Front and Send to Back), as ACAPI_DrawOrder_DrawOrderGetNext walks "
+        "it. Use the optional elementType and filters parameters for filtering. Objects that belong to another element "
+        "(zone stamps, the parts of stairs and railings) are left out unless the IncludeSubElemObjects filter is "
+        "given."
+    ),
+    params_model=GetElementsInDrawOrderParameters,
     pagination_field="elements",
 )
 
@@ -346,11 +594,67 @@ register_tool_for_dispatch(
 )
 
 
+def get_hierarchical_element_owners(conn_header: ConnHeader, params: GetHierarchicalElementOwnersParameters) -> dict:
+    """
+    Gets the owner of each given element in its hierarchical element: the root (e.g. the Curtain Wall, Stair or Railing
+    of a frame, tread or post) or the immediate parent. Also returns whether the given element is a main element, a
+    subelement or not part of a hierarchical element.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetHierarchicalElementOwners",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    get_hierarchical_element_owners,
+    name="elements_get_hierarchical_element_owners",
+    title="GetHierarchicalElementOwners",
+    description=(
+        "Gets the owner of each given element in its hierarchical element: the root (e.g. the Curtain Wall, Stair or "
+        "Railing of a frame, tread or post) or the immediate parent. Also returns whether the given element is a main "
+        "element, a subelement or not part of a hierarchical element."
+    ),
+    params_model=GetHierarchicalElementOwnersParameters,
+)
+
+
+def get_links_of_elements(conn_header: ConnHeader, params: GetLinksOfElementsParameters) -> dict:
+    """
+    Gets the links created by LinkElements that start from the given elements: the linked element and the flags of each
+    link. Links pointing to an element are not returned; query the elements they start from. Returns an error item for
+    an element that does not exist.
+
+    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
+    and page_token set to that token to get the next page of results.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetLinksOfElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    get_links_of_elements,
+    name="elements_get_links_of_elements",
+    title="GetLinksOfElements",
+    description=(
+        "Gets the links created by LinkElements that start from the given elements: the linked element and the flags "
+        "of each link. Links pointing to an element are not returned; query the elements they start from. Returns an "
+        "error item for an element that does not exist."
+    ),
+    params_model=GetLinksOfElementsParameters,
+    pagination_field="linksOfElements",
+)
+
+
 def get_marker_parameters_of_elements(conn_header: ConnHeader, params: GetMarkerParametersOfElementsParameters) -> dict:
     """
     Gets the marker library part and the marker's GDL parameters (name, type, value) of the given Window and Door
     elements. The marker is the stamp drawn next to the opening on the floor plan; its parameters are separate from the
     opening's own GDL parameters, which GetGDLParametersOfElements returns.
+
+    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
+    and page_token set to that token to get the next page of results.
     """
     return conn_header.core.post_tapir_command(
         command="GetMarkerParametersOfElements",
@@ -368,6 +672,109 @@ register_tool_for_dispatch(
         "from the opening's own GDL parameters, which GetGDLParametersOfElements returns."
     ),
     params_model=GetMarkerParametersOfElementsParameters,
+    pagination_field="markerParametersOfElements",
+)
+
+
+def get_opening_default(conn_header: ConnHeader, params: GetOpeningDefaultParameters) -> dict:
+    """
+    Returns the settings of the Opening tool defaults: the extrusion parameters (as GetOpeningDetails returns them) and
+    the floor plan parameters (as GetOpeningFloorPlanParameters returns them). Available from Archicad 29.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetOpeningDefault", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    get_opening_default,
+    name="elements_get_opening_default",
+    title="GetOpeningDefault",
+    description=(
+        "Returns the settings of the Opening tool defaults: the extrusion parameters (as GetOpeningDetails returns "
+        "them) and the floor plan parameters (as GetOpeningFloorPlanParameters returns them). Available from Archicad "
+        "29."
+    ),
+    params_model=GetOpeningDefaultParameters,
+)
+
+
+def get_opening_details(conn_header: ConnHeader, params: GetOpeningDetailsParameters) -> dict:
+    """
+    Returns the details of Opening elements: the parent element, the cut and connected elements, the geometry (anchor
+    point, extrusion direction, axes, polygon) and the extrusion parameters (size, anchor, offsets, surface overrides).
+    Available from Archicad 29.
+
+    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
+    and page_token set to that token to get the next page of results.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetOpeningDetails", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    get_opening_details,
+    name="elements_get_opening_details",
+    title="GetOpeningDetails",
+    description=(
+        "Returns the details of Opening elements: the parent element, the cut and connected elements, the geometry "
+        "(anchor point, extrusion direction, axes, polygon) and the extrusion parameters (size, anchor, offsets, "
+        "surface overrides). Available from Archicad 29."
+    ),
+    params_model=GetOpeningDetailsParameters,
+    pagination_field="openings",
+)
+
+
+def get_opening_floor_plan_parameters(conn_header: ConnHeader, params: GetOpeningFloorPlanParametersParameters) -> dict:
+    """
+    Returns the floor plan parameters of Opening elements: the reference axis, the cut surface and outline lines, the
+    cover fills and the cut and uncut symbols. Available from Archicad 29.
+
+    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
+    and page_token set to that token to get the next page of results.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetOpeningFloorPlanParameters",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    get_opening_floor_plan_parameters,
+    name="elements_get_opening_floor_plan_parameters",
+    title="GetOpeningFloorPlanParameters",
+    description=(
+        "Returns the floor plan parameters of Opening elements: the reference axis, the cut surface and outline lines, "
+        "the cover fills and the cut and uncut symbols. Available from Archicad 29."
+    ),
+    params_model=GetOpeningFloorPlanParametersParameters,
+    pagination_field="openings",
+)
+
+
+def get_opening_transformations(conn_header: ConnHeader, params: GetOpeningTransformationsParameters) -> dict:
+    """
+    Gets the placement of Opening elements without changing them: the global-to-local transformation matrix Archicad
+    returns, its inverse, and the origin and axes of the opening in world coordinates derived from the inverse. Mirrored
+    openings give a left-handed matrix (isMirrored). Needs Archicad 27 or later.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetOpeningTransformations", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    get_opening_transformations,
+    name="elements_get_opening_transformations",
+    title="GetOpeningTransformations",
+    description=(
+        "Gets the placement of Opening elements without changing them: the global-to-local transformation matrix "
+        "Archicad returns, its inverse, and the origin and axes of the opening in world coordinates derived from the "
+        "inverse. Mirrored openings give a left-handed matrix (isMirrored). Needs Archicad 27 or later."
+    ),
+    params_model=GetOpeningTransformationsParameters,
 )
 
 
@@ -376,7 +783,8 @@ def get_quantities_of_elements(conn_header: ConnHeader, params: GetQuantitiesOfE
     Gets the quantities of the given elements calculated by Archicad (volumes, surfaces, lengths etc.), together with
     the volume and projected area per building material (one item per skin of composite and complex profile elements,
     one item for basic elements). Supported types: Wall, Column, Beam, Slab, Roof, Shell, Morph, Zone, ColumnSegment,
-    BeamSegment. Use the optional minOpeningSize parameter to control the conditional values.
+    BeamSegment. Use the optional minOpeningSize parameter to control the conditional values, and calculateInOneCall to
+    calculate all the elements in one Archicad call.
 
     This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
     and page_token set to that token to get the next page of results.
@@ -394,7 +802,8 @@ register_tool_for_dispatch(
         "Gets the quantities of the given elements calculated by Archicad (volumes, surfaces, lengths etc.), together "
         "with the volume and projected area per building material (one item per skin of composite and complex profile "
         "elements, one item for basic elements). Supported types: Wall, Column, Beam, Slab, Roof, Shell, Morph, Zone, "
-        "ColumnSegment, BeamSegment. Use the optional minOpeningSize parameter to control the conditional values."
+        "ColumnSegment, BeamSegment. Use the optional minOpeningSize parameter to control the conditional values, and "
+        "calculateInOneCall to calculate all the elements in one Archicad call."
     ),
     params_model=GetQuantitiesOfElementsParameters,
     pagination_field="quantitiesOfElements",
@@ -496,7 +905,13 @@ register_tool_for_dispatch(
 def get_subelements_of_hierarchical_elements(
     conn_header: ConnHeader, params: GetSubelementsOfHierarchicalElementsParameters
 ) -> dict:
-    """Gets the subelements of the given hierarchical elements."""
+    """
+    Gets the subelements of the given hierarchical elements. From Archicad 28 the subelements of external hierarchical
+    elements (for example MEP elements or elements of other add-ons) are returned as externalSubelements.
+
+    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
+    and page_token set to that token to get the next page of results.
+    """
     return conn_header.core.post_tapir_command(
         command="GetSubelementsOfHierarchicalElements",
         parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
@@ -507,8 +922,47 @@ register_tool_for_dispatch(
     get_subelements_of_hierarchical_elements,
     name="elements_get_subelements_of_hierarchical_elements",
     title="GetSubelementsOfHierarchicalElements",
-    description="Gets the subelements of the given hierarchical elements.",
+    description=(
+        "Gets the subelements of the given hierarchical elements. From Archicad 28 the subelements of external "
+        "hierarchical elements (for example MEP elements or elements of other add-ons) are returned as "
+        "externalSubelements."
+    ),
     params_model=GetSubelementsOfHierarchicalElementsParameters,
+    pagination_field="subelements",
+)
+
+
+def get_surface_quantities_of_elements(
+    conn_header: ConnHeader, params: GetSurfaceQuantitiesOfElementsParameters
+) -> dict:
+    """
+    Gets the exposed surface areas of the given elements calculated by Archicad: for each element one item per surface
+    attribute and building material pair with the area that is not covered by the covering elements (for example the
+    wall area behind a slab is taken off the wall's surface). The covering elements are the optional coverElements; by
+    default every construction element of the project. The output is aligned with the input array of elements.
+
+    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
+    and page_token set to that token to get the next page of results.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetSurfaceQuantitiesOfElements",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    get_surface_quantities_of_elements,
+    name="elements_get_surface_quantities_of_elements",
+    title="GetSurfaceQuantitiesOfElements",
+    description=(
+        "Gets the exposed surface areas of the given elements calculated by Archicad: for each element one item per "
+        "surface attribute and building material pair with the area that is not covered by the covering elements (for "
+        "example the wall area behind a slab is taken off the wall's surface). The covering elements are the optional "
+        "coverElements; by default every construction element of the project. The output is aligned with the input "
+        "array of elements."
+    ),
+    params_model=GetSurfaceQuantitiesOfElementsParameters,
+    pagination_field="surfaceQuantitiesOfElements",
 )
 
 
@@ -536,6 +990,37 @@ register_tool_for_dispatch(
 )
 
 
+def get_zone_reductions(conn_header: ConnHeader, params: GetZoneReductionsParameters) -> dict:
+    """
+    Gets the area reductions of the given Zones, as the Zone Stamp's area calculation uses them: the polygons of the
+    Zone covered by Walls, Columns, reducing Fills, sloping Roofs and low ceilings, each with its type, the percentage
+    it is reduced by, its area and its outline with holes. Area calculations by local standards need these parts, which
+    GetQuantitiesOfElements only gives as totals. The output is aligned with the input array of elements.
+
+    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
+    and page_token set to that token to get the next page of results.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetZoneReductions", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    get_zone_reductions,
+    name="elements_get_zone_reductions",
+    title="GetZoneReductions",
+    description=(
+        "Gets the area reductions of the given Zones, as the Zone Stamp's area calculation uses them: the polygons of "
+        "the Zone covered by Walls, Columns, reducing Fills, sloping Roofs and low ceilings, each with its type, the "
+        "percentage it is reduced by, its area and its outline with holes. Area calculations by local standards need "
+        "these parts, which GetQuantitiesOfElements only gives as totals. The output is aligned with the input array "
+        "of elements."
+    ),
+    params_model=GetZoneReductionsParameters,
+    pagination_field="reductionsOfZones",
+)
+
+
 def highlight_elements(conn_header: ConnHeader, params: HighlightElementsParameters) -> dict:
     """
     Highlights the elements given in the elements array. In case of empty elements array removes all previously set
@@ -558,6 +1043,35 @@ register_tool_for_dispatch(
 )
 
 
+def link_elements(conn_header: ConnHeader, params: LinkElementsParameters) -> dict:
+    """
+    Creates persistent links between pairs of elements, each from one element to another, with an optional integer flags
+    value per link. Scripts can record their own relations between elements this way (for example which label documents
+    which column) instead of storing GUIDs in properties. The links are stored in the project and have no effect on
+    geometry; they are independent from groups, hotlinks and solid element operations. A link is directional: it is
+    returned by GetLinksOfElements for the element it starts from only, and removed by UnlinkElements. Undoable.
+    """
+    return conn_header.core.post_tapir_command(
+        command="LinkElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    link_elements,
+    name="elements_link_elements",
+    title="LinkElements",
+    description=(
+        "Creates persistent links between pairs of elements, each from one element to another, with an optional "
+        "integer flags value per link. Scripts can record their own relations between elements this way (for example "
+        "which label documents which column) instead of storing GUIDs in properties. The links are stored in the "
+        "project and have no effect on geometry; they are independent from groups, hotlinks and solid element "
+        "operations. A link is directional: it is returned by GetLinksOfElements for the element it starts from only, "
+        "and removed by UnlinkElements. Undoable."
+    ),
+    params_model=LinkElementsParameters,
+)
+
+
 def lock_elements(conn_header: ConnHeader, params: LockElementsParameters) -> dict:
     """Locks the given elements. Manual lock, not teamwork!"""
     return conn_header.core.post_tapir_command(
@@ -571,6 +1085,53 @@ register_tool_for_dispatch(
     title="LockElements",
     description="Locks the given elements. Manual lock, not teamwork!",
     params_model=LockElementsParameters,
+)
+
+
+def measure_texts(conn_header: ConnHeader, params: MeasureTextsParameters) -> dict:
+    """
+    Measures texts before placing them: the length of every line for a given font, style and height, on paper in
+    millimetres or in the model at the current drawing scale, and the font's capital size factor. Creates nothing.
+    """
+    return conn_header.core.post_tapir_command(
+        command="MeasureTexts", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    measure_texts,
+    name="elements_measure_texts",
+    title="MeasureTexts",
+    description=(
+        "Measures texts before placing them: the length of every line for a given font, style and height, on paper in "
+        "millimetres or in the model at the current drawing scale, and the font's capital size factor. Creates "
+        "nothing."
+    ),
+    params_model=MeasureTextsParameters,
+)
+
+
+def mirror_elements(conn_header: ConnHeader, params: MirrorElementsParameters) -> dict:
+    """
+    Mirrors elements across an axis given by two points on the floor plan, optionally as a copy. An element that cannot
+    be edited (its layer is hidden or locked, it is locked, or it is not available in teamwork) gets a failed execution
+    result naming the reason instead of being skipped silently.
+    """
+    return conn_header.core.post_tapir_command(
+        command="MirrorElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    mirror_elements,
+    name="elements_mirror_elements",
+    title="MirrorElements",
+    description=(
+        "Mirrors elements across an axis given by two points on the floor plan, optionally as a copy. An element that "
+        "cannot be edited (its layer is hidden or locked, it is locked, or it is not available in teamwork) gets a "
+        "failed execution result naming the reason instead of being skipped silently."
+    ),
+    params_model=MirrorElementsParameters,
 )
 
 
@@ -595,6 +1156,56 @@ register_tool_for_dispatch(
         "skipped silently."
     ),
     params_model=MoveElementsParameters,
+)
+
+
+def regularize_polygons(conn_header: ConnHeader, params: RegularizePolygonsParameters) -> dict:
+    """
+    Regularizes polygons with Archicad's own polygon regularization, before they are used to create slabs, zones or
+    fills: removes duplicate points, fixes the orientation, resolves self-intersections and touching holes. Each input
+    polygon gives 0, 1 or more valid polygons in the format of CreateSlabs, optionally with the input vertex and edge
+    each result vertex and edge came from. Changes nothing in the project.
+    """
+    return conn_header.core.post_tapir_command(
+        command="RegularizePolygons", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    regularize_polygons,
+    name="elements_regularize_polygons",
+    title="RegularizePolygons",
+    description=(
+        "Regularizes polygons with Archicad's own polygon regularization, before they are used to create slabs, zones "
+        "or fills: removes duplicate points, fixes the orientation, resolves self-intersections and touching holes. "
+        "Each input polygon gives 0, 1 or more valid polygons in the format of CreateSlabs, optionally with the input "
+        "vertex and edge each result vertex and edge came from. Changes nothing in the project."
+    ),
+    params_model=RegularizePolygonsParameters,
+)
+
+
+def regularize_polylines(conn_header: ConnHeader, params: RegularizePolylinesParameters) -> dict:
+    """
+    Regularizes polylines with Archicad's own polyline regularization: removes repeated consecutive points. The result
+    is in the format of CreatePolylines and may be empty, optionally with the input point and segment each result point
+    and segment came from. Changes nothing in the project.
+    """
+    return conn_header.core.post_tapir_command(
+        command="RegularizePolylines", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    regularize_polylines,
+    name="elements_regularize_polylines",
+    title="RegularizePolylines",
+    description=(
+        "Regularizes polylines with Archicad's own polyline regularization: removes repeated consecutive points. The "
+        "result is in the format of CreatePolylines and may be empty, optionally with the input point and segment each "
+        "result point and segment came from. Changes nothing in the project."
+    ),
+    params_model=RegularizePolylinesParameters,
 )
 
 
@@ -641,8 +1252,58 @@ register_tool_for_dispatch(
 )
 
 
+def run_parameter_script_of_elements(conn_header: ConnHeader, params: RunParameterScriptOfElementsParameters) -> dict:
+    """
+    Runs the parameter script of the library part of the given elements (objects, lamps, windows, doors, etc.), so that
+    parameter values that depend on other parameters are updated, e.g. after SetGDLParametersOfElements.
+    """
+    return conn_header.core.post_tapir_command(
+        command="RunParameterScriptOfElements",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    run_parameter_script_of_elements,
+    name="elements_run_parameter_script_of_elements",
+    title="RunParameterScriptOfElements",
+    description=(
+        "Runs the parameter script of the library part of the given elements (objects, lamps, windows, doors, etc.), "
+        "so that parameter values that depend on other parameters are updated, e.g. after SetGDLParametersOfElements."
+    ),
+    params_model=RunParameterScriptOfElementsParameters,
+)
+
+
+def set_category_values_of_elements(conn_header: ConnHeader, params: SetCategoryValuesOfElementsParameters) -> dict:
+    """
+    Sets the category values (Structural Function, Position, Renovation Status ...) of the given elements, one element
+    and one category per item, in a single undoable step. The value must belong to the given category, as
+    GetElementCategories lists them; an element without that category gets a failed execution result. The names are
+    localized: use the type and the categoryValueId in scripts.
+    """
+    return conn_header.core.post_tapir_command(
+        command="SetCategoryValuesOfElements",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    set_category_values_of_elements,
+    name="elements_set_category_values_of_elements",
+    title="SetCategoryValuesOfElements",
+    description=(
+        "Sets the category values (Structural Function, Position, Renovation Status ...) of the given elements, one "
+        "element and one category per item, in a single undoable step. The value must belong to the given category, as "
+        "GetElementCategories lists them; an element without that category gets a failed execution result. The names "
+        "are localized: use the type and the categoryValueId in scripts."
+    ),
+    params_model=SetCategoryValuesOfElementsParameters,
+)
+
+
 def set_details_of_elements(conn_header: ConnHeader, params: SetDetailsOfElementsParameters) -> dict:
-    """Sets the details of the given elements (floor, layer, order etc)."""
+    """Sets the details of the given elements (floor, layer, order, Element ID etc)."""
     return conn_header.core.post_tapir_command(
         command="SetDetailsOfElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
@@ -652,7 +1313,7 @@ register_tool_for_dispatch(
     set_details_of_elements,
     name="elements_set_details_of_elements",
     title="SetDetailsOfElements",
-    description="Sets the details of the given elements (floor, layer, order etc).",
+    description="Sets the details of the given elements (floor, layer, order, Element ID etc).",
     params_model=SetDetailsOfElementsParameters,
 )
 
@@ -675,7 +1336,11 @@ register_tool_for_dispatch(
 
 
 def set_gdl_parameters_of_elements(conn_header: ConnHeader, params: SetGDLParametersOfElementsParameters) -> dict:
-    """Sets the given GDL parameters of the given elements."""
+    """
+    Sets the given GDL parameters of the given elements. An element Archicad does not let the user edit (its layer
+    locked, the element locked, or not reserved by the user in Teamwork) gets a failed execution result naming that
+    reason, whatever the parameter.
+    """
     return conn_header.core.post_tapir_command(
         command="SetGDLParametersOfElements",
         parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
@@ -686,7 +1351,11 @@ register_tool_for_dispatch(
     set_gdl_parameters_of_elements,
     name="elements_set_gdl_parameters_of_elements",
     title="SetGDLParametersOfElements",
-    description="Sets the given GDL parameters of the given elements.",
+    description=(
+        "Sets the given GDL parameters of the given elements. An element Archicad does not let the user edit (its "
+        "layer locked, the element locked, or not reserved by the user in Teamwork) gets a failed execution result "
+        "naming that reason, whatever the parameter."
+    ),
     params_model=SetGDLParametersOfElementsParameters,
 )
 
@@ -711,6 +1380,145 @@ register_tool_for_dispatch(
         "and the other marker parameters are left as they are."
     ),
     params_model=SetMarkerParametersOfElementsParameters,
+)
+
+
+def set_opening_details(conn_header: ConnHeader, params: SetOpeningDetailsParameters) -> dict:
+    """
+    Changes the details of Opening elements: the parent element, the cut elements, the polygon, a transformation of the
+    geometry and the extrusion parameters (size, anchor, offsets, surface overrides) returned by GetOpeningDetails.
+    Available from Archicad 29.
+    """
+    return conn_header.core.post_tapir_command(
+        command="SetOpeningDetails", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    set_opening_details,
+    name="elements_set_opening_details",
+    title="SetOpeningDetails",
+    description=(
+        "Changes the details of Opening elements: the parent element, the cut elements, the polygon, a transformation "
+        "of the geometry and the extrusion parameters (size, anchor, offsets, surface overrides) returned by "
+        "GetOpeningDetails. Available from Archicad 29."
+    ),
+    params_model=SetOpeningDetailsParameters,
+)
+
+
+def set_opening_floor_plan_parameters(conn_header: ConnHeader, params: SetOpeningFloorPlanParametersParameters) -> dict:
+    """
+    Changes the floor plan parameters of Opening elements returned by GetOpeningFloorPlanParameters, and sets or removes
+    their cut and uncut symbols. Available from Archicad 29.
+    """
+    return conn_header.core.post_tapir_command(
+        command="SetOpeningFloorPlanParameters",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    set_opening_floor_plan_parameters,
+    name="elements_set_opening_floor_plan_parameters",
+    title="SetOpeningFloorPlanParameters",
+    description=(
+        "Changes the floor plan parameters of Opening elements returned by GetOpeningFloorPlanParameters, and sets or "
+        "removes their cut and uncut symbols. Available from Archicad 29."
+    ),
+    params_model=SetOpeningFloorPlanParametersParameters,
+)
+
+
+def set_zone_labeling_settings(conn_header: ConnHeader, params: SetZoneLabelingSettingsParameters) -> dict:
+    """Turns the automatic labeling of Zones on or off. Available from Archicad 28."""
+    return conn_header.core.post_tapir_command(
+        command="SetZoneLabelingSettings", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    set_zone_labeling_settings,
+    name="elements_set_zone_labeling_settings",
+    title="SetZoneLabelingSettings",
+    description="Turns the automatic labeling of Zones on or off. Available from Archicad 28.",
+    params_model=SetZoneLabelingSettingsParameters,
+)
+
+
+def solve_stair_baseline(conn_header: ConnHeader, params: SolveStairBaselineParameters) -> dict:
+    """
+    Runs the Archicad stair solver on the given Stair baselines and parameters without creating any element. Returns for
+    each one whether the baseline was already correct, could be solved or could not be solved, with the baseline and the
+    main stair settings after solving. Available from Archicad 27.
+    """
+    return conn_header.core.post_tapir_command(
+        command="SolveStairBaseline", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    solve_stair_baseline,
+    name="elements_solve_stair_baseline",
+    title="SolveStairBaseline",
+    description=(
+        "Runs the Archicad stair solver on the given Stair baselines and parameters without creating any element. "
+        "Returns for each one whether the baseline was already correct, could be solved or could not be solved, with "
+        "the baseline and the main stair settings after solving. Available from Archicad 27."
+    ),
+    params_model=SolveStairBaselineParameters,
+)
+
+
+def triangulate_polygons_of_elements(conn_header: ConnHeader, params: TriangulatePolygonsOfElementsParameters) -> dict:
+    """
+    Triangulates the plan polygon of the given elements, holes excluded, as Archicad does it: the outline of a Slab,
+    Zone, Hatch or Mesh and the polygon of a Roof. Each triangle is given by the 2D coordinates of its three vertices.
+    The output is aligned with the input array of elements; an element of another type gets an error item.
+
+    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
+    and page_token set to that token to get the next page of results.
+    """
+    return conn_header.core.post_tapir_command(
+        command="TriangulatePolygonsOfElements",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    triangulate_polygons_of_elements,
+    name="elements_triangulate_polygons_of_elements",
+    title="TriangulatePolygonsOfElements",
+    description=(
+        "Triangulates the plan polygon of the given elements, holes excluded, as Archicad does it: the outline of a "
+        "Slab, Zone, Hatch or Mesh and the polygon of a Roof. Each triangle is given by the 2D coordinates of its "
+        "three vertices. The output is aligned with the input array of elements; an element of another type gets an "
+        "error item."
+    ),
+    params_model=TriangulatePolygonsOfElementsParameters,
+    pagination_field="triangulations",
+)
+
+
+def unlink_elements(conn_header: ConnHeader, params: UnlinkElementsParameters) -> dict:
+    """
+    Removes the links created by LinkElements between the given pairs of elements. The direction matters: the link
+    starting from fromElementId and pointing to toElementId is removed. Undoable.
+    """
+    return conn_header.core.post_tapir_command(
+        command="UnlinkElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    unlink_elements,
+    name="elements_unlink_elements",
+    title="UnlinkElements",
+    description=(
+        "Removes the links created by LinkElements between the given pairs of elements. The direction matters: the "
+        "link starting from fromElementId and pointing to toElementId is removed. Undoable."
+    ),
+    params_model=UnlinkElementsParameters,
 )
 
 

@@ -9,6 +9,10 @@ from multiconn_archicad.models.tapir.commands import (
     DeleteProjectInfoFieldsParameters,
     GetAutoTextKeysParameters,
     GetAutoTextNameParameters,
+    GetCurrentViewImageParameters,
+    GetHotlinkProxyElementTableParameters,
+    GetNoteAutoTextKeywordsParameters,
+    GetProjectPreferencesParameters,
     OpenProjectParameters,
     PrintViewParameters,
     RebuildViewParameters,
@@ -18,6 +22,8 @@ from multiconn_archicad.models.tapir.commands import (
     SaveProjectParameters,
     SetGeoLocationParameters,
     SetProjectInfoFieldParameters,
+    SetProjectNotesParameters,
+    SetProjectPreferencesParameters,
     SetStoriesParameters,
     UpdateHotlinksParameters,
 )
@@ -197,8 +203,34 @@ register_tool_for_dispatch(
 )
 
 
+def get_current_view_image(conn_header: ConnHeader, params: GetCurrentViewImageParameters) -> dict:
+    """
+    Returns what the 3D window, or the PhotoRendering window, shows as a base64 encoded png or jpg image with its size
+    in pixels, without writing a file. Available from Archicad 30.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetCurrentViewImage", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    get_current_view_image,
+    name="project_get_current_view_image",
+    title="GetCurrentViewImage",
+    description=(
+        "Returns what the 3D window, or the PhotoRendering window, shows as a base64 encoded png or jpg image with its "
+        "size in pixels, without writing a file. Available from Archicad 30."
+    ),
+    params_model=GetCurrentViewImageParameters,
+    image_field="image",
+)
+
+
 def get_geo_location(conn_header: ConnHeader) -> dict:
-    """Gets the project location details."""
+    """
+    Gets the project location details: the project location, and the survey point's position, geo-referencing
+    parameters, visibility and lock state (the lock from Archicad 26).
+    """
     return conn_header.core.post_tapir_command(command="GetGeoLocation", parameters={})
 
 
@@ -206,14 +238,48 @@ register_tool_for_dispatch(
     get_geo_location,
     name="project_get_geo_location",
     title="GetGeoLocation",
-    description="Gets the project location details.",
+    description=(
+        "Gets the project location details: the project location, and the survey point's position, geo-referencing "
+        "parameters, visibility and lock state (the lock from Archicad 26)."
+    ),
     params_model=None,
+)
+
+
+def get_hotlink_proxy_element_table(conn_header: ConnHeader, params: GetHotlinkProxyElementTableParameters) -> dict:
+    """
+    Maps the proxy elements of placed hotlink instances to the elements of the source file they were made from, so an
+    element seen in a hotlinked module can be traced back to its source element.
+
+    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
+    and page_token set to that token to get the next page of results.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetHotlinkProxyElementTable",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    get_hotlink_proxy_element_table,
+    name="project_get_hotlink_proxy_element_table",
+    title="GetHotlinkProxyElementTable",
+    description=(
+        "Maps the proxy elements of placed hotlink instances to the elements of the source file they were made from, "
+        "so an element seen in a hotlinked module can be traced back to its source element."
+    ),
+    params_model=GetHotlinkProxyElementTableParameters,
+    pagination_field="proxyElementTables",
 )
 
 
 def get_hotlinks(conn_header: ConnHeader) -> dict:
     """
-    Gets the file system locations (path) of the hotlink modules. The hotlinks can have tree hierarchy in the project.
+    Gets the file system locations (path) of the hotlink modules and the instance elements placed from each node. The
+    hotlinks can have tree hierarchy in the project.
+
+    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
+    and page_token set to that token to get the next page of results.
     """
     return conn_header.core.post_tapir_command(command="GetHotlinks", parameters={})
 
@@ -223,10 +289,33 @@ register_tool_for_dispatch(
     name="project_get_hotlinks",
     title="GetHotlinks",
     description=(
-        "Gets the file system locations (path) of the hotlink modules. The hotlinks can have tree hierarchy in the "
-        "project."
+        "Gets the file system locations (path) of the hotlink modules and the instance elements placed from each node. "
+        "The hotlinks can have tree hierarchy in the project."
     ),
     params_model=None,
+    pagination_field="hotlinks",
+)
+
+
+def get_note_auto_text_keywords(conn_header: ConnHeader, params: GetNoteAutoTextKeywordsParameters) -> dict:
+    """
+    Retrieves the keywords of note autotexts (the autotexts of dimension, label and other element notes) by their
+    numeric API_NoteAutotextID values. Available from Archicad 26.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetNoteAutoTextKeywords", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    get_note_auto_text_keywords,
+    name="project_get_note_auto_text_keywords",
+    title="GetNoteAutoTextKeywords",
+    description=(
+        "Retrieves the keywords of note autotexts (the autotexts of dimension, label and other element notes) by their "
+        "numeric API_NoteAutotextID values. Available from Archicad 26."
+    ),
+    params_model=GetNoteAutoTextKeywordsParameters,
 )
 
 
@@ -258,6 +347,48 @@ register_tool_for_dispatch(
 )
 
 
+def get_project_notes(conn_header: ConnHeader) -> dict:
+    """
+    Gets the Project Notes of the project (File > Info > Project Notes): client, project name, company, address,
+    architect, draftsmen, project status, date of issue, keywords and notes.
+    """
+    return conn_header.core.post_tapir_command(command="GetProjectNotes", parameters={})
+
+
+register_tool_for_dispatch(
+    get_project_notes,
+    name="project_get_project_notes",
+    title="GetProjectNotes",
+    description=(
+        "Gets the Project Notes of the project (File > Info > Project Notes): client, project name, company, address, "
+        "architect, draftsmen, project status, date of issue, keywords and notes."
+    ),
+    params_model=None,
+)
+
+
+def get_project_preferences(conn_header: ConnHeader, params: GetProjectPreferencesParameters) -> dict:
+    """
+    Gets pages of the project preferences (Options > Project Preferences): the working units, the dimensions and the
+    calculation units. Further pages may follow.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetProjectPreferences", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    get_project_preferences,
+    name="project_get_project_preferences",
+    title="GetProjectPreferences",
+    description=(
+        "Gets pages of the project preferences (Options > Project Preferences): the working units, the dimensions and "
+        "the calculation units. Further pages may follow."
+    ),
+    params_model=GetProjectPreferencesParameters,
+)
+
+
 def get_stories(conn_header: ConnHeader) -> dict:
     """
     Retrieves information about the story structure of the currently loaded project: index, floor id, name, level,
@@ -273,6 +404,26 @@ register_tool_for_dispatch(
     description=(
         "Retrieves information about the story structure of the currently loaded project: index, floor id, name, "
         "level, height and, from Archicad 28, the IFC GlobalId of each story."
+    ),
+    params_model=None,
+)
+
+
+def get_survey_point_transformation(conn_header: ConnHeader) -> dict:
+    """
+    Gets the 3x4 matrix that transforms points from the Project Origin coordinate system into the Survey Point
+    coordinate system, row by row, and its inverse when it is invertible. Read only. Available from Archicad 27.
+    """
+    return conn_header.core.post_tapir_command(command="GetSurveyPointTransformation", parameters={})
+
+
+register_tool_for_dispatch(
+    get_survey_point_transformation,
+    name="project_get_survey_point_transformation",
+    title="GetSurveyPointTransformation",
+    description=(
+        "Gets the 3x4 matrix that transforms points from the Project Origin coordinate system into the Survey Point "
+        "coordinate system, row by row, and its inverse when it is invertible. Read only. Available from Archicad 27."
     ),
     params_model=None,
 )
@@ -397,7 +548,10 @@ register_tool_for_dispatch(
 
 
 def set_geo_location(conn_header: ConnHeader, params: SetGeoLocationParameters) -> dict:
-    """Sets the project location details."""
+    """
+    Sets the project location details: the project location, and the survey point's position, geo-referencing
+    parameters, visibility and lock state (the lock from Archicad 26). Omitted fields stay unchanged.
+    """
     return conn_header.core.post_tapir_command(
         command="SetGeoLocation", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
@@ -407,7 +561,10 @@ register_tool_for_dispatch(
     set_geo_location,
     name="project_set_geo_location",
     title="SetGeoLocation",
-    description="Sets the project location details.",
+    description=(
+        "Sets the project location details: the project location, and the survey point's position, geo-referencing "
+        "parameters, visibility and lock state (the lock from Archicad 26). Omitted fields stay unchanged."
+    ),
     params_model=SetGeoLocationParameters,
 )
 
@@ -425,6 +582,54 @@ register_tool_for_dispatch(
     title="SetProjectInfoField",
     description="Sets the value of a project info field.",
     params_model=SetProjectInfoFieldParameters,
+)
+
+
+def set_project_notes(conn_header: ConnHeader, params: SetProjectNotesParameters) -> dict:
+    """
+    Changes the Project Notes of the project (File > Info > Project Notes). Only the given fields are changed; texts
+    longer than the field Archicad stores are truncated.
+    """
+    return conn_header.core.post_tapir_command(
+        command="SetProjectNotes", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    set_project_notes,
+    name="project_set_project_notes",
+    title="SetProjectNotes",
+    description=(
+        "Changes the Project Notes of the project (File > Info > Project Notes). Only the given fields are changed; "
+        "texts longer than the field Archicad stores are truncated."
+    ),
+    params_model=SetProjectNotesParameters,
+)
+
+
+def set_project_preferences(conn_header: ConnHeader, params: SetProjectPreferencesParameters) -> dict:
+    """
+    Changes pages of the project preferences (Options > Project Preferences): the working units, the dimensions and the
+    calculation units. Only the given fields change, the rest of each page keeps its value. In Teamwork the
+    PreferencesDialog lockable object set has to be reserved first (ReserveLockableObjectSet). Available from Archicad
+    27.
+    """
+    return conn_header.core.post_tapir_command(
+        command="SetProjectPreferences", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    set_project_preferences,
+    name="project_set_project_preferences",
+    title="SetProjectPreferences",
+    description=(
+        "Changes pages of the project preferences (Options > Project Preferences): the working units, the dimensions "
+        "and the calculation units. Only the given fields change, the rest of each page keeps its value. In Teamwork "
+        "the PreferencesDialog lockable object set has to be reserved first (ReserveLockableObjectSet). Available from "
+        "Archicad 27."
+    ),
+    params_model=SetProjectPreferencesParameters,
 )
 
 

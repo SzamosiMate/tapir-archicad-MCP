@@ -5,8 +5,10 @@ from multiconn_archicad.models.tapir.commands import (
     CreateClassificationSystemsParameters,
     DeleteClassificationItemsParameters,
     DeleteClassificationSystemsParameters,
+    GetClassificationsOfElementDefaultsParameters,
     GetClassificationsOfElementsParameters,
     ImportClassificationsXmlParameters,
+    SetClassificationsOfElementDefaultsParameters,
     SetClassificationsOfElementsParameters,
     UpdateClassificationItemsParameters,
     UpdateClassificationSystemsParameters,
@@ -81,6 +83,31 @@ register_tool_for_dispatch(
 )
 
 
+def get_classifications_of_element_defaults(
+    conn_header: ConnHeader, params: GetClassificationsOfElementDefaultsParameters
+) -> dict:
+    """
+    Returns the classification of the tool defaults (the settings new elements get) of the given element types in the
+    given classification systems.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetClassificationsOfElementDefaults",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    get_classifications_of_element_defaults,
+    name="classifications_get_classifications_of_element_defaults",
+    title="GetClassificationsOfElementDefaults",
+    description=(
+        "Returns the classification of the tool defaults (the settings new elements get) of the given element types in "
+        "the given classification systems."
+    ),
+    params_model=GetClassificationsOfElementDefaultsParameters,
+)
+
+
 def get_classifications_of_elements(conn_header: ConnHeader, params: GetClassificationsOfElementsParameters) -> dict:
     """
     Returns the classification of the given elements in the given classification systems. It works for subelements of
@@ -123,6 +150,31 @@ register_tool_for_dispatch(
         "exist. Returns the systems and items it created and removed."
     ),
     params_model=ImportClassificationsXmlParameters,
+)
+
+
+def set_classifications_of_element_defaults(
+    conn_header: ConnHeader, params: SetClassificationsOfElementDefaultsParameters
+) -> dict:
+    """
+    Sets the classifications of the tool defaults (the settings new elements get) of the given element types. In order
+    to set a default to unclassified, omit the classificationItemId field.
+    """
+    return conn_header.core.post_tapir_command(
+        command="SetClassificationsOfElementDefaults",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    set_classifications_of_element_defaults,
+    name="classifications_set_classifications_of_element_defaults",
+    title="SetClassificationsOfElementDefaults",
+    description=(
+        "Sets the classifications of the tool defaults (the settings new elements get) of the given element types. In "
+        "order to set a default to unclassified, omit the classificationItemId field."
+    ),
+    params_model=SetClassificationsOfElementDefaultsParameters,
 )
 
 

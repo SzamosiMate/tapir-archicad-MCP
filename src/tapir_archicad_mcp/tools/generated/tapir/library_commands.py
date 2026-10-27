@@ -3,9 +3,12 @@ from multiconn_archicad import ConnHeader
 from multiconn_archicad.models.tapir.commands import (
     AddFilesToEmbeddedLibraryParameters,
     AddLibrariesParameters,
+    CopyFilesIntoEmbeddedLibraryParameters,
+    CreateFolderInEmbeddedLibraryParameters,
     DeleteEmbeddedLibraryItemsParameters,
     GetAvailableLibraryPartsParameters,
     SetLibrariesParameters,
+    SetLibraryPartScriptsParameters,
 )
 
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
@@ -46,6 +49,54 @@ register_tool_for_dispatch(
     title="AddLibraries",
     description="Adds the given folders to the project's local libraries, skipping any already loaded.",
     params_model=AddLibrariesParameters,
+)
+
+
+def copy_files_into_embedded_library(conn_header: ConnHeader, params: CopyFilesIntoEmbeddedLibraryParameters) -> dict:
+    """
+    Copies the given files, keeping their names, into a folder of the embedded library with one library operation. The
+    target folder is created when it is missing. With overwriteIfExists an item of the same name in that folder is
+    replaced.
+    """
+    return conn_header.core.post_tapir_command(
+        command="CopyFilesIntoEmbeddedLibrary",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    copy_files_into_embedded_library,
+    name="library_copy_files_into_embedded_library",
+    title="CopyFilesIntoEmbeddedLibrary",
+    description=(
+        "Copies the given files, keeping their names, into a folder of the embedded library with one library "
+        "operation. The target folder is created when it is missing. With overwriteIfExists an item of the same name "
+        "in that folder is replaced."
+    ),
+    params_model=CopyFilesIntoEmbeddedLibraryParameters,
+)
+
+
+def create_folder_in_embedded_library(conn_header: ConnHeader, params: CreateFolderInEmbeddedLibraryParameters) -> dict:
+    """
+    Creates a folder, with any missing parent folders, inside the embedded library. The folderPath is relative to the
+    embedded library, like the outputPath of AddFilesToEmbeddedLibrary.
+    """
+    return conn_header.core.post_tapir_command(
+        command="CreateFolderInEmbeddedLibrary",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    create_folder_in_embedded_library,
+    name="library_create_folder_in_embedded_library",
+    title="CreateFolderInEmbeddedLibrary",
+    description=(
+        "Creates a folder, with any missing parent folders, inside the embedded library. The folderPath is relative to "
+        "the embedded library, like the outputPath of AddFilesToEmbeddedLibrary."
+    ),
+    params_model=CreateFolderInEmbeddedLibraryParameters,
 )
 
 
@@ -144,4 +195,28 @@ register_tool_for_dispatch(
         "Set the libraries before opening a file that needs them and the missing-library dialog does not appear."
     ),
     params_model=SetLibrariesParameters,
+)
+
+
+def set_library_part_scripts(conn_header: ConnHeader, params: SetLibraryPartScriptsParameters) -> dict:
+    """
+    Sets the master, parameter, 2D, 3D and properties scripts of loaded library parts. Only the given scripts are
+    changed; an empty script makes the section empty. A library part that is not editable (e.g. a part of a library
+    package or a read-only library) is refused and left unchanged. Available from Archicad 28.
+    """
+    return conn_header.core.post_tapir_command(
+        command="SetLibraryPartScripts", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    set_library_part_scripts,
+    name="library_set_library_part_scripts",
+    title="SetLibraryPartScripts",
+    description=(
+        "Sets the master, parameter, 2D, 3D and properties scripts of loaded library parts. Only the given scripts are "
+        "changed; an empty script makes the section empty. A library part that is not editable (e.g. a part of a "
+        "library package or a read-only library) is refused and left unchanged. Available from Archicad 28."
+    ),
+    params_model=SetLibraryPartScriptsParameters,
 )

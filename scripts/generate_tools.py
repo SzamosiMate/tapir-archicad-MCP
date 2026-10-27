@@ -70,7 +70,7 @@ def _generate_imports_for_group(commands: list[dict], valid_model_names: set[str
     if not imports:
         return ""
 
-    import_statements = ",\n".join(f"    {imp}" for imp in sorted(imports))
+    import_statements = ",\n".join(f"    {imp}" for imp in sorted(imports, key=str.casefold))
     return f"from multiconn_archicad.models.{config.name}.commands import (\n{import_statements},\n)"
 
 
@@ -174,7 +174,7 @@ def generate_tool_files(grouped_commands: dict[str, list[dict]], config: ApiSour
 def generate_init_file(config: ApiSourceConfig, module_names: set[str]):
     init_path = config.output_dir / "__init__.py"
     content = [FILE_HEADER, ""]
-    for module_name in sorted(list(module_names)):
+    for module_name in sorted(module_names):
         content.append(f"from tapir_archicad_mcp.tools.generated.{config.name}.{module_name} import *")
     with open(init_path, "w", encoding="utf-8") as f:
         f.write("\n".join(content))
