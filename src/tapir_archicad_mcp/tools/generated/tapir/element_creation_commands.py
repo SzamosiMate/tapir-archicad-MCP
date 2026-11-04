@@ -21,6 +21,7 @@ from multiconn_archicad.models.tapir.commands import (
     CreateObjectsParameters,
     CreateOpeningsParameters,
     CreatePolylinesParameters,
+    CreateRailingsParameters,
     CreateRoofsParameters,
     CreateSlabsParameters,
     CreateSplinesParameters,
@@ -212,7 +213,10 @@ register_tool_for_dispatch(
 
 
 def create_hatches(conn_header: ConnHeader, params: CreateHatchesParameters) -> dict:
-    """Creates Hatch elements based on the given parameters."""
+    """
+    Creates Hatch elements based on the given parameters. A hatch can have holes, in the same format
+    SetDetailsOfElements accepts for hatches.
+    """
     return conn_header.core.post_tapir_command(
         command="CreateHatches", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
@@ -222,7 +226,10 @@ register_tool_for_dispatch(
     create_hatches,
     name="elements_create_hatches",
     title="CreateHatches",
-    description="Creates Hatch elements based on the given parameters.",
+    description=(
+        "Creates Hatch elements based on the given parameters. A hatch can have holes, in the same format "
+        "SetDetailsOfElements accepts for hatches."
+    ),
     params_model=CreateHatchesParameters,
 )
 
@@ -392,6 +399,30 @@ register_tool_for_dispatch(
     title="CreatePolylines",
     description="Creates Polyline elements based on the given parameters.",
     params_model=CreatePolylinesParameters,
+)
+
+
+def create_railings(conn_header: ConnHeader, params: CreateRailingsParameters) -> dict:
+    """
+    Creates Railing elements along a reference polyline. Posts, rails, handrails, toprails, panels and balusters come
+    from the favorite or from the Railing tool defaults; Archicad generates one node per vertex and one segment per pair
+    of consecutive vertices.
+    """
+    return conn_header.core.post_tapir_command(
+        command="CreateRailings", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    create_railings,
+    name="elements_create_railings",
+    title="CreateRailings",
+    description=(
+        "Creates Railing elements along a reference polyline. Posts, rails, handrails, toprails, panels and balusters "
+        "come from the favorite or from the Railing tool defaults; Archicad generates one node per vertex and one "
+        "segment per pair of consecutive vertices."
+    ),
+    params_model=CreateRailingsParameters,
 )
 
 

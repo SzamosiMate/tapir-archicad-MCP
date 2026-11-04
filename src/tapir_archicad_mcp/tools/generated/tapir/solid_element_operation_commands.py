@@ -2,11 +2,15 @@
 from multiconn_archicad import ConnHeader
 from multiconn_archicad.models.tapir.commands import (
     CreateSolidElementLinksParameters,
+    CreateSolidOperationsParameters,
     GetElementTrimsParameters,
+    GetMergedElementsParameters,
     GetSolidElementLinksParameters,
+    MergeElementsParameters,
     RemoveElementTrimsParameters,
     RemoveSolidElementLinksParameters,
     TrimElementsParameters,
+    UnmergeElementsParameters,
 )
 
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
@@ -28,6 +32,30 @@ register_tool_for_dispatch(
 )
 
 
+def create_solid_operations(conn_header: ConnHeader, params: CreateSolidOperationsParameters) -> dict:
+    """
+    Runs a solid operation (subtraction, intersection, addition) on two morphs and returns the resulting morphs, one
+    item per operation. Unlike CreateSolidElementLinks this is not a link: the target and the operator morph are
+    replaced by the result. Morphs only; the operations run in one undo step.
+    """
+    return conn_header.core.post_tapir_command(
+        command="CreateSolidOperations", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    create_solid_operations,
+    name="solid_ops_create_solid_operations",
+    title="CreateSolidOperations",
+    description=(
+        "Runs a solid operation (subtraction, intersection, addition) on two morphs and returns the resulting morphs, "
+        "one item per operation. Unlike CreateSolidElementLinks this is not a link: the target and the operator morph "
+        "are replaced by the result. Morphs only; the operations run in one undo step."
+    ),
+    params_model=CreateSolidOperationsParameters,
+)
+
+
 def get_element_trims(conn_header: ConnHeader, params: GetElementTrimsParameters) -> dict:
     """Which roofs and shells trim each queried element, with the trim type, and which elements it trims."""
     return conn_header.core.post_tapir_command(
@@ -41,6 +69,32 @@ register_tool_for_dispatch(
     title="GetElementTrims",
     description=("Which roofs and shells trim each queried element, with the trim type, and which elements it trims."),
     params_model=GetElementTrimsParameters,
+)
+
+
+def get_merged_elements(conn_header: ConnHeader, params: GetMergedElementsParameters) -> dict:
+    """
+    Gets the elements each queried element is merged with, one item per queried element; an unknown element is an error
+    item.
+
+    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
+    and page_token set to that token to get the next page of results.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetMergedElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    get_merged_elements,
+    name="solid_ops_get_merged_elements",
+    title="GetMergedElements",
+    description=(
+        "Gets the elements each queried element is merged with, one item per queried element; an unknown element is an "
+        "error item."
+    ),
+    params_model=GetMergedElementsParameters,
+    pagination_field="elementMerges",
 )
 
 
@@ -59,6 +113,30 @@ register_tool_for_dispatch(
         "Returns solid element operation links for each queried element, grouped by role (target or operator)."
     ),
     params_model=GetSolidElementLinksParameters,
+)
+
+
+def merge_elements(conn_header: ConnHeader, params: MergeElementsParameters) -> dict:
+    """
+    Merges the given construction elements (the Merge command of Archicad, which cleans up the junctions of slabs,
+    beams, walls and similar elements). Undoable. The element types are not filtered: Archicad reports the ones it
+    cannot merge.
+    """
+    return conn_header.core.post_tapir_command(
+        command="MergeElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    merge_elements,
+    name="solid_ops_merge_elements",
+    title="MergeElements",
+    description=(
+        "Merges the given construction elements (the Merge command of Archicad, which cleans up the junctions of "
+        "slabs, beams, walls and similar elements). Undoable. The element types are not filtered: Archicad reports the "
+        "ones it cannot merge."
+    ),
+    params_model=MergeElementsParameters,
 )
 
 
@@ -113,4 +191,22 @@ register_tool_for_dispatch(
         "element with a trim type."
     ),
     params_model=TrimElementsParameters,
+)
+
+
+def unmerge_elements(conn_header: ConnHeader, params: UnmergeElementsParameters) -> dict:
+    """Removes the merge between the two elements of each given pair. Undoable; one execution result per pair."""
+    return conn_header.core.post_tapir_command(
+        command="UnmergeElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    unmerge_elements,
+    name="solid_ops_unmerge_elements",
+    title="UnmergeElements",
+    description=(
+        "Removes the merge between the two elements of each given pair. Undoable; one execution result per pair."
+    ),
+    params_model=UnmergeElementsParameters,
 )

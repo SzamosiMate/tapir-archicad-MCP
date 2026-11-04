@@ -208,7 +208,7 @@ async def test_page_token_is_bound_to_command(fake_archicad):
     with pytest.raises(ToolError, match="page_token"):
         await archicad_call_tool(
             "properties_get_all_properties",
-            {"port": fake_archicad.port, "page_token": token},
+            {"port": fake_archicad.port, "params": {}, "page_token": token},
         )
 
     assert len(fake_archicad.calls) == 1

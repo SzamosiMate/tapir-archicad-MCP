@@ -3,6 +3,7 @@ from multiconn_archicad import ConnHeader
 from multiconn_archicad.models.tapir.commands import (
     ModifyBeamsParameters,
     ModifyColumnsParameters,
+    ModifyCurtainWallsParameters,
     ModifyDoorsParameters,
     ModifyLabelsParameters,
     ModifyLampsParameters,
@@ -10,10 +11,12 @@ from multiconn_archicad.models.tapir.commands import (
     ModifyMorphsParameters,
     ModifyObjectsParameters,
     ModifyRoofsParameters,
+    ModifyShellsParameters,
     ModifySlabsParameters,
     ModifyTextsParameters,
     ModifyWallsParameters,
     ModifyWindowsParameters,
+    ModifyZonesParameters,
 )
 
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
@@ -48,6 +51,30 @@ register_tool_for_dispatch(
     title="ModifyColumns",
     description="Modifies Column elements based on the given parameters.",
     params_model=ModifyColumnsParameters,
+)
+
+
+def modify_curtain_walls(conn_header: ConnHeader, params: ModifyCurtainWallsParameters) -> dict:
+    """
+    Modifies Curtain Wall elements in place, keeping their GUID, properties and classifications: the height, the bottom
+    elevation and story, the reference line (with the same number of segments), and the column (primary) and row
+    (secondary) pattern with its cell assignments, in the fields of CreateCurtainWalls.
+    """
+    return conn_header.core.post_tapir_command(
+        command="ModifyCurtainWalls", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    modify_curtain_walls,
+    name="elements_modify_curtain_walls",
+    title="ModifyCurtainWalls",
+    description=(
+        "Modifies Curtain Wall elements in place, keeping their GUID, properties and classifications: the height, the "
+        "bottom elevation and story, the reference line (with the same number of segments), and the column (primary) "
+        "and row (secondary) pattern with its cell assignments, in the fields of CreateCurtainWalls."
+    ),
+    params_model=ModifyCurtainWallsParameters,
 )
 
 
@@ -163,6 +190,28 @@ register_tool_for_dispatch(
 )
 
 
+def modify_shells(conn_header: ConnHeader, params: ModifyShellsParameters) -> dict:
+    """
+    Modifies the structure (Basic or Composite, building material or composite) of Shell elements based on the given
+    parameters.
+    """
+    return conn_header.core.post_tapir_command(
+        command="ModifyShells", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    modify_shells,
+    name="elements_modify_shells",
+    title="ModifyShells",
+    description=(
+        "Modifies the structure (Basic or Composite, building material or composite) of Shell elements based on the "
+        "given parameters."
+    ),
+    params_model=ModifyShellsParameters,
+)
+
+
 def modify_slabs(conn_header: ConnHeader, params: ModifySlabsParameters) -> dict:
     """Modifies Slab elements based on the given parameters."""
     return conn_header.core.post_tapir_command(
@@ -224,4 +273,26 @@ register_tool_for_dispatch(
     title="ModifyWindows",
     description="Modifies Window elements based on the given parameters.",
     params_model=ModifyWindowsParameters,
+)
+
+
+def modify_zones(conn_header: ConnHeader, params: ModifyZonesParameters) -> dict:
+    """
+    Modifies Zone elements: name, number, category, zone stamp, height, base offset, top link and floor thickness. Only
+    the given fields are changed; the polygon is kept.
+    """
+    return conn_header.core.post_tapir_command(
+        command="ModifyZones", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    modify_zones,
+    name="elements_modify_zones",
+    title="ModifyZones",
+    description=(
+        "Modifies Zone elements: name, number, category, zone stamp, height, base offset, top link and floor "
+        "thickness. Only the given fields are changed; the polygon is kept."
+    ),
+    params_model=ModifyZonesParameters,
 )

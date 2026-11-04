@@ -93,7 +93,7 @@ Select the response list most likely to dominate tokens if several exist. The cu
 
 ### Base64 images
 
-Inspect returned content and referenced item models. Configure `image_fields` for a base64 string or `image_lists` for a supported list shape; the current extractor expects list items like `{"image": {"content": "..."}}` or an error. File paths, texture filenames and image-related enum values are not returned images. Image lists may independently need pagination. If a new shape is unsupported, make the smallest necessary generator/runtime change and test it rather than adding an ineffective config field.
+Inspect returned content and referenced item models. Configure `image_fields` for base64 strings and `image_lists` for arrays of base64 strings or items shaped like `{"image": {"content": "..."}}` or an error. Use a tuple when a command returns multiple fields of the same kind. File paths, texture filenames and image-related enum values are not returned images. Image lists may independently need pagination. If a new shape is unsupported, make the smallest necessary generator/runtime change and test it rather than adding an ineffective config field.
 
 ### Category mapping
 

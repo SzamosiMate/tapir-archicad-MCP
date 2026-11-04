@@ -307,13 +307,14 @@ def has_type(schema, required_type, document):
 
 
 def validate_config(release, configs):
-    from generate_tools import camel_to_snake
+    from generate_tools import camel_to_snake, category_to_module_name
 
     expected = {}
     for config in configs:
         commands = release["commands"][config.name]
         schema = release["schemas"][config.name]
         active = commands.keys() - config.commands_to_exclude
+        module_categories = {}
         for name, command in commands.items():
             group = command["group"]
             require(group in config.group_mapping, f"Unmapped category: {config.name}/{group}")
@@ -322,8 +323,13 @@ def validate_config(release, configs):
             public_name = f"{config.group_mapping[group]}_{camel_to_snake(name)}"
             require(re.fullmatch(r"[a-z][a-z0-9]*(?:_[a-z0-9]+)*", public_name), f"Invalid public name: {public_name}")
             require(public_name not in expected, f"Tool-name collision: {public_name}")
-            expected[public_name] = {"source": config.name, "title": name, "module": group.replace(" ", "_").lower()}
-        require(not (config.image_fields.keys() & config.image_lists.keys()), f"Conflicting {config.name} image config")
+            module = category_to_module_name(group)
+            require(module.isidentifier(), f"Invalid category module: {config.name}/{group}")
+            require(
+                module_categories.setdefault(module, group) == group,
+                f"Category module collision: {config.name}/{module}",
+            )
+            expected[public_name] = {"source": config.name, "title": name, "module": module}
         for setting, mapping in (
             ("pagination", config.paginated_commands),
             ("image", config.image_fields),
@@ -333,27 +339,34 @@ def validate_config(release, configs):
                 mapping.keys() <= active,
                 f"Inactive/unknown {config.name} {setting} entries: {sorted(mapping.keys() - active)}",
             )
-            for title, field in mapping.items():
-                fields = field_schemas(schema["$defs"][title + "Result"], field, schema)
-                required_type = "string" if setting == "image" else "array"
-                require(
-                    fields and all(has_type(f, required_type, schema) for f in fields),
-                    f"Invalid {setting} top-level field: {config.name}/{title}/{field}",
-                )
-                if setting == "image_list":
-                    contents = []
-                    for item in fields:
-                        for array in variants(item, schema):
-                            if "items" not in array:
-                                continue
-                            for branch in variants(array["items"], schema):
-                                for image in field_schemas(branch, "image", schema):
-                                    contents.extend(field_schemas(image, "content", schema))
+            for title, configured_fields in mapping.items():
+                names = (configured_fields,) if isinstance(configured_fields, str) else configured_fields
+                for field in names:
+                    fields = field_schemas(schema["$defs"][title + "Result"], field, schema)
+                    required_type = "string" if setting == "image" else "array"
                     require(
-                        contents and all(has_type(f, "string", schema) for f in contents),
-                        f"Unsupported image-list shape: {config.name}/{title}/{field}",
+                        fields and all(has_type(f, required_type, schema) for f in fields),
+                        f"Invalid {setting} top-level field: {config.name}/{title}/{field}",
                     )
+                    if setting == "image_list":
+                        require(
+                            all(is_image_list(f, schema) for f in fields),
+                            f"Unsupported image-list shape: {config.name}/{title}/{field}",
+                        )
     return expected
+
+
+def is_image_list(schema, document):
+    items = [branch["items"] for branch in variants(schema, document) if "items" in branch]
+    if items and all(has_type(item, "string", document) for item in items):
+        return True
+    contents = [
+        content
+        for item in items
+        for image in field_schemas(item, "image", document)
+        for content in field_schemas(image, "content", document)
+    ]
+    return bool(contents) and all(has_type(content, "string", document) for content in contents)
 
 
 def validate_generated(release, configs, expected):

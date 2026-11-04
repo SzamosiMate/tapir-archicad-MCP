@@ -2,11 +2,19 @@
 from multiconn_archicad import ConnHeader
 from multiconn_archicad.models.tapir.commands import (
     ChangeWindowParameters,
+    CloseWindowsParameters,
+    DeleteGhostRecordsParameters,
     GetContainingDatabasesParameters,
     GetElementFromUserParameters,
+    GetLineFromUserParameters,
     GetPointFromUserParameters,
+    GetPolygonFromUserParameters,
     GetSpecialFoldersParameters,
+    ModelToScreenParameters,
+    RunActionCenterChecksParameters,
+    ScreenToModelParameters,
     Set3DCutawayStatusParameters,
+    SetArchicadVisibilityParameters,
     SetCurrentWindowDrawingScaleParameters,
     SetDialogAutoCloseParameters,
     ShowAlertParameters,
@@ -18,7 +26,10 @@ from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
 def change_window(conn_header: ConnHeader, params: ChangeWindowParameters) -> dict:
     """
     Changes the current (active) window to the given window. A databaseId on its own is enough; the window type is taken
-    from the database. With windowType 'FloorPlan' and a storyIndex it also activates that story on the floor plan.
+    from the database. The databaseId of a worksheet or detail whose window was never opened opens its Project Map item
+    instead (from Archicad 27). With windowType 'FloorPlan' and a storyIndex it also activates that story on the floor
+    plan. windowType 'Report' on its own opens the Session Report window (from Archicad 26); its text cannot be read
+    through the Archicad API.
     """
     return conn_header.core.post_tapir_command(
         command="ChangeWindow", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -31,10 +42,58 @@ register_tool_for_dispatch(
     title="ChangeWindow",
     description=(
         "Changes the current (active) window to the given window. A databaseId on its own is enough; the window type "
-        "is taken from the database. With windowType 'FloorPlan' and a storyIndex it also activates that story on the "
-        "floor plan."
+        "is taken from the database. The databaseId of a worksheet or detail whose window was never opened opens its "
+        "Project Map item instead (from Archicad 27). With windowType 'FloorPlan' and a storyIndex it also activates "
+        "that story on the floor plan. windowType 'Report' on its own opens the Session Report window (from Archicad "
+        "26); its text cannot be read through the Archicad API."
     ),
     params_model=ChangeWindowParameters,
+)
+
+
+def close_windows(conn_header: ConnHeader, params: CloseWindowsParameters) -> dict:
+    """
+    Closes the windows of the given databases (for example layouts, sections or details opened earlier with
+    ChangeWindow), with one execution result per window; a window Archicad cannot close gets a failed result. Requires
+    Archicad 27 or later.
+    """
+    return conn_header.core.post_tapir_command(
+        command="CloseWindows", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    close_windows,
+    name="app_close_windows",
+    title="CloseWindows",
+    description=(
+        "Closes the windows of the given databases (for example layouts, sections or details opened earlier with "
+        "ChangeWindow), with one execution result per window; a window Archicad cannot close gets a failed result. "
+        "Requires Archicad 27 or later."
+    ),
+    params_model=CloseWindowsParameters,
+)
+
+
+def delete_ghost_records(conn_header: ConnHeader, params: DeleteGhostRecordsParameters) -> dict:
+    """
+    Deletes the trace (ghost) record of each given parent database, which removes the trace reference shown in that
+    database's window. A database without a trace reference gets a failed execution result. Not undoable.
+    """
+    return conn_header.core.post_tapir_command(
+        command="DeleteGhostRecords", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    delete_ghost_records,
+    name="app_delete_ghost_records",
+    title="DeleteGhostRecords",
+    description=(
+        "Deletes the trace (ghost) record of each given parent database, which removes the trace reference shown in "
+        "that database's window. A database without a trace reference gets a failed execution result. Not undoable."
+    ),
+    params_model=DeleteGhostRecordsParameters,
 )
 
 
@@ -106,6 +165,26 @@ register_tool_for_dispatch(
 )
 
 
+def get_archicad_visibility(conn_header: ConnHeader) -> dict:
+    """
+    Returns whether the Archicad application is shown or hidden. Supported on Windows only; on macOS it returns an
+    error.
+    """
+    return conn_header.core.post_tapir_command(command="GetArchicadVisibility", parameters={})
+
+
+register_tool_for_dispatch(
+    get_archicad_visibility,
+    name="app_get_archicad_visibility",
+    title="GetArchicadVisibility",
+    description=(
+        "Returns whether the Archicad application is shown or hidden. Supported on Windows only; on macOS it returns "
+        "an error."
+    ),
+    params_model=None,
+)
+
+
 def get_containing_databases(conn_header: ConnHeader, params: GetContainingDatabasesParameters) -> dict:
     """
     Returns the database (window type, database id and name) that contains each of the given elements, from any
@@ -155,7 +234,11 @@ register_tool_for_dispatch(
 
 
 def get_current_window_type(conn_header: ConnHeader) -> dict:
-    """Returns the type of the current (active) window."""
+    """
+    Returns the type of the current (active) window and, when it has one, the databaseId of the database it shows, which
+    ChangeWindow takes to bring the window back after a script switched to another one. The saved view (View Map item)
+    the window was opened from is not returned, as Archicad does not tell which one it was.
+    """
     return conn_header.core.post_tapir_command(command="GetCurrentWindowType", parameters={})
 
 
@@ -163,7 +246,59 @@ register_tool_for_dispatch(
     get_current_window_type,
     name="app_get_current_window_type",
     title="GetCurrentWindowType",
-    description="Returns the type of the current (active) window.",
+    description=(
+        "Returns the type of the current (active) window and, when it has one, the databaseId of the database it "
+        "shows, which ChangeWindow takes to bring the window back after a script switched to another one. The saved "
+        "view (View Map item) the window was opened from is not returned, as Archicad does not tell which one it was."
+    ),
+    params_model=None,
+)
+
+
+def get_dialog_auto_close(conn_header: ConnHeader) -> dict:
+    """
+    Tells whether the dialog auto close is on, the same state SetDialogAutoClose writes, so a script can restore it
+    afterwards. The state belongs to the running Archicad process: it is off when Archicad starts (unless the
+    TAPIR_DIALOG_AUTOCLOSE environment variable is true), it stays as last set until Archicad quits, and it is shared by
+    every add-on and script in that Archicad.
+    """
+    return conn_header.core.post_tapir_command(command="GetDialogAutoClose", parameters={})
+
+
+register_tool_for_dispatch(
+    get_dialog_auto_close,
+    name="app_get_dialog_auto_close",
+    title="GetDialogAutoClose",
+    description=(
+        "Tells whether the dialog auto close is on, the same state SetDialogAutoClose writes, so a script can restore "
+        "it afterwards. The state belongs to the running Archicad process: it is off when Archicad starts (unless the "
+        "TAPIR_DIALOG_AUTOCLOSE environment variable is true), it stays as last set until Archicad quits, and it is "
+        "shared by every add-on and script in that Archicad."
+    ),
+    params_model=None,
+)
+
+
+def get_edit_mode_state(conn_header: ConnHeader) -> dict:
+    """
+    Tells whether Archicad is in a hierarchical editing mode (curtain wall, stair, beam or column editing), and which
+    element is being edited. Read only: it never enters, leaves or cancels an editing mode. Commands that modify the
+    project can fail while such a mode is active. The overall inEditMode flag requires Archicad 29 or later; the command
+    requires Archicad 27 or later.
+    """
+    return conn_header.core.post_tapir_command(command="GetEditModeState", parameters={})
+
+
+register_tool_for_dispatch(
+    get_edit_mode_state,
+    name="app_get_edit_mode_state",
+    title="GetEditModeState",
+    description=(
+        "Tells whether Archicad is in a hierarchical editing mode (curtain wall, stair, beam or column editing), and "
+        "which element is being edited. Read only: it never enters, leaves or cancels an editing mode. Commands that "
+        "modify the project can fail while such a mode is active. The overall inEditMode flag requires Archicad 29 or "
+        "later; the command requires Archicad 27 or later."
+    ),
     params_model=None,
 )
 
@@ -193,6 +328,24 @@ register_tool_for_dispatch(
 )
 
 
+def get_line_from_user(conn_header: ConnHeader, params: GetLineFromUserParameters) -> dict:
+    """Waits for the user to input a line in the active Archicad window and returns start and end coordinates."""
+    return conn_header.core.post_tapir_command(
+        command="GetLineFromUser", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    get_line_from_user,
+    name="app_get_line_from_user",
+    title="GetLineFromUser",
+    description=(
+        "Waits for the user to input a line in the active Archicad window and returns start and end coordinates."
+    ),
+    params_model=GetLineFromUserParameters,
+)
+
+
 def get_point_from_user(conn_header: ConnHeader, params: GetPointFromUserParameters) -> dict:
     """
     Asks the designer to click a point in the current window and returns it. Archicad waits for the click or for Escape,
@@ -213,6 +366,44 @@ register_tool_for_dispatch(
         "cancelled."
     ),
     params_model=GetPointFromUserParameters,
+)
+
+
+def get_polygon_from_user(conn_header: ConnHeader, params: GetPolygonFromUserParameters) -> dict:
+    """Waits for the user to input a polygon in the active Archicad window and returns its points and arcs."""
+    return conn_header.core.post_tapir_command(
+        command="GetPolygonFromUser", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    get_polygon_from_user,
+    name="app_get_polygon_from_user",
+    title="GetPolygonFromUser",
+    description=(
+        "Waits for the user to input a polygon in the active Archicad window and returns its points and arcs."
+    ),
+    params_model=GetPolygonFromUserParameters,
+)
+
+
+def get_printer_and_plotter_info(conn_header: ConnHeader) -> dict:
+    """
+    Retrieves the printer selected in Archicad, with its name and orientation, and the selected plotter, with its name
+    and model.
+    """
+    return conn_header.core.post_tapir_command(command="GetPrinterAndPlotterInfo", parameters={})
+
+
+register_tool_for_dispatch(
+    get_printer_and_plotter_info,
+    name="app_get_printer_and_plotter_info",
+    title="GetPrinterAndPlotterInfo",
+    description=(
+        "Retrieves the printer selected in Archicad, with its name and orientation, and the selected plotter, with its "
+        "name and model."
+    ),
+    params_model=None,
 )
 
 
@@ -239,8 +430,8 @@ register_tool_for_dispatch(
 def get_product_version_info(conn_header: ConnHeader) -> dict:
     """
     Retrieves the version information of the running Archicad: build number, language code, product family and version
-    text, plus the product name, product type and main/update/hotfix versions from Archicad 29. Requires Archicad 28 or
-    later.
+    text, plus the product name, product type, main/update/hotfix versions, the available domains (Architecture, MEP)
+    and the CEIP project identifier of the open project from Archicad 29. Requires Archicad 28 or later.
     """
     return conn_header.core.post_tapir_command(command="GetProductVersionInfo", parameters={})
 
@@ -251,8 +442,9 @@ register_tool_for_dispatch(
     title="GetProductVersionInfo",
     description=(
         "Retrieves the version information of the running Archicad: build number, language code, product family and "
-        "version text, plus the product name, product type and main/update/hotfix versions from Archicad 29. Requires "
-        "Archicad 28 or later."
+        "version text, plus the product name, product type, main/update/hotfix versions, the available domains "
+        "(Architecture, MEP) and the CEIP project identifier of the open project from Archicad 29. Requires Archicad "
+        "28 or later."
     ),
     params_model=None,
 )
@@ -294,6 +486,114 @@ register_tool_for_dispatch(
 )
 
 
+def model_to_screen(conn_header: ConnHeader, params: ModelToScreenParameters) -> dict:
+    """
+    Converts model coordinates to pixel positions local to the current Archicad view window (not global desktop
+    coordinates), using the current window's size, drawing scale and zoom. In a 3D window the coordinates are projected
+    with the current camera; in other windows z is disregarded. Available from Archicad 29.
+    """
+    return conn_header.core.post_tapir_command(
+        command="ModelToScreen", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    model_to_screen,
+    name="app_model_to_screen",
+    title="ModelToScreen",
+    description=(
+        "Converts model coordinates to pixel positions local to the current Archicad view window (not global desktop "
+        "coordinates), using the current window's size, drawing scale and zoom. In a 3D window the coordinates are "
+        "projected with the current camera; in other windows z is disregarded. Available from Archicad 29."
+    ),
+    params_model=ModelToScreenParameters,
+)
+
+
+def rebuild_current_database(conn_header: ConnHeader) -> dict:
+    """Rebuilds the current database, the one the API works on (see ChangeWindow). Requires Archicad 27 or later."""
+    return conn_header.core.post_tapir_command(command="RebuildCurrentDatabase", parameters={})
+
+
+register_tool_for_dispatch(
+    rebuild_current_database,
+    name="app_rebuild_current_database",
+    title="RebuildCurrentDatabase",
+    description=(
+        "Rebuilds the current database, the one the API works on (see ChangeWindow). Requires Archicad 27 or later."
+    ),
+    params_model=None,
+)
+
+
+def redraw_current_database(conn_header: ConnHeader) -> dict:
+    """
+    Redraws the current database, even when its window is in the background. Only the visible region of its window is
+    updated.
+    """
+    return conn_header.core.post_tapir_command(command="RedrawCurrentDatabase", parameters={})
+
+
+register_tool_for_dispatch(
+    redraw_current_database,
+    name="app_redraw_current_database",
+    title="RedrawCurrentDatabase",
+    description=(
+        "Redraws the current database, even when its window is in the background. Only the visible region of its "
+        "window is updated."
+    ),
+    params_model=None,
+)
+
+
+def run_action_center_checks(conn_header: ConnHeader, params: RunActionCenterChecksParameters) -> dict:
+    """
+    Runs the given checks of the Action Center (by default the hotlink check). A successful result means the check ran,
+    not that nothing was found: Archicad does not report the outcome to the caller, it shows the Action Center tab when
+    the check found an issue.
+    """
+    return conn_header.core.post_tapir_command(
+        command="RunActionCenterChecks", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    run_action_center_checks,
+    name="app_run_action_center_checks",
+    title="RunActionCenterChecks",
+    description=(
+        "Runs the given checks of the Action Center (by default the hotlink check). A successful result means the "
+        "check ran, not that nothing was found: Archicad does not report the outcome to the caller, it shows the "
+        "Action Center tab when the check found an issue."
+    ),
+    params_model=RunActionCenterChecksParameters,
+)
+
+
+def screen_to_model(conn_header: ConnHeader, params: ScreenToModelParameters) -> dict:
+    """
+    Converts pixel positions local to the current Archicad view window to 2D model coordinates of the current database,
+    using the current window's size, drawing scale and zoom. It is a 2D mapping: it does not reconstruct a 3D point, and
+    several model coordinates can map to the same pixel.
+    """
+    return conn_header.core.post_tapir_command(
+        command="ScreenToModel", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    screen_to_model,
+    name="app_screen_to_model",
+    title="ScreenToModel",
+    description=(
+        "Converts pixel positions local to the current Archicad view window to 2D model coordinates of the current "
+        "database, using the current window's size, drawing scale and zoom. It is a 2D mapping: it does not "
+        "reconstruct a 3D point, and several model coordinates can map to the same pixel."
+    ),
+    params_model=ScreenToModelParameters,
+)
+
+
 def set3_d_cutaway_status(conn_header: ConnHeader, params: Set3DCutawayStatusParameters) -> dict:
     """
     Turns 3D Cutaway on or off and shows or hides the cutting planes in the 3D window. In Archicad 25-27 the 3D window
@@ -313,6 +613,30 @@ register_tool_for_dispatch(
         "window may need to be open."
     ),
     params_model=Set3DCutawayStatusParameters,
+)
+
+
+def set_archicad_visibility(conn_header: ConnHeader, params: SetArchicadVisibilityParameters) -> dict:
+    """
+    Hides or shows the Archicad application, e.g. to keep it out of the way while a batch runs. A script that hides
+    Archicad must show it again, also when the script fails (e.g. in a finally block). Supported on Windows only; on
+    macOS it returns an error.
+    """
+    return conn_header.core.post_tapir_command(
+        command="SetArchicadVisibility", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    set_archicad_visibility,
+    name="app_set_archicad_visibility",
+    title="SetArchicadVisibility",
+    description=(
+        "Hides or shows the Archicad application, e.g. to keep it out of the way while a batch runs. A script that "
+        "hides Archicad must show it again, also when the script fails (e.g. in a finally block). Supported on Windows "
+        "only; on macOS it returns an error."
+    ),
+    params_model=SetArchicadVisibilityParameters,
 )
 
 
