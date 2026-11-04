@@ -3,12 +3,15 @@ from multiconn_archicad import ConnHeader
 from multiconn_archicad.models.tapir.commands import (
     GetElementsByIFCIdsParameters,
     GetIFCAttributesOfElementsParameters,
+    GetIFCClassificationReferencesOfElementsParameters,
     GetIFCIdsOfElementsParameters,
     GetIFCPropertiesOfElementsParameters,
     GetIFCTypeOfElementsParameters,
     IFCFileOperationParameters,
+    RemoveIFCClassificationReferencesOfElementsParameters,
     RemoveIFCPropertiesOfElementsParameters,
     SetIFCAttributesOfElementsParameters,
+    SetIFCClassificationReferencesOfElementsParameters,
     SetIFCPropertiesOfElementsParameters,
 )
 
@@ -17,7 +20,7 @@ from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
 
 def get_elements_by_ifc_ids(conn_header: ConnHeader, params: GetElementsByIFCIdsParameters) -> dict:
     """
-    Retrieves the elements by the given IFC identifiers.
+    Retrieves the elements by the given IFC identifiers. Accepts IFC GlobalIds in every Archicad version.
 
     This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
     and page_token set to that token to get the next page of results.
@@ -31,7 +34,9 @@ register_tool_for_dispatch(
     get_elements_by_ifc_ids,
     name="ifc_get_elements_by_ifc_ids",
     title="GetElementsByIFCIds",
-    description="Retrieves the elements by the given IFC identifiers.",
+    description=(
+        "Retrieves the elements by the given IFC identifiers. Accepts IFC GlobalIds in every Archicad version."
+    ),
     params_model=GetElementsByIFCIdsParameters,
     pagination_field="elementsByIFCIds",
 )
@@ -66,6 +71,41 @@ register_tool_for_dispatch(
 )
 
 
+def get_ifc_classification_references_of_elements(
+    conn_header: ConnHeader, params: GetIFCClassificationReferencesOfElementsParameters
+) -> dict:
+    """
+    Retrieves the IFC classification references of the given elements, subelements included: identification, name,
+    location, description (from Archicad 29), the referenced classification (name, source, edition) and whether the
+    reference comes from the preview translator or is stored locally. On Archicad 25, 26 and 27 the source is not given,
+    the referenced classification also has its edition date, description and location, and storedOnly returns only the
+    references stored on the elements.
+
+    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
+    and page_token set to that token to get the next page of results.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetIFCClassificationReferencesOfElements",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    get_ifc_classification_references_of_elements,
+    name="ifc_get_ifc_classification_references_of_elements",
+    title="GetIFCClassificationReferencesOfElements",
+    description=(
+        "Retrieves the IFC classification references of the given elements, subelements included: identification, "
+        "name, location, description (from Archicad 29), the referenced classification (name, source, edition) and "
+        "whether the reference comes from the preview translator or is stored locally. On Archicad 25, 26 and 27 the "
+        "source is not given, the referenced classification also has its edition date, description and location, and "
+        "storedOnly returns only the references stored on the elements."
+    ),
+    params_model=GetIFCClassificationReferencesOfElementsParameters,
+    pagination_field="elementIFCClassificationReferences",
+)
+
+
 def get_ifc_export_translators(conn_header: ConnHeader) -> dict:
     """
     Lists the IFC export translators of the project, the preview translator first. Pass one of the names to
@@ -87,7 +127,7 @@ register_tool_for_dispatch(
 
 
 def get_ifc_ids_of_elements(conn_header: ConnHeader, params: GetIFCIdsOfElementsParameters) -> dict:
-    """Retrieves the IFC identifiers of the given elements."""
+    """Retrieves the IFC identifiers of the given elements. Before Archicad 28 it also returns their IFC GlobalIds."""
     return conn_header.core.post_tapir_command(
         command="GetIFCIdsOfElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
@@ -97,7 +137,9 @@ register_tool_for_dispatch(
     get_ifc_ids_of_elements,
     name="ifc_get_ifc_ids_of_elements",
     title="GetIFCIdsOfElements",
-    description="Retrieves the IFC identifiers of the given elements.",
+    description=(
+        "Retrieves the IFC identifiers of the given elements. Before Archicad 28 it also returns their IFC GlobalIds."
+    ),
     params_model=GetIFCIdsOfElementsParameters,
 )
 
@@ -163,6 +205,33 @@ register_tool_for_dispatch(
 )
 
 
+def remove_ifc_classification_references_of_elements(
+    conn_header: ConnHeader, params: RemoveIFCClassificationReferencesOfElementsParameters
+) -> dict:
+    """
+    Removes IFC classification references stored on elements, given by the name of their classification and optionally
+    their identification; without identification every stored reference of that classification is removed. Available
+    only in Archicad 25, 26 and 27 for now.
+    """
+    return conn_header.core.post_tapir_command(
+        command="RemoveIFCClassificationReferencesOfElements",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    remove_ifc_classification_references_of_elements,
+    name="ifc_remove_ifc_classification_references_of_elements",
+    title="RemoveIFCClassificationReferencesOfElements",
+    description=(
+        "Removes IFC classification references stored on elements, given by the name of their classification and "
+        "optionally their identification; without identification every stored reference of that classification is "
+        "removed. Available only in Archicad 25, 26 and 27 for now."
+    ),
+    params_model=RemoveIFCClassificationReferencesOfElementsParameters,
+)
+
+
 def remove_ifc_properties_of_elements(conn_header: ConnHeader, params: RemoveIFCPropertiesOfElementsParameters) -> dict:
     """
     Removes local IFC properties, given by property set and property name, from elements. Available only in Archicad 25,
@@ -208,6 +277,33 @@ register_tool_for_dispatch(
         "Archicad 25, 26 and 27 for now."
     ),
     params_model=SetIFCAttributesOfElementsParameters,
+)
+
+
+def set_ifc_classification_references_of_elements(
+    conn_header: ConnHeader, params: SetIFCClassificationReferencesOfElementsParameters
+) -> dict:
+    """
+    Stores IFC classification references (identification, name, location and the referenced classification with its
+    name, edition, edition date, description and location) on elements. Available only in Archicad 25, 26 and 27 for
+    now.
+    """
+    return conn_header.core.post_tapir_command(
+        command="SetIFCClassificationReferencesOfElements",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    set_ifc_classification_references_of_elements,
+    name="ifc_set_ifc_classification_references_of_elements",
+    title="SetIFCClassificationReferencesOfElements",
+    description=(
+        "Stores IFC classification references (identification, name, location and the referenced classification with "
+        "its name, edition, edition date, description and location) on elements. Available only in Archicad 25, 26 and "
+        "27 for now."
+    ),
+    params_model=SetIFCClassificationReferencesOfElementsParameters,
 )
 
 

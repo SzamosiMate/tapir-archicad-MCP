@@ -5,9 +5,14 @@ from multiconn_archicad.models.tapir.commands import (
     CreateClassificationSystemsParameters,
     DeleteClassificationItemsParameters,
     DeleteClassificationSystemsParameters,
+    GetClassificationItemParentsParameters,
+    GetClassificationItemVisibilityParameters,
+    GetClassificationsOfAttributesParameters,
     GetClassificationsOfElementDefaultsParameters,
     GetClassificationsOfElementsParameters,
+    GetClassificationsOfToolDefaultsParameters,
     ImportClassificationsXmlParameters,
+    SetClassificationsOfAttributesParameters,
     SetClassificationsOfElementDefaultsParameters,
     SetClassificationsOfElementsParameters,
     UpdateClassificationItemsParameters,
@@ -83,6 +88,83 @@ register_tool_for_dispatch(
 )
 
 
+def get_classification_item_parents(conn_header: ConnHeader, params: GetClassificationItemParentsParameters) -> dict:
+    """
+    Returns the parent item and the classification system of the given Classification Items; a top level item has no
+    parent. The output is aligned with the input array of items.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetClassificationItemParents",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    get_classification_item_parents,
+    name="classifications_get_classification_item_parents",
+    title="GetClassificationItemParents",
+    description=(
+        "Returns the parent item and the classification system of the given Classification Items; a top level item has "
+        "no parent. The output is aligned with the input array of items."
+    ),
+    params_model=GetClassificationItemParentsParameters,
+)
+
+
+def get_classification_item_visibility(
+    conn_header: ConnHeader, params: GetClassificationItemVisibilityParameters
+) -> dict:
+    """
+    Tells whether the given classification items are visible (offered) for the given elements, element tool defaults and
+    attributes, such as building materials. Non-existing targets and classification items are reported as errors.
+    Visibility does not tell whether the target is classified with the item, and an item can be visible even if its
+    parent item is not.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetClassificationItemVisibility",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    get_classification_item_visibility,
+    name="classifications_get_classification_item_visibility",
+    title="GetClassificationItemVisibility",
+    description=(
+        "Tells whether the given classification items are visible (offered) for the given elements, element tool "
+        "defaults and attributes, such as building materials. Non-existing targets and classification items are "
+        "reported as errors. Visibility does not tell whether the target is classified with the item, and an item can "
+        "be visible even if its parent item is not."
+    ),
+    params_model=GetClassificationItemVisibilityParameters,
+)
+
+
+def get_classifications_of_attributes(
+    conn_header: ConnHeader, params: GetClassificationsOfAttributesParameters
+) -> dict:
+    """
+    Returns the classifications of the given attributes (building materials, composites, surfaces, etc.) in every
+    classification system they are classified in.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetClassificationsOfAttributes",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    get_classifications_of_attributes,
+    name="classifications_get_classifications_of_attributes",
+    title="GetClassificationsOfAttributes",
+    description=(
+        "Returns the classifications of the given attributes (building materials, composites, surfaces, etc.) in every "
+        "classification system they are classified in."
+    ),
+    params_model=GetClassificationsOfAttributesParameters,
+)
+
+
 def get_classifications_of_element_defaults(
     conn_header: ConnHeader, params: GetClassificationsOfElementDefaultsParameters
 ) -> dict:
@@ -131,6 +213,33 @@ register_tool_for_dispatch(
 )
 
 
+def get_classifications_of_tool_defaults(
+    conn_header: ConnHeader, params: GetClassificationsOfToolDefaultsParameters
+) -> dict:
+    """
+    Returns every classification of the tool defaults (the settings new elements get) of the given element types, in all
+    classification systems at once. Unlike GetClassificationsOfElementDefaults it needs no list of classification
+    systems; systems in which a default is unclassified are left out.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetClassificationsOfToolDefaults",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    get_classifications_of_tool_defaults,
+    name="classifications_get_classifications_of_tool_defaults",
+    title="GetClassificationsOfToolDefaults",
+    description=(
+        "Returns every classification of the tool defaults (the settings new elements get) of the given element types, "
+        "in all classification systems at once. Unlike GetClassificationsOfElementDefaults it needs no list of "
+        "classification systems; systems in which a default is unclassified are left out."
+    ),
+    params_model=GetClassificationsOfToolDefaultsParameters,
+)
+
+
 def import_classifications_xml(conn_header: ConnHeader, params: ImportClassificationsXmlParameters) -> dict:
     """
     Imports a Classification Manager XML export, with the given policies for systems and items that already exist.
@@ -150,6 +259,33 @@ register_tool_for_dispatch(
         "exist. Returns the systems and items it created and removed."
     ),
     params_model=ImportClassificationsXmlParameters,
+)
+
+
+def set_classifications_of_attributes(
+    conn_header: ConnHeader, params: SetClassificationsOfAttributesParameters
+) -> dict:
+    """
+    Sets the classifications of attributes (building materials, composites, surfaces, etc.). The given item replaces the
+    attribute's current item in the same classification system. In order to set the classification of an attribute to
+    unclassified in a system, omit the classificationItemId field.
+    """
+    return conn_header.core.post_tapir_command(
+        command="SetClassificationsOfAttributes",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    set_classifications_of_attributes,
+    name="classifications_set_classifications_of_attributes",
+    title="SetClassificationsOfAttributes",
+    description=(
+        "Sets the classifications of attributes (building materials, composites, surfaces, etc.). The given item "
+        "replaces the attribute's current item in the same classification system. In order to set the classification "
+        "of an attribute to unclassified in a system, omit the classificationItemId field."
+    ),
+    params_model=SetClassificationsOfAttributesParameters,
 )
 
 

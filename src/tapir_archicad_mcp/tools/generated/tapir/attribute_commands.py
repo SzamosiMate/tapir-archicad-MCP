@@ -6,6 +6,7 @@ from multiconn_archicad.models.tapir.commands import (
     CreateCompositesParameters,
     CreateFillsParameters,
     CreateGraphicOverrideCombinationsParameters,
+    CreateGraphicOverrideRuleGroupsParameters,
     CreateGraphicOverrideRulesParameters,
     CreateLayerCombinationsParameters,
     CreateLayersParameters,
@@ -18,6 +19,7 @@ from multiconn_archicad.models.tapir.commands import (
     DeleteGraphicOverrideCombinationsParameters,
     DeleteGraphicOverrideRuleGroupsParameters,
     DeleteGraphicOverrideRulesParameters,
+    DeleteUserDataOfAttributesParameters,
     GetAttributesByTypeParameters,
     GetAttributesFromProjectParameters,
     GetBuildingMaterialPhysicalPropertiesParameters,
@@ -27,15 +29,62 @@ from multiconn_archicad.models.tapir.commands import (
     GetGraphicOverrideRulesByNameParameters,
     GetLayerCombinationsParameters,
     GetMEPSystemsParameters,
+    GetPensParameters,
     GetProfilesParameters,
     GetSurfacesParameters,
+    GetUserDataOfAttributesParameters,
+    ModifyGraphicOverrideCombinationsParameters,
     ModifyGraphicOverrideRulesParameters,
+    ModifyPensParameters,
     MoveAttributesAndFoldersParameters,
     MoveGraphicOverrideRulesParameters,
     RenameGraphicOverrideRuleGroupsParameters,
+    SetGraphicOverrideRuleGroupOrderParameters,
+    SetGraphicOverrideRuleOrderParameters,
+    SetUserDataOfAttributesParameters,
 )
 
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
+
+
+def consolidate_fills(conn_header: ConnHeader) -> dict:
+    """
+    Runs the Fill Consolidation menu command of Archicad on the current window, as the menu does, and reports whether it
+    ran together with what Archicad answered. Available from Archicad 27.
+    """
+    return conn_header.core.post_tapir_command(command="ConsolidateFills", parameters={})
+
+
+register_tool_for_dispatch(
+    consolidate_fills,
+    name="attributes_consolidate_fills",
+    title="ConsolidateFills",
+    description=(
+        "Runs the Fill Consolidation menu command of Archicad on the current window, as the menu does, and reports "
+        "whether it ran together with what Archicad answered. Available from Archicad 27."
+    ),
+    params_model=None,
+)
+
+
+def consolidate_lines(conn_header: ConnHeader) -> dict:
+    """
+    Runs the Line Consolidation menu command of Archicad on the current window, as the menu does, and reports whether it
+    ran together with what Archicad answered. Available from Archicad 27.
+    """
+    return conn_header.core.post_tapir_command(command="ConsolidateLines", parameters={})
+
+
+register_tool_for_dispatch(
+    consolidate_lines,
+    name="attributes_consolidate_lines",
+    title="ConsolidateLines",
+    description=(
+        "Runs the Line Consolidation menu command of Archicad on the current window, as the menu does, and reports "
+        "whether it ran together with what Archicad answered. Available from Archicad 27."
+    ),
+    params_model=None,
+)
 
 
 def create_attribute_folders(conn_header: ConnHeader, params: CreateAttributeFoldersParameters) -> dict:
@@ -126,6 +175,25 @@ register_tool_for_dispatch(
     title="CreateGraphicOverrideCombinations",
     description="Creates graphic override combinations from existing rules. Available from Archicad 27.",
     params_model=CreateGraphicOverrideCombinationsParameters,
+)
+
+
+def create_graphic_override_rule_groups(
+    conn_header: ConnHeader, params: CreateGraphicOverrideRuleGroupsParameters
+) -> dict:
+    """Creates empty graphic override rule groups. Available from Archicad 27."""
+    return conn_header.core.post_tapir_command(
+        command="CreateGraphicOverrideRuleGroups",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    create_graphic_override_rule_groups,
+    name="attributes_create_graphic_override_rule_groups",
+    title="CreateGraphicOverrideRuleGroups",
+    description="Creates empty graphic override rule groups. Available from Archicad 27.",
+    params_model=CreateGraphicOverrideRuleGroupsParameters,
 )
 
 
@@ -358,6 +426,29 @@ register_tool_for_dispatch(
 )
 
 
+def delete_user_data_of_attributes(conn_header: ConnHeader, params: DeleteUserDataOfAttributesParameters) -> dict:
+    """
+    Removes the user data of attributes, every key at once. Archicad does not record this change as an undo step, so
+    Undo does not revert it.
+    """
+    return conn_header.core.post_tapir_command(
+        command="DeleteUserDataOfAttributes",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    delete_user_data_of_attributes,
+    name="attributes_delete_user_data_of_attributes",
+    title="DeleteUserDataOfAttributes",
+    description=(
+        "Removes the user data of attributes, every key at once. Archicad does not record this change as an undo step, "
+        "so Undo does not revert it."
+    ),
+    params_model=DeleteUserDataOfAttributesParameters,
+)
+
+
 def get_attributes_by_type(conn_header: ConnHeader, params: GetAttributesByTypeParameters) -> dict:
     """
     Returns the details of every attribute of the given type. From Archicad 30 an attribute that Archicad keeps a
@@ -389,7 +480,9 @@ def get_attributes_from_project(conn_header: ConnHeader, params: GetAttributesFr
     """
     Reads the attributes of the given types from another project or template file without opening it, for example to
     compare them with the attributes of the open project. Nothing is imported into the open project. The names are the
-    legacy 8-bit names, so non-ASCII characters may not come through. Available from Archicad 27.
+    legacy 8-bit names, so non-ASCII characters may not come through. Archicad does not read Layer, Surface,
+    BuildingMaterial and MEPSystem attributes from a file that is not open: these types get an error item instead of an
+    empty list. Available from Archicad 27.
     """
     return conn_header.core.post_tapir_command(
         command="GetAttributesFromProject", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -403,7 +496,9 @@ register_tool_for_dispatch(
     description=(
         "Reads the attributes of the given types from another project or template file without opening it, for example "
         "to compare them with the attributes of the open project. Nothing is imported into the open project. The names "
-        "are the legacy 8-bit names, so non-ASCII characters may not come through. Available from Archicad 27."
+        "are the legacy 8-bit names, so non-ASCII characters may not come through. Archicad does not read Layer, "
+        "Surface, BuildingMaterial and MEPSystem attributes from a file that is not open: these types get an error "
+        "item instead of an empty list. Available from Archicad 27."
     ),
     params_model=GetAttributesFromProjectParameters,
 )
@@ -659,6 +754,28 @@ register_tool_for_dispatch(
 )
 
 
+def get_pens(conn_header: ConnHeader, params: GetPensParameters) -> dict:
+    """
+    Returns the given pens, or all of them, in effect in the current window: index, color, width and description. It
+    also works when the pens in effect are not a Pen Table attribute. Available from Archicad 27.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetPens", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    get_pens,
+    name="attributes_get_pens",
+    title="GetPens",
+    description=(
+        "Returns the given pens, or all of them, in effect in the current window: index, color, width and description. "
+        "It also works when the pens in effect are not a Pen Table attribute. Available from Archicad 27."
+    ),
+    params_model=GetPensParameters,
+)
+
+
 def get_profiles(conn_header: ConnHeader, params: GetProfilesParameters) -> dict:
     """Returns the details of the given Profile attributes."""
     return conn_header.core.post_tapir_command(
@@ -691,6 +808,79 @@ register_tool_for_dispatch(
 )
 
 
+def get_used_attributes(conn_header: ConnHeader) -> dict:
+    """
+    Gets the attributes in use, as Archicad reports them for the usedAttributes JSON query: parsed into usedAttributes
+    when the report is a JSON object, otherwise as text in raw. Helps to find the attributes DeleteAttributes can remove
+    before a handover. Available from Archicad 27.
+    """
+    return conn_header.core.post_tapir_command(command="GetUsedAttributes", parameters={})
+
+
+register_tool_for_dispatch(
+    get_used_attributes,
+    name="attributes_get_used_attributes",
+    title="GetUsedAttributes",
+    description=(
+        "Gets the attributes in use, as Archicad reports them for the usedAttributes JSON query: parsed into "
+        "usedAttributes when the report is a JSON object, otherwise as text in raw. Helps to find the attributes "
+        "DeleteAttributes can remove before a handover. Available from Archicad 27."
+    ),
+    params_model=None,
+)
+
+
+def get_user_data_of_attributes(conn_header: ConnHeader, params: GetUserDataOfAttributesParameters) -> dict:
+    """
+    Reads the key-value pairs stored on attributes by SetUserDataOfAttributes. An attribute without user data returns no
+    pairs; one holding user data in another layout returns an error.
+
+    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
+    and page_token set to that token to get the next page of results.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetUserDataOfAttributes", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    get_user_data_of_attributes,
+    name="attributes_get_user_data_of_attributes",
+    title="GetUserDataOfAttributes",
+    description=(
+        "Reads the key-value pairs stored on attributes by SetUserDataOfAttributes. An attribute without user data "
+        "returns no pairs; one holding user data in another layout returns an error."
+    ),
+    params_model=GetUserDataOfAttributesParameters,
+    pagination_field="userDataOfAttributes",
+)
+
+
+def modify_graphic_override_combinations(
+    conn_header: ConnHeader, params: ModifyGraphicOverrideCombinationsParameters
+) -> dict:
+    """
+    Modifies the name and/or the rules of graphic override combinations. Omitted fields are kept. Available from
+    Archicad 27.
+    """
+    return conn_header.core.post_tapir_command(
+        command="ModifyGraphicOverrideCombinations",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    modify_graphic_override_combinations,
+    name="attributes_modify_graphic_override_combinations",
+    title="ModifyGraphicOverrideCombinations",
+    description=(
+        "Modifies the name and/or the rules of graphic override combinations. Omitted fields are kept. Available from "
+        "Archicad 27."
+    ),
+    params_model=ModifyGraphicOverrideCombinationsParameters,
+)
+
+
 def modify_graphic_override_rules(conn_header: ConnHeader, params: ModifyGraphicOverrideRulesParameters) -> dict:
     """
     Modifies the name, criterion or style of graphic override rules. The criterion is given as Archicad's criterion XML
@@ -712,6 +902,31 @@ register_tool_for_dispatch(
         "Archicad 27."
     ),
     params_model=ModifyGraphicOverrideRulesParameters,
+)
+
+
+def modify_pens(conn_header: ConnHeader, params: ModifyPensParameters) -> dict:
+    """
+    Changes the color, width and description of single pens of the Pen Table in effect for the model views (the default)
+    or the layouts, keeping every other pen as it is. Only the given fields of a listed pen are changed. In a Teamwork
+    project the PenTables lockable object set must be reserved first (see ReserveLockableObjectSet).
+    """
+    return conn_header.core.post_tapir_command(
+        command="ModifyPens", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    modify_pens,
+    name="attributes_modify_pens",
+    title="ModifyPens",
+    description=(
+        "Changes the color, width and description of single pens of the Pen Table in effect for the model views (the "
+        "default) or the layouts, keeping every other pen as it is. Only the given fields of a listed pen are changed. "
+        "In a Teamwork project the PenTables lockable object set must be reserved first (see "
+        "ReserveLockableObjectSet)."
+    ),
+    params_model=ModifyPensParameters,
 )
 
 
@@ -779,4 +994,81 @@ register_tool_for_dispatch(
         "Renames graphic override rule groups, found by name. Their rules are kept. Available from Archicad 27."
     ),
     params_model=RenameGraphicOverrideRuleGroupsParameters,
+)
+
+
+def set_graphic_override_rule_group_order(
+    conn_header: ConnHeader, params: SetGraphicOverrideRuleGroupOrderParameters
+) -> dict:
+    """
+    Sets the order of the graphic override rule groups, found by name. The groups not listed keep their order and follow
+    the listed ones. Available from Archicad 27.
+    """
+    return conn_header.core.post_tapir_command(
+        command="SetGraphicOverrideRuleGroupOrder",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    set_graphic_override_rule_group_order,
+    name="attributes_set_graphic_override_rule_group_order",
+    title="SetGraphicOverrideRuleGroupOrder",
+    description=(
+        "Sets the order of the graphic override rule groups, found by name. The groups not listed keep their order and "
+        "follow the listed ones. Available from Archicad 27."
+    ),
+    params_model=SetGraphicOverrideRuleGroupOrderParameters,
+)
+
+
+def set_graphic_override_rule_order(conn_header: ConnHeader, params: SetGraphicOverrideRuleOrderParameters) -> dict:
+    """
+    Sets the order of the rules in graphic override rule groups, found by name. The listed rules come first, in the
+    given order; the other rules of the group keep their order after them. Available from Archicad 27.
+    """
+    return conn_header.core.post_tapir_command(
+        command="SetGraphicOverrideRuleOrder",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    set_graphic_override_rule_order,
+    name="attributes_set_graphic_override_rule_order",
+    title="SetGraphicOverrideRuleOrder",
+    description=(
+        "Sets the order of the rules in graphic override rule groups, found by name. The listed rules come first, in "
+        "the given order; the other rules of the group keep their order after them. Available from Archicad 27."
+    ),
+    params_model=SetGraphicOverrideRuleOrderParameters,
+)
+
+
+def set_user_data_of_attributes(conn_header: ConnHeader, params: SetUserDataOfAttributesParameters) -> dict:
+    """
+    Stores string values under keys in the user data of attributes, for scripts to keep their own state on an attribute.
+    The given pairs are merged into what each attribute already holds: a key that exists gets the new value, other keys
+    are left as they are, and the keys listed in keysToDelete are removed. Prefix the keys with the script's name so
+    that scripts do not overwrite each other's data. User data in another layout is left unchanged and reported as an
+    error. Archicad does not record this change as an undo step, so Undo does not revert it.
+    """
+    return conn_header.core.post_tapir_command(
+        command="SetUserDataOfAttributes", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    set_user_data_of_attributes,
+    name="attributes_set_user_data_of_attributes",
+    title="SetUserDataOfAttributes",
+    description=(
+        "Stores string values under keys in the user data of attributes, for scripts to keep their own state on an "
+        "attribute. The given pairs are merged into what each attribute already holds: a key that exists gets the new "
+        "value, other keys are left as they are, and the keys listed in keysToDelete are removed. Prefix the keys with "
+        "the script's name so that scripts do not overwrite each other's data. User data in another layout is left "
+        "unchanged and reported as an error. Archicad does not record this change as an undo step, so Undo does not "
+        "revert it."
+    ),
+    params_model=SetUserDataOfAttributesParameters,
 )

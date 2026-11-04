@@ -3,11 +3,13 @@ from multiconn_archicad import ConnHeader
 from multiconn_archicad.models.tapir.commands import (
     GetLockableObjectSetStatusParameters,
     GetReservationStatusOfElementsParameters,
+    GetTeamworkOwnersOfDatabasesParameters,
     GrantElementsParameters,
     ReleaseElementsParameters,
     ReleaseLockableObjectSetParameters,
     ReserveElementsParameters,
     ReserveLockableObjectSetParameters,
+    UploadLibrariesToBIMcloudParameters,
 )
 
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
@@ -54,6 +56,49 @@ register_tool_for_dispatch(
         "reserved by the current user or reserved by another user, with the reserving user and the element's owner."
     ),
     params_model=GetReservationStatusOfElementsParameters,
+)
+
+
+def get_teamwork_owners_of_databases(conn_header: ConnHeader, params: GetTeamworkOwnersOfDatabasesParameters) -> dict:
+    """
+    Returns the Teamwork owner (user id and name) of each given database, e.g. of a layout or a view database. The user
+    id is 0 when nobody owns the database.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetTeamworkOwnersOfDatabases",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    get_teamwork_owners_of_databases,
+    name="teamwork_get_teamwork_owners_of_databases",
+    title="GetTeamworkOwnersOfDatabases",
+    description=(
+        "Returns the Teamwork owner (user id and name) of each given database, e.g. of a layout or a view database. "
+        "The user id is 0 when nobody owns the database."
+    ),
+    params_model=GetTeamworkOwnersOfDatabasesParameters,
+)
+
+
+def get_teamwork_project_info(conn_header: ConnHeader) -> dict:
+    """
+    Tells whether the opened project is a Teamwork project and whether it is online, and returns its BIMcloud server,
+    project name and the current user (id and name).
+    """
+    return conn_header.core.post_tapir_command(command="GetTeamworkProjectInfo", parameters={})
+
+
+register_tool_for_dispatch(
+    get_teamwork_project_info,
+    name="teamwork_get_teamwork_project_info",
+    title="GetTeamworkProjectInfo",
+    description=(
+        "Tells whether the opened project is a Teamwork project and whether it is online, and returns its BIMcloud "
+        "server, project name and the current user (id and name)."
+    ),
+    params_model=None,
 )
 
 
@@ -227,4 +272,26 @@ register_tool_for_dispatch(
     title="TeamworkSend",
     description="Performs a send operation on the currently opened Teamwork project.",
     params_model=None,
+)
+
+
+def upload_libraries_to_bi_mcloud(conn_header: ConnHeader, params: UploadLibrariesToBIMcloudParameters) -> dict:
+    """
+    Uploads local library folders or container files (.lcf) to a folder of a BIMcloud or Teamwork server, as BIMcloud
+    libraries. Returns a result per library. Available from Archicad 29.
+    """
+    return conn_header.core.post_tapir_command(
+        command="UploadLibrariesToBIMcloud", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    upload_libraries_to_bi_mcloud,
+    name="teamwork_upload_libraries_to_bi_mcloud",
+    title="UploadLibrariesToBIMcloud",
+    description=(
+        "Uploads local library folders or container files (.lcf) to a folder of a BIMcloud or Teamwork server, as "
+        "BIMcloud libraries. Returns a result per library. Available from Archicad 29."
+    ),
+    params_model=UploadLibrariesToBIMcloudParameters,
 )

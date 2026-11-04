@@ -39,25 +39,38 @@ def extract_images(
     entry: ToolRegistryEntry, result: dict[str, JsonValue]
 ) -> tuple[dict[str, JsonValue], list[ImageContent]]:
     """Split an image command's result into the JSON without the images and the image blocks, in order."""
-    field = entry.image_field
-    if field is not None and (image := _image_content(result.get(field))) is not None:
-        return {**result, field: _reference(1)}, [image]
+    replacements: dict[str, JsonValue] = {}
+    images: list[ImageContent] = []
+    fields = (entry.image_field,) if isinstance(entry.image_field, str) else entry.image_field or ()
+    for field in fields:
+        if (image := _image_content(result.get(field))) is not None:
+            images.append(image)
+            replacements[field] = _reference(len(images))
 
-    # Items of an image list are {"image": {"content": <base64>}} or {"error": ...}.
-    list_field = entry.image_list_field
-    if list_field is not None and isinstance(result.get(list_field), list):
-        images: list[ImageContent] = []
+    list_fields = (entry.image_list_field,) if isinstance(entry.image_list_field, str) else entry.image_list_field or ()
+    for field in list_fields:
+        values = result.get(field)
+        if not isinstance(values, list):
+            continue
+        previous_count = len(images)
         items = []
-        for item in result[list_field]:
-            content = item.get("image") if isinstance(item, dict) else None
-            if isinstance(content, dict) and (image := _image_content(content.get("content"))) is not None:
+        for item in values:
+            # Library pictures are strings. Profile previews also carry metadata and error items.
+            if isinstance(item, str) and (image := _image_content(item)) is not None:
+                images.append(image)
+                item = _reference(len(images))
+            elif (
+                isinstance(item, dict)
+                and isinstance(content := item.get("image"), dict)
+                and (image := _image_content(content.get("content"))) is not None
+            ):
                 images.append(image)
                 item = {**item, "image": {**content, "content": _reference(len(images))}}
             items.append(item)
-        if images:
-            return {**result, list_field: items}, images
+        if len(images) > previous_count:
+            replacements[field] = items
 
-    return result, []
+    return ({**result, **replacements} if replacements else result), images
 
 
 def build_result(payload: dict[str, JsonValue], images: Sequence[ImageContent] = ()) -> CallToolResult:

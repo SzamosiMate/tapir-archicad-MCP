@@ -41,8 +41,8 @@ class ApiSourceConfig:
     group_mapping: dict[str, str]
     prefix_to_strip: str = ""
     paginated_commands: dict[str, str] = field(default_factory=dict)
-    image_fields: dict[str, str] = field(default_factory=dict)
-    image_lists: dict[str, str] = field(default_factory=dict)
+    image_fields: dict[str, str | tuple[str, ...]] = field(default_factory=dict)
+    image_lists: dict[str, str | tuple[str, ...]] = field(default_factory=dict)
     commands_to_exclude: set[str] = field(default_factory=set)
 
 
@@ -62,6 +62,7 @@ TAPIR_CONFIG = ApiSourceConfig(
 
         # Domain specifics
         "MEP Commands": "mep",
+        "MEP Commands (extended)": "mep",
         "Keynote Commands": "keynotes",
         "Design Options Commands": "design_options",
         "IFC Commands": "ifc",
@@ -76,6 +77,7 @@ TAPIR_CONFIG = ApiSourceConfig(
         "Application Commands": "app",
         "Project Commands": "project",
         "Project Data Commands": "project_data",
+        "Custom Data Commands": "custom_data",
         "Analytical Commands": "analytical",
         "Navigator Commands": "navigator",
         "Issue Management Commands": "issues",
@@ -87,6 +89,7 @@ TAPIR_CONFIG = ApiSourceConfig(
         "QuitArchicad",  # Can lose unsaved work; easy to quit manually
         "CloseProject",  # Can lose unsaved work; easy to close manually
         "NewProject",  # Discards unsaved work; use the application UI
+        "RemoveLibrariesFromBIMcloud",  # Removes shared server libraries used by other projects
         "GenerateDocumentation",  # Internal use only
         "ShowScriptUI",  # Application UI workflow
         "GetScriptUIResult",  # Companion to ShowScriptUI
@@ -94,7 +97,7 @@ TAPIR_CONFIG = ApiSourceConfig(
         "DeleteAttributeFolders",  # Same deletion; prefer Official
         "RenameAttributeFolders",  # Same rename; prefer Official
         "DeleteNavigatorItems",  # Same contract; prefer Official
-        "MoveNavigatorItem",  # Same operation; prefer Official
+        "MoveNavigatorItem",  # Official already moves and reorders navigator items
         "CloneProjectMapItemToViewMap",  # Only adds batching; prefer Official
         "CreateLayoutSubset",  # Only adds batching/defaults; prefer Official
         "CreateViewMapFolder",  # Official also supports sibling placement
@@ -106,8 +109,9 @@ TAPIR_CONFIG = ApiSourceConfig(
         "GetLines",  # Same line details; index available elsewhere
         "GetPenTables",  # Pen data, index and active tables available elsewhere
         "GetZoneCategories",  # Same category details; index available elsewhere
-        "GetCurrentRevisionChangesOfLayouts",  # Malformed revision response schema
-        "GetRevisionChangesOfElements",  # Bad response schema and element GUID lookup
+        "GetAllClassificationSystems",  # Same contract; prefer Official
+        "GetElementsByClassification",  # Official returns the same IDs with flat pagination
+        "GetClassificationOfAttributesInSystem",  # Misdeclared result; use GetClassificationsOfAttributes
     },
     paginated_commands={
         "GetAllElements": "elements",
@@ -158,12 +162,49 @@ TAPIR_CONFIG = ApiSourceConfig(
         "GetUserDataOfGroups": "userDataOfGroups",
         "GetZoneReductions": "reductionsOfZones",
         "TriangulatePolygonsOfElements": "triangulations",
+        "GetCurrentRevisionChangesOfLayouts": "currentRevisionChangesOfLayouts",
+        "GetRevisionChangesOfElements": "revisionChangesOfElements",
+        "GetRevisionIssues": "revisionIssues",
+        "GetAddOnViewpointChildren": "viewpointIds",
+        "GetAddOnViewpointRoots": "viewpointIds",
+        "GetAddOnViewpoints": "viewpoints",
+        "GetAllElementsOfGroups": "elementsOfGroups",
+        "GetAnalyticalLinks": "links",
+        "GetAnalyticalLoads": "loads",
+        "GetAnalyticalMemberDetails": "analyticalMembers",
+        "GetAnalyticalMemberPartGeometries": "geometries",
+        "GetAnalyticalMembers": "curveMembers",
+        "GetAnalyticalReleases": "releases",
+        "GetAnalyticalSupports": "supports",
+        "GetBodyMaterialsOfElements": "bodyMaterials",
+        "GetCutPolygonsOfElements": "cutPolygons",
+        "GetDrawingPrimitivesOfElements": "drawingPrimitivesOfElements",
+        "GetElementChangesSince": "modifiedElements",
+        "GetElementConnections": "connections",
+        "GetElementsInCreationOrder": "elements",
+        "GetElementUserData": "elementUserData",
+        "GetFavoriteDetails": "favoriteDetails",
+        "GetHotspotsOfElements": "hotspotsOfElements",
+        "GetIFCClassificationReferencesOfElements": "elementIFCClassificationReferences",
+        "GetMEPDistributionSystems": "distributionSystems",
+        "GetMEPElementDetails": "elementDetails",
+        "GetMEPPreferenceTableRows": "rows",
+        "GetMergedElements": "elementMerges",
+        "GetPropertyObjectsOfElements": "propertyObjectsOfElements",
+        "GetSkylightHolePolygons": "skylightHolePolygons",
+        "GetStoryControlPrimitives": "primitives",
+        "GetTextureCoordinates": "textureCoordinates",
+        "GetUserDataOfAttributes": "userDataOfAttributes",
     },
     image_fields={
         "GetElementPreviewImage": "previewImage",
         "GetFavoritePreviewImage": "previewImage",
         "GetRoomImage": "roomImage",
         "GetCurrentViewImage": "image",
+        "GetLibraryPartPictures": ("previewPicture", "darkPreviewPicture"),
+    },
+    image_lists={
+        "GetLibraryPartPictures": ("gdlPictures", "darkGdlPictures"),
     },
 )
 

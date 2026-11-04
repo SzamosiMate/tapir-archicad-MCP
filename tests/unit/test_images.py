@@ -93,6 +93,32 @@ async def test_profile_previews_keep_errors_and_number_images(fake_archicad):
     }
 
 
+async def test_library_part_pictures_extract_both_previews_and_picture_lists(fake_archicad):
+    fake_archicad.on_tapir_command(
+        "GetLibraryPartPictures",
+        {
+            "previewPicture": PNG_B64,
+            "darkPreviewPicture": PNG_B64,
+            "gdlPictures": [PNG_B64, "invalid"],
+            "darkGdlPictures": [PNG_B64],
+        },
+    )
+
+    result = await archicad_call_tool(
+        "library_get_library_part_pictures", {"port": fake_archicad.port, "params": {"name": "Door.gsm"}}
+    )
+
+    assert [block.type for block in result.content] == ["text", "image", "image", "image", "image"]
+    assert all(block.data == PNG_B64 for block in result.content[1:])
+    assert result.structured_content == {
+        "previewPicture": "returned as MCP image content #1",
+        "darkPreviewPicture": "returned as MCP image content #2",
+        "gdlPictures": ["returned as MCP image content #3", "invalid"],
+        "darkGdlPictures": ["returned as MCP image content #4"],
+    }
+    assert PNG_B64 not in result.content[0].text
+
+
 async def test_non_image_results_are_call_tool_results_with_the_same_content(fake_archicad):
     fake_archicad.on_tapir_command("GetAddOnVersion", {"version": "1.7.2", "name": "Wand Ä"})
 

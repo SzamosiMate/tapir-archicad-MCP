@@ -24,6 +24,10 @@ def camel_to_snake(name: str) -> str:
     return re.sub(r'([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
 
 
+def category_to_module_name(category: str) -> str:
+    return re.sub(r"[^a-z0-9]+", "_", category.lower()).strip("_")
+
+
 def get_command_model_names(command_name: str) -> tuple[str, str]:
     return f"{command_name}Parameters", f"{command_name}Result"
 
@@ -124,9 +128,9 @@ def _generate_tool_function_code(command: dict, valid_model_names: set[str], con
 
     image_registration_arg = ""
     if command_name_camel in config.image_fields:
-        image_registration_arg = f',\n    image_field="{config.image_fields[command_name_camel]}"'
-    elif command_name_camel in config.image_lists:
-        image_registration_arg = f',\n    image_list_field="{config.image_lists[command_name_camel]}"'
+        image_registration_arg += f",\n    image_field={config.image_fields[command_name_camel]!r}"
+    if command_name_camel in config.image_lists:
+        image_registration_arg += f",\n    image_list_field={config.image_lists[command_name_camel]!r}"
 
     function_code = f'''{decorator}def {command_name_snake}(conn_header: ConnHeader{param_signature}) -> {return_annotation}:
 {indent(docstring, "    ")}
@@ -146,7 +150,7 @@ def _generate_tool_function_code(command: dict, valid_model_names: set[str], con
 
 def generate_tool_files(grouped_commands: dict[str, list[dict]], config: ApiSourceConfig, valid_model_names: set[str]):
     for group_name, commands in grouped_commands.items():
-        file_name_base = group_name.replace(" ", "_").lower()
+        file_name_base = category_to_module_name(group_name)
         file_path = config.output_dir / f"{file_name_base}.py"
 
         imports_block = _generate_imports_for_group(commands, valid_model_names, config)
@@ -223,7 +227,7 @@ def run_generation_for_source(config: ApiSourceConfig) -> set[str]:
     prepare_output_directory(config.output_dir)
     generate_tool_files(grouped_commands, config, valid_model_names)
 
-    generated_modules = {group_name.replace(" ", "_").lower() for group_name in grouped_commands}
+    generated_modules = {category_to_module_name(group_name) for group_name in grouped_commands}
     generate_init_file(config, generated_modules)
 
     # 4. Format generated files with Ruff

@@ -6,13 +6,18 @@ from multiconn_archicad.models.tapir.commands import (
     CreatePropertyGroupsParameters,
     DeletePropertyDefinitionsParameters,
     DeletePropertyGroupsParameters,
+    GetAllPropertiesParameters,
+    GetPropertiesOfToolDefaultsParameters,
+    GetPropertyAvailabilityOfDefaultsParameters,
     GetPropertyDefinitionsOfAttributesParameters,
     GetPropertyValuesOfAttributesParameters,
     GetPropertyValuesOfElementsParameters,
     ImportPropertiesXmlParameters,
     MakePropertyAvailableForElementsParameters,
     MakePropertyUnavailableForElementsParameters,
+    ModifyPropertyValueOfElementsParameters,
     RemovePropertyFromAttributesParameters,
+    SetBuiltInPropertyValuesOfAttributesParameters,
     SetPropertyValuesOfAttributesParameters,
     SetPropertyValuesOfElementsParameters,
     UpdatePropertyDefinitionsParameters,
@@ -108,23 +113,79 @@ register_tool_for_dispatch(
 )
 
 
-def get_all_properties(conn_header: ConnHeader) -> dict:
+def get_all_properties(conn_header: ConnHeader, params: GetAllPropertiesParameters) -> dict:
     """
-    Returns all user defined and built-in properties.
+    Returns all user defined and built-in properties. Optionally only the given properties or property types, and
+    without the availability lists.
 
     This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
     and page_token set to that token to get the next page of results.
     """
-    return conn_header.core.post_tapir_command(command="GetAllProperties", parameters={})
+    return conn_header.core.post_tapir_command(
+        command="GetAllProperties", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
 
 
 register_tool_for_dispatch(
     get_all_properties,
     name="properties_get_all_properties",
     title="GetAllProperties",
-    description="Returns all user defined and built-in properties.",
-    params_model=None,
+    description=(
+        "Returns all user defined and built-in properties. Optionally only the given properties or property types, and "
+        "without the availability lists."
+    ),
+    params_model=GetAllPropertiesParameters,
     pagination_field="properties",
+)
+
+
+def get_properties_of_tool_defaults(conn_header: ConnHeader, params: GetPropertiesOfToolDefaultsParameters) -> dict:
+    """
+    Returns the property definitions of the tool defaults (the settings new elements get) of the given element types,
+    filtered by kind (all by default), and optionally the value of each property in the tool default.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetPropertiesOfToolDefaults",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    get_properties_of_tool_defaults,
+    name="properties_get_properties_of_tool_defaults",
+    title="GetPropertiesOfToolDefaults",
+    description=(
+        "Returns the property definitions of the tool defaults (the settings new elements get) of the given element "
+        "types, filtered by kind (all by default), and optionally the value of each property in the tool default."
+    ),
+    params_model=GetPropertiesOfToolDefaultsParameters,
+)
+
+
+def get_property_availability_of_defaults(
+    conn_header: ConnHeader, params: GetPropertyAvailabilityOfDefaultsParameters
+) -> dict:
+    """
+    Tells whether the given properties are available and whether they are visible in the current tool default of an
+    element type, before creating new elements. It checks the native tool default only, not a Favorite that is not
+    applied. Unknown properties are reported as errors, not as unavailable. Available from Archicad 26.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetPropertyAvailabilityOfDefaults",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    get_property_availability_of_defaults,
+    name="properties_get_property_availability_of_defaults",
+    title="GetPropertyAvailabilityOfDefaults",
+    description=(
+        "Tells whether the given properties are available and whether they are visible in the current tool default of "
+        "an element type, before creating new elements. It checks the native tool default only, not a Favorite that is "
+        "not applied. Unknown properties are reported as errors, not as unavailable. Available from Archicad 26."
+    ),
+    params_model=GetPropertyAvailabilityOfDefaultsParameters,
 )
 
 
@@ -158,7 +219,10 @@ register_tool_for_dispatch(
 
 
 def get_property_values_of_attributes(conn_header: ConnHeader, params: GetPropertyValuesOfAttributesParameters) -> dict:
-    """Returns the property values of the attributes for the given property."""
+    """
+    Returns the property values of the attributes for the given property. With includeStatus it also returns whether
+    each property is available, editable and visible for the attribute (from 1.7.3).
+    """
     return conn_header.core.post_tapir_command(
         command="GetPropertyValuesOfAttributes",
         parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
@@ -169,7 +233,10 @@ register_tool_for_dispatch(
     get_property_values_of_attributes,
     name="properties_get_property_values_of_attributes",
     title="GetPropertyValuesOfAttributes",
-    description="Returns the property values of the attributes for the given property.",
+    description=(
+        "Returns the property values of the attributes for the given property. With includeStatus it also returns "
+        "whether each property is available, editable and visible for the attribute (from 1.7.3)."
+    ),
     params_model=GetPropertyValuesOfAttributesParameters,
 )
 
@@ -261,6 +328,29 @@ register_tool_for_dispatch(
 )
 
 
+def modify_property_value_of_elements(conn_header: ConnHeader, params: ModifyPropertyValueOfElementsParameters) -> dict:
+    """
+    Sets one property value on all the given elements in a single step. If the property is not available for any of the
+    elements, none of them is changed. Available from Archicad 27.
+    """
+    return conn_header.core.post_tapir_command(
+        command="ModifyPropertyValueOfElements",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    modify_property_value_of_elements,
+    name="properties_modify_property_value_of_elements",
+    title="ModifyPropertyValueOfElements",
+    description=(
+        "Sets one property value on all the given elements in a single step. If the property is not available for any "
+        "of the elements, none of them is changed. Available from Archicad 27."
+    ),
+    params_model=ModifyPropertyValueOfElementsParameters,
+)
+
+
 def remove_property_from_attributes(conn_header: ConnHeader, params: RemovePropertyFromAttributesParameters) -> dict:
     """
     Makes a custom property unavailable for the given attributes (for example Building Materials), in one undo step.
@@ -281,6 +371,31 @@ register_tool_for_dispatch(
         "step. Available in Archicad 25, 26 and 27 only."
     ),
     params_model=RemovePropertyFromAttributesParameters,
+)
+
+
+def set_built_in_property_values_of_attributes(
+    conn_header: ConnHeader, params: SetBuiltInPropertyValuesOfAttributesParameters
+) -> dict:
+    """
+    Sets built-in property values of attributes, writing the values of each attribute together. Custom properties are
+    refused; set them with SetPropertyValuesOfAttributes. Returns one execution result per value.
+    """
+    return conn_header.core.post_tapir_command(
+        command="SetBuiltInPropertyValuesOfAttributes",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    set_built_in_property_values_of_attributes,
+    name="properties_set_built_in_property_values_of_attributes",
+    title="SetBuiltInPropertyValuesOfAttributes",
+    description=(
+        "Sets built-in property values of attributes, writing the values of each attribute together. Custom properties "
+        "are refused; set them with SetPropertyValuesOfAttributes. Returns one execution result per value."
+    ),
+    params_model=SetBuiltInPropertyValuesOfAttributesParameters,
 )
 
 

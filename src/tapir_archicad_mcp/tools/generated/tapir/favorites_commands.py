@@ -3,19 +3,51 @@ from multiconn_archicad import ConnHeader
 from multiconn_archicad.models.tapir.commands import (
     ApplyFavoritesToElementDefaultsParameters,
     ApplyFavoritesToElementsParameters,
+    ApplyFavoriteToToolDefaultParameters,
+    ChangeFavoriteParameters,
+    CreateFavoriteFolderParameters,
+    CreateFavoriteParameters,
     CreateFavoritesFromElementsParameters,
+    DeleteFavoriteFolderParameters,
     DeleteFavoritesParameters,
     ExportFavoritesParameters,
     GetAllFavoritesParameters,
+    GetFavoriteDetailsParameters,
     GetFavoritePreviewImageParameters,
     GetFavoritesByTypeParameters,
     GetFavoriteSettingsParameters,
     ImportFavoritesParameters,
+    MoveFavoriteFolderParameters,
+    MoveFavoritesParameters,
+    RenameFavoriteFolderParameters,
     RenameFavoritesParameters,
     UpdateFavoritesFromElementsParameters,
 )
 
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
+
+
+def apply_favorite_to_tool_default(conn_header: ConnHeader, params: ApplyFavoriteToToolDefaultParameters) -> dict:
+    """
+    Makes the settings of the given Favorite the settings of its tool, and returns the element type of that tool.
+    Available from Archicad 29.
+    """
+    return conn_header.core.post_tapir_command(
+        command="ApplyFavoriteToToolDefault",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    apply_favorite_to_tool_default,
+    name="favorites_apply_favorite_to_tool_default",
+    title="ApplyFavoriteToToolDefault",
+    description=(
+        "Makes the settings of the given Favorite the settings of its tool, and returns the element type of that tool. "
+        "Available from Archicad 29."
+    ),
+    params_model=ApplyFavoriteToToolDefaultParameters,
+)
 
 
 def apply_favorites_to_element_defaults(
@@ -40,13 +72,14 @@ register_tool_for_dispatch(
 def apply_favorites_to_elements(conn_header: ConnHeader, params: ApplyFavoritesToElementsParameters) -> dict:
     """
     Apply the given favorites to existing elements. Only settings-type parameters are changed - geometry (position,
-    floor, and dimensions such as a Wall's height) is left untouched, so applying a Favorite never moves or resizes the
-    target element. For the hierarchical types (Stair, Railing, Curtain Wall) the settings of the sub-elements are not
-    applied, because they are inseparable from the Favorite's own geometry. By default settings, classifications,
-    categories and properties are all applied; each can be opted out of individually. keepFields lists fields of the
-    target (its ID, layer, an opening's width, height and sill height, a Wall's reference line location, height and top
-    link) that are copied back after the Favorite has been applied, so that e.g. only the library part or the wall type
-    changes.
+    floor, and dimensions such as a Wall's height) is left untouched, so applying a Favorite never moves the target
+    element. A Window or Door keeps its wall, marker and placement, and takes the Favorite's library part and
+    parameters, size included. For the hierarchical types (Stair, Railing, Curtain Wall) the settings of the sub-
+    elements are not applied, because they are inseparable from the Favorite's own geometry. By default settings,
+    classifications, categories and properties are all applied; each can be opted out of individually. keepFields lists
+    fields of the target (its ID, layer, an opening's width, height and sill height, a Wall's reference line location,
+    height and top link) that are copied back after the Favorite has been applied, so that e.g. only the library part or
+    the wall type changes.
     """
     return conn_header.core.post_tapir_command(
         command="ApplyFavoritesToElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -60,14 +93,83 @@ register_tool_for_dispatch(
     description=(
         "Apply the given favorites to existing elements. Only settings-type parameters are changed - geometry "
         "(position, floor, and dimensions such as a Wall's height) is left untouched, so applying a Favorite never "
-        "moves or resizes the target element. For the hierarchical types (Stair, Railing, Curtain Wall) the settings "
-        "of the sub-elements are not applied, because they are inseparable from the Favorite's own geometry. By "
-        "default settings, classifications, categories and properties are all applied; each can be opted out of "
+        "moves the target element. A Window or Door keeps its wall, marker and placement, and takes the Favorite's "
+        "library part and parameters, size included. For the hierarchical types (Stair, Railing, Curtain Wall) the "
+        "settings of the sub-elements are not applied, because they are inseparable from the Favorite's own geometry. "
+        "By default settings, classifications, categories and properties are all applied; each can be opted out of "
         "individually. keepFields lists fields of the target (its ID, layer, an opening's width, height and sill "
         "height, a Wall's reference line location, height and top link) that are copied back after the Favorite has "
         "been applied, so that e.g. only the library part or the wall type changes."
     ),
     params_model=ApplyFavoritesToElementsParameters,
+)
+
+
+def change_favorite(conn_header: ConnHeader, params: ChangeFavoriteParameters) -> dict:
+    """
+    Gives an existing Favorite the settings of another Favorite or of the current Opening tool default. Available from
+    Archicad 29.
+    """
+    return conn_header.core.post_tapir_command(
+        command="ChangeFavorite", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    change_favorite,
+    name="favorites_change_favorite",
+    title="ChangeFavorite",
+    description=(
+        "Gives an existing Favorite the settings of another Favorite or of the current Opening tool default. Available "
+        "from Archicad 29."
+    ),
+    params_model=ChangeFavoriteParameters,
+)
+
+
+def create_favorite(conn_header: ConnHeader, params: CreateFavoriteParameters) -> dict:
+    """
+    Creates a Favorite in the given folder from the settings of another Favorite or of the current Opening tool default.
+    conflictPolicy says what happens when the name is taken: fail, skip, overwrite the existing Favorite's settings or
+    create the new one under a free name. Available from Archicad 29.
+    """
+    return conn_header.core.post_tapir_command(
+        command="CreateFavorite", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    create_favorite,
+    name="favorites_create_favorite",
+    title="CreateFavorite",
+    description=(
+        "Creates a Favorite in the given folder from the settings of another Favorite or of the current Opening tool "
+        "default. conflictPolicy says what happens when the name is taken: fail, skip, overwrite the existing "
+        "Favorite's settings or create the new one under a free name. Available from Archicad 29."
+    ),
+    params_model=CreateFavoriteParameters,
+)
+
+
+def create_favorite_folder(conn_header: ConnHeader, params: CreateFavoriteFolderParameters) -> dict:
+    """
+    Creates a folder in the Favorites palette, in the parent folder given by its path. Returns the new folder. Available
+    from Archicad 29.
+    """
+    return conn_header.core.post_tapir_command(
+        command="CreateFavoriteFolder", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    create_favorite_folder,
+    name="favorites_create_favorite_folder",
+    title="CreateFavoriteFolder",
+    description=(
+        "Creates a folder in the Favorites palette, in the parent folder given by its path. Returns the new folder. "
+        "Available from Archicad 29."
+    ),
+    params_model=CreateFavoriteFolderParameters,
 )
 
 
@@ -85,6 +187,30 @@ register_tool_for_dispatch(
     title="CreateFavoritesFromElements",
     description="Create favorites from the given elements.",
     params_model=CreateFavoritesFromElementsParameters,
+)
+
+
+def delete_favorite_folder(conn_header: ConnHeader, params: DeleteFavoriteFolderParameters) -> dict:
+    """
+    Deletes a folder of the Favorites palette given by its path. Archicad deletes the folder's Favorites and subfolders
+    with it, so a folder that is not empty is deleted only if recursive is true. The root folder cannot be deleted.
+    Returns the deleted folder. Available from Archicad 29.
+    """
+    return conn_header.core.post_tapir_command(
+        command="DeleteFavoriteFolder", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    delete_favorite_folder,
+    name="favorites_delete_favorite_folder",
+    title="DeleteFavoriteFolder",
+    description=(
+        "Deletes a folder of the Favorites palette given by its path. Archicad deletes the folder's Favorites and "
+        "subfolders with it, so a folder that is not empty is deleted only if recursive is true. The root folder "
+        "cannot be deleted. Returns the deleted folder. Available from Archicad 29."
+    ),
+    params_model=DeleteFavoriteFolderParameters,
 )
 
 
@@ -152,6 +278,54 @@ register_tool_for_dispatch(
 )
 
 
+def get_favorite_details(conn_header: ConnHeader, params: GetFavoriteDetailsParameters) -> dict:
+    """
+    Returns the classifications, property values and element category values stored in the given favorites, so they can
+    be audited before elements are placed. Each property value comes with its evaluation status and default-value flag;
+    the value itself is only returned when it has been evaluated.
+
+    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
+    and page_token set to that token to get the next page of results.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetFavoriteDetails", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    get_favorite_details,
+    name="favorites_get_favorite_details",
+    title="GetFavoriteDetails",
+    description=(
+        "Returns the classifications, property values and element category values stored in the given favorites, so "
+        "they can be audited before elements are placed. Each property value comes with its evaluation status and "
+        "default-value flag; the value itself is only returned when it has been evaluated."
+    ),
+    params_model=GetFavoriteDetailsParameters,
+    pagination_field="favoriteDetails",
+)
+
+
+def get_favorite_folders(conn_header: ConnHeader) -> dict:
+    """
+    Returns the folder tree of the Favorites palette from its root folder: the name and path of every folder and the
+    names of the Favorites in it. Available from Archicad 29.
+    """
+    return conn_header.core.post_tapir_command(command="GetFavoriteFolders", parameters={})
+
+
+register_tool_for_dispatch(
+    get_favorite_folders,
+    name="favorites_get_favorite_folders",
+    title="GetFavoriteFolders",
+    description=(
+        "Returns the folder tree of the Favorites palette from its root folder: the name and path of every folder and "
+        "the names of the Favorites in it. Available from Archicad 29."
+    ),
+    params_model=None,
+)
+
+
 def get_favorite_preview_image(conn_header: ConnHeader, params: GetFavoritePreviewImageParameters) -> dict:
     """Returns the preview image of the given favorite."""
     return conn_header.core.post_tapir_command(
@@ -216,7 +390,11 @@ register_tool_for_dispatch(
 
 
 def import_favorites(conn_header: ConnHeader, params: ImportFavoritesParameters) -> dict:
-    """Import Favorites from a .prefs file or folder into the current project."""
+    """
+    Import Favorites from a .prefs file or folder into the current project. From Archicad 29 they can also be imported
+    from a folder of Favorite files (xml format, all of them or the given fileNames) or from a legacy .prf file
+    (legacyPRF format), with the conflict policies Error, Skip, OverwriteExisting and RenameNew.
+    """
     return conn_header.core.post_tapir_command(
         command="ImportFavorites", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
@@ -226,8 +404,79 @@ register_tool_for_dispatch(
     import_favorites,
     name="favorites_import_favorites",
     title="ImportFavorites",
-    description="Import Favorites from a .prefs file or folder into the current project.",
+    description=(
+        "Import Favorites from a .prefs file or folder into the current project. From Archicad 29 they can also be "
+        "imported from a folder of Favorite files (xml format, all of them or the given fileNames) or from a legacy "
+        ".prf file (legacyPRF format), with the conflict policies Error, Skip, OverwriteExisting and RenameNew."
+    ),
     params_model=ImportFavoritesParameters,
+)
+
+
+def move_favorite_folder(conn_header: ConnHeader, params: MoveFavoriteFolderParameters) -> dict:
+    """
+    Moves a folder of the Favorites palette, with its Favorites and subfolders, into another folder. Folders are given
+    as their path of folder names from the root. Returns the new path of the folder. Available from Archicad 29.
+    """
+    return conn_header.core.post_tapir_command(
+        command="MoveFavoriteFolder", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    move_favorite_folder,
+    name="favorites_move_favorite_folder",
+    title="MoveFavoriteFolder",
+    description=(
+        "Moves a folder of the Favorites palette, with its Favorites and subfolders, into another folder. Folders are "
+        "given as their path of folder names from the root. Returns the new path of the folder. Available from "
+        "Archicad 29."
+    ),
+    params_model=MoveFavoriteFolderParameters,
+)
+
+
+def move_favorites(conn_header: ConnHeader, params: MoveFavoritesParameters) -> dict:
+    """
+    Moves Favorites given by their names into a folder of the Favorites palette given by its path. Returns an execution
+    result for each Favorite. Available from Archicad 29.
+    """
+    return conn_header.core.post_tapir_command(
+        command="MoveFavorites", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    move_favorites,
+    name="favorites_move_favorites",
+    title="MoveFavorites",
+    description=(
+        "Moves Favorites given by their names into a folder of the Favorites palette given by its path. Returns an "
+        "execution result for each Favorite. Available from Archicad 29."
+    ),
+    params_model=MoveFavoritesParameters,
+)
+
+
+def rename_favorite_folder(conn_header: ConnHeader, params: RenameFavoriteFolderParameters) -> dict:
+    """
+    Renames a folder of the Favorites palette given by its path. The root folder cannot be renamed. Returns the renamed
+    folder. Available from Archicad 29.
+    """
+    return conn_header.core.post_tapir_command(
+        command="RenameFavoriteFolder", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    rename_favorite_folder,
+    name="favorites_rename_favorite_folder",
+    title="RenameFavoriteFolder",
+    description=(
+        "Renames a folder of the Favorites palette given by its path. The root folder cannot be renamed. Returns the "
+        "renamed folder. Available from Archicad 29."
+    ),
+    params_model=RenameFavoriteFolderParameters,
 )
 
 
