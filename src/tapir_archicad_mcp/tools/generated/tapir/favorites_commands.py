@@ -10,8 +10,11 @@ from multiconn_archicad.models.tapir.commands import (
     CreateFavoritesFromElementsParameters,
     DeleteFavoriteFolderParameters,
     DeleteFavoritesParameters,
+    DeleteFavoritesWithManagerParameters,
     ExportFavoritesParameters,
     GetAllFavoritesParameters,
+    GetFavoriteContentsParameters,
+    GetFavoriteDefaultsParameters,
     GetFavoriteDetailsParameters,
     GetFavoritePreviewImageParameters,
     GetFavoritesByTypeParameters,
@@ -19,8 +22,10 @@ from multiconn_archicad.models.tapir.commands import (
     ImportFavoritesParameters,
     MoveFavoriteFolderParameters,
     MoveFavoritesParameters,
+    ReadFavoritesFileParameters,
     RenameFavoriteFolderParameters,
     RenameFavoritesParameters,
+    SearchFavoritesParameters,
     UpdateFavoritesFromElementsParameters,
 )
 
@@ -79,7 +84,8 @@ def apply_favorites_to_elements(conn_header: ConnHeader, params: ApplyFavoritesT
     classifications, categories and properties are all applied; each can be opted out of individually. keepFields lists
     fields of the target (its ID, layer, an opening's width, height and sill height, a Wall's reference line location,
     height and top link) that are copied back after the Favorite has been applied, so that e.g. only the library part or
-    the wall type changes.
+    the wall type changes. With favorite instead of favoritesToApply, one Favorite is read once and applied to the given
+    elements, or to every element of its type that matches the filter.
     """
     return conn_header.core.post_tapir_command(
         command="ApplyFavoritesToElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -99,7 +105,9 @@ register_tool_for_dispatch(
         "By default settings, classifications, categories and properties are all applied; each can be opted out of "
         "individually. keepFields lists fields of the target (its ID, layer, an opening's width, height and sill "
         "height, a Wall's reference line location, height and top link) that are copied back after the Favorite has "
-        "been applied, so that e.g. only the library part or the wall type changes."
+        "been applied, so that e.g. only the library part or the wall type changes. With favorite instead of "
+        "favoritesToApply, one Favorite is read once and applied to the given elements, or to every element of its "
+        "type that matches the filter."
     ),
     params_model=ApplyFavoritesToElementsParameters,
 )
@@ -230,10 +238,34 @@ register_tool_for_dispatch(
 )
 
 
+def delete_favorites_with_manager(conn_header: ConnHeader, params: DeleteFavoritesWithManagerParameters) -> dict:
+    """
+    Deletes the given Favorites through the Favorite manager, each found by name, optionally only in the given folder.
+    One execution result for each. Available from Archicad 29.
+    """
+    return conn_header.core.post_tapir_command(
+        command="DeleteFavoritesWithManager",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    delete_favorites_with_manager,
+    name="favorites_delete_favorites_with_manager",
+    title="DeleteFavoritesWithManager",
+    description=(
+        "Deletes the given Favorites through the Favorite manager, each found by name, optionally only in the given "
+        "folder. One execution result for each. Available from Archicad 29."
+    ),
+    params_model=DeleteFavoritesWithManagerParameters,
+)
+
+
 def export_favorites(conn_header: ConnHeader, params: ExportFavoritesParameters) -> dict:
     """
     Export the project's Favorites to a .prefs file or folder. From Archicad 29 they can also be exported to a folder of
-    Favorite files (xml format) or to a legacy .prf file (legacyPRF format).
+    Favorite files (xml format) or to a legacy .prf file (legacyPRF format). With overwrite false an export to a single
+    file refuses to replace an existing file.
     """
     return conn_header.core.post_tapir_command(
         command="ExportFavorites", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -246,7 +278,8 @@ register_tool_for_dispatch(
     title="ExportFavorites",
     description=(
         "Export the project's Favorites to a .prefs file or folder. From Archicad 29 they can also be exported to a "
-        "folder of Favorite files (xml format) or to a legacy .prf file (legacyPRF format)."
+        "folder of Favorite files (xml format) or to a legacy .prf file (legacyPRF format). With overwrite false an "
+        "export to a single file refuses to replace an existing file."
     ),
     params_model=ExportFavoritesParameters,
 )
@@ -278,14 +311,66 @@ register_tool_for_dispatch(
 )
 
 
+def get_favorite_contents(conn_header: ConnHeader, params: GetFavoriteContentsParameters) -> dict:
+    """
+    Returns the Favorites of a folder of the Favorites palette and of its subfolders (every Favorite when no folder is
+    given), each with its folder path, classifications, element category values and property values, read through the
+    Favorite manager. Available from Archicad 29.
+
+    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
+    and page_token set to that token to get the next page of results.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetFavoriteContents", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    get_favorite_contents,
+    name="favorites_get_favorite_contents",
+    title="GetFavoriteContents",
+    description=(
+        "Returns the Favorites of a folder of the Favorites palette and of its subfolders (every Favorite when no "
+        "folder is given), each with its folder path, classifications, element category values and property values, "
+        "read through the Favorite manager. Available from Archicad 29."
+    ),
+    params_model=GetFavoriteContentsParameters,
+    pagination_field="favorites",
+)
+
+
+def get_favorite_defaults(conn_header: ConnHeader, params: GetFavoriteDefaultsParameters) -> dict:
+    """
+    Reads the element default stored in each given Favorite through the Favorite manager, without applying it or placing
+    an element: the element type, the layer, the element ID, the folder, the library part and GDL parameters, the marker
+    of every element type that has one, and the sub-elements with each of their kinds (Curtain Wall frames and panels,
+    Stair treads and risers, Railing posts and rails, markers ...). Available from Archicad 29.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetFavoriteDefaults", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    get_favorite_defaults,
+    name="favorites_get_favorite_defaults",
+    title="GetFavoriteDefaults",
+    description=(
+        "Reads the element default stored in each given Favorite through the Favorite manager, without applying it or "
+        "placing an element: the element type, the layer, the element ID, the folder, the library part and GDL "
+        "parameters, the marker of every element type that has one, and the sub-elements with each of their kinds "
+        "(Curtain Wall frames and panels, Stair treads and risers, Railing posts and rails, markers ...). Available "
+        "from Archicad 29."
+    ),
+    params_model=GetFavoriteDefaultsParameters,
+)
+
+
 def get_favorite_details(conn_header: ConnHeader, params: GetFavoriteDetailsParameters) -> dict:
     """
     Returns the classifications, property values and element category values stored in the given favorites, so they can
     be audited before elements are placed. Each property value comes with its evaluation status and default-value flag;
     the value itself is only returned when it has been evaluated.
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
     """
     return conn_header.core.post_tapir_command(
         command="GetFavoriteDetails", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -302,7 +387,6 @@ register_tool_for_dispatch(
         "default-value flag; the value itself is only returned when it has been evaluated."
     ),
     params_model=GetFavoriteDetailsParameters,
-    pagination_field="favoriteDetails",
 )
 
 
@@ -393,7 +477,8 @@ def import_favorites(conn_header: ConnHeader, params: ImportFavoritesParameters)
     """
     Import Favorites from a .prefs file or folder into the current project. From Archicad 29 they can also be imported
     from a folder of Favorite files (xml format, all of them or the given fileNames) or from a legacy .prf file
-    (legacyPRF format), with the conflict policies Error, Skip, OverwriteExisting and RenameNew.
+    (legacyPRF format), with the conflict policies Error, Skip, OverwriteExisting and RenameNew. In a Teamwork project
+    the Favorites lockable object set must be reserved first (see ReserveLockableObjectSet).
     """
     return conn_header.core.post_tapir_command(
         command="ImportFavorites", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -407,7 +492,8 @@ register_tool_for_dispatch(
     description=(
         "Import Favorites from a .prefs file or folder into the current project. From Archicad 29 they can also be "
         "imported from a folder of Favorite files (xml format, all of them or the given fileNames) or from a legacy "
-        ".prf file (legacyPRF format), with the conflict policies Error, Skip, OverwriteExisting and RenameNew."
+        ".prf file (legacyPRF format), with the conflict policies Error, Skip, OverwriteExisting and RenameNew. In a "
+        "Teamwork project the Favorites lockable object set must be reserved first (see ReserveLockableObjectSet)."
     ),
     params_model=ImportFavoritesParameters,
 )
@@ -458,6 +544,30 @@ register_tool_for_dispatch(
 )
 
 
+def read_favorites_file(conn_header: ConnHeader, params: ReadFavoritesFileParameters) -> dict:
+    """
+    Read the Favorites of a .prefs file or folder without importing them, returning the name, element type and folder of
+    each. Nothing in the project changes, so the result can be compared with the project's Favorites before
+    ImportFavorites.
+    """
+    return conn_header.core.post_tapir_command(
+        command="ReadFavoritesFile", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    read_favorites_file,
+    name="favorites_read_favorites_file",
+    title="ReadFavoritesFile",
+    description=(
+        "Read the Favorites of a .prefs file or folder without importing them, returning the name, element type and "
+        "folder of each. Nothing in the project changes, so the result can be compared with the project's Favorites "
+        "before ImportFavorites."
+    ),
+    params_model=ReadFavoritesFileParameters,
+)
+
+
 def rename_favorite_folder(conn_header: ConnHeader, params: RenameFavoriteFolderParameters) -> dict:
     """
     Renames a folder of the Favorites palette given by its path. The root folder cannot be renamed. Returns the renamed
@@ -493,6 +603,22 @@ register_tool_for_dispatch(
     title="RenameFavorites",
     description="Rename existing favorites.",
     params_model=RenameFavoritesParameters,
+)
+
+
+def search_favorites(conn_header: ConnHeader, params: SearchFavoritesParameters) -> dict:
+    """Searches project favorites by keyword (matching favorite name or folder) and/or element type."""
+    return conn_header.core.post_tapir_command(
+        command="SearchFavorites", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    search_favorites,
+    name="favorites_search_favorites",
+    title="SearchFavorites",
+    description="Searches project favorites by keyword (matching favorite name or folder) and/or element type.",
+    params_model=SearchFavoritesParameters,
 )
 
 

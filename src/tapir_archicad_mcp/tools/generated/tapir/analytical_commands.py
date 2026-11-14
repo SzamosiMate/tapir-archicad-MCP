@@ -9,6 +9,7 @@ from multiconn_archicad.models.tapir.commands import (
     CreateAnalyticalLoadGroupsParameters,
     CreateAnalyticalLoadsParameters,
     CreateAnalyticalSupportsParameters,
+    CreateElementsFromAnalyticalMembersParameters,
     DeleteAnalyticalLoadCasesParameters,
     DeleteAnalyticalLoadCombinationsParameters,
     DeleteAnalyticalLoadGroupsParameters,
@@ -210,6 +211,34 @@ register_tool_for_dispatch(
 )
 
 
+def create_elements_from_analytical_members(
+    conn_header: ConnHeader, params: CreateElementsFromAnalyticalMembersParameters
+) -> dict:
+    """
+    Creates elements (beams, columns, walls, slabs, roofs) from the given curve, surface or segmented surface members,
+    in the form GetAnalyticalMemberDetails returns them, optionally with the settings of a favorite, in one undo step.
+    Returns the new elements and, from Archicad 26, the mapping of their edges and vertices to member parts.
+    """
+    return conn_header.core.post_tapir_command(
+        command="CreateElementsFromAnalyticalMembers",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    create_elements_from_analytical_members,
+    name="analytical_create_elements_from_analytical_members",
+    title="CreateElementsFromAnalyticalMembers",
+    description=(
+        "Creates elements (beams, columns, walls, slabs, roofs) from the given curve, surface or segmented surface "
+        "members, in the form GetAnalyticalMemberDetails returns them, optionally with the settings of a favorite, in "
+        "one undo step. Returns the new elements and, from Archicad 26, the mapping of their edges and vertices to "
+        "member parts."
+    ),
+    params_model=CreateElementsFromAnalyticalMembersParameters,
+)
+
+
 def delete_analytical_load_cases(conn_header: ConnHeader, params: DeleteAnalyticalLoadCasesParameters) -> dict:
     """Deletes the given structural analysis load cases in one undo step."""
     return conn_header.core.post_tapir_command(
@@ -266,9 +295,6 @@ def get_analytical_links(conn_header: ConnHeader, params: GetAnalyticalLinksPara
     """
     Retrieves the settings, the connected member parts and the geometry of the given analytical links. Available from
     Archicad 26.
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
     """
     return conn_header.core.post_tapir_command(
         command="GetAnalyticalLinks", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -284,7 +310,6 @@ register_tool_for_dispatch(
         "from Archicad 26."
     ),
     params_model=GetAnalyticalLinksParameters,
-    pagination_field="links",
 )
 
 
@@ -344,9 +369,6 @@ def get_analytical_loads(conn_header: ConnHeader, params: GetAnalyticalLoadsPara
     """
     Retrieves the settings, the loaded member part, the custom data (the curve of an edge load, the contour of a surface
     load) and the geometry of the given analytical point, edge and surface loads. Available from Archicad 26.
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
     """
     return conn_header.core.post_tapir_command(
         command="GetAnalyticalLoads", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -363,7 +385,6 @@ register_tool_for_dispatch(
         "26."
     ),
     params_model=GetAnalyticalLoadsParameters,
-    pagination_field="loads",
 )
 
 
@@ -402,9 +423,6 @@ def get_analytical_member_part_geometries(
     """
     Retrieves the node of the given analytical member vertices and the curve of the given member edges. Available from
     Archicad 26.
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
     """
     return conn_header.core.post_tapir_command(
         command="GetAnalyticalMemberPartGeometries",
@@ -421,7 +439,6 @@ register_tool_for_dispatch(
         "from Archicad 26."
     ),
     params_model=GetAnalyticalMemberPartGeometriesParameters,
-    pagination_field="geometries",
 )
 
 
@@ -450,9 +467,6 @@ def get_analytical_members(conn_header: ConnHeader, params: GetAnalyticalMembers
     """
     Lists the elements of the curve and surface members of the given Structural Analytical Model, or of the model of the
     current view when no model is given (the model is required before Archicad 27).
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
     """
     return conn_header.core.post_tapir_command(
         command="GetAnalyticalMembers", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -468,7 +482,6 @@ register_tool_for_dispatch(
         "of the current view when no model is given (the model is required before Archicad 27)."
     ),
     params_model=GetAnalyticalMembersParameters,
-    pagination_field="curveMembers",
 )
 
 
@@ -529,12 +542,7 @@ register_tool_for_dispatch(
 
 
 def get_analytical_releases(conn_header: ConnHeader, params: GetAnalyticalReleasesParameters) -> dict:
-    """
-    Retrieves the releases of the given analytical members. Available from Archicad 26.
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
-    """
+    """Retrieves the releases of the given analytical members. Available from Archicad 26."""
     return conn_header.core.post_tapir_command(
         command="GetAnalyticalReleases", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
@@ -546,7 +554,6 @@ register_tool_for_dispatch(
     title="GetAnalyticalReleases",
     description="Retrieves the releases of the given analytical members. Available from Archicad 26.",
     params_model=GetAnalyticalReleasesParameters,
-    pagination_field="releases",
 )
 
 
@@ -554,9 +561,6 @@ def get_analytical_supports(conn_header: ConnHeader, params: GetAnalyticalSuppor
     """
     Retrieves the settings, the supported member part and the geometry of the given analytical supports. Available from
     Archicad 26.
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
     """
     return conn_header.core.post_tapir_command(
         command="GetAnalyticalSupports", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -572,7 +576,6 @@ register_tool_for_dispatch(
         "Available from Archicad 26."
     ),
     params_model=GetAnalyticalSupportsParameters,
-    pagination_field="supports",
 )
 
 

@@ -65,7 +65,10 @@ register_tool_for_dispatch(
 
 
 def delete_issue(conn_header: ConnHeader, params: DeleteIssueParameters) -> dict:
-    """Deletes the specified issue."""
+    """
+    Deletes the specified issue. With dryRun true nothing is deleted and no undo step is created: the response has
+    dryRun set to true, and wouldDelete when the issue exists.
+    """
     return conn_header.core.post_tapir_command(
         command="DeleteIssue", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
@@ -75,7 +78,10 @@ register_tool_for_dispatch(
     delete_issue,
     name="issues_delete_issue",
     title="DeleteIssue",
-    description="Deletes the specified issue.",
+    description=(
+        "Deletes the specified issue. With dryRun true nothing is deleted and no undo step is created: the response "
+        "has dryRun set to true, and wouldDelete when the issue exists."
+    ),
     params_model=DeleteIssueParameters,
 )
 
@@ -97,7 +103,7 @@ register_tool_for_dispatch(
 
 
 def export_issues_to_bcf(conn_header: ConnHeader, params: ExportIssuesToBCFParameters) -> dict:
-    """Exports specified issues to a BCF file."""
+    """Exports specified issues to a BCF file. With overwrite false it refuses to replace an existing file."""
     return conn_header.core.post_tapir_command(
         command="ExportIssuesToBCF", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
@@ -107,7 +113,9 @@ register_tool_for_dispatch(
     export_issues_to_bcf,
     name="issues_export_issues_to_bcf",
     title="ExportIssuesToBCF",
-    description="Exports specified issues to a BCF file.",
+    description=(
+        "Exports specified issues to a BCF file. With overwrite false it refuses to replace an existing file."
+    ),
     params_model=ExportIssuesToBCFParameters,
 )
 

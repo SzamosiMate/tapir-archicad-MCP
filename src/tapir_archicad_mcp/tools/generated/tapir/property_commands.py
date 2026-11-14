@@ -2,6 +2,7 @@
 from multiconn_archicad import ConnHeader
 from multiconn_archicad.models.tapir.commands import (
     AddPropertyToAttributesParameters,
+    CheckPropertyValuesParameters,
     CreatePropertyDefinitionsParameters,
     CreatePropertyGroupsParameters,
     DeletePropertyDefinitionsParameters,
@@ -10,15 +11,23 @@ from multiconn_archicad.models.tapir.commands import (
     GetPropertiesOfToolDefaultsParameters,
     GetPropertyAvailabilityOfDefaultsParameters,
     GetPropertyDefinitionsOfAttributesParameters,
+    GetPropertyDefinitionsOfElementComponentsParameters,
+    GetPropertyEditabilityParameters,
+    GetPropertyExpressionReferencesParameters,
     GetPropertyValuesOfAttributesParameters,
+    GetPropertyValuesOfElementComponentsParameters,
+    GetPropertyValuesOfElementDefaultsParameters,
     GetPropertyValuesOfElementsParameters,
     ImportPropertiesXmlParameters,
     MakePropertyAvailableForElementsParameters,
     MakePropertyUnavailableForElementsParameters,
     ModifyPropertyValueOfElementsParameters,
     RemovePropertyFromAttributesParameters,
+    SearchPropertiesParameters,
     SetBuiltInPropertyValuesOfAttributesParameters,
+    SetPropertyValueOfAttributesParameters,
     SetPropertyValuesOfAttributesParameters,
+    SetPropertyValuesOfElementDefaultsParameters,
     SetPropertyValuesOfElementsParameters,
     UpdatePropertyDefinitionsParameters,
     UpdatePropertyGroupsParameters,
@@ -46,6 +55,24 @@ register_tool_for_dispatch(
         "undo step. Available in Archicad 25, 26 and 27 only."
     ),
     params_model=AddPropertyToAttributesParameters,
+)
+
+
+def check_property_values(conn_header: ConnHeader, params: CheckPropertyValuesParameters) -> dict:
+    """Checks whether the given values are acceptable for the given property definitions, without changing anything."""
+    return conn_header.core.post_tapir_command(
+        command="CheckPropertyValues", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    check_property_values,
+    name="properties_check_property_values",
+    title="CheckPropertyValues",
+    description=(
+        "Checks whether the given values are acceptable for the given property definitions, without changing anything."
+    ),
+    params_model=CheckPropertyValuesParameters,
 )
 
 
@@ -82,7 +109,10 @@ register_tool_for_dispatch(
 
 
 def delete_property_definitions(conn_header: ConnHeader, params: DeletePropertyDefinitionsParameters) -> dict:
-    """Deletes the given Custom Property Definitions."""
+    """
+    Deletes the given Custom Property Definitions. With dryRun true nothing is deleted and no undo step is created: the
+    response has dryRun set to true, and each property that exists gets wouldDelete.
+    """
     return conn_header.core.post_tapir_command(
         command="DeletePropertyDefinitions", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
@@ -92,13 +122,19 @@ register_tool_for_dispatch(
     delete_property_definitions,
     name="properties_delete_property_definitions",
     title="DeletePropertyDefinitions",
-    description="Deletes the given Custom Property Definitions.",
+    description=(
+        "Deletes the given Custom Property Definitions. With dryRun true nothing is deleted and no undo step is "
+        "created: the response has dryRun set to true, and each property that exists gets wouldDelete."
+    ),
     params_model=DeletePropertyDefinitionsParameters,
 )
 
 
 def delete_property_groups(conn_header: ConnHeader, params: DeletePropertyGroupsParameters) -> dict:
-    """Deletes the given Custom Property Groups."""
+    """
+    Deletes the given Custom Property Groups. With dryRun true nothing is deleted and no undo step is created: the
+    response has dryRun set to true, and each property group that exists gets wouldDelete.
+    """
     return conn_header.core.post_tapir_command(
         command="DeletePropertyGroups", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
@@ -108,7 +144,10 @@ register_tool_for_dispatch(
     delete_property_groups,
     name="properties_delete_property_groups",
     title="DeletePropertyGroups",
-    description="Deletes the given Custom Property Groups.",
+    description=(
+        "Deletes the given Custom Property Groups. With dryRun true nothing is deleted and no undo step is created: "
+        "the response has dryRun set to true, and each property group that exists gets wouldDelete."
+    ),
     params_model=DeletePropertyGroupsParameters,
 )
 
@@ -218,6 +257,76 @@ register_tool_for_dispatch(
 )
 
 
+def get_property_definitions_of_element_components(
+    conn_header: ConnHeader, params: GetPropertyDefinitionsOfElementComponentsParameters
+) -> dict:
+    """
+    Returns the property definitions available on the given element components, optionally filtered to user defined or
+    built-in ones.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetPropertyDefinitionsOfElementComponents",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    get_property_definitions_of_element_components,
+    name="properties_get_property_definitions_of_element_components",
+    title="GetPropertyDefinitionsOfElementComponents",
+    description=(
+        "Returns the property definitions available on the given element components, optionally filtered to user "
+        "defined or built-in ones."
+    ),
+    params_model=GetPropertyDefinitionsOfElementComponentsParameters,
+)
+
+
+def get_property_editability(conn_header: ConnHeader, params: GetPropertyEditabilityParameters) -> dict:
+    """
+    Tells whether the values of the given properties can be modified, and whether the properties are visible, for the
+    given elements. Also tells whether they can be modified in the tool defaults of element types (from Archicad 26) and
+    in the default values of the property definitions themselves. Unknown elements, element types and properties are
+    reported as errors, not as locked properties.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetPropertyEditability", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    get_property_editability,
+    name="properties_get_property_editability",
+    title="GetPropertyEditability",
+    description=(
+        "Tells whether the values of the given properties can be modified, and whether the properties are visible, for "
+        "the given elements. Also tells whether they can be modified in the tool defaults of element types (from "
+        "Archicad 26) and in the default values of the property definitions themselves. Unknown elements, element "
+        "types and properties are reported as errors, not as locked properties."
+    ),
+    params_model=GetPropertyEditabilityParameters,
+)
+
+
+def get_property_expression_references(
+    conn_header: ConnHeader, params: GetPropertyExpressionReferencesParameters
+) -> dict:
+    """Returns the strings that refer to the given properties in property expressions."""
+    return conn_header.core.post_tapir_command(
+        command="GetPropertyExpressionReferences",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    get_property_expression_references,
+    name="properties_get_property_expression_references",
+    title="GetPropertyExpressionReferences",
+    description="Returns the strings that refer to the given properties in property expressions.",
+    params_model=GetPropertyExpressionReferencesParameters,
+)
+
+
 def get_property_values_of_attributes(conn_header: ConnHeader, params: GetPropertyValuesOfAttributesParameters) -> dict:
     """
     Returns the property values of the attributes for the given property. With includeStatus it also returns whether
@@ -238,6 +347,62 @@ register_tool_for_dispatch(
         "whether each property is available, editable and visible for the attribute (from 1.7.3)."
     ),
     params_model=GetPropertyValuesOfAttributesParameters,
+)
+
+
+def get_property_values_of_element_components(
+    conn_header: ConnHeader, params: GetPropertyValuesOfElementComponentsParameters
+) -> dict:
+    """
+    Returns the property values of the given element components for the given properties, in the shape of
+    GetPropertyValuesOfElements. Use GetComponentsOfElements to list the components of an element.
+
+    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
+    and page_token set to that token to get the next page of results.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetPropertyValuesOfElementComponents",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    get_property_values_of_element_components,
+    name="properties_get_property_values_of_element_components",
+    title="GetPropertyValuesOfElementComponents",
+    description=(
+        "Returns the property values of the given element components for the given properties, in the shape of "
+        "GetPropertyValuesOfElements. Use GetComponentsOfElements to list the components of an element."
+    ),
+    params_model=GetPropertyValuesOfElementComponentsParameters,
+    pagination_field="propertyValuesForElementComponents",
+)
+
+
+def get_property_values_of_element_defaults(
+    conn_header: ConnHeader, params: GetPropertyValuesOfElementDefaultsParameters
+) -> dict:
+    """
+    Returns the values of the given properties in the current tool default of an element type, which new elements of
+    that type get. It reads the native tool default of the generic variation of the type, not a Favorite that is not
+    applied. A property that is not available for the tool default is reported as an error.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetPropertyValuesOfElementDefaults",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    get_property_values_of_element_defaults,
+    name="properties_get_property_values_of_element_defaults",
+    title="GetPropertyValuesOfElementDefaults",
+    description=(
+        "Returns the values of the given properties in the current tool default of an element type, which new elements "
+        "of that type get. It reads the native tool default of the generic variation of the type, not a Favorite that "
+        "is not applied. A property that is not available for the tool default is reported as an error."
+    ),
+    params_model=GetPropertyValuesOfElementDefaultsParameters,
 )
 
 
@@ -293,7 +458,7 @@ register_tool_for_dispatch(
 def make_property_available_for_elements(
     conn_header: ConnHeader, params: MakePropertyAvailableForElementsParameters
 ) -> dict:
-    """Makes a property definition available for all the given elements. Available only in Archicad 27."""
+    """Makes a property definition available for all the given elements. Available in Archicad 25, 26 and 27."""
     return conn_header.core.post_tapir_command(
         command="MakePropertyAvailableForElements",
         parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
@@ -304,7 +469,9 @@ register_tool_for_dispatch(
     make_property_available_for_elements,
     name="properties_make_property_available_for_elements",
     title="MakePropertyAvailableForElements",
-    description="Makes a property definition available for all the given elements. Available only in Archicad 27.",
+    description=(
+        "Makes a property definition available for all the given elements. Available in Archicad 25, 26 and 27."
+    ),
     params_model=MakePropertyAvailableForElementsParameters,
 )
 
@@ -312,7 +479,7 @@ register_tool_for_dispatch(
 def make_property_unavailable_for_elements(
     conn_header: ConnHeader, params: MakePropertyUnavailableForElementsParameters
 ) -> dict:
-    """Makes a property definition unavailable for all the given elements. Available only in Archicad 27."""
+    """Makes a property definition unavailable for all the given elements. Available in Archicad 25, 26 and 27."""
     return conn_header.core.post_tapir_command(
         command="MakePropertyUnavailableForElements",
         parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
@@ -323,7 +490,9 @@ register_tool_for_dispatch(
     make_property_unavailable_for_elements,
     name="properties_make_property_unavailable_for_elements",
     title="MakePropertyUnavailableForElements",
-    description=("Makes a property definition unavailable for all the given elements. Available only in Archicad 27."),
+    description=(
+        "Makes a property definition unavailable for all the given elements. Available in Archicad 25, 26 and 27."
+    ),
     params_model=MakePropertyUnavailableForElementsParameters,
 )
 
@@ -331,7 +500,7 @@ register_tool_for_dispatch(
 def modify_property_value_of_elements(conn_header: ConnHeader, params: ModifyPropertyValueOfElementsParameters) -> dict:
     """
     Sets one property value on all the given elements in a single step. If the property is not available for any of the
-    elements, none of them is changed. Available from Archicad 27.
+    elements, none of them is changed.
     """
     return conn_header.core.post_tapir_command(
         command="ModifyPropertyValueOfElements",
@@ -345,7 +514,7 @@ register_tool_for_dispatch(
     title="ModifyPropertyValueOfElements",
     description=(
         "Sets one property value on all the given elements in a single step. If the property is not available for any "
-        "of the elements, none of them is changed. Available from Archicad 27."
+        "of the elements, none of them is changed."
     ),
     params_model=ModifyPropertyValueOfElementsParameters,
 )
@@ -354,7 +523,8 @@ register_tool_for_dispatch(
 def remove_property_from_attributes(conn_header: ConnHeader, params: RemovePropertyFromAttributesParameters) -> dict:
     """
     Makes a custom property unavailable for the given attributes (for example Building Materials), in one undo step.
-    Available in Archicad 25, 26 and 27 only.
+    Available in Archicad 25, 26 and 27 only. With dryRun true nothing is changed and no undo step is created: the
+    response has dryRun set to true, and wouldDelete when the property and every attribute exist.
     """
     return conn_header.core.post_tapir_command(
         command="RemovePropertyFromAttributes",
@@ -368,9 +538,32 @@ register_tool_for_dispatch(
     title="RemovePropertyFromAttributes",
     description=(
         "Makes a custom property unavailable for the given attributes (for example Building Materials), in one undo "
-        "step. Available in Archicad 25, 26 and 27 only."
+        "step. Available in Archicad 25, 26 and 27 only. With dryRun true nothing is changed and no undo step is "
+        "created: the response has dryRun set to true, and wouldDelete when the property and every attribute exist."
     ),
     params_model=RemovePropertyFromAttributesParameters,
+)
+
+
+def search_properties(conn_header: ConnHeader, params: SearchPropertiesParameters) -> dict:
+    """
+    Searches properties by name or group substring with optional filtering by property type, value type, and collection
+    type.
+    """
+    return conn_header.core.post_tapir_command(
+        command="SearchProperties", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    search_properties,
+    name="properties_search_properties",
+    title="SearchProperties",
+    description=(
+        "Searches properties by name or group substring with optional filtering by property type, value type, and "
+        "collection type."
+    ),
+    params_model=SearchPropertiesParameters,
 )
 
 
@@ -399,6 +592,29 @@ register_tool_for_dispatch(
 )
 
 
+def set_property_value_of_attributes(conn_header: ConnHeader, params: SetPropertyValueOfAttributesParameters) -> dict:
+    """
+    Sets one property value on several attributes (for example Building Materials) in one undo step. If the property is
+    not available for any of the given attributes, no attribute is changed.
+    """
+    return conn_header.core.post_tapir_command(
+        command="SetPropertyValueOfAttributes",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    set_property_value_of_attributes,
+    name="properties_set_property_value_of_attributes",
+    title="SetPropertyValueOfAttributes",
+    description=(
+        "Sets one property value on several attributes (for example Building Materials) in one undo step. If the "
+        "property is not available for any of the given attributes, no attribute is changed."
+    ),
+    params_model=SetPropertyValueOfAttributesParameters,
+)
+
+
 def set_property_values_of_attributes(conn_header: ConnHeader, params: SetPropertyValuesOfAttributesParameters) -> dict:
     """Sets the property values of attributes."""
     return conn_header.core.post_tapir_command(
@@ -416,8 +632,39 @@ register_tool_for_dispatch(
 )
 
 
+def set_property_values_of_element_defaults(
+    conn_header: ConnHeader, params: SetPropertyValuesOfElementDefaultsParameters
+) -> dict:
+    """
+    Sets the property values of the tool defaults (the settings new elements get) of element types, so every element
+    placed afterwards gets them, without saving and applying a favorite.
+    """
+    return conn_header.core.post_tapir_command(
+        command="SetPropertyValuesOfElementDefaults",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    set_property_values_of_element_defaults,
+    name="properties_set_property_values_of_element_defaults",
+    title="SetPropertyValuesOfElementDefaults",
+    description=(
+        "Sets the property values of the tool defaults (the settings new elements get) of element types, so every "
+        "element placed afterwards gets them, without saving and applying a favorite."
+    ),
+    params_model=SetPropertyValuesOfElementDefaultsParameters,
+)
+
+
 def set_property_values_of_elements(conn_header: ConnHeader, params: SetPropertyValuesOfElementsParameters) -> dict:
-    """Sets the property values of elements. It works for subelements of hierarchal elements also."""
+    """
+    Sets the property values of elements. It works for subelements of hierarchal elements also. With valueStatus an
+    element's value can also be reset to the default value of the property (Default) or made undefined (UserUndefined,
+    from 1.8.1). With dryRun true nothing is changed and no undo step is created: the response has dryRun set to true,
+    and each item that passes the checks made before writing gets wouldChange, with the element's value now (oldValue)
+    and the value a real run would write (newValue), both as GetPropertyValuesOfElements gives them.
+    """
     return conn_header.core.post_tapir_command(
         command="SetPropertyValuesOfElements",
         parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
@@ -428,7 +675,14 @@ register_tool_for_dispatch(
     set_property_values_of_elements,
     name="properties_set_property_values_of_elements",
     title="SetPropertyValuesOfElements",
-    description="Sets the property values of elements. It works for subelements of hierarchal elements also.",
+    description=(
+        "Sets the property values of elements. It works for subelements of hierarchal elements also. With valueStatus "
+        "an element's value can also be reset to the default value of the property (Default) or made undefined "
+        "(UserUndefined, from 1.8.1). With dryRun true nothing is changed and no undo step is created: the response "
+        "has dryRun set to true, and each item that passes the checks made before writing gets wouldChange, with the "
+        "element's value now (oldValue) and the value a real run would write (newValue), both as "
+        "GetPropertyValuesOfElements gives them."
+    ),
     params_model=SetPropertyValuesOfElementsParameters,
 )
 

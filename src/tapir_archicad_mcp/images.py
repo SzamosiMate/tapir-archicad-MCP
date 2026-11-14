@@ -20,7 +20,7 @@ def _reference(number: int) -> str:
 
 
 def _image_content(data: JsonValue) -> ImageContent | None:
-    # The image commands offer png and jpg. Anything else stays in the JSON, so a client never gets a broken image.
+    # Emit recognized PNG/JPEG content; other formats stay in JSON for the caller to handle.
     if not isinstance(data, str):
         return None
     try:
@@ -55,10 +55,13 @@ def extract_images(
         previous_count = len(images)
         items = []
         for item in values:
-            # Library pictures are strings. Profile previews also carry metadata and error items.
+            # Library pictures are strings; converted images and profile previews use wrappers.
             if isinstance(item, str) and (image := _image_content(item)) is not None:
                 images.append(image)
                 item = _reference(len(images))
+            elif isinstance(item, dict) and (image := _image_content(item.get("image"))) is not None:
+                images.append(image)
+                item = {**item, "image": _reference(len(images))}
             elif (
                 isinstance(item, dict)
                 and isinstance(content := item.get("image"), dict)

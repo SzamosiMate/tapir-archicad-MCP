@@ -360,13 +360,15 @@ def is_image_list(schema, document):
     items = [branch["items"] for branch in variants(schema, document) if "items" in branch]
     if items and all(has_type(item, "string", document) for item in items):
         return True
-    contents = [
-        content
-        for item in items
-        for image in field_schemas(item, "image", document)
-        for content in field_schemas(image, "content", document)
-    ]
-    return bool(contents) and all(has_type(content, "string", document) for content in contents)
+    images = [image for item in items for image in field_schemas(item, "image", document)]
+    return bool(images) and all(
+        has_type(image, "string", document)
+        or (
+            (contents := field_schemas(image, "content", document))
+            and all(has_type(content, "string", document) for content in contents)
+        )
+        for image in images
+    )
 
 
 def validate_generated(release, configs, expected):

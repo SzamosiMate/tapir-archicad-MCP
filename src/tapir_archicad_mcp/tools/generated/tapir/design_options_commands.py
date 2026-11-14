@@ -11,9 +11,11 @@ from multiconn_archicad.models.tapir.commands import (
     DeleteDesignOptionSetsParameters,
     DeleteDesignOptionsParameters,
     DuplicateDesignOptionCombinationsParameters,
+    GetDesignOptionCombinationOfViewsParameters,
     GetDesignOptionForElementsParameters,
     GetElementsOfDesignOptionsParameters,
     GetHotlinkDesignOptionTableDetailsParameters,
+    GetHotlinkDesignOptionTablesParameters,
     MoveDesignOptionsToAnotherSetParameters,
     MoveElementsToDesignOptionsParameters,
     RenameDesignOptionCombinationsParameters,
@@ -23,6 +25,8 @@ from multiconn_archicad.models.tapir.commands import (
     ReorderDesignOptionsInSetParameters,
     SetActiveDesignOptionsInCombinationsParameters,
     SetDefaultDesignOptionParameters,
+    SetDesignOptionCombinationOfViewsParameters,
+    SetHotlinkDesignOptionTablesParameters,
 )
 
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
@@ -230,6 +234,31 @@ register_tool_for_dispatch(
 )
 
 
+def get_design_option_combination_of_views(
+    conn_header: ConnHeader, params: GetDesignOptionCombinationOfViewsParameters
+) -> dict:
+    """
+    Retrieves which design option combination the given views show: only the main model, a combination, a custom set of
+    design options or a deleted combination. Available from Archicad 27.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetDesignOptionCombinationOfViews",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    get_design_option_combination_of_views,
+    name="design_options_get_design_option_combination_of_views",
+    title="GetDesignOptionCombinationOfViews",
+    description=(
+        "Retrieves which design option combination the given views show: only the main model, a combination, a custom "
+        "set of design options or a deleted combination. Available from Archicad 27."
+    ),
+    params_model=GetDesignOptionCombinationOfViewsParameters,
+)
+
+
 def get_design_option_combinations(conn_header: ConnHeader) -> dict:
     """Retrieves information about existing design option combinations."""
     return conn_header.core.post_tapir_command(command="GetDesignOptionCombinations", parameters={})
@@ -334,6 +363,31 @@ register_tool_for_dispatch(
         "hotlinked source file, and which of them the node shows. Available from Archicad 29."
     ),
     params_model=GetHotlinkDesignOptionTableDetailsParameters,
+)
+
+
+def get_hotlink_design_option_tables(conn_header: ConnHeader, params: GetHotlinkDesignOptionTablesParameters) -> dict:
+    """
+    Retrieves the design option table of the given hotlink nodes and placed hotlink instances: the filter mode (main
+    model only, by options or by combination), the design option sets, options and combinations of the hotlinked module
+    and which of them are active. Available from Archicad 29.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetHotlinkDesignOptionTables",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    get_hotlink_design_option_tables,
+    name="design_options_get_hotlink_design_option_tables",
+    title="GetHotlinkDesignOptionTables",
+    description=(
+        "Retrieves the design option table of the given hotlink nodes and placed hotlink instances: the filter mode "
+        "(main model only, by options or by combination), the design option sets, options and combinations of the "
+        "hotlinked module and which of them are active. Available from Archicad 29."
+    ),
+    params_model=GetHotlinkDesignOptionTablesParameters,
 )
 
 
@@ -508,4 +562,52 @@ register_tool_for_dispatch(
         "Archicad 29."
     ),
     params_model=SetDefaultDesignOptionParameters,
+)
+
+
+def set_design_option_combination_of_views(
+    conn_header: ConnHeader, params: SetDesignOptionCombinationOfViewsParameters
+) -> dict:
+    """
+    Sets the design option combination the given views show, or makes them show only the main model. Available from
+    Archicad 27.
+    """
+    return conn_header.core.post_tapir_command(
+        command="SetDesignOptionCombinationOfViews",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    set_design_option_combination_of_views,
+    name="design_options_set_design_option_combination_of_views",
+    title="SetDesignOptionCombinationOfViews",
+    description=(
+        "Sets the design option combination the given views show, or makes them show only the main model. Available "
+        "from Archicad 27."
+    ),
+    params_model=SetDesignOptionCombinationOfViewsParameters,
+)
+
+
+def set_hotlink_design_option_tables(conn_header: ConnHeader, params: SetHotlinkDesignOptionTablesParameters) -> dict:
+    """
+    Sets the filter mode, the active combination and the active option of sets in the design option table of the given
+    placed hotlink instances. Available from Archicad 29.
+    """
+    return conn_header.core.post_tapir_command(
+        command="SetHotlinkDesignOptionTables",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    set_hotlink_design_option_tables,
+    name="design_options_set_hotlink_design_option_tables",
+    title="SetHotlinkDesignOptionTables",
+    description=(
+        "Sets the filter mode, the active combination and the active option of sets in the design option table of the "
+        "given placed hotlink instances. Available from Archicad 29."
+    ),
+    params_model=SetHotlinkDesignOptionTablesParameters,
 )

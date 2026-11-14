@@ -123,9 +123,6 @@ def get_mep_preference_table_rows(conn_header: ConnHeader, params: GetMEPPrefere
     Rectangular duct and cable carrier segment tables only give whether they exist, as their rows have no key. On
     Archicad 27, which has one kind of preference table, a row is found by its shape and index and has a value and a
     description; the table's name and number of rows per shape are returned too. Available from Archicad 27.
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
     """
     return conn_header.core.post_tapir_command(
         command="GetMEPPreferenceTableRows", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -146,7 +143,6 @@ register_tool_for_dispatch(
         "Available from Archicad 27."
     ),
     params_model=GetMEPPreferenceTableRowsParameters,
-    pagination_field="rows",
 )
 
 

@@ -60,7 +60,9 @@ register_tool_for_dispatch(
 def delete_element_sets(conn_header: ConnHeader, params: DeleteElementSetsParameters) -> dict:
     """
     Deletes the given element sets. The elements of a set are not deleted. Only element sets created by the Tapir Add-On
-    can be deleted; sets created by other add-ons are reported as failed.
+    can be deleted; sets created by other add-ons are reported as failed. With dryRun true nothing is deleted and no
+    undo step is created: the response has dryRun set to true, and each element set that a real run would delete gets
+    wouldDelete.
     """
     return conn_header.core.post_tapir_command(
         command="DeleteElementSets", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -73,19 +75,16 @@ register_tool_for_dispatch(
     title="DeleteElementSets",
     description=(
         "Deletes the given element sets. The elements of a set are not deleted. Only element sets created by the Tapir "
-        "Add-On can be deleted; sets created by other add-ons are reported as failed."
+        "Add-On can be deleted; sets created by other add-ons are reported as failed. With dryRun true nothing is "
+        "deleted and no undo step is created: the response has dryRun set to true, and each element set that a real "
+        "run would delete gets wouldDelete."
     ),
     params_model=DeleteElementSetsParameters,
 )
 
 
 def get_all_elements_of_groups(conn_header: ConnHeader, params: GetAllElementsOfGroupsParameters) -> dict:
-    """
-    Gets all the elements of each given group, including the elements of its nested groups.
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
-    """
+    """Gets all the elements of each given group, including the elements of its nested groups."""
     return conn_header.core.post_tapir_command(
         command="GetAllElementsOfGroups", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
@@ -97,7 +96,6 @@ register_tool_for_dispatch(
     title="GetAllElementsOfGroups",
     description="Gets all the elements of each given group, including the elements of its nested groups.",
     params_model=GetAllElementsOfGroupsParameters,
-    pagination_field="elementsOfGroups",
 )
 
 

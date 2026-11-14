@@ -6,6 +6,7 @@ from multiconn_archicad.models.tapir.commands import (
     GetIFCClassificationReferencesOfElementsParameters,
     GetIFCIdsOfElementsParameters,
     GetIFCPropertiesOfElementsParameters,
+    GetIFCSpatialStructureParameters,
     GetIFCTypeOfElementsParameters,
     IFCFileOperationParameters,
     RemoveIFCClassificationReferencesOfElementsParameters,
@@ -39,6 +40,28 @@ register_tool_for_dispatch(
     ),
     params_model=GetElementsByIFCIdsParameters,
     pagination_field="elementsByIFCIds",
+)
+
+
+def get_ifc_assignments(conn_header: ConnHeader) -> dict:
+    """
+    Returns the IFC assignments of the project: the root IFC groups, and for each object the objects assigned to it
+    (children) and the objects it is assigned to (parents). Each object is given by its hash value, its element where it
+    belongs to one, its IFC type and its GlobalId. Available from Archicad 28.
+    """
+    return conn_header.core.post_tapir_command(command="GetIFCAssignments", parameters={})
+
+
+register_tool_for_dispatch(
+    get_ifc_assignments,
+    name="ifc_get_ifc_assignments",
+    title="GetIFCAssignments",
+    description=(
+        "Returns the IFC assignments of the project: the root IFC groups, and for each object the objects assigned to "
+        "it (children) and the objects it is assigned to (parents). Each object is given by its hash value, its "
+        "element where it belongs to one, its IFC type and its GlobalId. Available from Archicad 28."
+    ),
+    params_model=None,
 )
 
 
@@ -76,13 +99,10 @@ def get_ifc_classification_references_of_elements(
 ) -> dict:
     """
     Retrieves the IFC classification references of the given elements, subelements included: identification, name,
-    location, description (from Archicad 29), the referenced classification (name, source, edition) and whether the
-    reference comes from the preview translator or is stored locally. On Archicad 25, 26 and 27 the source is not given,
-    the referenced classification also has its edition date, description and location, and storedOnly returns only the
-    references stored on the elements.
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
+    location, description and sort (from Archicad 29), the name of the IfcRelAssociatesClassification (from Archicad
+    28), the referenced classification (name, source, edition, edition date, description and location) and whether the
+    reference comes from the preview translator or is stored locally. On Archicad 25, 26 and 27 the source is not given
+    and storedOnly returns only the references stored on the elements.
     """
     return conn_header.core.post_tapir_command(
         command="GetIFCClassificationReferencesOfElements",
@@ -96,19 +116,20 @@ register_tool_for_dispatch(
     title="GetIFCClassificationReferencesOfElements",
     description=(
         "Retrieves the IFC classification references of the given elements, subelements included: identification, "
-        "name, location, description (from Archicad 29), the referenced classification (name, source, edition) and "
-        "whether the reference comes from the preview translator or is stored locally. On Archicad 25, 26 and 27 the "
-        "source is not given, the referenced classification also has its edition date, description and location, and "
-        "storedOnly returns only the references stored on the elements."
+        "name, location, description and sort (from Archicad 29), the name of the IfcRelAssociatesClassification (from "
+        "Archicad 28), the referenced classification (name, source, edition, edition date, description and location) "
+        "and whether the reference comes from the preview translator or is stored locally. On Archicad 25, 26 and 27 "
+        "the source is not given and storedOnly returns only the references stored on the elements."
     ),
     params_model=GetIFCClassificationReferencesOfElementsParameters,
-    pagination_field="elementIFCClassificationReferences",
 )
 
 
 def get_ifc_export_translators(conn_header: ConnHeader) -> dict:
     """
-    Lists the IFC export translators of the project, the preview translator first. Pass one of the names to
+    Lists the IFC export translators of the project in the order of Archicad's translator list. preview marks the first
+    one, which the Archicad API documents as the preview translator; no API identifies the preview translator otherwise,
+    and in some projects the IFC Translators dialog shows another one as preview. Pass one of the names to
     IFCFileOperation as translatorName.
     """
     return conn_header.core.post_tapir_command(command="GetIFCExportTranslators", parameters={})
@@ -119,8 +140,10 @@ register_tool_for_dispatch(
     name="ifc_get_ifc_export_translators",
     title="GetIFCExportTranslators",
     description=(
-        "Lists the IFC export translators of the project, the preview translator first. Pass one of the names to "
-        "IFCFileOperation as translatorName."
+        "Lists the IFC export translators of the project in the order of Archicad's translator list. preview marks the "
+        "first one, which the Archicad API documents as the preview translator; no API identifies the preview "
+        "translator otherwise, and in some projects the IFC Translators dialog shows another one as preview. Pass one "
+        "of the names to IFCFileOperation as translatorName."
     ),
     params_model=None,
 )
@@ -167,6 +190,30 @@ register_tool_for_dispatch(
 )
 
 
+def get_ifc_spatial_structure(conn_header: ConnHeader, params: GetIFCSpatialStructureParameters) -> dict:
+    """
+    Returns the IfcProject, IfcSite and IfcBuilding objects of the project's IFC model (hash value, IFC type and
+    GlobalId), and for the given elements the index of the story they are assigned to in the IFC model. Available from
+    Archicad 28.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetIFCSpatialStructure", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    get_ifc_spatial_structure,
+    name="ifc_get_ifc_spatial_structure",
+    title="GetIFCSpatialStructure",
+    description=(
+        "Returns the IfcProject, IfcSite and IfcBuilding objects of the project's IFC model (hash value, IFC type and "
+        "GlobalId), and for the given elements the index of the story they are assigned to in the IFC model. Available "
+        "from Archicad 28."
+    ),
+    params_model=GetIFCSpatialStructureParameters,
+)
+
+
 def get_ifc_type_of_elements(conn_header: ConnHeader, params: GetIFCTypeOfElementsParameters) -> dict:
     """Retrieves the IFC types of the given elements."""
     return conn_header.core.post_tapir_command(
@@ -186,7 +233,8 @@ register_tool_for_dispatch(
 def ifc_file_operation(conn_header: ConnHeader, params: IFCFileOperationParameters) -> dict:
     """
     Executes an IFC file operation: opens or merges an IFC file, or saves the project as an IFC file. A save can name
-    the export translator to use.
+    the export translator to use, a merge the story the IFC file's first storey is placed on. With overwrite false a
+    save refuses to replace an existing file.
     """
     return conn_header.core.post_tapir_command(
         command="IFCFileOperation", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -199,7 +247,8 @@ register_tool_for_dispatch(
     title="IFCFileOperation",
     description=(
         "Executes an IFC file operation: opens or merges an IFC file, or saves the project as an IFC file. A save can "
-        "name the export translator to use."
+        "name the export translator to use, a merge the story the IFC file's first storey is placed on. With overwrite "
+        "false a save refuses to replace an existing file."
     ),
     params_model=IFCFileOperationParameters,
 )
@@ -211,7 +260,8 @@ def remove_ifc_classification_references_of_elements(
     """
     Removes IFC classification references stored on elements, given by the name of their classification and optionally
     their identification; without identification every stored reference of that classification is removed. Available
-    only in Archicad 25, 26 and 27 for now.
+    only in Archicad 25, 26 and 27 for now. With dryRun true nothing is removed and no undo step is created: the
+    response has dryRun set to true, and each element that has a matching stored reference gets wouldDelete.
     """
     return conn_header.core.post_tapir_command(
         command="RemoveIFCClassificationReferencesOfElements",
@@ -226,7 +276,9 @@ register_tool_for_dispatch(
     description=(
         "Removes IFC classification references stored on elements, given by the name of their classification and "
         "optionally their identification; without identification every stored reference of that classification is "
-        "removed. Available only in Archicad 25, 26 and 27 for now."
+        "removed. Available only in Archicad 25, 26 and 27 for now. With dryRun true nothing is removed and no undo "
+        "step is created: the response has dryRun set to true, and each element that has a matching stored reference "
+        "gets wouldDelete."
     ),
     params_model=RemoveIFCClassificationReferencesOfElementsParameters,
 )
@@ -235,7 +287,8 @@ register_tool_for_dispatch(
 def remove_ifc_properties_of_elements(conn_header: ConnHeader, params: RemoveIFCPropertiesOfElementsParameters) -> dict:
     """
     Removes local IFC properties, given by property set and property name, from elements. Available only in Archicad 25,
-    26 and 27 for now.
+    26 and 27 for now. With dryRun true nothing is removed and no undo step is created: the response has dryRun set to
+    true, and each element that has the local IFC property gets wouldDelete.
     """
     return conn_header.core.post_tapir_command(
         command="RemoveIFCPropertiesOfElements",
@@ -249,7 +302,8 @@ register_tool_for_dispatch(
     title="RemoveIFCPropertiesOfElements",
     description=(
         "Removes local IFC properties, given by property set and property name, from elements. Available only in "
-        "Archicad 25, 26 and 27 for now."
+        "Archicad 25, 26 and 27 for now. With dryRun true nothing is removed and no undo step is created: the response "
+        "has dryRun set to true, and each element that has the local IFC property gets wouldDelete."
     ),
     params_model=RemoveIFCPropertiesOfElementsParameters,
 )

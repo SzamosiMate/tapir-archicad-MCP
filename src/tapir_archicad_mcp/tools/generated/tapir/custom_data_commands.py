@@ -9,12 +9,7 @@ from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
 
 
 def get_element_user_data(conn_header: ConnHeader, params: GetElementUserDataParameters) -> dict:
-    """
-    Reads the values stored on elements by SetElementUserData: every key of each element, or only the given keys.
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
-    """
+    """Reads the values stored on elements by SetElementUserData: every key of each element, or only the given keys."""
     return conn_header.core.post_tapir_command(
         command="GetElementUserData", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
@@ -28,7 +23,6 @@ register_tool_for_dispatch(
         "Reads the values stored on elements by SetElementUserData: every key of each element, or only the given keys."
     ),
     params_model=GetElementUserDataParameters,
-    pagination_field="elementUserData",
 )
 
 

@@ -64,6 +64,97 @@ async def test_attribute_folder_tools_use_tapir_contracts(fake_archicad, name, c
     assert fake_archicad.calls == [(command, params)]
 
 
+@pytest.mark.parametrize(
+    ("name", "command", "params"),
+    [
+        (
+            "attributes_delete_attributes",
+            "DeleteAttributes",
+            {"attributesToDelete": [{"attributeType": "Layer", "attributeId": {"attributeId": {"guid": GUID}}}]},
+        ),
+        (
+            "attributes_delete_attribute_folders",
+            "DeleteAttributeFolders",
+            {"attributeFolders": [{"attributeType": "Layer", "path": ["Unused"]}]},
+        ),
+        (
+            "navigator_delete_navigator_items",
+            "DeleteNavigatorItems",
+            {"navigatorItemIds": [{"navigatorItemId": {"guid": GUID}}]},
+        ),
+    ],
+)
+async def test_deletion_tools_dispatch_dry_run_to_tapir(fake_archicad, name, command, params):
+    params = {**params, "dryRun": True}
+    response = {"executionResults": [{"success": True, "wouldDelete": True}], "dryRun": True}
+    fake_archicad.on_tapir_command(command, response)
+
+    result = await archicad_call_tool(name, {"port": fake_archicad.port, "params": params})
+
+    assert result == response
+    assert fake_archicad.calls == [(command, params)]
+
+
+async def test_2d_bounding_boxes_use_tapir_for_drawing_elements(fake_archicad):
+    response = {"boundingBoxes2D": [{"boundingBox2D": {"xMin": 0, "yMin": 0, "xMax": 1, "yMax": 1}}]}
+    fake_archicad.on_tapir_command("Get2DBoundingBoxes", response)
+    params = {"elements": [{"elementId": {"guid": GUID}}]}
+
+    result = await archicad_call_tool("elements_get2_d_bounding_boxes", {"port": fake_archicad.port, "params": params})
+
+    assert result == response
+    assert fake_archicad.calls == [("Get2DBoundingBoxes", params)]
+
+
+async def test_library_primitives_page_without_repeating_the_read(fake_archicad):
+    primitives = [
+        {"type": "Line", "begCoordinate": {"x": index, "y": 0}, "endCoordinate": {"x": index, "y": 1}}
+        for index in range(101)
+    ]
+    fake_archicad.on_tapir_command("GetLibraryPart2DPrimitives", {"primitives": primitives})
+    params = {"name": "Door"}
+    args = {"port": fake_archicad.port, "params": params}
+
+    first = await archicad_call_tool("library_get_library_part2_d_primitives", args)
+    last = await archicad_call_tool(
+        "library_get_library_part2_d_primitives", {**args, "page_token": first["next_page_token"]}
+    )
+
+    assert first["primitives"] == primitives[:100]
+    assert last["primitives"] == primitives[100:]
+    assert last["pagination"] == {"total": 101, "returned": 1, "truncated": False}
+    assert fake_archicad.calls == [("GetLibraryPart2DPrimitives", params)]
+
+
+async def test_component_property_values_use_tapir_and_page_the_outer_list(fake_archicad):
+    values = [{"propertyValues": [{"value": str(index)}]} for index in range(101)]
+    fake_archicad.on_tapir_command("GetPropertyValuesOfElementComponents", {"propertyValuesForElementComponents": values})
+    params = {
+        "elementComponents": [
+            {"elementComponentId": {"elementId": {"guid": GUID}, "componentId": {"guid": GUID}}}
+        ] * 101,
+        "properties": [{"propertyId": {"guid": GUID}}],
+    }
+    args = {"port": fake_archicad.port, "params": params}
+
+    first = await archicad_call_tool("properties_get_property_values_of_element_components", args)
+    last = await archicad_call_tool(
+        "properties_get_property_values_of_element_components", {**args, "page_token": first["next_page_token"]}
+    )
+
+    assert first["propertyValuesForElementComponents"] == values[:100]
+    assert last["propertyValuesForElementComponents"] == values[100:]
+    assert fake_archicad.calls == [("GetPropertyValuesOfElementComponents", params)]
+
+
+async def test_upstream_command_catalog_is_not_discoverable(fake_archicad):
+    from tapir_archicad_mcp.tools.custom.functions import archicad_get_command_schema, archicad_list_commands
+
+    assert "app_get_commands" not in {command.name for command in archicad_list_commands()}
+    with pytest.raises(ToolError, match="not found"):
+        archicad_get_command_schema("app_get_commands")
+
+
 async def test_element_details_pages_raw_results_without_reexecuting(fake_archicad):
     details = [{"details": {"height": index}} for index in range(101)]
     details[-1] = {"error": {"code": 1, "message": "Cannot read element"}}

@@ -119,6 +119,40 @@ async def test_library_part_pictures_extract_both_previews_and_picture_lists(fak
     assert PNG_B64 not in result.content[0].text
 
 
+async def test_converted_images_extract_flat_wrappers_and_preserve_other_results(fake_archicad):
+    gif = base64.b64encode(b"GIF89a").decode()
+    response = {
+        "images": [
+            {"image": PNG_B64, "futureField": "kept"},
+            {"error": {"code": 1, "message": "Cannot convert"}},
+            {"image": JPG_B64},
+            {"image": gif},
+            {"image": "invalid"},
+        ]
+    }
+    fake_archicad.on_tapir_command("ConvertImages", response)
+    params = {"images": [{"image": PNG_B64, "inputFormat": "PNG", "outputFormat": "JPEG"}]}
+
+    result = await archicad_call_tool("app_convert_images", {"port": fake_archicad.port, "params": params})
+
+    assert fake_archicad.calls == [("ConvertImages", params)]
+    assert [block.data for block in result.content[1:]] == [PNG_B64, JPG_B64]
+    assert result.structured_content == {
+        "images": [
+            {"image": "returned as MCP image content #1", "futureField": "kept"},
+            response["images"][1],
+            {"image": "returned as MCP image content #2"},
+            {"image": gif},
+            {"image": "invalid"},
+        ]
+    }
+    assert response["images"][0]["image"] == PNG_B64
+    handle = (await archicad_get_job()).structured_content["jobs"][0]["jobHandle"]
+    repeated = await archicad_get_job(handle)
+    assert repeated.structured_content["result"] == result.structured_content
+    assert [block.data for block in repeated.content[1:]] == [PNG_B64, JPG_B64]
+
+
 async def test_non_image_results_are_call_tool_results_with_the_same_content(fake_archicad):
     fake_archicad.on_tapir_command("GetAddOnVersion", {"version": "1.7.2", "name": "Wand Ä"})
 
