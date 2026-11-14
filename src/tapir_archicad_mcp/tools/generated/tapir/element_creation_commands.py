@@ -21,8 +21,11 @@ from multiconn_archicad.models.tapir.commands import (
     CreateObjectsParameters,
     CreateOpeningsParameters,
     CreatePolylinesParameters,
+    CreateRailingsFromPolylineParameters,
     CreateRailingsParameters,
     CreateRoofsParameters,
+    CreateShellsParameters,
+    CreateSkylightsParameters,
     CreateSlabsParameters,
     CreateSplinesParameters,
     CreateStairsParameters,
@@ -54,8 +57,9 @@ register_tool_for_dispatch(
 
 def create_associative_dimensions(conn_header: ConnHeader, params: CreateAssociativeDimensionsParameters) -> dict:
     """
-    Creates associative linear dimensions from explicit witness point references. A witness point can also be static,
-    given by its coordinate instead of an element.
+    Creates associative dimensions from explicit witness point references: linear by default, or cumulative, baseline or
+    elevation dimensions (appearance). A witness point can also be static, given by its coordinate instead of an
+    element.
     """
     return conn_header.core.post_tapir_command(
         command="CreateAssociativeDimensions",
@@ -68,8 +72,9 @@ register_tool_for_dispatch(
     name="elements_create_associative_dimensions",
     title="CreateAssociativeDimensions",
     description=(
-        "Creates associative linear dimensions from explicit witness point references. A witness point can also be "
-        "static, given by its coordinate instead of an element."
+        "Creates associative dimensions from explicit witness point references: linear by default, or cumulative, "
+        "baseline or elevation dimensions (appearance). A witness point can also be static, given by its coordinate "
+        "instead of an element."
     ),
     params_model=CreateAssociativeDimensionsParameters,
 )
@@ -79,9 +84,11 @@ def create_associative_dimensions_on_section(
     conn_header: ConnHeader, params: CreateAssociativeDimensionsOnSectionParameters
 ) -> dict:
     """
-    Creates associative linear dimensions on section elements using common wall, slab, beam, column and opening presets.
-    The preset points of multiple section elements can be merged into one continuous dimension chain via
-    sectionElementIds.
+    Creates associative dimensions on section elements using common wall, slab, beam, column, door and window presets:
+    linear by default, or cumulative, baseline or elevation dimensions (appearance), e.g. level marks. The preset points
+    of multiple section elements can be merged into one continuous dimension chain via sectionElementIds. For Opening
+    tool elements, which Archicad does not associate with dimensions, the OpeningEdges preset places fixed points at
+    their edges instead.
     """
     return conn_header.core.post_tapir_command(
         command="CreateAssociativeDimensionsOnSection",
@@ -94,16 +101,23 @@ register_tool_for_dispatch(
     name="elements_create_associative_dimensions_on_section",
     title="CreateAssociativeDimensionsOnSection",
     description=(
-        "Creates associative linear dimensions on section elements using common wall, slab, beam, column and opening "
-        "presets. The preset points of multiple section elements can be merged into one continuous dimension chain via "
-        "sectionElementIds."
+        "Creates associative dimensions on section elements using common wall, slab, beam, column, door and window "
+        "presets: linear by default, or cumulative, baseline or elevation dimensions (appearance), e.g. level marks. "
+        "The preset points of multiple section elements can be merged into one continuous dimension chain via "
+        "sectionElementIds. For Opening tool elements, which Archicad does not associate with dimensions, the "
+        "OpeningEdges preset places fixed points at their edges instead."
     ),
     params_model=CreateAssociativeDimensionsOnSectionParameters,
 )
 
 
 def create_beams(conn_header: ConnHeader, params: CreateBeamsParameters) -> dict:
-    """Creates Beam elements based on the given parameters."""
+    """
+    Creates Beam elements based on the given parameters. Takes the same cut fill pens and cover fill as ModifyBeams,
+    besides the position, shape, slant and cross section; settings not given come from the Beam tool defaults or the
+    favorite. Not written by either command: the surfaces of the beam segments, and the cut fill pens before Archicad
+    27.
+    """
     return conn_header.core.post_tapir_command(
         command="CreateBeams", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
@@ -113,7 +127,12 @@ register_tool_for_dispatch(
     create_beams,
     name="elements_create_beams",
     title="CreateBeams",
-    description="Creates Beam elements based on the given parameters.",
+    description=(
+        "Creates Beam elements based on the given parameters. Takes the same cut fill pens and cover fill as "
+        "ModifyBeams, besides the position, shape, slant and cross section; settings not given come from the Beam tool "
+        "defaults or the favorite. Not written by either command: the surfaces of the beam segments, and the cut fill "
+        "pens before Archicad 27."
+    ),
     params_model=CreateBeamsParameters,
 )
 
@@ -135,7 +154,12 @@ register_tool_for_dispatch(
 
 
 def create_columns(conn_header: ConnHeader, params: CreateColumnsParameters) -> dict:
-    """Creates Column elements based on the given parameters."""
+    """
+    Creates Column elements based on the given parameters. Takes the same cut fill pens and cover fill as ModifyColumns,
+    besides the position, size, slant, cross section and veneer; settings not given come from the Column tool defaults
+    or the favorite. Not written by either command: the surfaces of the column segments, and the cut fill pens before
+    Archicad 27.
+    """
     return conn_header.core.post_tapir_command(
         command="CreateColumns", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
@@ -145,7 +169,12 @@ register_tool_for_dispatch(
     create_columns,
     name="elements_create_columns",
     title="CreateColumns",
-    description="Creates Column elements based on the given parameters.",
+    description=(
+        "Creates Column elements based on the given parameters. Takes the same cut fill pens and cover fill as "
+        "ModifyColumns, besides the position, size, slant, cross section and veneer; settings not given come from the "
+        "Column tool defaults or the favorite. Not written by either command: the surfaces of the column segments, and "
+        "the cut fill pens before Archicad 27."
+    ),
     params_model=CreateColumnsParameters,
 )
 
@@ -267,7 +296,12 @@ register_tool_for_dispatch(
 
 
 def create_lamps(conn_header: ConnHeader, params: CreateLampsParameters) -> dict:
-    """Creates Lamp elements based on the given parameters."""
+    """
+    Creates Lamp elements based on the given parameters. A library part named in libraryPartName starts from its own
+    default size and GDL parameters, not from those of the part the Lamp tool holds; the dimensions and the GDL
+    parameters given (by name, in parameters) override them. layerIndex places the element on a layer. With databaseId
+    the lamps are placed in that database, e.g. a worksheet, instead of the current one.
+    """
     return conn_header.core.post_tapir_command(
         command="CreateLamps", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
@@ -277,7 +311,12 @@ register_tool_for_dispatch(
     create_lamps,
     name="elements_create_lamps",
     title="CreateLamps",
-    description="Creates Lamp elements based on the given parameters.",
+    description=(
+        "Creates Lamp elements based on the given parameters. A library part named in libraryPartName starts from its "
+        "own default size and GDL parameters, not from those of the part the Lamp tool holds; the dimensions and the "
+        "GDL parameters given (by name, in parameters) override them. layerIndex places the element on a layer. With "
+        "databaseId the lamps are placed in that database, e.g. a worksheet, instead of the current one."
+    ),
     params_model=CreateLampsParameters,
 )
 
@@ -339,7 +378,10 @@ register_tool_for_dispatch(
 
 
 def create_morphs(conn_header: ConnHeader, params: CreateMorphsParameters) -> dict:
-    """Creates Morph elements from simple box definitions."""
+    """
+    Creates Morph elements from simple box definitions or arbitrary bodies. Each item may name a favorite (favoriteName)
+    to start from, a layer (layerIndex) and an Element ID (id); the given geometry and floor are kept.
+    """
     return conn_header.core.post_tapir_command(
         command="CreateMorphs", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
@@ -349,13 +391,22 @@ register_tool_for_dispatch(
     create_morphs,
     name="elements_create_morphs",
     title="CreateMorphs",
-    description="Creates Morph elements from simple box definitions.",
+    description=(
+        "Creates Morph elements from simple box definitions or arbitrary bodies. Each item may name a favorite "
+        "(favoriteName) to start from, a layer (layerIndex) and an Element ID (id); the given geometry and floor are "
+        "kept."
+    ),
     params_model=CreateMorphsParameters,
 )
 
 
 def create_objects(conn_header: ConnHeader, params: CreateObjectsParameters) -> dict:
-    """Creates Object elements based on the given parameters."""
+    """
+    Creates Object elements based on the given parameters. A library part named in libraryPartName starts from its own
+    default size and GDL parameters, not from those of the part the Object tool holds; the dimensions and the GDL
+    parameters given (by name, in parameters) override them. layerIndex places the element on a layer. With databaseId
+    the objects are placed in that database, e.g. a worksheet, instead of the current one.
+    """
     return conn_header.core.post_tapir_command(
         command="CreateObjects", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
@@ -365,7 +416,12 @@ register_tool_for_dispatch(
     create_objects,
     name="elements_create_objects",
     title="CreateObjects",
-    description="Creates Object elements based on the given parameters.",
+    description=(
+        "Creates Object elements based on the given parameters. A library part named in libraryPartName starts from "
+        "its own default size and GDL parameters, not from those of the part the Object tool holds; the dimensions and "
+        "the GDL parameters given (by name, in parameters) override them. layerIndex places the element on a layer. "
+        "With databaseId the objects are placed in that database, e.g. a worksheet, instead of the current one."
+    ),
     params_model=CreateObjectsParameters,
 )
 
@@ -405,8 +461,8 @@ register_tool_for_dispatch(
 def create_railings(conn_header: ConnHeader, params: CreateRailingsParameters) -> dict:
     """
     Creates Railing elements along a reference polyline. Posts, rails, handrails, toprails, panels and balusters come
-    from the favorite or from the Railing tool defaults; Archicad generates one node per vertex and one segment per pair
-    of consecutive vertices.
+    from the favorite, from an existing railing (templateElementId) or from the Railing tool defaults; Archicad
+    generates one node per vertex and one segment per pair of consecutive vertices.
     """
     return conn_header.core.post_tapir_command(
         command="CreateRailings", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -419,10 +475,34 @@ register_tool_for_dispatch(
     title="CreateRailings",
     description=(
         "Creates Railing elements along a reference polyline. Posts, rails, handrails, toprails, panels and balusters "
-        "come from the favorite or from the Railing tool defaults; Archicad generates one node per vertex and one "
-        "segment per pair of consecutive vertices."
+        "come from the favorite, from an existing railing (templateElementId) or from the Railing tool defaults; "
+        "Archicad generates one node per vertex and one segment per pair of consecutive vertices."
     ),
     params_model=CreateRailingsParameters,
+)
+
+
+def create_railings_from_polyline(conn_header: ConnHeader, params: CreateRailingsFromPolylineParameters) -> dict:
+    """
+    Creates Railing elements along a 3D reference polyline: each node has its own elevation and segments can be arcs.
+    Posts, rails, handrails, toprails, panels and balusters come from the favorite or from the Railing tool defaults.
+    """
+    return conn_header.core.post_tapir_command(
+        command="CreateRailingsFromPolyline",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    create_railings_from_polyline,
+    name="elements_create_railings_from_polyline",
+    title="CreateRailingsFromPolyline",
+    description=(
+        "Creates Railing elements along a 3D reference polyline: each node has its own elevation and segments can be "
+        "arcs. Posts, rails, handrails, toprails, panels and balusters come from the favorite or from the Railing tool "
+        "defaults."
+    ),
+    params_model=CreateRailingsFromPolylineParameters,
 )
 
 
@@ -448,8 +528,63 @@ register_tool_for_dispatch(
 )
 
 
+def create_shells(conn_header: ConnHeader, params: CreateShellsParameters) -> dict:
+    """
+    Creates extruded, revolved and ruled Shell elements from profile polylines, with thickness, structure, an optional
+    clipping contour and holes.
+    """
+    return conn_header.core.post_tapir_command(
+        command="CreateShells", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    create_shells,
+    name="elements_create_shells",
+    title="CreateShells",
+    description=(
+        "Creates extruded, revolved and ruled Shell elements from profile polylines, with thickness, structure, an "
+        "optional clipping contour and holes."
+    ),
+    params_model=CreateShellsParameters,
+)
+
+
+def create_skylights(conn_header: ConnHeader, params: CreateSkylightsParameters) -> dict:
+    """
+    Creates Skylight elements with a roof or shell owner and a floor plan anchor position. It takes the same settings as
+    ModifySkylights (anchor point, fix mode, width, height, azimuth and elevation angles, mirroring, floor plan display,
+    pens, line types, section fill, surface and the library part flags) and optionally a library part; the settings not
+    given come from the Skylight tool defaults or a favorite. Surface placement is handled by Archicad and has not yet
+    been verified for this command.
+    """
+    return conn_header.core.post_tapir_command(
+        command="CreateSkylights", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    create_skylights,
+    name="elements_create_skylights",
+    title="CreateSkylights",
+    description=(
+        "Creates Skylight elements with a roof or shell owner and a floor plan anchor position. It takes the same "
+        "settings as ModifySkylights (anchor point, fix mode, width, height, azimuth and elevation angles, mirroring, "
+        "floor plan display, pens, line types, section fill, surface and the library part flags) and optionally a "
+        "library part; the settings not given come from the Skylight tool defaults or a favorite. Surface placement is "
+        "handled by Archicad and has not yet been verified for this command."
+    ),
+    params_model=CreateSkylightsParameters,
+)
+
+
 def create_slabs(conn_header: ConnHeader, params: CreateSlabsParameters) -> dict:
-    """Creates Slab elements based on the given parameters."""
+    """
+    Creates Slab elements based on the given parameters. Takes the same surfaces (top, side, bottom), cut fill pens and
+    floor fill as ModifySlabs, besides the outline, holes, level and structure; settings not given come from the Slab
+    tool defaults or the favorite. Not written by either command: the surface of a single edge, and the cut fill pens
+    before Archicad 27; of the floor fill orientation Archicad applies only the type through the API.
+    """
     return conn_header.core.post_tapir_command(
         command="CreateSlabs", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
@@ -459,7 +594,13 @@ register_tool_for_dispatch(
     create_slabs,
     name="elements_create_slabs",
     title="CreateSlabs",
-    description="Creates Slab elements based on the given parameters.",
+    description=(
+        "Creates Slab elements based on the given parameters. Takes the same surfaces (top, side, bottom), cut fill "
+        "pens and floor fill as ModifySlabs, besides the outline, holes, level and structure; settings not given come "
+        "from the Slab tool defaults or the favorite. Not written by either command: the surface of a single edge, and "
+        "the cut fill pens before Archicad 27; of the floor fill orientation Archicad applies only the type through "
+        "the API."
+    ),
     params_model=CreateSlabsParameters,
 )
 
@@ -481,7 +622,13 @@ register_tool_for_dispatch(
 
 
 def create_stairs(conn_header: ConnHeader, params: CreateStairsParameters) -> dict:
-    """Creates Stair elements based on the given baseline and parameters."""
+    """
+    Creates Stair elements based on the given baseline and parameters, optionally with the segment type of each baseline
+    edge and the turn at each baseline point (landings and winders). Accepts the same settings as ModifyStairs: the step
+    values with their locks, the finish and structure visibility, the extra treads, the walking line, the numbering, the
+    walking direction, and the tread, riser and structure settings of the flights and the landings; settings not given
+    come from the Stair tool defaults or the favorite.
+    """
     return conn_header.core.post_tapir_command(
         command="CreateStairs", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
@@ -491,7 +638,13 @@ register_tool_for_dispatch(
     create_stairs,
     name="elements_create_stairs",
     title="CreateStairs",
-    description="Creates Stair elements based on the given baseline and parameters.",
+    description=(
+        "Creates Stair elements based on the given baseline and parameters, optionally with the segment type of each "
+        "baseline edge and the turn at each baseline point (landings and winders). Accepts the same settings as "
+        "ModifyStairs: the step values with their locks, the finish and structure visibility, the extra treads, the "
+        "walking line, the numbering, the walking direction, and the tread, riser and structure settings of the "
+        "flights and the landings; settings not given come from the Stair tool defaults or the favorite."
+    ),
     params_model=CreateStairsParameters,
 )
 
@@ -530,7 +683,14 @@ register_tool_for_dispatch(
 
 
 def create_walls(conn_header: ConnHeader, params: CreateWallsParameters) -> dict:
-    """Creates Wall elements based on the given parameters."""
+    """
+    Creates Wall elements based on the given parameters. Takes the same wall settings as ModifyWalls, applied by the
+    same code, except geometryType and profileType, which the new wall takes from the favorite or the Wall tool defaults
+    (its plan outline is always Straight), and bottomOffset, which comes from zCoordinate. Neither command can write a
+    Polygonal outline (it needs an outline polygon, which these commands do not take), connectionPriority or
+    junctionSequence (Archicad ignores writes to them; GetDetailsOfElements reads them), and on Archicad 29 any story
+    visibility other than 'Home story only' and 'All relevant stories'.
+    """
     return conn_header.core.post_tapir_command(
         command="CreateWalls", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
@@ -540,7 +700,14 @@ register_tool_for_dispatch(
     create_walls,
     name="elements_create_walls",
     title="CreateWalls",
-    description="Creates Wall elements based on the given parameters.",
+    description=(
+        "Creates Wall elements based on the given parameters. Takes the same wall settings as ModifyWalls, applied by "
+        "the same code, except geometryType and profileType, which the new wall takes from the favorite or the Wall "
+        "tool defaults (its plan outline is always Straight), and bottomOffset, which comes from zCoordinate. Neither "
+        "command can write a Polygonal outline (it needs an outline polygon, which these commands do not take), "
+        "connectionPriority or junctionSequence (Archicad ignores writes to them; GetDetailsOfElements reads them), "
+        "and on Archicad 29 any story visibility other than 'Home story only' and 'All relevant stories'."
+    ),
     params_model=CreateWallsParameters,
 )
 
@@ -562,7 +729,12 @@ register_tool_for_dispatch(
 
 
 def create_zones(conn_header: ConnHeader, params: CreateZonesParameters) -> dict:
-    """Creates Zone elements based on the given parameters."""
+    """
+    Creates Zone elements based on the given parameters. Takes the same zone settings as ModifyZones (name, number,
+    category, zone stamp, levels, contour line and cover fill), applied by the same helpers; the polygon or reference
+    point is only set here. An item whose area would overlap an existing Zone on the same story fails with an error
+    naming that Zone instead of opening Archicad's modal overlap warning, unless its allowOverlap is true.
+    """
     return conn_header.core.post_tapir_command(
         command="CreateZones", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
@@ -572,6 +744,12 @@ register_tool_for_dispatch(
     create_zones,
     name="elements_create_zones",
     title="CreateZones",
-    description="Creates Zone elements based on the given parameters.",
+    description=(
+        "Creates Zone elements based on the given parameters. Takes the same zone settings as ModifyZones (name, "
+        "number, category, zone stamp, levels, contour line and cover fill), applied by the same helpers; the polygon "
+        "or reference point is only set here. An item whose area would overlap an existing Zone on the same story "
+        "fails with an error naming that Zone instead of opening Archicad's modal overlap warning, unless its "
+        "allowOverlap is true."
+    ),
     params_model=CreateZonesParameters,
 )

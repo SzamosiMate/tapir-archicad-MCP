@@ -76,9 +76,6 @@ def get_merged_elements(conn_header: ConnHeader, params: GetMergedElementsParame
     """
     Gets the elements each queried element is merged with, one item per queried element; an unknown element is an error
     item.
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
     """
     return conn_header.core.post_tapir_command(
         command="GetMergedElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -94,7 +91,6 @@ register_tool_for_dispatch(
         "error item."
     ),
     params_model=GetMergedElementsParameters,
-    pagination_field="elementMerges",
 )
 
 
@@ -120,7 +116,8 @@ def merge_elements(conn_header: ConnHeader, params: MergeElementsParameters) -> 
     """
     Merges the given construction elements (the Merge command of Archicad, which cleans up the junctions of slabs,
     beams, walls and similar elements). Undoable. The element types are not filtered: Archicad reports the ones it
-    cannot merge.
+    cannot merge. The merge is read back: when Archicad records no merge between the given elements (it decides which
+    elements and type combinations it merges), the result is a failure, not a success.
     """
     return conn_header.core.post_tapir_command(
         command="MergeElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -134,14 +131,21 @@ register_tool_for_dispatch(
     description=(
         "Merges the given construction elements (the Merge command of Archicad, which cleans up the junctions of "
         "slabs, beams, walls and similar elements). Undoable. The element types are not filtered: Archicad reports the "
-        "ones it cannot merge."
+        "ones it cannot merge. The merge is read back: when Archicad records no merge between the given elements (it "
+        "decides which elements and type combinations it merges), the result is a failure, not a success."
     ),
     params_model=MergeElementsParameters,
 )
 
 
 def remove_element_trims(conn_header: ConnHeader, params: RemoveElementTrimsParameters) -> dict:
-    """Removes the trim between an element and the roof or shell trimming it."""
+    """
+    Removes the trim between an element and the roof or shell trimming it. The Archicad API removes the trimming
+    connection between the two elements, so when they trim each other (two roofs or shells) both directions are removed;
+    trim the other direction again with TrimElements to keep it. With dryRun true nothing is removed and no undo step is
+    created: the response has dryRun set to true, and each pair whose element is trimmed by its trimming element gets
+    wouldDelete.
+    """
     return conn_header.core.post_tapir_command(
         command="RemoveElementTrims", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
@@ -151,13 +155,22 @@ register_tool_for_dispatch(
     remove_element_trims,
     name="solid_ops_remove_element_trims",
     title="RemoveElementTrims",
-    description="Removes the trim between an element and the roof or shell trimming it.",
+    description=(
+        "Removes the trim between an element and the roof or shell trimming it. The Archicad API removes the trimming "
+        "connection between the two elements, so when they trim each other (two roofs or shells) both directions are "
+        "removed; trim the other direction again with TrimElements to keep it. With dryRun true nothing is removed and "
+        "no undo step is created: the response has dryRun set to true, and each pair whose element is trimmed by its "
+        "trimming element gets wouldDelete."
+    ),
     params_model=RemoveElementTrimsParameters,
 )
 
 
 def remove_solid_element_links(conn_header: ConnHeader, params: RemoveSolidElementLinksParameters) -> dict:
-    """Removes solid element operation links between target and operator elements."""
+    """
+    Removes solid element operation links between target and operator elements. With dryRun true nothing is removed and
+    no undo step is created: the response has dryRun set to true, and each link that exists gets wouldDelete.
+    """
     return conn_header.core.post_tapir_command(
         command="RemoveSolidElementLinks", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
@@ -167,7 +180,11 @@ register_tool_for_dispatch(
     remove_solid_element_links,
     name="solid_ops_remove_solid_element_links",
     title="RemoveSolidElementLinks",
-    description="Removes solid element operation links between target and operator elements.",
+    description=(
+        "Removes solid element operation links between target and operator elements. With dryRun true nothing is "
+        "removed and no undo step is created: the response has dryRun set to true, and each link that exists gets "
+        "wouldDelete."
+    ),
     params_model=RemoveSolidElementLinksParameters,
 )
 
@@ -175,7 +192,9 @@ register_tool_for_dispatch(
 def trim_elements(conn_header: ConnHeader, params: TrimElementsParameters) -> dict:
     """
     Trims construction elements with a roof or shell: the roofs and shells in the list, or one given trimming element
-    with a trim type.
+    with a trim type. With several roofs or shells in the list Archicad decides which of them trims which element (they
+    may also trim each other), so not every element is necessarily trimmed by each; to trim each element with each roof
+    or shell, call it once per roof or shell with trimmingElement, and check the result with GetElementTrims.
     """
     return conn_header.core.post_tapir_command(
         command="TrimElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -188,7 +207,10 @@ register_tool_for_dispatch(
     title="TrimElements",
     description=(
         "Trims construction elements with a roof or shell: the roofs and shells in the list, or one given trimming "
-        "element with a trim type."
+        "element with a trim type. With several roofs or shells in the list Archicad decides which of them trims which "
+        "element (they may also trim each other), so not every element is necessarily trimmed by each; to trim each "
+        "element with each roof or shell, call it once per roof or shell with trimmingElement, and check the result "
+        "with GetElementTrims."
     ),
     params_model=TrimElementsParameters,
 )

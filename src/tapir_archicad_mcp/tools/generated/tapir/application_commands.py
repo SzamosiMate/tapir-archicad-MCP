@@ -3,21 +3,26 @@ from multiconn_archicad import ConnHeader
 from multiconn_archicad.models.tapir.commands import (
     ChangeWindowParameters,
     CloseWindowsParameters,
+    ConvertImagesParameters,
     DeleteGhostRecordsParameters,
+    GetArcFromUserParameters,
     GetContainingDatabasesParameters,
     GetElementFromUserParameters,
     GetLineFromUserParameters,
     GetPointFromUserParameters,
     GetPolygonFromUserParameters,
     GetSpecialFoldersParameters,
+    GetToolboxItemsParameters,
     ModelToScreenParameters,
     RunActionCenterChecksParameters,
     ScreenToModelParameters,
     Set3DCutawayStatusParameters,
     SetArchicadVisibilityParameters,
+    SetCurrentToolParameters,
     SetCurrentWindowDrawingScaleParameters,
     SetDialogAutoCloseParameters,
     ShowAlertParameters,
+    ShowNotificationBubbleParameters,
 )
 
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
@@ -75,6 +80,32 @@ register_tool_for_dispatch(
 )
 
 
+def convert_images(conn_header: ConnHeader, params: ConvertImagesParameters) -> dict:
+    """
+    Converts base64 encoded images from one image format to another with Archicad's own image converters, for example a
+    PNG preview image to JPEG. The formats are Bitmap, GIF, TIFF, JPEG and PNG, or the MIME type of another format
+    Archicad can read or write. The output is aligned with the input array of images. Changes nothing in the project.
+    """
+    return conn_header.core.post_tapir_command(
+        command="ConvertImages", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    convert_images,
+    name="app_convert_images",
+    title="ConvertImages",
+    description=(
+        "Converts base64 encoded images from one image format to another with Archicad's own image converters, for "
+        "example a PNG preview image to JPEG. The formats are Bitmap, GIF, TIFF, JPEG and PNG, or the MIME type of "
+        "another format Archicad can read or write. The output is aligned with the input array of images. Changes "
+        "nothing in the project."
+    ),
+    params_model=ConvertImagesParameters,
+    image_list_field="images",
+)
+
+
 def delete_ghost_records(conn_header: ConnHeader, params: DeleteGhostRecordsParameters) -> dict:
     """
     Deletes the trace (ghost) record of each given parent database, which removes the trace reference shown in that
@@ -127,6 +158,57 @@ register_tool_for_dispatch(
     name="app_get_add_on_version",
     title="GetAddOnVersion",
     description="Retrieves the version of the Tapir Additional JSON Commands Add-On.",
+    params_model=None,
+)
+
+
+def get_arc_from_user(conn_header: ConnHeader, params: GetArcFromUserParameters) -> dict:
+    """
+    Asks the designer to draw an arc in the current window - its center, its start point (which sets the radius) and its
+    end point - with a rubber-band circle shown while drawing, and returns its center, radius, start and end angles, the
+    angle it turns through, its direction and its start and end points. Archicad waits for the clicks or for Escape, and
+    every other JSON command queues behind this one until then; cancelling returns cancelled.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetArcFromUser", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    get_arc_from_user,
+    name="app_get_arc_from_user",
+    title="GetArcFromUser",
+    description=(
+        "Asks the designer to draw an arc in the current window - its center, its start point (which sets the radius) "
+        "and its end point - with a rubber-band circle shown while drawing, and returns its center, radius, start and "
+        "end angles, the angle it turns through, its direction and its start and end points. Archicad waits for the "
+        "clicks or for Escape, and every other JSON command queues behind this one until then; cancelling returns "
+        "cancelled."
+    ),
+    params_model=GetArcFromUserParameters,
+)
+
+
+def get_archicad_license_info(conn_header: ConnHeader) -> dict:
+    """
+    Retrieves the license the running Archicad runs on: its type (Full, Education, Trial, Demo, Start or BIMcloud Team
+    Client), the raw protection mode with its bits by name, and the highest Software Service Agreement (SSA) level of
+    the license, so a script can warn before it uses a feature the license lacks. The SSA level is not available in
+    Archicad 25.
+    """
+    return conn_header.core.post_tapir_command(command="GetArchicadLicenseInfo", parameters={})
+
+
+register_tool_for_dispatch(
+    get_archicad_license_info,
+    name="app_get_archicad_license_info",
+    title="GetArchicadLicenseInfo",
+    description=(
+        "Retrieves the license the running Archicad runs on: its type (Full, Education, Trial, Demo, Start or BIMcloud "
+        "Team Client), the raw protection mode with its bits by name, and the highest Software Service Agreement (SSA) "
+        "level of the license, so a script can warn before it uses a feature the license lacks. The SSA level is not "
+        "available in Archicad 25."
+    ),
     params_model=None,
 )
 
@@ -206,6 +288,28 @@ register_tool_for_dispatch(
         "example to find an element placed on a layout."
     ),
     params_model=GetContainingDatabasesParameters,
+)
+
+
+def get_current_tool(conn_header: ConnHeader) -> dict:
+    """
+    Returns the tool active in the Toolbox: its element type, its variation (the subtype, e.g. Door, Skylight or a
+    library part subtype of an add-on) and, for the tools of add-ons, its class id, in the form SetCurrentTool accepts.
+    Nothing is returned when the active tool makes no element, e.g. the Arrow or the Marquee.
+    """
+    return conn_header.core.post_tapir_command(command="GetCurrentTool", parameters={})
+
+
+register_tool_for_dispatch(
+    get_current_tool,
+    name="app_get_current_tool",
+    title="GetCurrentTool",
+    description=(
+        "Returns the tool active in the Toolbox: its element type, its variation (the subtype, e.g. Door, Skylight or "
+        "a library part subtype of an add-on) and, for the tools of add-ons, its class id, in the form SetCurrentTool "
+        "accepts. Nothing is returned when the active tool makes no element, e.g. the Arrow or the Marquee."
+    ),
+    params_model=None,
 )
 
 
@@ -346,6 +450,29 @@ register_tool_for_dispatch(
 )
 
 
+def get_magic_wand_settings(conn_header: ConnHeader) -> dict:
+    """
+    Returns the settings of Archicad's Magic Wand Settings dialog: how curves are approximated with straight segments (a
+    number of segments along arcs or circles, a largest deviation from the curve, or a segment length) and the trace
+    method. Useful to know how the Magic Wand will trace a curve. Changes nothing in the project.
+    """
+    return conn_header.core.post_tapir_command(command="GetMagicWandSettings", parameters={})
+
+
+register_tool_for_dispatch(
+    get_magic_wand_settings,
+    name="app_get_magic_wand_settings",
+    title="GetMagicWandSettings",
+    description=(
+        "Returns the settings of Archicad's Magic Wand Settings dialog: how curves are approximated with straight "
+        "segments (a number of segments along arcs or circles, a largest deviation from the curve, or a segment "
+        "length) and the trace method. Useful to know how the Magic Wand will trace a curve. Changes nothing in the "
+        "project."
+    ),
+    params_model=None,
+)
+
+
 def get_point_from_user(conn_header: ConnHeader, params: GetPointFromUserParameters) -> dict:
     """
     Asks the designer to click a point in the current window and returns it. Archicad waits for the click or for Escape,
@@ -469,6 +596,28 @@ register_tool_for_dispatch(
         "temporary, application, defaults, templates, help, embedded project library, etc.)."
     ),
     params_model=GetSpecialFoldersParameters,
+)
+
+
+def get_toolbox_items(conn_header: ConnHeader, params: GetToolboxItemsParameters) -> dict:
+    """
+    Lists the tools of the Toolbox, the tools of add-ons included, in the form SetCurrentTool accepts, and the active
+    tool. includeHidden also lists the tools without an icon, e.g. the Slab Accessory.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetToolboxItems", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    get_toolbox_items,
+    name="app_get_toolbox_items",
+    title="GetToolboxItems",
+    description=(
+        "Lists the tools of the Toolbox, the tools of add-ons included, in the form SetCurrentTool accepts, and the "
+        "active tool. includeHidden also lists the tools without an icon, e.g. the Slab Accessory."
+    ),
+    params_model=GetToolboxItemsParameters,
 )
 
 
@@ -640,6 +789,30 @@ register_tool_for_dispatch(
 )
 
 
+def set_current_tool(conn_header: ConnHeader, params: SetCurrentToolParameters) -> dict:
+    """
+    Activates a tool in the Toolbox, given as GetCurrentTool or GetToolboxItems returns it; an empty input activates the
+    Arrow. Archicad switches the tool once it processes its events, so GetCurrentTool may still return the previous tool
+    right after this command.
+    """
+    return conn_header.core.post_tapir_command(
+        command="SetCurrentTool", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    set_current_tool,
+    name="app_set_current_tool",
+    title="SetCurrentTool",
+    description=(
+        "Activates a tool in the Toolbox, given as GetCurrentTool or GetToolboxItems returns it; an empty input "
+        "activates the Arrow. Archicad switches the tool once it processes its events, so GetCurrentTool may still "
+        "return the previous tool right after this command."
+    ),
+    params_model=SetCurrentToolParameters,
+)
+
+
 def set_current_window_drawing_scale(conn_header: ConnHeader, params: SetCurrentWindowDrawingScaleParameters) -> dict:
     """
     Changes the drawing scale of the current (active) window, the scale shown in the bottom bar, to the given
@@ -706,4 +879,34 @@ register_tool_for_dispatch(
     title="ShowAlert",
     description="Display a dialog with up to three buttons.",
     params_model=ShowAlertParameters,
+)
+
+
+def show_notification_bubble(conn_header: ConnHeader, params: ShowNotificationBubbleParameters) -> dict:
+    """
+    Shows a non-blocking notification bubble with a message in the current Archicad window, e.g. to report progress or a
+    result without stopping the user as ShowAlert does. The bubble disappears by itself after the timeout. It is shown
+    at a model coordinate or a pixel position of the current view, by default at the center of the current 2D view.
+    Optionally it gets a large icon, is shown at most a given number of times, or is turned off, until the user runs
+    'Enable all informational messages'. Returns the bubble's settings read back from Archicad. Requires Archicad 29 or
+    later.
+    """
+    return conn_header.core.post_tapir_command(
+        command="ShowNotificationBubble", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    show_notification_bubble,
+    name="app_show_notification_bubble",
+    title="ShowNotificationBubble",
+    description=(
+        "Shows a non-blocking notification bubble with a message in the current Archicad window, e.g. to report "
+        "progress or a result without stopping the user as ShowAlert does. The bubble disappears by itself after the "
+        "timeout. It is shown at a model coordinate or a pixel position of the current view, by default at the center "
+        "of the current 2D view. Optionally it gets a large icon, is shown at most a given number of times, or is "
+        "turned off, until the user runs 'Enable all informational messages'. Returns the bubble's settings read back "
+        "from Archicad. Requires Archicad 29 or later."
+    ),
+    params_model=ShowNotificationBubbleParameters,
 )

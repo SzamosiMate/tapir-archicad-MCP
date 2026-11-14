@@ -3,7 +3,9 @@ from multiconn_archicad import ConnHeader
 from multiconn_archicad.models.tapir.commands import (
     GetLockableObjectSetStatusParameters,
     GetReservationStatusOfElementsParameters,
+    GetTeamworkAccessRightsParameters,
     GetTeamworkOwnersOfDatabasesParameters,
+    GetTeamworkRightsOfObjectsParameters,
     GrantElementsParameters,
     ReleaseElementsParameters,
     ReleaseLockableObjectSetParameters,
@@ -39,7 +41,8 @@ def get_reservation_status_of_elements(
 ) -> dict:
     """
     Returns the Teamwork reservation status of elements without reserving them: whether each element is free, reserved
-    by the current user or reserved by another user, with the reserving user and the element's owner.
+    by the current user or reserved by another user, with the reserving user. New elements stay reserved by the user who
+    created them until they are released.
     """
     return conn_header.core.post_tapir_command(
         command="GetReservationStatusOfElements",
@@ -53,9 +56,32 @@ register_tool_for_dispatch(
     title="GetReservationStatusOfElements",
     description=(
         "Returns the Teamwork reservation status of elements without reserving them: whether each element is free, "
-        "reserved by the current user or reserved by another user, with the reserving user and the element's owner."
+        "reserved by the current user or reserved by another user, with the reserving user. New elements stay reserved "
+        "by the user who created them until they are released."
     ),
     params_model=GetReservationStatusOfElementsParameters,
+)
+
+
+def get_teamwork_access_rights(conn_header: ConnHeader, params: GetTeamworkAccessRightsParameters) -> dict:
+    """
+    Returns whether the role of the current user has the given Teamwork access rights (API_TWAccessRights names without
+    the API prefix, e.g. LayersCreate), all of them when no names are given.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetTeamworkAccessRights", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    get_teamwork_access_rights,
+    name="teamwork_get_teamwork_access_rights",
+    title="GetTeamworkAccessRights",
+    description=(
+        "Returns whether the role of the current user has the given Teamwork access rights (API_TWAccessRights names "
+        "without the API prefix, e.g. LayersCreate), all of them when no names are given."
+    ),
+    params_model=GetTeamworkAccessRightsParameters,
 )
 
 
@@ -99,6 +125,29 @@ register_tool_for_dispatch(
         "server, project name and the current user (id and name)."
     ),
     params_model=None,
+)
+
+
+def get_teamwork_rights_of_objects(conn_header: ConnHeader, params: GetTeamworkRightsOfObjectsParameters) -> dict:
+    """
+    Returns for each given object, for example an element, whether the current Teamwork user has the right to create
+    objects of its kind and to delete or modify it.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetTeamworkRightsOfObjects",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    get_teamwork_rights_of_objects,
+    name="teamwork_get_teamwork_rights_of_objects",
+    title="GetTeamworkRightsOfObjects",
+    description=(
+        "Returns for each given object, for example an element, whether the current Teamwork user has the right to "
+        "create objects of its kind and to delete or modify it."
+    ),
+    params_model=GetTeamworkRightsOfObjectsParameters,
 )
 
 
@@ -146,7 +195,10 @@ register_tool_for_dispatch(
 
 
 def release_elements(conn_header: ConnHeader, params: ReleaseElementsParameters) -> dict:
-    """Releases elements in Teamwork mode."""
+    """
+    Releases elements in Teamwork mode. Fails, naming them, when any of the given GUIDs is not an element; the other
+    elements are released.
+    """
     return conn_header.core.post_tapir_command(
         command="ReleaseElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
@@ -156,7 +208,10 @@ register_tool_for_dispatch(
     release_elements,
     name="teamwork_release_elements",
     title="ReleaseElements",
-    description="Releases elements in Teamwork mode.",
+    description=(
+        "Releases elements in Teamwork mode. Fails, naming them, when any of the given GUIDs is not an element; the "
+        "other elements are released."
+    ),
     params_model=ReleaseElementsParameters,
 )
 
@@ -192,7 +247,10 @@ register_tool_for_dispatch(
 
 
 def reserve_elements(conn_header: ConnHeader, params: ReserveElementsParameters) -> dict:
-    """Reserves elements in Teamwork mode."""
+    """
+    Reserves elements in Teamwork mode. GUIDs that are not elements (navigator items, layouts, databases) cannot be
+    reserved with it: they are returned in notElements and the execution result fails.
+    """
     return conn_header.core.post_tapir_command(
         command="ReserveElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
@@ -202,7 +260,10 @@ register_tool_for_dispatch(
     reserve_elements,
     name="teamwork_reserve_elements",
     title="ReserveElements",
-    description="Reserves elements in Teamwork mode.",
+    description=(
+        "Reserves elements in Teamwork mode. GUIDs that are not elements (navigator items, layouts, databases) cannot "
+        "be reserved with it: they are returned in notElements and the execution result fails."
+    ),
     params_model=ReserveElementsParameters,
 )
 

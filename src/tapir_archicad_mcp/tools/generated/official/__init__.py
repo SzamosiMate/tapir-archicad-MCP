@@ -5,7 +5,6 @@ from tapir_archicad_mcp.tools.generated.official.attribute_commands import *
 from tapir_archicad_mcp.tools.generated.official.basic_commands import *
 from tapir_archicad_mcp.tools.generated.official.classification_commands import *
 from tapir_archicad_mcp.tools.generated.official.component_commands import *
-from tapir_archicad_mcp.tools.generated.official.element_geometry_commands import *
 from tapir_archicad_mcp.tools.generated.official.element_listing_commands import *
 from tapir_archicad_mcp.tools.generated.official.element_relation_commands import *
 from tapir_archicad_mcp.tools.generated.official.layout_book_commands import *

@@ -25,12 +25,16 @@ from multiconn_archicad.models.tapir.commands import (
     GetNoteAutoTextKeywordsParameters,
     GetNoteAutotextsParameters,
     GetProjectPreferencesParameters,
+    InterpretAutoTextsParameters,
+    MoveProjectInfoFieldsParameters,
     MoveProjectInfoGroupsParameters,
     OpenProjectParameters,
     PhotoRenderParameters,
     PrintViewParameters,
     RebuildViewParameters,
+    RenameProjectInfoFieldsParameters,
     RenameProjectInfoGroupsParameters,
+    ResolveNamesParameters,
     SaveAsModuleFileParameters,
     SaveCurrentWindowAsImageParameters,
     SaveProjectAsArchiveParameters,
@@ -202,7 +206,10 @@ register_tool_for_dispatch(
 
 
 def create_project_info_fields(conn_header: ConnHeader, params: CreateProjectInfoFieldsParameters) -> dict:
-    """Creates one or more custom project info fields."""
+    """
+    Creates one or more custom project info fields. From Archicad 30 the Project Info group of each field can be given;
+    without it the field goes to the first group.
+    """
     return conn_header.core.post_tapir_command(
         command="CreateProjectInfoFields", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
@@ -212,7 +219,10 @@ register_tool_for_dispatch(
     create_project_info_fields,
     name="project_create_project_info_fields",
     title="CreateProjectInfoFields",
-    description="Creates one or more custom project info fields.",
+    description=(
+        "Creates one or more custom project info fields. From Archicad 30 the Project Info group of each field can be "
+        "given; without it the field goes to the first group."
+    ),
     params_model=CreateProjectInfoFieldsParameters,
 )
 
@@ -252,7 +262,10 @@ register_tool_for_dispatch(
 
 
 def delete_project_info_fields(conn_header: ConnHeader, params: DeleteProjectInfoFieldsParameters) -> dict:
-    """Deletes one or more custom project info fields. Hardcoded fields cannot be deleted."""
+    """
+    Deletes one or more custom project info fields, by their autotext keys or, from Archicad 30, by the ids of the
+    fields of the Project Info groups. Hardcoded fields cannot be deleted.
+    """
     return conn_header.core.post_tapir_command(
         command="DeleteProjectInfoFields", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
@@ -262,7 +275,10 @@ register_tool_for_dispatch(
     delete_project_info_fields,
     name="project_delete_project_info_fields",
     title="DeleteProjectInfoFields",
-    description="Deletes one or more custom project info fields. Hardcoded fields cannot be deleted.",
+    description=(
+        "Deletes one or more custom project info fields, by their autotext keys or, from Archicad 30, by the ids of "
+        "the fields of the Project Info groups. Hardcoded fields cannot be deleted."
+    ),
     params_model=DeleteProjectInfoFieldsParameters,
 )
 
@@ -308,6 +324,26 @@ register_tool_for_dispatch(
         "name and guid. Available from Archicad 27."
     ),
     params_model=FindDimensionStandardParameters,
+)
+
+
+def get_all_auto_text_keys(conn_header: ConnHeader) -> dict:
+    """
+    Retrieves every autotext key Archicad knows (not only the property-based ones returned by GetAutoTextKeys) with its
+    current value, resolved without an element context.
+    """
+    return conn_header.core.post_tapir_command(command="GetAllAutoTextKeys", parameters={})
+
+
+register_tool_for_dispatch(
+    get_all_auto_text_keys,
+    name="project_get_all_auto_text_keys",
+    title="GetAllAutoTextKeys",
+    description=(
+        "Retrieves every autotext key Archicad knows (not only the property-based ones returned by GetAutoTextKeys) "
+        "with its current value, resolved without an element context."
+    ),
+    params_model=None,
 )
 
 
@@ -391,6 +427,28 @@ register_tool_for_dispatch(
 )
 
 
+def get_coordinate_origins(conn_header: ConnHeader) -> dict:
+    """
+    Gets the offset of the virtual coordinate system origin from the world origin, and the user origin of the current
+    database. Use it to tell which origin the coordinates of different sources (elements, views, survey point) are
+    relative to.
+    """
+    return conn_header.core.post_tapir_command(command="GetCoordinateOrigins", parameters={})
+
+
+register_tool_for_dispatch(
+    get_coordinate_origins,
+    name="project_get_coordinate_origins",
+    title="GetCoordinateOrigins",
+    description=(
+        "Gets the offset of the virtual coordinate system origin from the world origin, and the user origin of the "
+        "current database. Use it to tell which origin the coordinates of different sources (elements, views, survey "
+        "point) are relative to."
+    ),
+    params_model=None,
+)
+
+
 def get_current_view_image(conn_header: ConnHeader, params: GetCurrentViewImageParameters) -> dict:
     """
     Returns what the 3D window, or the PhotoRendering window, shows as a base64 encoded png or jpg image with its size
@@ -441,7 +499,8 @@ register_tool_for_dispatch(
 def get_export_tolerance(conn_header: ConnHeader) -> dict:
     """
     Gets the export tolerance: the largest distance allowed between an arc and the straight segments that replace it
-    when curves are segmented for export.
+    when curves are segmented for export. Archicad only provides this value while an export is in progress, so outside
+    an export the command returns an error saying so.
     """
     return conn_header.core.post_tapir_command(command="GetExportTolerance", parameters={})
 
@@ -452,7 +511,8 @@ register_tool_for_dispatch(
     title="GetExportTolerance",
     description=(
         "Gets the export tolerance: the largest distance allowed between an arc and the straight segments that replace "
-        "it when curves are segmented for export."
+        "it when curves are segmented for export. Archicad only provides this value while an export is in progress, so "
+        "outside an export the command returns an error saying so."
     ),
     params_model=None,
 )
@@ -615,8 +675,8 @@ register_tool_for_dispatch(
 def get_note_autotexts(conn_header: ConnHeader, params: GetNoteAutotextsParameters) -> dict:
     """
     Retrieves the autotexts available in the notes of an element type (e.g. a Dimension), each with the element types it
-    is available for. The autotexts are identified by the numeric value of their API_NoteAutotextID. Needs Archicad 26
-    or later.
+    is available for. The autotexts are identified by the numeric value of their API_NoteAutotextID. For a Dimension,
+    the optional dimensionAppearance (Linear by default) chooses the dimension type. Needs Archicad 26 or later.
     """
     return conn_header.core.post_tapir_command(
         command="GetNoteAutotexts", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -629,8 +689,9 @@ register_tool_for_dispatch(
     title="GetNoteAutotexts",
     description=(
         "Retrieves the autotexts available in the notes of an element type (e.g. a Dimension), each with the element "
-        "types it is available for. The autotexts are identified by the numeric value of their API_NoteAutotextID. "
-        "Needs Archicad 26 or later."
+        "types it is available for. The autotexts are identified by the numeric value of their API_NoteAutotextID. For "
+        "a Dimension, the optional dimensionAppearance (Linear by default) chooses the dimension type. Needs Archicad "
+        "26 or later."
     ),
     params_model=GetNoteAutotextsParameters,
 )
@@ -709,7 +770,8 @@ register_tool_for_dispatch(
 def get_project_preferences(conn_header: ConnHeader, params: GetProjectPreferencesParameters) -> dict:
     """
     Gets pages of the project preferences (Options > Project Preferences): the working units, the dimensions, the
-    calculation units and the zones. Further pages may follow.
+    calculation units, the zones and the reference levels, and the Floor Plan Cut Plane Settings. Further pages may
+    follow.
     """
     return conn_header.core.post_tapir_command(
         command="GetProjectPreferences", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -722,7 +784,8 @@ register_tool_for_dispatch(
     title="GetProjectPreferences",
     description=(
         "Gets pages of the project preferences (Options > Project Preferences): the working units, the dimensions, the "
-        "calculation units and the zones. Further pages may follow."
+        "calculation units, the zones and the reference levels, and the Floor Plan Cut Plane Settings. Further pages "
+        "may follow."
     ),
     params_model=GetProjectPreferencesParameters,
 )
@@ -730,8 +793,8 @@ register_tool_for_dispatch(
 
 def get_rendering_scenes(conn_header: ConnHeader) -> dict:
     """
-    Gets the names of the rendering scenes of the project, as the Scene list of the PhotoRendering Settings palette
-    shows them.
+    Gets the names of the rendering scenes of the project (the Scene list of the PhotoRendering Settings palette), the
+    most recently used first, and the name of the current scene.
     """
     return conn_header.core.post_tapir_command(command="GetRenderingScenes", parameters={})
 
@@ -741,8 +804,8 @@ register_tool_for_dispatch(
     name="project_get_rendering_scenes",
     title="GetRenderingScenes",
     description=(
-        "Gets the names of the rendering scenes of the project, as the Scene list of the PhotoRendering Settings "
-        "palette shows them."
+        "Gets the names of the rendering scenes of the project (the Scene list of the PhotoRendering Settings "
+        "palette), the most recently used first, and the name of the current scene."
     ),
     params_model=None,
 )
@@ -828,6 +891,50 @@ register_tool_for_dispatch(
 )
 
 
+def interpret_auto_texts(conn_header: ConnHeader, params: InterpretAutoTextsParameters) -> dict:
+    """
+    Resolves one or more autotexts (e.g. '<LAYOUTID>') to their values, optionally in the context of an element, so a
+    key can be tested before it is written into a Text or Label.
+    """
+    return conn_header.core.post_tapir_command(
+        command="InterpretAutoTexts", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    interpret_auto_texts,
+    name="project_interpret_auto_texts",
+    title="InterpretAutoTexts",
+    description=(
+        "Resolves one or more autotexts (e.g. '<LAYOUTID>') to their values, optionally in the context of an element, "
+        "so a key can be tested before it is written into a Text or Label."
+    ),
+    params_model=InterpretAutoTextsParameters,
+)
+
+
+def move_project_info_fields(conn_header: ConnHeader, params: MoveProjectInfoFieldsParameters) -> dict:
+    """
+    Moves fields of the Project Info groups to a group, before another field of it or to its end. A subfield of a
+    calculated field moves with its parent field. Available from Archicad 30.
+    """
+    return conn_header.core.post_tapir_command(
+        command="MoveProjectInfoFields", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    move_project_info_fields,
+    name="project_move_project_info_fields",
+    title="MoveProjectInfoFields",
+    description=(
+        "Moves fields of the Project Info groups to a group, before another field of it or to its end. A subfield of a "
+        "calculated field moves with its parent field. Available from Archicad 30."
+    ),
+    params_model=MoveProjectInfoFieldsParameters,
+)
+
+
 def move_project_info_groups(conn_header: ConnHeader, params: MoveProjectInfoGroupsParameters) -> dict:
     """
     Moves Project Info groups before another group, or to the end of the group list when no other group is given.
@@ -851,7 +958,10 @@ register_tool_for_dispatch(
 
 
 def open_project(conn_header: ConnHeader, params: OpenProjectParameters) -> dict:
-    """Opens the given project."""
+    """
+    Opens the given project. The unsaved changes of the open project are discarded without asking: Archicad has no query
+    for them, so call SaveProject first when they must be kept.
+    """
     return conn_header.core.post_tapir_command(
         command="OpenProject", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
@@ -861,7 +971,10 @@ register_tool_for_dispatch(
     open_project,
     name="project_open_project",
     title="OpenProject",
-    description="Opens the given project.",
+    description=(
+        "Opens the given project. The unsaved changes of the open project are discarded without asking: Archicad has "
+        "no query for them, so call SaveProject first when they must be kept."
+    ),
     params_model=OpenProjectParameters,
 )
 
@@ -869,8 +982,9 @@ register_tool_for_dispatch(
 def photo_render(conn_header: ConnHeader, params: PhotoRenderParameters) -> dict:
     """
     Renders the 3D model with the current rendering scene, or with the given one, as Document > Creative Imaging >
-    PhotoRender Projection does, and saves the image to a file (png, jpg, bmp, tiff or gif). The image size and quality
-    come from the scene.
+    PhotoRender Projection does, and saves the image to a file (png, jpg, bmp, tiff or gif). The image size, resolution
+    and quality come from the scene; a width, height or resolution given here is used for this render only, the scene is
+    not changed. With overwrite false it refuses to replace an existing file.
     """
     return conn_header.core.post_tapir_command(
         command="PhotoRender", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -883,8 +997,9 @@ register_tool_for_dispatch(
     title="PhotoRender",
     description=(
         "Renders the 3D model with the current rendering scene, or with the given one, as Document > Creative Imaging "
-        "> PhotoRender Projection does, and saves the image to a file (png, jpg, bmp, tiff or gif). The image size and "
-        "quality come from the scene."
+        "> PhotoRender Projection does, and saves the image to a file (png, jpg, bmp, tiff or gif). The image size, "
+        "resolution and quality come from the scene; a width, height or resolution given here is used for this render "
+        "only, the scene is not changed. With overwrite false it refuses to replace an existing file."
     ),
     params_model=PhotoRenderParameters,
 )
@@ -922,6 +1037,28 @@ register_tool_for_dispatch(
 )
 
 
+def rename_project_info_fields(conn_header: ConnHeader, params: RenameProjectInfoFieldsParameters) -> dict:
+    """
+    Renames custom fields of the Project Info groups. Fixed (built-in) fields cannot be renamed. Available from Archicad
+    30.
+    """
+    return conn_header.core.post_tapir_command(
+        command="RenameProjectInfoFields", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    rename_project_info_fields,
+    name="project_rename_project_info_fields",
+    title="RenameProjectInfoFields",
+    description=(
+        "Renames custom fields of the Project Info groups. Fixed (built-in) fields cannot be renamed. Available from "
+        "Archicad 30."
+    ),
+    params_model=RenameProjectInfoFieldsParameters,
+)
+
+
 def rename_project_info_groups(conn_header: ConnHeader, params: RenameProjectInfoGroupsParameters) -> dict:
     """Renames Project Info groups. Available from Archicad 30."""
     return conn_header.core.post_tapir_command(
@@ -938,8 +1075,52 @@ register_tool_for_dispatch(
 )
 
 
+def resolve_names(conn_header: ConnHeader, params: ResolveNamesParameters) -> dict:
+    """
+    Looks up words or phrases (for example from a user's question) among the names of the open project before they are
+    passed to other commands: stories, layers, layer combinations, building materials, composites, profiles, surfaces,
+    fills, lines, zone categories, element types (by API name and, from Archicad 27, by the name the Archicad interface
+    shows), properties (by name, and by group and name together) and classifications (systems by name and version, items
+    of every system by name and ID). For each name it returns 'found' with the items named exactly so, 'closeMatches'
+    with the nearest names, best first (ranked by differences in case, accents, spacing and separators, shared words,
+    one name containing the other and a few differing characters), or 'notFound' when nothing in the project is close,
+    meaning the project has no such item and it must not be guessed. Each match carries what the other commands take:
+    the story index, the attribute id and index, the elementType, the propertyId (with the property's group, value type
+    and the classification items a custom property is available for), or the classificationSystemId and
+    classificationItemId. Matching is lexical and deterministic. Read only.
+    """
+    return conn_header.core.post_tapir_command(
+        command="ResolveNames", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    resolve_names,
+    name="project_resolve_names",
+    title="ResolveNames",
+    description=(
+        "Looks up words or phrases (for example from a user's question) among the names of the open project before "
+        "they are passed to other commands: stories, layers, layer combinations, building materials, composites, "
+        "profiles, surfaces, fills, lines, zone categories, element types (by API name and, from Archicad 27, by the "
+        "name the Archicad interface shows), properties (by name, and by group and name together) and classifications "
+        "(systems by name and version, items of every system by name and ID). For each name it returns 'found' with "
+        "the items named exactly so, 'closeMatches' with the nearest names, best first (ranked by differences in case, "
+        "accents, spacing and separators, shared words, one name containing the other and a few differing characters), "
+        "or 'notFound' when nothing in the project is close, meaning the project has no such item and it must not be "
+        "guessed. Each match carries what the other commands take: the story index, the attribute id and index, the "
+        "elementType, the propertyId (with the property's group, value type and the classification items a custom "
+        "property is available for), or the classificationSystemId and classificationItemId. Matching is lexical and "
+        "deterministic. Read only."
+    ),
+    params_model=ResolveNamesParameters,
+)
+
+
 def save_as_module_file(conn_header: ConnHeader, params: SaveAsModuleFileParameters) -> dict:
-    """Saves the given elements, or the current selection, as a hotlink module (.mod) file."""
+    """
+    Saves the given elements, or the current selection, as a hotlink module (.mod) file. With overwrite false it refuses
+    to replace an existing file.
+    """
     return conn_header.core.post_tapir_command(
         command="SaveAsModuleFile", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
@@ -949,7 +1130,10 @@ register_tool_for_dispatch(
     save_as_module_file,
     name="project_save_as_module_file",
     title="SaveAsModuleFile",
-    description="Saves the given elements, or the current selection, as a hotlink module (.mod) file.",
+    description=(
+        "Saves the given elements, or the current selection, as a hotlink module (.mod) file. With overwrite false it "
+        "refuses to replace an existing file."
+    ),
     params_model=SaveAsModuleFileParameters,
 )
 
@@ -957,7 +1141,8 @@ register_tool_for_dispatch(
 def save_current_window_as_image(conn_header: ConnHeader, params: SaveCurrentWindowAsImageParameters) -> dict:
     """
     Saves what the current window shows as an image file (png, jpg, bmp, tiff or gif), as File > Save as does with a
-    picture format. Master layout windows are not supported: save a layout that uses the master layout instead.
+    picture format. Master layout windows are not supported: save a layout that uses the master layout instead. With
+    overwrite false it refuses to replace an existing file.
     """
     return conn_header.core.post_tapir_command(
         command="SaveCurrentWindowAsImage", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -971,14 +1156,17 @@ register_tool_for_dispatch(
     description=(
         "Saves what the current window shows as an image file (png, jpg, bmp, tiff or gif), as File > Save as does "
         "with a picture format. Master layout windows are not supported: save a layout that uses the master layout "
-        "instead."
+        "instead. With overwrite false it refuses to replace an existing file."
     ),
     params_model=SaveCurrentWindowAsImageParameters,
 )
 
 
 def save_project(conn_header: ConnHeader, params: SaveProjectParameters) -> dict:
-    """Saves the currently opened project."""
+    """
+    Saves the currently opened project, in place or to a given path. With overwrite false it refuses to replace an
+    existing file at the path.
+    """
     return conn_header.core.post_tapir_command(
         command="SaveProject", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
@@ -988,13 +1176,19 @@ register_tool_for_dispatch(
     save_project,
     name="project_save_project",
     title="SaveProject",
-    description="Saves the currently opened project.",
+    description=(
+        "Saves the currently opened project, in place or to a given path. With overwrite false it refuses to replace "
+        "an existing file at the path."
+    ),
     params_model=SaveProjectParameters,
 )
 
 
 def save_project_as_archive(conn_header: ConnHeader, params: SaveProjectAsArchiveParameters) -> dict:
-    """Saves the open project as an archive (.pla) file, with the library parts it uses inside."""
+    """
+    Saves the open project as an archive (.pla) file, with the library parts it uses inside. With overwrite false it
+    refuses to replace an existing file.
+    """
     return conn_header.core.post_tapir_command(
         command="SaveProjectAsArchive", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
@@ -1004,7 +1198,10 @@ register_tool_for_dispatch(
     save_project_as_archive,
     name="project_save_project_as_archive",
     title="SaveProjectAsArchive",
-    description="Saves the open project as an archive (.pla) file, with the library parts it uses inside.",
+    description=(
+        "Saves the open project as an archive (.pla) file, with the library parts it uses inside. With overwrite false "
+        "it refuses to replace an existing file."
+    ),
     params_model=SaveProjectAsArchiveParameters,
 )
 
@@ -1130,7 +1327,9 @@ register_tool_for_dispatch(
 def set_project_notes(conn_header: ConnHeader, params: SetProjectNotesParameters) -> dict:
     """
     Changes the Project Notes of the project (File > Info > Project Notes). Only the given fields are changed; texts
-    longer than the field Archicad stores are truncated.
+    longer than the field Archicad stores are truncated. architect and draftsmen are full names that Archicad keeps as
+    name parts: a new name is stored in the given name with the other parts cleared, and the parts of a name that is not
+    given or not changed are kept.
     """
     return conn_header.core.post_tapir_command(
         command="SetProjectNotes", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -1143,7 +1342,9 @@ register_tool_for_dispatch(
     title="SetProjectNotes",
     description=(
         "Changes the Project Notes of the project (File > Info > Project Notes). Only the given fields are changed; "
-        "texts longer than the field Archicad stores are truncated."
+        "texts longer than the field Archicad stores are truncated. architect and draftsmen are full names that "
+        "Archicad keeps as name parts: a new name is stored in the given name with the other parts cleared, and the "
+        "parts of a name that is not given or not changed are kept."
     ),
     params_model=SetProjectNotesParameters,
 )
@@ -1152,9 +1353,9 @@ register_tool_for_dispatch(
 def set_project_preferences(conn_header: ConnHeader, params: SetProjectPreferencesParameters) -> dict:
     """
     Changes pages of the project preferences (Options > Project Preferences): the working units, the dimensions, the
-    calculation units and the zones. Only the given fields change, the rest of each page keeps its value. In Teamwork
-    the PreferencesDialog lockable object set has to be reserved first (ReserveLockableObjectSet). Available from
-    Archicad 27.
+    calculation units, the zones and the reference levels, and the Floor Plan Cut Plane Settings. Only the given fields
+    change, the rest of each page keeps its value. In Teamwork the PreferencesDialog lockable object set has to be
+    reserved first (ReserveLockableObjectSet). Available from Archicad 27.
     """
     return conn_header.core.post_tapir_command(
         command="SetProjectPreferences", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -1167,9 +1368,9 @@ register_tool_for_dispatch(
     title="SetProjectPreferences",
     description=(
         "Changes pages of the project preferences (Options > Project Preferences): the working units, the dimensions, "
-        "the calculation units and the zones. Only the given fields change, the rest of each page keeps its value. In "
-        "Teamwork the PreferencesDialog lockable object set has to be reserved first (ReserveLockableObjectSet). "
-        "Available from Archicad 27."
+        "the calculation units, the zones and the reference levels, and the Floor Plan Cut Plane Settings. Only the "
+        "given fields change, the rest of each page keeps its value. In Teamwork the PreferencesDialog lockable object "
+        "set has to be reserved first (ReserveLockableObjectSet). Available from Archicad 27."
     ),
     params_model=SetProjectPreferencesParameters,
 )

@@ -8,30 +8,37 @@ from multiconn_archicad.models.tapir.commands import (
     CreateElectricalDevicesParameters,
     CreateElectricalPanelsParameters,
     CreateMEPElementsParameters,
+    CreateMEPFlexibleSegmentsParameters,
     CreateMEPPhysicalSystemsParameters,
     CreateMEPRoutingElementsParameters,
     CreateMEPSystemGroupsParameters,
+    CreateMEPTakeOffsParameters,
     DeleteElectricalCircuitsParameters,
     DeleteMEPPhysicalSystemsParameters,
     GetElectricalCircuitsParameters,
     GetElectricalDevicesParameters,
     GetElectricalPanelsParameters,
+    GetMEPDistributionSystemsParameters,
     GetMEPElementDetailsParameters,
     GetMEPElementsParameters,
+    GetMEPPhysicalSystemsOfElementsParameters,
     GetMEPPortsParameters,
     GetMEPPreferenceTablesParameters,
     GetMEPRoutingElementsParameters,
     GetMEPRoutingParametersParameters,
+    GetMEPToolDefaultsParameters,
     ModifyElectricalCircuitsParameters,
     ModifyElectricalDevicesParameters,
     ModifyElectricalPanelsParameters,
     ModifyElectricalProjectSettingsParameters,
+    ModifyMEPElementsParameters,
     ModifyMEPPhysicalSystemsParameters,
     ModifyMEPPortsParameters,
     ModifyMEPPreferenceTablesParameters,
     ModifyMEPRoutingElementsParameters,
     ModifyMEPSystemGroupsParameters,
     SetMEPRoutingParametersParameters,
+    TransferMEPSettingsParameters,
 )
 
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
@@ -63,7 +70,10 @@ register_tool_for_dispatch(
 def connect_mep_elements(conn_header: ConnHeader, params: ConnectMEPElementsParameters) -> dict:
     """
     Connects MEP routing elements to other MEP elements or routes. Merges routes, splits routes or creates branch
-    elements as needed. Archicad 27 does not report the merged, split or created elements. Available from Archicad 27.
+    elements as needed. The first or last node of the 'connectToId' route must lie exactly on the 'routingElementId'
+    route, so for a tee pass the main route as 'routingElementId' and the branch as 'connectToId'. A failed connection
+    says which condition is not met. Archicad 27 does not report the merged, split or created elements. Available from
+    Archicad 27.
     """
     return conn_header.core.post_tapir_command(
         command="ConnectMEPElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -76,8 +86,10 @@ register_tool_for_dispatch(
     title="ConnectMEPElements",
     description=(
         "Connects MEP routing elements to other MEP elements or routes. Merges routes, splits routes or creates branch "
-        "elements as needed. Archicad 27 does not report the merged, split or created elements. Available from "
-        "Archicad 27."
+        "elements as needed. The first or last node of the 'connectToId' route must lie exactly on the "
+        "'routingElementId' route, so for a tee pass the main route as 'routingElementId' and the branch as "
+        "'connectToId'. A failed connection says which condition is not met. Archicad 27 does not report the merged, "
+        "split or created elements. Available from Archicad 27."
     ),
     params_model=ConnectMEPElementsParameters,
 )
@@ -172,8 +184,9 @@ register_tool_for_dispatch(
 
 def create_mep_elements(conn_header: ConnHeader, params: CreateMEPElementsParameters) -> dict:
     """
-    Creates MEP elements (Terminal, Accessory, Equipment or Fitting) at the given positions, optionally with a changed
-    insulation that applies only to what is placed. Available from Archicad 28.
+    Creates MEP elements (Terminal, Accessory, Equipment or Fitting) at the given positions, optionally with another
+    library part, size (from Archicad 30), MEP system, port sizes and shapes and a changed insulation, which apply only
+    to what is placed. Available from Archicad 28.
     """
     return conn_header.core.post_tapir_command(
         command="CreateMEPElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -185,10 +198,35 @@ register_tool_for_dispatch(
     name="mep_create_mep_elements",
     title="CreateMEPElements",
     description=(
-        "Creates MEP elements (Terminal, Accessory, Equipment or Fitting) at the given positions, optionally with a "
-        "changed insulation that applies only to what is placed. Available from Archicad 28."
+        "Creates MEP elements (Terminal, Accessory, Equipment or Fitting) at the given positions, optionally with "
+        "another library part, size (from Archicad 30), MEP system, port sizes and shapes and a changed insulation, "
+        "which apply only to what is placed. Available from Archicad 28."
     ),
     params_model=CreateMEPElementsParameters,
+)
+
+
+def create_mep_flexible_segments(conn_header: ConnHeader, params: CreateMEPFlexibleSegmentsParameters) -> dict:
+    """
+    Creates MEP flexible segments through the given control points, or along a polyline of alternating line and spline
+    parts (Piping), with the current settings of the Flexible Segment tool of their domain, optionally with the
+    orientation (control points) or direction (polyline) at both ends. Available from Archicad 28.
+    """
+    return conn_header.core.post_tapir_command(
+        command="CreateMEPFlexibleSegments", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    create_mep_flexible_segments,
+    name="mep_create_mep_flexible_segments",
+    title="CreateMEPFlexibleSegments",
+    description=(
+        "Creates MEP flexible segments through the given control points, or along a polyline of alternating line and "
+        "spline parts (Piping), with the current settings of the Flexible Segment tool of their domain, optionally "
+        "with the orientation (control points) or direction (polyline) at both ends. Available from Archicad 28."
+    ),
+    params_model=CreateMEPFlexibleSegmentsParameters,
 )
 
 
@@ -253,6 +291,34 @@ register_tool_for_dispatch(
     title="CreateMEPSystemGroups",
     description="Creates MEP system groups. Available from Archicad 29.",
     params_model=CreateMEPSystemGroupsParameters,
+)
+
+
+def create_mep_take_offs(conn_header: ConnHeader, params: CreateMEPTakeOffsParameters) -> dict:
+    """
+    Creates MEP take-offs on the given routing segments, at a distance from the beginning of the segment (not more than
+    its length) and optionally rotated around its axis by a multiple of 90 degrees, with the current settings of the
+    Take-Off tool of their domain (by default the domain of the segment's routing element), optionally with their length
+    and without insulation, which apply only to what is created. Archicad only has Ventilation take-offs. Available from
+    Archicad 28.
+    """
+    return conn_header.core.post_tapir_command(
+        command="CreateMEPTakeOffs", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    create_mep_take_offs,
+    name="mep_create_mep_take_offs",
+    title="CreateMEPTakeOffs",
+    description=(
+        "Creates MEP take-offs on the given routing segments, at a distance from the beginning of the segment (not "
+        "more than its length) and optionally rotated around its axis by a multiple of 90 degrees, with the current "
+        "settings of the Take-Off tool of their domain (by default the domain of the segment's routing element), "
+        "optionally with their length and without insulation, which apply only to what is created. Archicad only has "
+        "Ventilation take-offs. Available from Archicad 28."
+    ),
+    params_model=CreateMEPTakeOffsParameters,
 )
 
 
@@ -397,15 +463,15 @@ register_tool_for_dispatch(
 )
 
 
-def get_mep_distribution_systems(conn_header: ConnHeader) -> dict:
+def get_mep_distribution_systems(conn_header: ConnHeader, params: GetMEPDistributionSystemsParameters) -> dict:
     """
-    Retrieves the MEP distribution systems of the project with their domain, MEP system attribute and member elements.
-    Available from Archicad 28.
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
+    Retrieves the MEP distribution systems of the project with their domain, MEP system attribute, member elements,
+    physical systems (from Archicad 29) and optionally their tree: the elements from the root element on, each with its
+    previous and next elements and the connecting ports. Available from Archicad 28.
     """
-    return conn_header.core.post_tapir_command(command="GetMEPDistributionSystems", parameters={})
+    return conn_header.core.post_tapir_command(
+        command="GetMEPDistributionSystems", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
 
 
 register_tool_for_dispatch(
@@ -413,24 +479,21 @@ register_tool_for_dispatch(
     name="mep_get_mep_distribution_systems",
     title="GetMEPDistributionSystems",
     description=(
-        "Retrieves the MEP distribution systems of the project with their domain, MEP system attribute and member "
-        "elements. Available from Archicad 28."
+        "Retrieves the MEP distribution systems of the project with their domain, MEP system attribute, member "
+        "elements, physical systems (from Archicad 29) and optionally their tree: the elements from the root element "
+        "on, each with its previous and next elements and the connecting ports. Available from Archicad 28."
     ),
-    params_model=None,
-    pagination_field="distributionSystems",
+    params_model=GetMEPDistributionSystemsParameters,
 )
 
 
 def get_mep_element_details(conn_header: ConnHeader, params: GetMEPElementDetailsParameters) -> dict:
     """
     Retrieves the type-specific details of the given MEP elements: insulation thickness and routing segment of rigid
-    segments, control points of flexible segments, radius factor, insulation thickness, preference table and routing
-    node of elbows (from Archicad 29), angle, length and insulation thickness of branches, and offsets, wider and
-    narrower ports, insulation thickness, routing node and (from Archicad 29) preference table of transitions. Available
-    from Archicad 28.
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
+    segments, control points and polyline of flexible segments, radius factor, insulation thickness, preference table
+    and routing node of elbows (from Archicad 29), angle, length and insulation thickness of branches, and offsets,
+    wider and narrower ports, insulation thickness, routing node and (from Archicad 29) preference table of transitions.
+    Available from Archicad 28.
     """
     return conn_header.core.post_tapir_command(
         command="GetMEPElementDetails", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -443,21 +506,21 @@ register_tool_for_dispatch(
     title="GetMEPElementDetails",
     description=(
         "Retrieves the type-specific details of the given MEP elements: insulation thickness and routing segment of "
-        "rigid segments, control points of flexible segments, radius factor, insulation thickness, preference table "
-        "and routing node of elbows (from Archicad 29), angle, length and insulation thickness of branches, and "
-        "offsets, wider and narrower ports, insulation thickness, routing node and (from Archicad 29) preference table "
-        "of transitions. Available from Archicad 28."
+        "rigid segments, control points and polyline of flexible segments, radius factor, insulation thickness, "
+        "preference table and routing node of elbows (from Archicad 29), angle, length and insulation thickness of "
+        "branches, and offsets, wider and narrower ports, insulation thickness, routing node and (from Archicad 29) "
+        "preference table of transitions. Available from Archicad 28."
     ),
     params_model=GetMEPElementDetailsParameters,
-    pagination_field="elementDetails",
 )
 
 
 def get_mep_elements(conn_header: ConnHeader, params: GetMEPElementsParameters) -> dict:
     """
-    Retrieves the MEP (Mechanical, Electrical, Plumbing) elements of the project, optionally filtered by type and
-    domain. MEP elements are ordinary elements, so the generic element commands work on them as well (for example they
-    can be deleted with the DeleteElements command). Available from Archicad 28.
+    Retrieves the MEP (Mechanical, Electrical, Plumbing) elements of the project (every element the MEP API lists, and
+    from Archicad 30 the electrical panels and devices), optionally filtered by type and domain. MEP elements are
+    ordinary elements, so the generic element commands work on them as well (for example they can be deleted with the
+    DeleteElements command). Available from Archicad 28.
 
     This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
     and page_token set to that token to get the next page of results.
@@ -472,21 +535,42 @@ register_tool_for_dispatch(
     name="mep_get_mep_elements",
     title="GetMEPElements",
     description=(
-        "Retrieves the MEP (Mechanical, Electrical, Plumbing) elements of the project, optionally filtered by type and "
-        "domain. MEP elements are ordinary elements, so the generic element commands work on them as well (for example "
-        "they can be deleted with the DeleteElements command). Available from Archicad 28."
+        "Retrieves the MEP (Mechanical, Electrical, Plumbing) elements of the project (every element the MEP API "
+        "lists, and from Archicad 30 the electrical panels and devices), optionally filtered by type and domain. MEP "
+        "elements are ordinary elements, so the generic element commands work on them as well (for example they can be "
+        "deleted with the DeleteElements command). Available from Archicad 28."
     ),
     params_model=GetMEPElementsParameters,
     pagination_field="elements",
 )
 
 
+def get_mep_physical_systems_of_elements(
+    conn_header: ConnHeader, params: GetMEPPhysicalSystemsOfElementsParameters
+) -> dict:
+    """Returns the physical systems each of the given MEP elements is part of. Available from Archicad 29."""
+    return conn_header.core.post_tapir_command(
+        command="GetMEPPhysicalSystemsOfElements",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    get_mep_physical_systems_of_elements,
+    name="mep_get_mep_physical_systems_of_elements",
+    title="GetMEPPhysicalSystemsOfElements",
+    description=("Returns the physical systems each of the given MEP elements is part of. Available from Archicad 29."),
+    params_model=GetMEPPhysicalSystemsOfElementsParameters,
+)
+
+
 def get_mep_ports(conn_header: ConnHeader, params: GetMEPPortsParameters) -> dict:
     """
-    Retrieves the ports of the given MEP elements including position, shape, size, connection status and connection
-    style (from Archicad 30), the flow direction of piping and ventilation ports, the nominal size of piping ports (from
-    Archicad 30), and the outer diameter, wall thickness and flange size (Archicad 30) of piping and ventilation ports.
-    Available from Archicad 28.
+    Retrieves the ports of the given MEP elements including position, shape, size, connection status (Archicad 27:
+    whether the port is connected, from Archicad 28: whether it is physically connected) and connection style (from
+    Archicad 30), the flow direction of piping and ventilation ports (from Archicad 28), the nominal size of piping
+    ports (from Archicad 30), and the outer diameter, wall thickness and flange size (Archicad 30) of piping and
+    ventilation ports. Available from Archicad 27.
     """
     return conn_header.core.post_tapir_command(
         command="GetMEPPorts", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -498,10 +582,11 @@ register_tool_for_dispatch(
     name="mep_get_mep_ports",
     title="GetMEPPorts",
     description=(
-        "Retrieves the ports of the given MEP elements including position, shape, size, connection status and "
-        "connection style (from Archicad 30), the flow direction of piping and ventilation ports, the nominal size of "
-        "piping ports (from Archicad 30), and the outer diameter, wall thickness and flange size (Archicad 30) of "
-        "piping and ventilation ports. Available from Archicad 28."
+        "Retrieves the ports of the given MEP elements including position, shape, size, connection status (Archicad "
+        "27: whether the port is connected, from Archicad 28: whether it is physically connected) and connection style "
+        "(from Archicad 30), the flow direction of piping and ventilation ports (from Archicad 28), the nominal size "
+        "of piping ports (from Archicad 30), and the outer diameter, wall thickness and flange size (Archicad 30) of "
+        "piping and ventilation ports. Available from Archicad 27."
     ),
     params_model=GetMEPPortsParameters,
 )
@@ -547,9 +632,9 @@ def get_mep_routing_elements(conn_header: ConnHeader, params: GetMEPRoutingEleme
     preference table, the ports logically connected at the route's beginning and end, the floor plan display settings
     (cut plane position, floor plan display option, show projection and on-story visibility, from Archicad 29), route
     polyline, segments with cross section data (shape, size, preference table and reference id), begin and end nodes,
-    anchor, reference line offsets, wall thickness, flange size, connection style and rigid segments, and nodes with
-    their incoming and outgoing segments, preferred transition placement, elbows and transitions. Available from
-    Archicad 28.
+    anchor, reference line offsets, wall thickness, flange size, connection style, insulation thickness and rigid
+    segments, and nodes with their incoming and outgoing segments, preferred transition placement, elbows and
+    transitions. Available from Archicad 28.
 
     This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
     and page_token set to that token to get the next page of results.
@@ -569,8 +654,8 @@ register_tool_for_dispatch(
         "display settings (cut plane position, floor plan display option, show projection and on-story visibility, "
         "from Archicad 29), route polyline, segments with cross section data (shape, size, preference table and "
         "reference id), begin and end nodes, anchor, reference line offsets, wall thickness, flange size, connection "
-        "style and rigid segments, and nodes with their incoming and outgoing segments, preferred transition "
-        "placement, elbows and transitions. Available from Archicad 28."
+        "style, insulation thickness and rigid segments, and nodes with their incoming and outgoing segments, "
+        "preferred transition placement, elbows and transitions. Available from Archicad 28."
     ),
     params_model=GetMEPRoutingElementsParameters,
     pagination_field="routingElements",
@@ -626,6 +711,36 @@ register_tool_for_dispatch(
     ),
     params_model=None,
     pagination_field="systemGroups",
+)
+
+
+def get_mep_tool_defaults(conn_header: ConnHeader, params: GetMEPToolDefaultsParameters) -> dict:
+    """
+    Retrieves the current settings of the MEP tools per domain, without changing them: the routing tool (MEP system,
+    branch preference table, floor plan display settings from Archicad 29, and its segment, node, elbow (Archicad 27 and
+    from Archicad 29) and transition defaults), its rigid segment and branch defaults, the flexible segment tool, the
+    library part, insulation and port settings of the terminal, accessory, fitting and equipment tools, and from
+    Archicad 30 the electrical panel tool with its number of circuit defaults. Archicad 27 gives fewer settings, and
+    only the shape of the ports. Available from Archicad 27.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetMEPToolDefaults", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    get_mep_tool_defaults,
+    name="mep_get_mep_tool_defaults",
+    title="GetMEPToolDefaults",
+    description=(
+        "Retrieves the current settings of the MEP tools per domain, without changing them: the routing tool (MEP "
+        "system, branch preference table, floor plan display settings from Archicad 29, and its segment, node, elbow "
+        "(Archicad 27 and from Archicad 29) and transition defaults), its rigid segment and branch defaults, the "
+        "flexible segment tool, the library part, insulation and port settings of the terminal, accessory, fitting and "
+        "equipment tools, and from Archicad 30 the electrical panel tool with its number of circuit defaults. Archicad "
+        "27 gives fewer settings, and only the shape of the ports. Available from Archicad 27."
+    ),
+    params_model=GetMEPToolDefaultsParameters,
 )
 
 
@@ -719,6 +834,36 @@ register_tool_for_dispatch(
 )
 
 
+def modify_mep_elements(conn_header: ConnHeader, params: ModifyMEPElementsParameters) -> dict:
+    """
+    Modifies placed MEP elements: the anchor point, orientation and library part of terminals, accessories, equipment,
+    fittings and flexible segments, the control points, polyline (Piping, from Archicad 28), and width and height of
+    flexible segments. Only the given fields are changed, in one undo step with one execution result per element; an
+    item with a field that does not fit its element changes nothing. Archicad reports a 'libraryPartId' it does not find
+    only after the item's other changes were made, so that item's error says which changes stayed. Available from
+    Archicad 27.
+    """
+    return conn_header.core.post_tapir_command(
+        command="ModifyMEPElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    modify_mep_elements,
+    name="mep_modify_mep_elements",
+    title="ModifyMEPElements",
+    description=(
+        "Modifies placed MEP elements: the anchor point, orientation and library part of terminals, accessories, "
+        "equipment, fittings and flexible segments, the control points, polyline (Piping, from Archicad 28), and width "
+        "and height of flexible segments. Only the given fields are changed, in one undo step with one execution "
+        "result per element; an item with a field that does not fit its element changes nothing. Archicad reports a "
+        "'libraryPartId' it does not find only after the item's other changes were made, so that item's error says "
+        "which changes stayed. Available from Archicad 27."
+    ),
+    params_model=ModifyMEPElementsParameters,
+)
+
+
 def modify_mep_physical_systems(conn_header: ConnHeader, params: ModifyMEPPhysicalSystemsParameters) -> dict:
     """
     Modifies MEP physical systems: name, root element and the MEP system used as their category. Only the given fields
@@ -769,9 +914,9 @@ def modify_mep_preference_tables(conn_header: ConnHeader, params: ModifyMEPPrefe
     """
     Modifies the MEP preference tables of a domain, in the shape GetMEPPreferenceTables returns them: adds tables,
     changes their names, segmentation lengths (from Archicad 29) and row values and descriptions, deletes or empties
-    rows, adds rows to the rectangular duct and cable carrier tables, deletes tables, and deletes reference ids from the
-    reference set and angles from the angle set (from Archicad 29). Each table is changed in one undoable step.
-    Available from Archicad 28.
+    rows, adds rows to the rectangular duct and cable carrier tables, deletes tables, deletes reference ids from the
+    reference set, and adds and deletes angles of the angle set (from Archicad 29). Each table is changed in one
+    undoable step. Available from Archicad 28.
     """
     return conn_header.core.post_tapir_command(
         command="ModifyMEPPreferenceTables", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -785,9 +930,9 @@ register_tool_for_dispatch(
     description=(
         "Modifies the MEP preference tables of a domain, in the shape GetMEPPreferenceTables returns them: adds "
         "tables, changes their names, segmentation lengths (from Archicad 29) and row values and descriptions, deletes "
-        "or empties rows, adds rows to the rectangular duct and cable carrier tables, deletes tables, and deletes "
-        "reference ids from the reference set and angles from the angle set (from Archicad 29). Each table is changed "
-        "in one undoable step. Available from Archicad 28."
+        "or empties rows, adds rows to the rectangular duct and cable carrier tables, deletes tables, deletes "
+        "reference ids from the reference set, and adds and deletes angles of the angle set (from Archicad 29). Each "
+        "table is changed in one undoable step. Available from Archicad 28."
     ),
     params_model=ModifyMEPPreferenceTablesParameters,
 )
@@ -798,8 +943,8 @@ def modify_mep_routing_elements(conn_header: ConnHeader, params: ModifyMEPRoutin
     Modifies the given MEP routing elements: MEP system, branch preference table, floor plan display settings (cut plane
     position, floor plan display option, show projection and on-story visibility, from Archicad 29), cross section data
     (shape, size, preference table and reference id), anchor, reference line offsets, wall thickness, flange size and
-    connection style of all segments, preferred transition placement of all nodes, and node positions. Available from
-    Archicad 28.
+    connection style of all segments, preferred transition placement of all nodes, insulation thickness of the whole
+    route (segments, elbows and transitions), and node positions. Available from Archicad 28.
     """
     return conn_header.core.post_tapir_command(
         command="ModifyMEPRoutingElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -814,8 +959,9 @@ register_tool_for_dispatch(
         "Modifies the given MEP routing elements: MEP system, branch preference table, floor plan display settings "
         "(cut plane position, floor plan display option, show projection and on-story visibility, from Archicad 29), "
         "cross section data (shape, size, preference table and reference id), anchor, reference line offsets, wall "
-        "thickness, flange size and connection style of all segments, preferred transition placement of all nodes, and "
-        "node positions. Available from Archicad 28."
+        "thickness, flange size and connection style of all segments, preferred transition placement of all nodes, "
+        "insulation thickness of the whole route (segments, elbows and transitions), and node positions. Available "
+        "from Archicad 28."
     ),
     params_model=ModifyMEPRoutingElementsParameters,
 )
@@ -842,7 +988,9 @@ def set_mep_routing_parameters(conn_header: ConnHeader, params: SetMEPRoutingPar
     Sets the routing parameters of placed MEP elements: the routing segment parameters (cross section and preference
     table) and, from Archicad 29, the routing node parameters (elbow radius factor and preference table, transition
     preference table) of routing elements, and the elbow and transition parameters of routing nodes (from Archicad 29).
-    Only the given keys are changed, in one undo step with one execution result per element. Available from Archicad 28.
+    Only the given keys are changed, with one execution result per element. A changed preference table is also set on
+    each of the route's segments and nodes and injected into them, because Archicad 29 can otherwise keep the old one;
+    the item fails if they still report the old table. Available from Archicad 28.
     """
     return conn_header.core.post_tapir_command(
         command="SetMEPRoutingParameters", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -857,8 +1005,36 @@ register_tool_for_dispatch(
         "Sets the routing parameters of placed MEP elements: the routing segment parameters (cross section and "
         "preference table) and, from Archicad 29, the routing node parameters (elbow radius factor and preference "
         "table, transition preference table) of routing elements, and the elbow and transition parameters of routing "
-        "nodes (from Archicad 29). Only the given keys are changed, in one undo step with one execution result per "
-        "element. Available from Archicad 28."
+        "nodes (from Archicad 29). Only the given keys are changed, with one execution result per element. A changed "
+        "preference table is also set on each of the route's segments and nodes and injected into them, because "
+        "Archicad 29 can otherwise keep the old one; the item fails if they still report the old table. Available from "
+        "Archicad 28."
     ),
     params_model=SetMEPRoutingParametersParameters,
+)
+
+
+def transfer_mep_settings(conn_header: ConnHeader, params: TransferMEPSettingsParameters) -> dict:
+    """
+    Picks up the settings of an MEP element and injects them into other MEP elements of the same type and domain, like
+    Archicad's pick up and inject parameters. Works for routing elements, terminals, accessories, equipment, fittings,
+    flexible segments, branches, take-offs and (from Archicad 30) electrical panels and devices. Each target is changed
+    in its own undoable step. Available from Archicad 28.
+    """
+    return conn_header.core.post_tapir_command(
+        command="TransferMEPSettings", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    transfer_mep_settings,
+    name="mep_transfer_mep_settings",
+    title="TransferMEPSettings",
+    description=(
+        "Picks up the settings of an MEP element and injects them into other MEP elements of the same type and domain, "
+        "like Archicad's pick up and inject parameters. Works for routing elements, terminals, accessories, equipment, "
+        "fittings, flexible segments, branches, take-offs and (from Archicad 30) electrical panels and devices. Each "
+        "target is changed in its own undoable step. Available from Archicad 28."
+    ),
+    params_model=TransferMEPSettingsParameters,
 )

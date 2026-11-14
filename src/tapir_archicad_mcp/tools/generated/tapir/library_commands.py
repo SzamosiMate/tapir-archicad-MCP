@@ -3,22 +3,48 @@ from multiconn_archicad import ConnHeader
 from multiconn_archicad.models.tapir.commands import (
     AddFilesToEmbeddedLibraryParameters,
     AddLibrariesParameters,
+    CompareLibraryPartUnIdsParameters,
     CopyFilesIntoEmbeddedLibraryParameters,
+    CopyLibraryPartsParameters,
     CreateFolderInEmbeddedLibraryParameters,
+    CreateLibraryPartFromElementsParameters,
     CreateLibraryPartParameters,
     CreateLibraryPartsParameters,
     DeleteEmbeddedLibraryItemsParameters,
+    FindLibraryPartsParameters,
     GetAvailableLibraryPartsParameters,
+    GetGDLParametersOfLibraryPartsParameters,
+    GetLibrariesOfLibPartsParameters,
+    GetLibraryPart2DPrimitivesParameters,
     GetLibraryPartCustomSectionParameters,
+    GetLibraryPartDetailsParameters,
+    GetLibraryPartFileInfoParameters,
+    GetLibraryPartIdentitiesParameters,
+    GetLibraryPartMetadataParameters,
     GetLibraryPartOriginalLocationsParameters,
+    GetLibraryPartParameterValuesParameters,
     GetLibraryPartPicturesParameters,
+    GetLibraryPartScriptsParameters,
+    GetLibraryPartSectionParameters,
+    GetLibraryPartSectionsParameters,
+    GetLibraryPartTypeDetailsParameters,
+    GetMissingLibPartNamesParameters,
+    GetUnusedLibraryPartsParameters,
+    InterpretGDLScript3DParameters,
+    IsLibraryPartSubtypeOfParameters,
     IsUsableGDLStringParameters,
+    ModifyLibraryListParameters,
     OpenLibraryPartInEditorParameters,
+    SearchLibraryPartsParameters,
+    SetGDLDateParameters,
     SetLibrariesParameters,
     SetLibraryPartCustomSectionParameters,
     SetLibraryPartMetadataParameters,
+    SetLibraryPartParametersParameters,
+    SetLibraryPartPictureImagesParameters,
     SetLibraryPartPicturesParameters,
     SetLibraryPartScriptsParameters,
+    UpdateLibraryPartSectionsParameters,
 )
 
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
@@ -78,6 +104,28 @@ register_tool_for_dispatch(
 )
 
 
+def compare_library_part_un_ids(conn_header: ConnHeader, params: CompareLibraryPartUnIdsParameters) -> dict:
+    """
+    Compares two library part unique IDs with Archicad's own comparison and tells whether their main and revision GUIDs
+    are the same.
+    """
+    return conn_header.core.post_tapir_command(
+        command="CompareLibraryPartUnIds", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    compare_library_part_un_ids,
+    name="library_compare_library_part_un_ids",
+    title="CompareLibraryPartUnIds",
+    description=(
+        "Compares two library part unique IDs with Archicad's own comparison and tells whether their main and revision "
+        "GUIDs are the same."
+    ),
+    params_model=CompareLibraryPartUnIdsParameters,
+)
+
+
 def copy_files_into_embedded_library(conn_header: ConnHeader, params: CopyFilesIntoEmbeddedLibraryParameters) -> dict:
     """
     Copies the given files, keeping their names, into a folder of the embedded library with one library operation. The
@@ -100,6 +148,32 @@ register_tool_for_dispatch(
         "in that folder is replaced."
     ),
     params_model=CopyFilesIntoEmbeddedLibraryParameters,
+)
+
+
+def copy_library_parts(conn_header: ConnHeader, params: CopyLibraryPartsParameters) -> dict:
+    """
+    Copies loaded library parts, given by name or by an element placed from them, under a new file name into a folder,
+    by default the embedded library. The copy gets a new unique ID unless the main GUID is kept. An existing file is
+    never overwritten. The libraries are reloaded once afterwards, so the copies can be found by name. Available from
+    Archicad 28.
+    """
+    return conn_header.core.post_tapir_command(
+        command="CopyLibraryParts", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    copy_library_parts,
+    name="library_copy_library_parts",
+    title="CopyLibraryParts",
+    description=(
+        "Copies loaded library parts, given by name or by an element placed from them, under a new file name into a "
+        "folder, by default the embedded library. The copy gets a new unique ID unless the main GUID is kept. An "
+        "existing file is never overwritten. The libraries are reloaded once afterwards, so the copies can be found by "
+        "name. Available from Archicad 28."
+    ),
+    params_model=CopyLibraryPartsParameters,
 )
 
 
@@ -145,6 +219,35 @@ register_tool_for_dispatch(
         "whether it is loaded with its index and names. Available from Archicad 28."
     ),
     params_model=CreateLibraryPartParameters,
+)
+
+
+def create_library_part_from_elements(conn_header: ConnHeader, params: CreateLibraryPartFromElementsParameters) -> dict:
+    """
+    Creates a library part in the embedded library (or in a given local library folder, which is added to the loaded
+    libraries when needed) whose 2D symbol is a copy of the given 2D drawing elements (lines, polylines, arcs, circles,
+    splines, fills, texts and hotspots), under the given parent subtype, with optional master, 2D, 3D and parameter
+    scripts, comment and keywords. A and B are taken from the extent of the symbol. The elements themselves are not
+    changed.
+    """
+    return conn_header.core.post_tapir_command(
+        command="CreateLibraryPartFromElements",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    create_library_part_from_elements,
+    name="library_create_library_part_from_elements",
+    title="CreateLibraryPartFromElements",
+    description=(
+        "Creates a library part in the embedded library (or in a given local library folder, which is added to the "
+        "loaded libraries when needed) whose 2D symbol is a copy of the given 2D drawing elements (lines, polylines, "
+        "arcs, circles, splines, fills, texts and hotspots), under the given parent subtype, with optional master, 2D, "
+        "3D and parameter scripts, comment and keywords. A and B are taken from the extent of the symbol. The elements "
+        "themselves are not changed."
+    ),
+    params_model=CreateLibraryPartFromElementsParameters,
 )
 
 
@@ -197,6 +300,33 @@ register_tool_for_dispatch(
 )
 
 
+def find_library_parts(conn_header: ConnHeader, params: FindLibraryPartsParameters) -> dict:
+    """
+    Finds loaded library parts with the Library Manager: all of them, GDL objects, images or text files, optionally only
+    those whose name contains a text. Returns the name, path and index of each. Available from Archicad 28.
+
+    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
+    and page_token set to that token to get the next page of results.
+    """
+    return conn_header.core.post_tapir_command(
+        command="FindLibraryParts", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    find_library_parts,
+    name="library_find_library_parts",
+    title="FindLibraryParts",
+    description=(
+        "Finds loaded library parts with the Library Manager: all of them, GDL objects, images or text files, "
+        "optionally only those whose name contains a text. Returns the name, path and index of each. Available from "
+        "Archicad 28."
+    ),
+    params_model=FindLibraryPartsParameters,
+    pagination_field="libraryParts",
+)
+
+
 def get_available_library_parts(conn_header: ConnHeader, params: GetAvailableLibraryPartsParameters) -> dict:
     """
     Lists library parts currently available to the project. Filter by typeId (e.g. 'Door', 'Window', 'Object', 'Lamp').
@@ -222,6 +352,84 @@ register_tool_for_dispatch(
 )
 
 
+def get_gdl_date(conn_header: ConnHeader) -> dict:
+    """Gets the date GDL scripts see: year, month, day, hour, minute and second."""
+    return conn_header.core.post_tapir_command(command="GetGDLDate", parameters={})
+
+
+register_tool_for_dispatch(
+    get_gdl_date,
+    name="library_get_gdl_date",
+    title="GetGDLDate",
+    description="Gets the date GDL scripts see: year, month, day, hour, minute and second.",
+    params_model=None,
+)
+
+
+def get_gdl_parameters_of_library_parts(
+    conn_header: ConnHeader, params: GetGDLParametersOfLibraryPartsParameters
+) -> dict:
+    """
+    Gets the default GDL parameters (name, display name, type, array dimensions, value, flags) of the given library
+    parts by name, read from the library part without placing it or changing any defaults. The output is in the format
+    of GetGDLParametersOfElements, without isLocked and possibleValues, which need a placed element. To read a part by
+    its file name, as SetLibraryPartParameters writes it, use GetLibraryPartParameterValues.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetGDLParametersOfLibraryParts",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    get_gdl_parameters_of_library_parts,
+    name="library_get_gdl_parameters_of_library_parts",
+    title="GetGDLParametersOfLibraryParts",
+    description=(
+        "Gets the default GDL parameters (name, display name, type, array dimensions, value, flags) of the given "
+        "library parts by name, read from the library part without placing it or changing any defaults. The output is "
+        "in the format of GetGDLParametersOfElements, without isLocked and possibleValues, which need a placed "
+        "element. To read a part by its file name, as SetLibraryPartParameters writes it, use "
+        "GetLibraryPartParameterValues."
+    ),
+    params_model=GetGDLParametersOfLibraryPartsParameters,
+)
+
+
+def get_gdl_user_globals(conn_header: ConnHeader) -> dict:
+    """
+    Returns the current GDL global variables the GDL interpreter gets, with their names, types and values. Available
+    from Archicad 28.
+    """
+    return conn_header.core.post_tapir_command(command="GetGDLUserGlobals", parameters={})
+
+
+register_tool_for_dispatch(
+    get_gdl_user_globals,
+    name="library_get_gdl_user_globals",
+    title="GetGDLUserGlobals",
+    description=(
+        "Returns the current GDL global variables the GDL interpreter gets, with their names, types and values. "
+        "Available from Archicad 28."
+    ),
+    params_model=None,
+)
+
+
+def get_last_valid_embedded_library_part_name(conn_header: ConnHeader) -> dict:
+    """Gets the name and file path of the last valid library part of the embedded library."""
+    return conn_header.core.post_tapir_command(command="GetLastValidEmbeddedLibraryPartName", parameters={})
+
+
+register_tool_for_dispatch(
+    get_last_valid_embedded_library_part_name,
+    name="library_get_last_valid_embedded_library_part_name",
+    title="GetLastValidEmbeddedLibraryPartName",
+    description="Gets the name and file path of the last valid library part of the embedded library.",
+    params_model=None,
+)
+
+
 def get_libraries(conn_header: ConnHeader) -> dict:
     """
     Gets the list of loaded libraries. From Archicad 28 a library package also gets its package information (ID,
@@ -239,6 +447,55 @@ register_tool_for_dispatch(
         "versions, minimum Archicad version and dependencies)."
     ),
     params_model=None,
+)
+
+
+def get_libraries_of_lib_parts(conn_header: ConnHeader, params: GetLibrariesOfLibPartsParameters) -> dict:
+    """
+    Gets the library of each given library part (by file name or guid): display name, location, embedded/built-
+    in/package/local/missing flags and the Library Manager tree path. Available from Archicad 29.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetLibrariesOfLibParts", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    get_libraries_of_lib_parts,
+    name="library_get_libraries_of_lib_parts",
+    title="GetLibrariesOfLibParts",
+    description=(
+        "Gets the library of each given library part (by file name or guid): display name, location, "
+        "embedded/built-in/package/local/missing flags and the Library Manager tree path. Available from Archicad 29."
+    ),
+    params_model=GetLibrariesOfLibPartsParameters,
+)
+
+
+def get_library_part2_d_primitives(conn_header: ConnHeader, params: GetLibraryPart2DPrimitivesParameters) -> dict:
+    """
+    Gets the lines, arcs and polygons (with their holes, and whether they are fills) of the 2D symbol of a loaded
+    library part, drawn with its default parameters or with the parameters of a placed instance.
+
+    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
+    and page_token set to that token to get the next page of results.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetLibraryPart2DPrimitives",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    get_library_part2_d_primitives,
+    name="library_get_library_part2_d_primitives",
+    title="GetLibraryPart2DPrimitives",
+    description=(
+        "Gets the lines, arcs and polygons (with their holes, and whether they are fills) of the 2D symbol of a loaded "
+        "library part, drawn with its default parameters or with the parameters of a placed instance."
+    ),
+    params_model=GetLibraryPart2DPrimitivesParameters,
+    pagination_field="primitives",
 )
 
 
@@ -262,6 +519,102 @@ register_tool_for_dispatch(
         "data version and its content as base64. Available from Archicad 28."
     ),
     params_model=GetLibraryPartCustomSectionParameters,
+)
+
+
+def get_library_part_details(conn_header: ConnHeader, params: GetLibraryPartDetailsParameters) -> dict:
+    """
+    Gets the details of loaded library parts, by name or index: path, library tree path, containing library, and for GDL
+    objects the GUID, subtype, license, UI default flag, which scripts and pictures they have, and optionally the
+    interface and migration scripts. Can also tell whether each one is in the subtype of another library part. Available
+    from Archicad 28.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetLibraryPartDetails", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    get_library_part_details,
+    name="library_get_library_part_details",
+    title="GetLibraryPartDetails",
+    description=(
+        "Gets the details of loaded library parts, by name or index: path, library tree path, containing library, and "
+        "for GDL objects the GUID, subtype, license, UI default flag, which scripts and pictures they have, and "
+        "optionally the interface and migration scripts. Can also tell whether each one is in the subtype of another "
+        "library part. Available from Archicad 28."
+    ),
+    params_model=GetLibraryPartDetailsParameters,
+)
+
+
+def get_library_part_file_info(conn_header: ConnHeader, params: GetLibraryPartFileInfoParameters) -> dict:
+    """
+    Reads library part files (.gsm) without loading them into the libraries of the project: the unique ID of the part,
+    the unique ID of its subtype and its master, parameter, 2D, 3D and properties scripts. Password protected parts need
+    their password. Available from Archicad 28.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetLibraryPartFileInfo", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    get_library_part_file_info,
+    name="library_get_library_part_file_info",
+    title="GetLibraryPartFileInfo",
+    description=(
+        "Reads library part files (.gsm) without loading them into the libraries of the project: the unique ID of the "
+        "part, the unique ID of its subtype and its master, parameter, 2D, 3D and properties scripts. Password "
+        "protected parts need their password. Available from Archicad 28."
+    ),
+    params_model=GetLibraryPartFileInfoParameters,
+)
+
+
+def get_library_part_identities(conn_header: ConnHeader, params: GetLibraryPartIdentitiesParameters) -> dict:
+    """
+    Gets the unique ID (main and revision GUID), the reference GUID and the Teamwork lock status of library parts given
+    by index or file path, and whether they are in a server library.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetLibraryPartIdentities", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    get_library_part_identities,
+    name="library_get_library_part_identities",
+    title="GetLibraryPartIdentities",
+    description=(
+        "Gets the unique ID (main and revision GUID), the reference GUID and the Teamwork lock status of library parts "
+        "given by index or file path, and whether they are in a server library."
+    ),
+    params_model=GetLibraryPartIdentitiesParameters,
+)
+
+
+def get_library_part_metadata(conn_header: ConnHeader, params: GetLibraryPartMetadataParameters) -> dict:
+    """
+    Returns the description, keywords, author and placeable, password protected and hierarchical pages flags of loaded
+    library parts, given by file name. Use it to search library parts by description or keywords and to tell placeable
+    parts from macros. Available from Archicad 28.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetLibraryPartMetadata", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    get_library_part_metadata,
+    name="library_get_library_part_metadata",
+    title="GetLibraryPartMetadata",
+    description=(
+        "Returns the description, keywords, author and placeable, password protected and hierarchical pages flags of "
+        "loaded library parts, given by file name. Use it to search library parts by description or keywords and to "
+        "tell placeable parts from macros. Available from Archicad 28."
+    ),
+    params_model=GetLibraryPartMetadataParameters,
 )
 
 
@@ -291,6 +644,35 @@ register_tool_for_dispatch(
 )
 
 
+def get_library_part_parameter_values(conn_header: ConnHeader, params: GetLibraryPartParameterValuesParameters) -> dict:
+    """
+    Returns the parameters of loaded library parts, given by their file name as GetAvailableLibraryParts returns it,
+    with their default values and descriptions, in the format of GetGDLParametersOfElements: the read counterpart of
+    SetLibraryPartParameters. Unlike GetGDLParametersOfLibraryParts, which finds a part by its name and also returns the
+    index, flags and value descriptions of each parameter, it reads through the Library Manager. Available from Archicad
+    28.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetLibraryPartParameterValues",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    get_library_part_parameter_values,
+    name="library_get_library_part_parameter_values",
+    title="GetLibraryPartParameterValues",
+    description=(
+        "Returns the parameters of loaded library parts, given by their file name as GetAvailableLibraryParts returns "
+        "it, with their default values and descriptions, in the format of GetGDLParametersOfElements: the read "
+        "counterpart of SetLibraryPartParameters. Unlike GetGDLParametersOfLibraryParts, which finds a part by its "
+        "name and also returns the index, flags and value descriptions of each parameter, it reads through the Library "
+        "Manager. Available from Archicad 28."
+    ),
+    params_model=GetLibraryPartParameterValuesParameters,
+)
+
+
 def get_library_part_pictures(conn_header: ConnHeader, params: GetLibraryPartPicturesParameters) -> dict:
     """
     Gets the preview picture and the GDL pictures of a loaded library part as base64 encoded PNGs, and from Archicad 29
@@ -315,6 +697,208 @@ register_tool_for_dispatch(
 )
 
 
+def get_library_part_scripts(conn_header: ConnHeader, params: GetLibraryPartScriptsParameters) -> dict:
+    """
+    Gets the master, parameter, 2D, 3D and properties scripts of loaded library parts, given by name or by an element
+    placed from them, with the unique ID of each part. A script section the part does not have is reported as not
+    present. Password protected parts need their password. Available from Archicad 28.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetLibraryPartScripts", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    get_library_part_scripts,
+    name="library_get_library_part_scripts",
+    title="GetLibraryPartScripts",
+    description=(
+        "Gets the master, parameter, 2D, 3D and properties scripts of loaded library parts, given by name or by an "
+        "element placed from them, with the unique ID of each part. A script section the part does not have is "
+        "reported as not present. Password protected parts need their password. Available from Archicad 28."
+    ),
+    params_model=GetLibraryPartScriptsParameters,
+)
+
+
+def get_library_part_section(conn_header: ConnHeader, params: GetLibraryPartSectionParameters) -> dict:
+    """
+    Reads the text of a text section (a script or the comment) of a library part given by index, without opening it in
+    the GDL editor. Takes the password of a protected library part.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetLibraryPartSection", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    get_library_part_section,
+    name="library_get_library_part_section",
+    title="GetLibraryPartSection",
+    description=(
+        "Reads the text of a text section (a script or the comment) of a library part given by index, without opening "
+        "it in the GDL editor. Takes the password of a protected library part."
+    ),
+    params_model=GetLibraryPartSectionParameters,
+)
+
+
+def get_library_part_sections(conn_header: ConnHeader, params: GetLibraryPartSectionsParameters) -> dict:
+    """
+    Lists the sections of library parts given by index: their four-character type code, sub-identifier, size and whether
+    they are text (scripts, comments) or binary (previews).
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetLibraryPartSections", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    get_library_part_sections,
+    name="library_get_library_part_sections",
+    title="GetLibraryPartSections",
+    description=(
+        "Lists the sections of library parts given by index: their four-character type code, sub-identifier, size and "
+        "whether they are text (scripts, comments) or binary (previews)."
+    ),
+    params_model=GetLibraryPartSectionsParameters,
+)
+
+
+def get_library_part_type_details(conn_header: ConnHeader, params: GetLibraryPartTypeDetailsParameters) -> dict:
+    """
+    Returns the type details of the given library parts (ACAPI_LibraryPart_GetDetails): full unique ID and its direct
+    parent's, type, the detail flags of objects, lamps, labels and zones, the frame and orientation settings of doors
+    and windows, and the element type and variation of the tool that places the library part. For their path, library,
+    GUID, license and scripts see GetLibraryPartDetails.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetLibraryPartTypeDetails", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    get_library_part_type_details,
+    name="library_get_library_part_type_details",
+    title="GetLibraryPartTypeDetails",
+    description=(
+        "Returns the type details of the given library parts (ACAPI_LibraryPart_GetDetails): full unique ID and its "
+        "direct parent's, type, the detail flags of objects, lamps, labels and zones, the frame and orientation "
+        "settings of doors and windows, and the element type and variation of the tool that places the library part. "
+        "For their path, library, GUID, license and scripts see GetLibraryPartDetails."
+    ),
+    params_model=GetLibraryPartTypeDetailsParameters,
+)
+
+
+def get_missing_lib_part_names(conn_header: ConnHeader, params: GetMissingLibPartNamesParameters) -> dict:
+    """
+    Gets the library part name of the given placed Object, Lamp, Window or Door elements, even if the library containing
+    the part is not loaded. Use it to find the parts of elements that are shown as dots because their library part is
+    missing.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetMissingLibPartNames", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    get_missing_lib_part_names,
+    name="library_get_missing_lib_part_names",
+    title="GetMissingLibPartNames",
+    description=(
+        "Gets the library part name of the given placed Object, Lamp, Window or Door elements, even if the library "
+        "containing the part is not loaded. Use it to find the parts of elements that are shown as dots because their "
+        "library part is missing."
+    ),
+    params_model=GetMissingLibPartNamesParameters,
+)
+
+
+def get_unused_library_parts(conn_header: ConnHeader, params: GetUnusedLibraryPartsParameters) -> dict:
+    """
+    Lists the loaded library parts that no element of the project is placed from. Read only. The Archicad API does not
+    tell which library parts are used, so every element of the floor plan and of every view and layout is checked:
+    objects, lamps, doors, windows, skylights, zone stamps, symbol labels, drawing titles, curtain wall parts, and the
+    markers of doors, windows, skylights, sections, elevations, details and worksheets. A library part used only in
+    another way (called as a macro, linked as a property object, as an interior elevation marker, in stairs and
+    railings, in the tool defaults or in Favorites) is listed as unused. Library parts that cannot be placed (e.g.
+    macros) are only listed with includeNotPlaceable.
+
+    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
+    and page_token set to that token to get the next page of results.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetUnusedLibraryParts", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    get_unused_library_parts,
+    name="library_get_unused_library_parts",
+    title="GetUnusedLibraryParts",
+    description=(
+        "Lists the loaded library parts that no element of the project is placed from. Read only. The Archicad API "
+        "does not tell which library parts are used, so every element of the floor plan and of every view and layout "
+        "is checked: objects, lamps, doors, windows, skylights, zone stamps, symbol labels, drawing titles, curtain "
+        "wall parts, and the markers of doors, windows, skylights, sections, elevations, details and worksheets. A "
+        "library part used only in another way (called as a macro, linked as a property object, as an interior "
+        "elevation marker, in stairs and railings, in the tool defaults or in Favorites) is listed as unused. Library "
+        "parts that cannot be placed (e.g. macros) are only listed with includeNotPlaceable."
+    ),
+    params_model=GetUnusedLibraryPartsParameters,
+    pagination_field="unusedLibraryParts",
+)
+
+
+def interpret_gdl_script3_d(conn_header: ConnHeader, params: InterpretGDLScript3DParameters) -> dict:
+    """
+    Runs a GDL 3D script, given as text or as the master and 3D scripts of a loaded library part with its default
+    parameters, with the settings of the GDL editor, and returns whether it ran without a GDL error, how many 3D model
+    elements it generated and their bounding box. The API returns no GDL error message or line number.
+    """
+    return conn_header.core.post_tapir_command(
+        command="InterpretGDLScript3D", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    interpret_gdl_script3_d,
+    name="library_interpret_gdl_script3_d",
+    title="InterpretGDLScript3D",
+    description=(
+        "Runs a GDL 3D script, given as text or as the master and 3D scripts of a loaded library part with its default "
+        "parameters, with the settings of the GDL editor, and returns whether it ran without a GDL error, how many 3D "
+        "model elements it generated and their bounding box. The API returns no GDL error message or line number."
+    ),
+    params_model=InterpretGDLScript3DParameters,
+)
+
+
+def is_library_part_subtype_of(conn_header: ConnHeader, params: IsLibraryPartSubtypeOfParameters) -> dict:
+    """
+    Checks for each of the given library parts whether the given ancestor is anywhere up its subtype hierarchy (e.g.
+    whether a part is a kind of furniture), independent of its name. A library part is not a subtype of itself. With
+    matchAncestorByMainId any revision of the ancestor matches.
+    """
+    return conn_header.core.post_tapir_command(
+        command="IsLibraryPartSubtypeOf", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    is_library_part_subtype_of,
+    name="library_is_library_part_subtype_of",
+    title="IsLibraryPartSubtypeOf",
+    description=(
+        "Checks for each of the given library parts whether the given ancestor is anywhere up its subtype hierarchy "
+        "(e.g. whether a part is a kind of furniture), independent of its name. A library part is not a subtype of "
+        "itself. With matchAncestorByMainId any revision of the ancestor matches."
+    ),
+    params_model=IsLibraryPartSubtypeOfParameters,
+)
+
+
 def is_usable_gdl_string(conn_header: ConnHeader, params: IsUsableGDLStringParameters) -> dict:
     """
     Checks whether each of the given strings is usable in GDL, e.g. before writing it into a GDL parameter or script.
@@ -334,6 +918,28 @@ register_tool_for_dispatch(
         "script. Returns one boolean for each string."
     ),
     params_model=IsUsableGDLStringParameters,
+)
+
+
+def modify_library_list(conn_header: ConnHeader, params: ModifyLibraryListParameters) -> dict:
+    """
+    Adds libraries by path and removes loaded libraries by name or path, in one change of the library list. Returns the
+    result of each addition and removal. Available from Archicad 28.
+    """
+    return conn_header.core.post_tapir_command(
+        command="ModifyLibraryList", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    modify_library_list,
+    name="library_modify_library_list",
+    title="ModifyLibraryList",
+    description=(
+        "Adds libraries by path and removes loaded libraries by name or path, in one change of the library list. "
+        "Returns the result of each addition and removal. Available from Archicad 28."
+    ),
+    params_model=ModifyLibraryListParameters,
 )
 
 
@@ -384,6 +990,50 @@ register_tool_for_dispatch(
     title="ResetLibraries",
     description="Resets the loaded libraries with the Archicad API's library reset.",
     params_model=None,
+)
+
+
+def search_library_parts(conn_header: ConnHeader, params: SearchLibraryPartsParameters) -> dict:
+    """
+    Finds the loaded library parts derived from an ancestor library part (by its unique ID) whose name matches a pattern
+    with * wildcards. Archicad returns at most 50 of them.
+    """
+    return conn_header.core.post_tapir_command(
+        command="SearchLibraryParts", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    search_library_parts,
+    name="library_search_library_parts",
+    title="SearchLibraryParts",
+    description=(
+        "Finds the loaded library parts derived from an ancestor library part (by its unique ID) whose name matches a "
+        "pattern with * wildcards. Archicad returns at most 50 of them."
+    ),
+    params_model=SearchLibraryPartsParameters,
+)
+
+
+def set_gdl_date(conn_header: ConnHeader, params: SetGDLDateParameters) -> dict:
+    """
+    Sets the date GDL scripts see: year, month, day, hour, minute and second, as GetGDLDate returns them. Useful to test
+    date-dependent library parts; set the value read with GetGDLDate back to restore it.
+    """
+    return conn_header.core.post_tapir_command(
+        command="SetGDLDate", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    set_gdl_date,
+    name="library_set_gdl_date",
+    title="SetGDLDate",
+    description=(
+        "Sets the date GDL scripts see: year, month, day, hour, minute and second, as GetGDLDate returns them. Useful "
+        "to test date-dependent library parts; set the value read with GetGDLDate back to restore it."
+    ),
+    params_model=SetGDLDateParameters,
 )
 
 
@@ -458,6 +1108,58 @@ register_tool_for_dispatch(
 )
 
 
+def set_library_part_parameters(conn_header: ConnHeader, params: SetLibraryPartParametersParameters) -> dict:
+    """
+    Sets the parameter values, and optionally the parameter descriptions, of loaded library parts, in the format of
+    SetGDLParametersOfElements. Only the given parameters are changed; with merge, the changed list is merged into the
+    parameters of the part instead of replacing them. A library part that is not editable, or with an invalid value
+    given, is left unchanged. Available from Archicad 28.
+    """
+    return conn_header.core.post_tapir_command(
+        command="SetLibraryPartParameters", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    set_library_part_parameters,
+    name="library_set_library_part_parameters",
+    title="SetLibraryPartParameters",
+    description=(
+        "Sets the parameter values, and optionally the parameter descriptions, of loaded library parts, in the format "
+        "of SetGDLParametersOfElements. Only the given parameters are changed; with merge, the changed list is merged "
+        "into the parameters of the part instead of replacing them. A library part that is not editable, or with an "
+        "invalid value given, is left unchanged. Available from Archicad 28."
+    ),
+    params_model=SetLibraryPartParametersParameters,
+)
+
+
+def set_library_part_picture_images(conn_header: ConnHeader, params: SetLibraryPartPictureImagesParameters) -> dict:
+    """
+    Sets the preview picture and the GDL pictures of a loaded library part from base64 encoded PNGs, and from Archicad
+    29 also their dark user interface variants. All pictures are set in one step; an invalid picture changes nothing. A
+    library part that is not editable is refused and left unchanged. Available from Archicad 28.
+    """
+    return conn_header.core.post_tapir_command(
+        command="SetLibraryPartPictureImages",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    set_library_part_picture_images,
+    name="library_set_library_part_picture_images",
+    title="SetLibraryPartPictureImages",
+    description=(
+        "Sets the preview picture and the GDL pictures of a loaded library part from base64 encoded PNGs, and from "
+        "Archicad 29 also their dark user interface variants. All pictures are set in one step; an invalid picture "
+        "changes nothing. A library part that is not editable is refused and left unchanged. Available from Archicad "
+        "28."
+    ),
+    params_model=SetLibraryPartPictureImagesParameters,
+)
+
+
 def set_library_part_pictures(conn_header: ConnHeader, params: SetLibraryPartPicturesParameters) -> dict:
     """
     Deletes the preview picture, the GDL pictures (and from Archicad 29 their dark variants) or the 2D symbol of a
@@ -505,4 +1207,27 @@ register_tool_for_dispatch(
         "read-only library) is refused and left unchanged. Available from Archicad 28."
     ),
     params_model=SetLibraryPartScriptsParameters,
+)
+
+
+def update_library_part_sections(conn_header: ConnHeader, params: UpdateLibraryPartSectionsParameters) -> dict:
+    """
+    Replaces the text of existing sections (scripts, comment, keywords, copyright) of a loaded library part, found by
+    its name. Each section is read back after the update, and the output has one execution result per section.
+    """
+    return conn_header.core.post_tapir_command(
+        command="UpdateLibraryPartSections", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    update_library_part_sections,
+    name="library_update_library_part_sections",
+    title="UpdateLibraryPartSections",
+    description=(
+        "Replaces the text of existing sections (scripts, comment, keywords, copyright) of a loaded library part, "
+        "found by its name. Each section is read back after the update, and the output has one execution result per "
+        "section."
+    ),
+    params_model=UpdateLibraryPartSectionsParameters,
 )

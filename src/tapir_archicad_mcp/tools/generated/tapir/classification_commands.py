@@ -56,7 +56,10 @@ register_tool_for_dispatch(
 
 
 def delete_classification_items(conn_header: ConnHeader, params: DeleteClassificationItemsParameters) -> dict:
-    """Deletes the given Classification Items."""
+    """
+    Deletes the given Classification Items. With dryRun true nothing is deleted and no undo step is created: the
+    response has dryRun set to true, and each classification item that exists gets wouldDelete.
+    """
     return conn_header.core.post_tapir_command(
         command="DeleteClassificationItems", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
@@ -66,13 +69,19 @@ register_tool_for_dispatch(
     delete_classification_items,
     name="classifications_delete_classification_items",
     title="DeleteClassificationItems",
-    description="Deletes the given Classification Items.",
+    description=(
+        "Deletes the given Classification Items. With dryRun true nothing is deleted and no undo step is created: the "
+        "response has dryRun set to true, and each classification item that exists gets wouldDelete."
+    ),
     params_model=DeleteClassificationItemsParameters,
 )
 
 
 def delete_classification_systems(conn_header: ConnHeader, params: DeleteClassificationSystemsParameters) -> dict:
-    """Deletes the given Classification Systems."""
+    """
+    Deletes the given Classification Systems. With dryRun true nothing is deleted and no undo step is created: the
+    response has dryRun set to true, and each classification system that exists gets wouldDelete.
+    """
     return conn_header.core.post_tapir_command(
         command="DeleteClassificationSystems",
         parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
@@ -83,7 +92,10 @@ register_tool_for_dispatch(
     delete_classification_systems,
     name="classifications_delete_classification_systems",
     title="DeleteClassificationSystems",
-    description="Deletes the given Classification Systems.",
+    description=(
+        "Deletes the given Classification Systems. With dryRun true nothing is deleted and no undo step is created: "
+        "the response has dryRun set to true, and each classification system that exists gets wouldDelete."
+    ),
     params_model=DeleteClassificationSystemsParameters,
 )
 
@@ -317,7 +329,10 @@ register_tool_for_dispatch(
 def set_classifications_of_elements(conn_header: ConnHeader, params: SetClassificationsOfElementsParameters) -> dict:
     """
     Sets the classifications of elements. In order to set the classification of an element to unclassified, omit the
-    classificationItemId field. It works for subelements of hierarchal elements also.
+    classificationItemId field. It works for subelements of hierarchal elements also. With dryRun true nothing is
+    changed and no undo step is created: the response has dryRun set to true, and each item that passes the checks made
+    before writing gets wouldChange, with the element's classification in the system now (oldValue) and the one a real
+    run would set (newValue).
     """
     return conn_header.core.post_tapir_command(
         command="SetClassificationsOfElements",
@@ -331,7 +346,10 @@ register_tool_for_dispatch(
     title="SetClassificationsOfElements",
     description=(
         "Sets the classifications of elements. In order to set the classification of an element to unclassified, omit "
-        "the classificationItemId field. It works for subelements of hierarchal elements also."
+        "the classificationItemId field. It works for subelements of hierarchal elements also. With dryRun true "
+        "nothing is changed and no undo step is created: the response has dryRun set to true, and each item that "
+        "passes the checks made before writing gets wouldChange, with the element's classification in the system now "
+        "(oldValue) and the one a real run would set (newValue)."
     ),
     params_model=SetClassificationsOfElementsParameters,
 )

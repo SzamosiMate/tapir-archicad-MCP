@@ -12,12 +12,7 @@ from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
 def get_current_revision_changes_of_layouts(
     conn_header: ConnHeader, params: GetCurrentRevisionChangesOfLayoutsParameters
 ) -> dict:
-    """
-    Retrieves all changes belong to the last revision of the given layouts.
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
-    """
+    """Retrieves all changes belong to the last revision of the given layouts."""
     return conn_header.core.post_tapir_command(
         command="GetCurrentRevisionChangesOfLayouts",
         parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
@@ -30,7 +25,6 @@ register_tool_for_dispatch(
     title="GetCurrentRevisionChangesOfLayouts",
     description="Retrieves all changes belong to the last revision of the given layouts.",
     params_model=GetCurrentRevisionChangesOfLayoutsParameters,
-    pagination_field="currentRevisionChangesOfLayouts",
 )
 
 
@@ -83,12 +77,7 @@ register_tool_for_dispatch(
 
 
 def get_revision_changes_of_elements(conn_header: ConnHeader, params: GetRevisionChangesOfElementsParameters) -> dict:
-    """
-    Retrieves the changes belong to the given elements.
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
-    """
+    """Retrieves the changes belong to the given elements."""
     return conn_header.core.post_tapir_command(
         command="GetRevisionChangesOfElements",
         parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
@@ -101,17 +90,11 @@ register_tool_for_dispatch(
     title="GetRevisionChangesOfElements",
     description="Retrieves the changes belong to the given elements.",
     params_model=GetRevisionChangesOfElementsParameters,
-    pagination_field="revisionChangesOfElements",
 )
 
 
 def get_revision_issues(conn_header: ConnHeader) -> dict:
-    """
-    Retrieves all issues.
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
-    """
+    """Retrieves all issues."""
     return conn_header.core.post_tapir_command(command="GetRevisionIssues", parameters={})
 
 
@@ -121,7 +104,6 @@ register_tool_for_dispatch(
     title="GetRevisionIssues",
     description="Retrieves all issues.",
     params_model=None,
-    pagination_field="revisionIssues",
 )
 
 

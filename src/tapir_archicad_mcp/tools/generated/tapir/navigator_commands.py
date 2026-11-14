@@ -6,15 +6,20 @@ from multiconn_archicad.models.tapir.commands import (
     ChangeDrawingLinkParameters,
     Create3DStylesParameters,
     CreateAddOnViewpointsParameters,
+    CreateDetailMarkersParameters,
     CreateDetailsParameters,
     CreateDrawingsParameters,
+    CreateElevationsParameters,
     CreateInteriorElevationsParameters,
     CreateLayoutParameters,
     CreateSectionsParameters,
     CreateViewsInViewMapParameters,
+    CreateWorksheetMarkersParameters,
     CreateWorksheetsParameters,
+    DeleteNavigatorItemsParameters,
     FindModelViewOptionParameters,
     FitInWindowParameters,
+    Get3DDocumentSettingsParameters,
     Get3DStyleDetailsParameters,
     GetAddOnViewpointChildrenParameters,
     GetAddOnViewpointsParameters,
@@ -23,14 +28,20 @@ from multiconn_archicad.models.tapir.commands import (
     GetDrawingContentBoxesParameters,
     GetLayoutSettingsParameters,
     GetLayoutSubsetSettingsParameters,
+    GetModelViewOptionDetailsParameters,
     GetNavigatorItemTreeParameters,
     GetNavigatorParentItemsParameters,
+    GetSectionsAndElevationsDetailsParameters,
     GetView2DTransformationsParameters,
     GetViewSettingsParameters,
+    ModifyDetailMarkersParameters,
+    ModifySectionsParameters,
     PublishPublisherSetParameters,
     RenameNavigatorItemParameters,
+    ReorderNavigatorItemsParameters,
     ResetZoomParameters,
     Set3DCutPlanesParameters,
+    Set3DDocumentSettingsParameters,
     Set3DFilterAndCutSettingsParameters,
     Set3DProjectionSettingsParameters,
     Set3DWindowSettingsParameters,
@@ -41,11 +52,14 @@ from multiconn_archicad.models.tapir.commands import (
     SetGridSettingsParameters,
     SetLayoutSettingsParameters,
     SetMasterLayoutContextParameters,
+    SetSectionsAndElevationsDetailsParameters,
     SetStructureDisplayParameters,
     SetViewOptionsParameters,
     SetViewRotationParameters,
     SetViewSettingsParameters,
     SetZoomParameters,
+    ShowElementsIn3DParameters,
+    StoreViewSettingsParameters,
     UpdateDrawingsParameters,
     ZoomToElementsParameters,
 )
@@ -171,6 +185,28 @@ register_tool_for_dispatch(
 )
 
 
+def create_detail_markers(conn_header: ConnHeader, params: CreateDetailMarkersParameters) -> dict:
+    """
+    Places Detail markers with their clip polygon in the current floor plan, section or elevation, each with a new
+    Detail viewpoint, like the Detail tool. GetDetailsOfElements reads them back.
+    """
+    return conn_header.core.post_tapir_command(
+        command="CreateDetailMarkers", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    create_detail_markers,
+    name="navigator_create_detail_markers",
+    title="CreateDetailMarkers",
+    description=(
+        "Places Detail markers with their clip polygon in the current floor plan, section or elevation, each with a "
+        "new Detail viewpoint, like the Detail tool. GetDetailsOfElements reads them back."
+    ),
+    params_model=CreateDetailMarkersParameters,
+)
+
+
 def create_details(conn_header: ConnHeader, params: CreateDetailsParameters) -> dict:
     """
     Creates independent Detail databases. Returns the databaseId and the Project Map navigatorItemId of each new detail.
@@ -208,6 +244,28 @@ register_tool_for_dispatch(
 )
 
 
+def create_elevations(conn_header: ConnHeader, params: CreateElevationsParameters) -> dict:
+    """
+    Creates Elevation elements on the floor plan. The floor plan must be the active window: creation fails while a
+    Section or Elevation window is active.
+    """
+    return conn_header.core.post_tapir_command(
+        command="CreateElevations", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    create_elevations,
+    name="navigator_create_elevations",
+    title="CreateElevations",
+    description=(
+        "Creates Elevation elements on the floor plan. The floor plan must be the active window: creation fails while "
+        "a Section or Elevation window is active."
+    ),
+    params_model=CreateElevationsParameters,
+)
+
+
 def create_interior_elevations(conn_header: ConnHeader, params: CreateInteriorElevationsParameters) -> dict:
     """
     Creates Interior Elevation elements on the floor plan. Every consecutive pair of the given points becomes one
@@ -237,7 +295,8 @@ def create_layout(conn_header: ConnHeader, params: CreateLayoutParameters) -> di
     Creates Layouts and their backing master layouts. Archicad inserts a new layout at the first place of its subset,
     renumbering the sheets after it; previousNavigatorItemId or position 'last' places it after an existing sheet or at
     the end instead. A custom layout number does not leave the layout out of the numbering;
-    layoutParameters.doNotIncludeInNumbering does.
+    layoutParameters.doNotIncludeInNumbering does. A layout that was created but could not be placed is returned with
+    both its databaseId and the error.
     """
     return conn_header.core.post_tapir_command(
         command="CreateLayout", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -252,7 +311,8 @@ register_tool_for_dispatch(
         "Creates Layouts and their backing master layouts. Archicad inserts a new layout at the first place of its "
         "subset, renumbering the sheets after it; previousNavigatorItemId or position 'last' places it after an "
         "existing sheet or at the end instead. A custom layout number does not leave the layout out of the numbering; "
-        "layoutParameters.doNotIncludeInNumbering does."
+        "layoutParameters.doNotIncludeInNumbering does. A layout that was created but could not be placed is returned "
+        "with both its databaseId and the error."
     ),
     params_model=CreateLayoutParameters,
 )
@@ -261,7 +321,8 @@ register_tool_for_dispatch(
 def create_sections(conn_header: ConnHeader, params: CreateSectionsParameters) -> dict:
     """
     Creates Section elements on the floor plan. A section looks to the left of its start to end direction, with its
-    depth line that far on that side. GetDetailsOfElements reads the geometry of existing sections back.
+    depth line that far on that side. GetDetailsOfElements reads the geometry of existing sections back. The floor plan
+    must be the active window: creation fails while a Section or Elevation window is active.
     """
     return conn_header.core.post_tapir_command(
         command="CreateSections", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -274,7 +335,8 @@ register_tool_for_dispatch(
     title="CreateSections",
     description=(
         "Creates Section elements on the floor plan. A section looks to the left of its start to end direction, with "
-        "its depth line that far on that side. GetDetailsOfElements reads the geometry of existing sections back."
+        "its depth line that far on that side. GetDetailsOfElements reads the geometry of existing sections back. The "
+        "floor plan must be the active window: creation fails while a Section or Elevation window is active."
     ),
     params_model=CreateSectionsParameters,
 )
@@ -302,6 +364,28 @@ register_tool_for_dispatch(
 )
 
 
+def create_worksheet_markers(conn_header: ConnHeader, params: CreateWorksheetMarkersParameters) -> dict:
+    """
+    Places Worksheet markers with their clip polygon in the current floor plan, section or elevation, each with a new
+    Worksheet viewpoint, like the Worksheet tool. GetDetailsOfElements reads them back.
+    """
+    return conn_header.core.post_tapir_command(
+        command="CreateWorksheetMarkers", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    create_worksheet_markers,
+    name="navigator_create_worksheet_markers",
+    title="CreateWorksheetMarkers",
+    description=(
+        "Places Worksheet markers with their clip polygon in the current floor plan, section or elevation, each with a "
+        "new Worksheet viewpoint, like the Worksheet tool. GetDetailsOfElements reads them back."
+    ),
+    params_model=CreateWorksheetMarkersParameters,
+)
+
+
 def create_worksheets(conn_header: ConnHeader, params: CreateWorksheetsParameters) -> dict:
     """
     Creates independent Worksheet databases. Returns the databaseId and the Project Map navigatorItemId of each new
@@ -324,10 +408,43 @@ register_tool_for_dispatch(
 )
 
 
+def delete_navigator_items(conn_header: ConnHeader, params: DeleteNavigatorItemsParameters) -> dict:
+    """
+    Deletes navigator items from the navigator tree: views and folders of the View Map, layouts and master layouts of
+    the Layout Book, and independent worksheets and details of the Project Map. Layout subsets, View Map folders that
+    are not empty, the other Project Map items and marker-linked worksheets and details cannot be deleted; the failed
+    execution result says which case applies. An item that Archicad refuses to delete (in a Teamwork project: it is not
+    reserved or the user has no right to delete it) is reported as a failed execution result. dryRun reports the result
+    of the checks made before deleting (item not found, layout subset, View Map folder that is not empty) without
+    deleting anything.
+    """
+    return conn_header.core.post_tapir_command(
+        command="DeleteNavigatorItems", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    delete_navigator_items,
+    name="navigator_delete_navigator_items",
+    title="DeleteNavigatorItems",
+    description=(
+        "Deletes navigator items from the navigator tree: views and folders of the View Map, layouts and master "
+        "layouts of the Layout Book, and independent worksheets and details of the Project Map. Layout subsets, View "
+        "Map folders that are not empty, the other Project Map items and marker-linked worksheets and details cannot "
+        "be deleted; the failed execution result says which case applies. An item that Archicad refuses to delete (in "
+        "a Teamwork project: it is not reserved or the user has no right to delete it) is reported as a failed "
+        "execution result. dryRun reports the result of the checks made before deleting (item not found, layout "
+        "subset, View Map folder that is not empty) without deleting anything."
+    ),
+    params_model=DeleteNavigatorItemsParameters,
+)
+
+
 def find_model_view_option(conn_header: ConnHeader, params: FindModelViewOptionParameters) -> dict:
     """
     Finds a model view option combination by id or by name and returns its index, id, name and flags. The index is the
-    one Archicad uses to switch the model view options of a window to the combination. Available from Archicad 27.
+    one SetViewOptions takes to switch the model view options of a window to the combination. Available from Archicad
+    27.
     """
     return conn_header.core.post_tapir_command(
         command="FindModelViewOption", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -340,8 +457,8 @@ register_tool_for_dispatch(
     title="FindModelViewOption",
     description=(
         "Finds a model view option combination by id or by name and returns its index, id, name and flags. The index "
-        "is the one Archicad uses to switch the model view options of a window to the combination. Available from "
-        "Archicad 27."
+        "is the one SetViewOptions takes to switch the model view options of a window to the combination. Available "
+        "from Archicad 27."
     ),
     params_model=FindModelViewOptionParameters,
 )
@@ -383,6 +500,30 @@ register_tool_for_dispatch(
 )
 
 
+def get3_d_document_settings(conn_header: ConnHeader, params: Get3DDocumentSettingsParameters) -> dict:
+    """
+    Gets the settings of a 3D Document, given by its navigator item: the element and story filter, the 3D cut, the
+    projection, the window and zoom, the uniform cut and uncut surface attributes, the source and the boundary contours,
+    with the field names of API_DocumentFrom3DType.
+    """
+    return conn_header.core.post_tapir_command(
+        command="Get3DDocumentSettings", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    get3_d_document_settings,
+    name="navigator_get3_d_document_settings",
+    title="Get3DDocumentSettings",
+    description=(
+        "Gets the settings of a 3D Document, given by its navigator item: the element and story filter, the 3D cut, "
+        "the projection, the window and zoom, the uniform cut and uncut surface attributes, the source and the "
+        "boundary contours, with the field names of API_DocumentFrom3DType."
+    ),
+    params_model=Get3DDocumentSettingsParameters,
+)
+
+
 def get3_d_filter_and_cut_settings(conn_header: ConnHeader) -> dict:
     """
     Gets the 'Filter and Cut Elements in 3D' settings of the 3D window: the stories shown, the filter mode and which
@@ -406,8 +547,8 @@ register_tool_for_dispatch(
 def get3_d_projection_settings(conn_header: ConnHeader) -> dict:
     """
     Gets the 3D projection settings of the 3D window: whether it is perspective or axonometric, the camera and target
-    position, view cone, roll angle, distance and azimuth of a perspective, or the transformation matrix of an
-    axonometry.
+    position, view cone, roll angle, distance and azimuth of a perspective, or the projection type, azimuth and
+    transformation matrix of an axonometry, and the sun position of either (date and time or azimuth and altitude).
     """
     return conn_header.core.post_tapir_command(command="Get3DProjectionSettings", parameters={})
 
@@ -418,8 +559,9 @@ register_tool_for_dispatch(
     title="Get3DProjectionSettings",
     description=(
         "Gets the 3D projection settings of the 3D window: whether it is perspective or axonometric, the camera and "
-        "target position, view cone, roll angle, distance and azimuth of a perspective, or the transformation matrix "
-        "of an axonometry."
+        "target position, view cone, roll angle, distance and azimuth of a perspective, or the projection type, "
+        "azimuth and transformation matrix of an axonometry, and the sun position of either (date and time or azimuth "
+        "and altitude)."
     ),
     params_model=None,
 )
@@ -445,6 +587,22 @@ register_tool_for_dispatch(
         "27."
     ),
     params_model=Get3DStyleDetailsParameters,
+)
+
+
+def get3_d_styles(conn_header: ConnHeader) -> dict:
+    """Gets the names of the 3D styles of the project and the name of the current one, which the 3D window uses."""
+    return conn_header.core.post_tapir_command(command="Get3DStyles", parameters={})
+
+
+register_tool_for_dispatch(
+    get3_d_styles,
+    name="navigator_get3_d_styles",
+    title="Get3DStyles",
+    description=(
+        "Gets the names of the 3D styles of the project and the name of the current one, which the 3D window uses."
+    ),
+    params_model=None,
 )
 
 
@@ -491,12 +649,7 @@ register_tool_for_dispatch(
 
 
 def get_add_on_viewpoint_children(conn_header: ConnHeader, params: GetAddOnViewpointChildrenParameters) -> dict:
-    """
-    Returns the direct children of an add-on viewpoint root or group. Available from Archicad 27.
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
-    """
+    """Returns the direct children of an add-on viewpoint root or group. Available from Archicad 27."""
     return conn_header.core.post_tapir_command(
         command="GetAddOnViewpointChildren", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
@@ -508,7 +661,6 @@ register_tool_for_dispatch(
     title="GetAddOnViewpointChildren",
     description="Returns the direct children of an add-on viewpoint root or group. Available from Archicad 27.",
     params_model=GetAddOnViewpointChildrenParameters,
-    pagination_field="viewpointIds",
 )
 
 
@@ -516,9 +668,6 @@ def get_add_on_viewpoint_roots(conn_header: ConnHeader) -> dict:
     """
     Returns the roots of the add-on viewpoints: the Project Map items created through the Archicad API by an add-on, as
     Archicad lists them to Tapir. Available from Archicad 27.
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
     """
     return conn_header.core.post_tapir_command(command="GetAddOnViewpointRoots", parameters={})
 
@@ -532,7 +681,6 @@ register_tool_for_dispatch(
         "add-on, as Archicad lists them to Tapir. Available from Archicad 27."
     ),
     params_model=None,
-    pagination_field="viewpointIds",
 )
 
 
@@ -541,9 +689,6 @@ def get_add_on_viewpoints(conn_header: ConnHeader, params: GetAddOnViewpointsPar
     Returns the details of the given add-on viewpoint items: their parent, type (Root, Group or Leaf), ID, name, view
     settings flags and attached data (base64 encoded). The output is aligned with the input array; an item that cannot
     be read gets an error. Available from Archicad 27.
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
     """
     return conn_header.core.post_tapir_command(
         command="GetAddOnViewpoints", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -560,7 +705,32 @@ register_tool_for_dispatch(
         "that cannot be read gets an error. Available from Archicad 27."
     ),
     params_model=GetAddOnViewpointsParameters,
-    pagination_field="viewpoints",
+)
+
+
+def get_cameras(conn_header: ConnHeader) -> dict:
+    """
+    Gets the Camera Sets (camera paths) of the project with their name, whether the set is the active one, its current
+    camera, and its cameras in path order. Each camera has its element id, whether it is active in the path, and its
+    perspective: camera and target position, distance, azimuth, view cone, roll angle, two-point perspective and sun, in
+    the shape Set3DProjectionSettings accepts, so passing a camera's perspective there shows its view in the 3D window.
+    Archicad cameras are always perspective; they have no name of their own.
+    """
+    return conn_header.core.post_tapir_command(command="GetCameras", parameters={})
+
+
+register_tool_for_dispatch(
+    get_cameras,
+    name="navigator_get_cameras",
+    title="GetCameras",
+    description=(
+        "Gets the Camera Sets (camera paths) of the project with their name, whether the set is the active one, its "
+        "current camera, and its cameras in path order. Each camera has its element id, whether it is active in the "
+        "path, and its perspective: camera and target position, distance, azimuth, view cone, roll angle, two-point "
+        "perspective and sun, in the shape Set3DProjectionSettings accepts, so passing a camera's perspective there "
+        "shows its view in the 3D window. Archicad cameras are always perspective; they have no name of their own."
+    ),
+    params_model=None,
 )
 
 
@@ -770,6 +940,34 @@ register_tool_for_dispatch(
 )
 
 
+def get_model_view_option_details(conn_header: ConnHeader, params: GetModelViewOptionDetailsParameters) -> dict:
+    """
+    Gets the settings stored in model view option combinations (Document > Model View > Model View Options), all of them
+    or the ones given by id or by name: the model view options in the fields of GetViewOptions, and the options library
+    parts add to the combination (gdlOptions) with their GDL parameter values. Read-only: the Archicad API has no
+    function to change, rename or create a stored combination; SetViewOptions changes the options of the current window.
+    Available from Archicad 27.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetModelViewOptionDetails", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    get_model_view_option_details,
+    name="navigator_get_model_view_option_details",
+    title="GetModelViewOptionDetails",
+    description=(
+        "Gets the settings stored in model view option combinations (Document > Model View > Model View Options), all "
+        "of them or the ones given by id or by name: the model view options in the fields of GetViewOptions, and the "
+        "options library parts add to the combination (gdlOptions) with their GDL parameter values. Read-only: the "
+        "Archicad API has no function to change, rename or create a stored combination; SetViewOptions changes the "
+        "options of the current window. Available from Archicad 27."
+    ),
+    params_model=GetModelViewOptionDetailsParameters,
+)
+
+
 def get_model_view_options(conn_header: ConnHeader) -> dict:
     """Gets all model view options"""
     return conn_header.core.post_tapir_command(command="GetModelViewOptions", parameters={})
@@ -828,6 +1026,26 @@ register_tool_for_dispatch(
 )
 
 
+def get_publisher_sets(conn_header: ConnHeader) -> dict:
+    """
+    Returns the publisher sets of the project with their saved output: the local or LAN path, the Teamwork file server
+    path, or the Internet host and directory name.
+    """
+    return conn_header.core.post_tapir_command(command="GetPublisherSets", parameters={})
+
+
+register_tool_for_dispatch(
+    get_publisher_sets,
+    name="navigator_get_publisher_sets",
+    title="GetPublisherSets",
+    description=(
+        "Returns the publisher sets of the project with their saved output: the local or LAN path, the Teamwork file "
+        "server path, or the Internet host and directory name."
+    ),
+    params_model=None,
+)
+
+
 def get_renovation_filters(conn_header: ConnHeader) -> dict:
     """
     Gets the renovation filters of the project, and the one the current window uses (Document > Renovation > Renovation
@@ -847,6 +1065,49 @@ register_tool_for_dispatch(
         "and SetViewSettings, so a filter listed here can be set on saved views too."
     ),
     params_model=None,
+)
+
+
+def get_schedules(conn_header: ConnHeader) -> dict:
+    """
+    Returns the Interactive Schedules of the Project Map: navigator item id, name, ID and the folders they are in.
+    Archicad's API does not give the rows of a schedule nor export it; to export one, put it in a publisher set with a
+    spreadsheet format in Archicad and run PublishPublisherSet.
+    """
+    return conn_header.core.post_tapir_command(command="GetSchedules", parameters={})
+
+
+register_tool_for_dispatch(
+    get_schedules,
+    name="navigator_get_schedules",
+    title="GetSchedules",
+    description=(
+        "Returns the Interactive Schedules of the Project Map: navigator item id, name, ID and the folders they are "
+        "in. Archicad's API does not give the rows of a schedule nor export it; to export one, put it in a publisher "
+        "set with a spreadsheet format in Archicad and run PublishPublisherSet."
+    ),
+    params_model=None,
+)
+
+
+def get_sections_and_elevations_details(
+    conn_header: ConnHeader, params: GetSectionsAndElevationsDetailsParameters
+) -> dict:
+    """Gets every configurable setting of the given Section and Elevation elements, with their name and reference ID."""
+    return conn_header.core.post_tapir_command(
+        command="GetSectionsAndElevationsDetails",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    get_sections_and_elevations_details,
+    name="navigator_get_sections_and_elevations_details",
+    title="GetSectionsAndElevationsDetails",
+    description=(
+        "Gets every configurable setting of the given Section and Elevation elements, with their name and reference ID."
+    ),
+    params_model=GetSectionsAndElevationsDetailsParameters,
 )
 
 
@@ -890,8 +1151,8 @@ register_tool_for_dispatch(
 
 def get_view_options(conn_header: ConnHeader) -> dict:
     """
-    Gets the model view options and on-screen view options of the current plan window, and the index of the model view
-    option combination it applies.
+    Gets the model view options and on-screen view options of the current plan window, and the index and name of the
+    model view option combination it applies.
     """
     return conn_header.core.post_tapir_command(command="GetViewOptions", parameters={})
 
@@ -901,8 +1162,8 @@ register_tool_for_dispatch(
     name="navigator_get_view_options",
     title="GetViewOptions",
     description=(
-        "Gets the model view options and on-screen view options of the current plan window, and the index of the model "
-        "view option combination it applies."
+        "Gets the model view options and on-screen view options of the current plan window, and the index and name of "
+        "the model view option combination it applies."
     ),
     params_model=None,
 )
@@ -921,6 +1182,57 @@ register_tool_for_dispatch(
     title="GetViewSettings",
     description="Gets the view settings of navigator items",
     params_model=GetViewSettingsParameters,
+)
+
+
+def modify_detail_markers(conn_header: ConnHeader, params: ModifyDetailMarkersParameters) -> dict:
+    """
+    Changes the name, the reference ID, the clip polygon, the boundary's pen and line type, the marker symbol's angle,
+    always-horizontal setting and pen of Detail and Worksheet markers. Not written: the base point (Archicad places it
+    at the center of the clip polygon's bounding box when the marker is created), the viewpoint the marker refers to,
+    and the marker symbol's other settings, which are parameters of the library part placed as the marker (markerId in
+    GetDetailsOfElements). A value Archicad did not apply gets a failed execution result.
+    """
+    return conn_header.core.post_tapir_command(
+        command="ModifyDetailMarkers", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    modify_detail_markers,
+    name="navigator_modify_detail_markers",
+    title="ModifyDetailMarkers",
+    description=(
+        "Changes the name, the reference ID, the clip polygon, the boundary's pen and line type, the marker symbol's "
+        "angle, always-horizontal setting and pen of Detail and Worksheet markers. Not written: the base point "
+        "(Archicad places it at the center of the clip polygon's bounding box when the marker is created), the "
+        "viewpoint the marker refers to, and the marker symbol's other settings, which are parameters of the library "
+        "part placed as the marker (markerId in GetDetailsOfElements). A value Archicad did not apply gets a failed "
+        "execution result."
+    ),
+    params_model=ModifyDetailMarkersParameters,
+)
+
+
+def modify_sections(conn_header: ConnHeader, params: ModifySectionsParameters) -> dict:
+    """
+    Changes the name and the reference ID of Section and Elevation elements, which the Project Map and the markers show.
+    GetDetailsOfElements reads those of a Section back as name and idStr.
+    """
+    return conn_header.core.post_tapir_command(
+        command="ModifySections", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    modify_sections,
+    name="navigator_modify_sections",
+    title="ModifySections",
+    description=(
+        "Changes the name and the reference ID of Section and Elevation elements, which the Project Map and the "
+        "markers show. GetDetailsOfElements reads those of a Section back as name and idStr."
+    ),
+    params_model=ModifySectionsParameters,
 )
 
 
@@ -944,12 +1256,13 @@ register_tool_for_dispatch(
 
 def rename_navigator_item(conn_header: ConnHeader, params: RenameNavigatorItemParameters) -> dict:
     """
-    Renames a navigator item or changes its ID. newId sets the custom layout number of a layout and the custom ID of any
-    other item. For a Project Map section, elevation, detail or worksheet the name and ID of the element behind the
-    viewpoint are changed, for an interior elevation those of the segment the item stands for; the change is undone when
-    the item does not show the new name. The name and ID of other Project Map items (stories, schedules, ...) cannot be
-    changed. Fails when Archicad refuses the change or does not apply the new name or ID. With customName false the item
-    drops its custom name and follows its Project Map source again.
+    Renames a navigator item or changes its ID. Renaming the Layout Book item of a placed Drawing also sets the custom
+    name of the Drawing. newId sets the custom layout number of a layout and the custom ID of any other item. For a
+    Project Map section, elevation, detail or worksheet the name and ID of the element behind the viewpoint are changed,
+    for an interior elevation those of the segment the item stands for; the change is undone when the item does not show
+    the new name. The name and ID of other Project Map items (stories, schedules, ...) cannot be changed. Fails when
+    Archicad refuses the change or does not apply the new name or ID. With customName false the item drops its custom
+    name and follows its Project Map source again.
     """
     return conn_header.core.post_tapir_command(
         command="RenameNavigatorItem", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -961,14 +1274,37 @@ register_tool_for_dispatch(
     name="navigator_rename_navigator_item",
     title="RenameNavigatorItem",
     description=(
-        "Renames a navigator item or changes its ID. newId sets the custom layout number of a layout and the custom ID "
-        "of any other item. For a Project Map section, elevation, detail or worksheet the name and ID of the element "
-        "behind the viewpoint are changed, for an interior elevation those of the segment the item stands for; the "
-        "change is undone when the item does not show the new name. The name and ID of other Project Map items "
-        "(stories, schedules, ...) cannot be changed. Fails when Archicad refuses the change or does not apply the new "
-        "name or ID. With customName false the item drops its custom name and follows its Project Map source again."
+        "Renames a navigator item or changes its ID. Renaming the Layout Book item of a placed Drawing also sets the "
+        "custom name of the Drawing. newId sets the custom layout number of a layout and the custom ID of any other "
+        "item. For a Project Map section, elevation, detail or worksheet the name and ID of the element behind the "
+        "viewpoint are changed, for an interior elevation those of the segment the item stands for; the change is "
+        "undone when the item does not show the new name. The name and ID of other Project Map items (stories, "
+        "schedules, ...) cannot be changed. Fails when Archicad refuses the change or does not apply the new name or "
+        "ID. With customName false the item drops its custom name and follows its Project Map source again."
     ),
     params_model=RenameNavigatorItemParameters,
+)
+
+
+def reorder_navigator_items(conn_header: ConnHeader, params: ReorderNavigatorItemsParameters) -> dict:
+    """
+    Reorders the children of a navigator item to match the given order. Works around MoveNavigatorItem being unable to
+    reposition an item within its current parent, by bouncing it through a sibling.
+    """
+    return conn_header.core.post_tapir_command(
+        command="ReorderNavigatorItems", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    reorder_navigator_items,
+    name="navigator_reorder_navigator_items",
+    title="ReorderNavigatorItems",
+    description=(
+        "Reorders the children of a navigator item to match the given order. Works around MoveNavigatorItem being "
+        "unable to reposition an item within its current parent, by bouncing it through a sibling."
+    ),
+    params_model=ReorderNavigatorItemsParameters,
 )
 
 
@@ -1004,6 +1340,28 @@ register_tool_for_dispatch(
 )
 
 
+def set3_d_document_settings(conn_header: ConnHeader, params: Set3DDocumentSettingsParameters) -> dict:
+    """
+    Changes the given settings of a 3D Document, given by its navigator item, in the form Get3DDocumentSettings returns;
+    the settings not given are kept. Returns the settings read back after the change.
+    """
+    return conn_header.core.post_tapir_command(
+        command="Set3DDocumentSettings", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    set3_d_document_settings,
+    name="navigator_set3_d_document_settings",
+    title="Set3DDocumentSettings",
+    description=(
+        "Changes the given settings of a 3D Document, given by its navigator item, in the form Get3DDocumentSettings "
+        "returns; the settings not given are kept. Returns the settings read back after the change."
+    ),
+    params_model=Set3DDocumentSettingsParameters,
+)
+
+
 def set3_d_filter_and_cut_settings(conn_header: ConnHeader, params: Set3DFilterAndCutSettingsParameters) -> dict:
     """
     Changes the 'Filter and Cut Elements in 3D' settings of the 3D window; only the given fields and the listed element
@@ -1028,8 +1386,11 @@ register_tool_for_dispatch(
 
 def set3_d_projection_settings(conn_header: ConnHeader, params: Set3DProjectionSettingsParameters) -> dict:
     """
-    Sets a perspective projection for the 3D window. Every perspective parameter is required: read a known good set with
-    Get3DProjectionSettings and pass it back, with the values to change replaced.
+    Sets a perspective or an axonometric projection for the 3D window. Every perspective parameter but sun is required:
+    read a known good set with Get3DProjectionSettings and pass it back, with the values to change replaced. An
+    axonometry changes only the values given: the projection type, the azimuth, the transformation matrix and the sun.
+    The sun of either changes only the values given in it and is kept when sun is missing. The 3D window shows the
+    change after a rebuild (RebuildView), e.g. before SaveCurrentWindowAsImage.
     """
     return conn_header.core.post_tapir_command(
         command="Set3DProjectionSettings", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -1041,8 +1402,11 @@ register_tool_for_dispatch(
     name="navigator_set3_d_projection_settings",
     title="Set3DProjectionSettings",
     description=(
-        "Sets a perspective projection for the 3D window. Every perspective parameter is required: read a known good "
-        "set with Get3DProjectionSettings and pass it back, with the values to change replaced."
+        "Sets a perspective or an axonometric projection for the 3D window. Every perspective parameter but sun is "
+        "required: read a known good set with Get3DProjectionSettings and pass it back, with the values to change "
+        "replaced. An axonometry changes only the values given: the projection type, the azimuth, the transformation "
+        "matrix and the sun. The sun of either changes only the values given in it and is kept when sun is missing. "
+        "The 3D window shows the change after a rebuild (RebuildView), e.g. before SaveCurrentWindowAsImage."
     ),
     params_model=Set3DProjectionSettingsParameters,
 )
@@ -1193,7 +1557,11 @@ register_tool_for_dispatch(
 
 
 def set_layout_settings(conn_header: ConnHeader, params: SetLayoutSettingsParameters) -> dict:
-    """Sets settings of layouts, including their master layout and Layout Info Panel custom data fields."""
+    """
+    Sets settings of layouts, including their master layout and Layout Info Panel custom data fields. In Teamwork the
+    layout settings must be reserved first in Archicad (Layout Book > Reserve Layout Settings); the Archicad API cannot
+    reserve them, and ReserveElements does not. GetTeamworkOwnersOfDatabases shows who holds a layout.
+    """
     return conn_header.core.post_tapir_command(
         command="SetLayoutSettings", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
@@ -1203,7 +1571,11 @@ register_tool_for_dispatch(
     set_layout_settings,
     name="navigator_set_layout_settings",
     title="SetLayoutSettings",
-    description="Sets settings of layouts, including their master layout and Layout Info Panel custom data fields.",
+    description=(
+        "Sets settings of layouts, including their master layout and Layout Info Panel custom data fields. In Teamwork "
+        "the layout settings must be reserved first in Archicad (Layout Book > Reserve Layout Settings); the Archicad "
+        "API cannot reserve them, and ReserveElements does not. GetTeamworkOwnersOfDatabases shows who holds a layout."
+    ),
     params_model=SetLayoutSettingsParameters,
 )
 
@@ -1229,6 +1601,31 @@ register_tool_for_dispatch(
         "does not assign a master layout to a layout. Available from Archicad 27."
     ),
     params_model=SetMasterLayoutContextParameters,
+)
+
+
+def set_sections_and_elevations_details(
+    conn_header: ConnHeader, params: SetSectionsAndElevationsDetailsParameters
+) -> dict:
+    """
+    Sets settings of the given Section and Elevation elements: pens, line types, horizontal and vertical range, model
+    effects, story handles and markers. The name and the reference ID are changed with ModifySections.
+    """
+    return conn_header.core.post_tapir_command(
+        command="SetSectionsAndElevationsDetails",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    set_sections_and_elevations_details,
+    name="navigator_set_sections_and_elevations_details",
+    title="SetSectionsAndElevationsDetails",
+    description=(
+        "Sets settings of the given Section and Elevation elements: pens, line types, horizontal and vertical range, "
+        "model effects, story handles and markers. The name and the reference ID are changed with ModifySections."
+    ),
+    params_model=SetSectionsAndElevationsDetailsParameters,
 )
 
 
@@ -1259,7 +1656,7 @@ register_tool_for_dispatch(
 def set_view_options(conn_header: ConnHeader, params: SetViewOptionsParameters) -> dict:
     """
     Switches the current plan window to a model view option combination by index, and/or changes the given model view
-    options and on-screen view options.
+    options and on-screen view options. With an index, the model view options stored in the combination apply.
     """
     return conn_header.core.post_tapir_command(
         command="SetViewOptions", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -1272,7 +1669,8 @@ register_tool_for_dispatch(
     title="SetViewOptions",
     description=(
         "Switches the current plan window to a model view option combination by index, and/or changes the given model "
-        "view options and on-screen view options."
+        "view options and on-screen view options. With an index, the model view options stored in the combination "
+        "apply."
     ),
     params_model=SetViewOptionsParameters,
 )
@@ -1323,6 +1721,52 @@ register_tool_for_dispatch(
     title="SetZoom",
     description="Zooms the current 2D window to the given box in model coordinates.",
     params_model=SetZoomParameters,
+)
+
+
+def show_elements_in3_d(conn_header: ConnHeader, params: ShowElementsIn3DParameters) -> dict:
+    """
+    Opens the 3D window on the given elements, as Show Selection in 3D does: they become the selection and only they are
+    shown. Without elements it shows every element, as Show All in 3D does.
+    """
+    return conn_header.core.post_tapir_command(
+        command="ShowElementsIn3D", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    show_elements_in3_d,
+    name="navigator_show_elements_in3_d",
+    title="ShowElementsIn3D",
+    description=(
+        "Opens the 3D window on the given elements, as Show Selection in 3D does: they become the selection and only "
+        "they are shown. Without elements it shows every element, as Show All in 3D does."
+    ),
+    params_model=ShowElementsIn3DParameters,
+)
+
+
+def store_view_settings(conn_header: ConnHeader, params: StoreViewSettingsParameters) -> dict:
+    """
+    Stores the current view settings (action Store) and puts them back later (action Restore), for example before and
+    after a script that changes the view. The two must be called in pairs and cannot be stacked. Restoring may rebuild
+    the view.
+    """
+    return conn_header.core.post_tapir_command(
+        command="StoreViewSettings", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    store_view_settings,
+    name="navigator_store_view_settings",
+    title="StoreViewSettings",
+    description=(
+        "Stores the current view settings (action Store) and puts them back later (action Restore), for example before "
+        "and after a script that changes the view. The two must be called in pairs and cannot be stacked. Restoring "
+        "may rebuild the view."
+    ),
+    params_model=StoreViewSettingsParameters,
 )
 
 

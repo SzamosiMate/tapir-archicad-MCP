@@ -2,7 +2,7 @@
 
 The generator config holds the active exclusions and their short reasons. Verify these details against the target release before retiring an exclusion.
 
-## GetClassificationOfAttributesInSystem
+## SetCurrent3DStyle
 
-- In MultiConn 0.9.7 for Tapir 1.8.0, the published result expects each successful `attributeClassifications` item to contain `classificationSystemId` and optional `classificationItemId` directly. Tapir wraps those fields under `classificationId`, so the published model rejects the actual success shape. [Published result schema](https://github.com/SzamosiMate/multiconn_archicad/blob/v0.9.7/code_generation/tapir/schema/tapir_master_schema.json#L19235) · [Tapir response writer](https://github.com/ENZYME-APD/tapir-archicad-automation/blob/1.8.0/archicad-addon/Sources/ClassificationCommands.cpp#L650)
-- `GetClassificationsOfAttributes` returns the classifications for every system. Filter its `classificationIds` by system and treat an absent assignment as unclassified. Revisit the exclusion if a later release aligns the schema with the writer and offers a result the broader command cannot supply. [Broader command writer](https://github.com/ENZYME-APD/tapir-archicad-automation/blob/1.8.0/archicad-addon/Sources/ClassificationCommands.cpp#L375)
+- In multiconn 0.9.8 / Tapir 2.0.0, this command validates the style name, then unconditionally returns `APIERR_NOTSUPPORTED`. It does not call `ACAPI_View_SetCurrent3DStyle`: the source documents an Archicad assertion in versions 28 and 29 and no known working version. [Pinned implementation](https://github.com/ENZYME-APD/tapir-archicad-automation/blob/2.0.0/archicad-addon/Sources/3DProjectionCommands.cpp#L1009)
+- Retire the exclusion when a published target actually switches the current style without that assertion, with matching schemas and documented supported Archicad versions. A declaration or schema alone is insufficient; the refusal must be removed by a working implementation.
