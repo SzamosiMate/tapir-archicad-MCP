@@ -5,9 +5,11 @@ This guide covers installation, troubleshooting, server options, and advanced us
 ## Requirements
 
 - Archicad running on Windows or macOS, with a project open.
-- The [Tapir Archicad Add-On](https://github.com/ENZYME-APD/tapir-archicad-automation), installed for your Archicad version. Discovery marks instances without Tapir as unavailable.
-- An MCP client and [uv](https://docs.astral.sh/uv/getting-started/installation/), available on the PATH seen by that client.
-- Python 3.12, 3.13, or 3.14. uv can download a compatible Python version if needed.
+- The [Tapir Archicad Add-On](https://github.com/ENZYME-APD/tapir-archicad-automation), which provides Archicad automation commands. Install it for your Archicad version; discovery marks instances without Tapir as unavailable.
+- [uv](https://docs.astral.sh/uv/getting-started/installation/), which installs and runs the MCP server and its dependencies. It must be available on the PATH seen by your MCP client.
+- An MCP client: the AI application that connects to the server.
+
+uv can download a compatible Python version if needed. If managing Python yourself, the server supports Python 3.12, 3.13, and 3.14.
 
 The server connects to running Archicad instances on its host. Available commands and parameters depend on the installed Archicad and Tapir versions; discovery reports version warnings.
 

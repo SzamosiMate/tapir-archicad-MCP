@@ -24,7 +24,12 @@ Astra uses photos and a plan as references to model in Archicad.
 
 ## Quick start
 
-You'll need Archicad running on Windows or macOS, the [Tapir add-on](https://github.com/ENZYME-APD/tapir-archicad-automation), [uv](https://docs.astral.sh/uv/getting-started/installation/), and an MCP client. The server requires Python 3.12–3.14; uv can provision Python for you.
+Before installing the MCP server, make sure Archicad is running on Windows or macOS and install these two requirements:
+
+1. **[Tapir add-on](https://github.com/ENZYME-APD/tapir-archicad-automation)** — an Archicad add-on that gives the server access to Archicad's automation commands. Install it in Archicad for the version you use.
+2. **[uv](https://docs.astral.sh/uv/getting-started/installation/)** — a tool that installs and runs the MCP server and its dependencies. Install it on the computer running Archicad.
+
+You'll also need an MCP client: the AI application that connects to the server.
 
 ### Ask your AI to install it
 
@@ -62,14 +67,24 @@ See [Setup and configuration](docs/setup-and-configuration.md) for client setup,
 
 ## Development and contributing
 
-Install [uv](https://docs.astral.sh/uv/getting-started/installation/), clone the repository, and run:
+To develop the server, clone the repository and run `uv sync` from the project directory. Then configure your MCP client to run the Python interpreter from that checkout's virtual environment:
 
-```sh
-uv sync --locked
-uv run --locked pytest tests
-```
+| Client setting | Windows | macOS |
+| --- | --- | --- |
+| Command | `<project>\.venv\Scripts\python.exe` | `<project>/.venv/bin/python` |
+| Arguments | `-m`, `tapir_archicad_mcp.server` | `-m`, `tapir_archicad_mcp.server` |
 
-Contributions are welcome: [open an issue or pull request](https://github.com/SzamosiMate/tapir-archicad-MCP/issues). Command wrappers are generated from the pinned `multiconn-archicad` release; see `scripts/generate_tools.py` and `scripts/generator_config.py` for the generator and its configuration.
+Replace `<project>` with the absolute path to your checkout. This runs the local code instead of the published `uvx` package. Restart the server in your client after making changes. Run tests with `uv run pytest tests`.
+
+### Generated commands
+
+The Archicad command wrappers in `src/tapir_archicad_mcp/tools/generated/` are generated from the exact `multiconn-archicad` version pinned in `pyproject.toml`. The generator reads command metadata from that release's Git tag; `scripts/generator_config.py` controls naming, exclusions, pagination, and image handling, and `scripts/generate_tools.py` produces the wrappers. To change generated behavior, review the generator and its configuration rather than only editing the generated files, since regeneration can overwrite those edits.
+
+### Contributions
+
+Ideas, bug fixes, and small, focused improvements are welcome. For larger features, architectural changes, or major rewrites, please [open an issue](https://github.com/SzamosiMate/tapir-archicad-MCP/issues) to discuss the approach before investing in a pull request. I may prefer to work through those changes myself as part of understanding and shaping the design.
+
+AI-assisted contributions are welcome. Please keep pull request descriptions short and in plain language: explain the problem, your solution, and how you checked it. For larger changes in particular, understand the proposed implementation and be ready to discuss the design and trade-offs.
 
 ## License and acknowledgments
 
