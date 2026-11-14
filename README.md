@@ -1,137 +1,76 @@
 # Archicad Tapir MCP Server
 
-This project provides a Model Context Protocol (MCP) server for Archicad. It acts as a bridge, allowing AI agents and applications (like Claude for Desktop) to interact with running Archicad instances by wrapping both the community-driven **Tapir API** and the **official Archicad JSON API**.
+Connect your AI assistant to Archicad. Use natural language to explore projects and automate workflows through the [Tapir add-on](https://github.com/ENZYME-APD/tapir-archicad-automation) and the official Archicad JSON API.
 
-The server dynamically generates a comprehensive set of **191+** MCP tools from the combined API schemas, enabling fine-grained control over Archicad projects.
+[![PyPI version](https://img.shields.io/pypi/v/tapir-archicad-mcp)](https://pypi.org/project/tapir-archicad-mcp/)
+[![CI](https://github.com/SzamosiMate/tapir-archicad-MCP/actions/workflows/test.yml/badge.svg?branch=master)](https://github.com/SzamosiMate/tapir-archicad-MCP/actions/workflows/test.yml)
+![Platforms: Windows and macOS](https://img.shields.io/badge/platforms-Windows%20%7C%20macOS-blue)
+[![Supported Tapir version](https://img.shields.io/badge/Tapir_Add--On-2.0.0-blue)](https://github.com/ENZYME-APD/tapir-archicad-automation/releases)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Status](https://img.shields.io/badge/status-alpha-orange.svg)]()
+## See it in action
 
-## Key Features
+Astra uses photos and a plan as references to model in Archicad.
 
--   **Pydantic-Powered Runtime Validation & Schema Generation:** Every tool's input and output shapes are backed by rigorous Pydantic models. The server dynamically compiles these into detailed JSON Schemas for the AI agent to inspect, and strictly validates all incoming tool arguments at runtime *before* forwarding them to Archicad. It handles complex models, Union types, and TypeAliases seamlessly.
--   **Progressive Tool Discovery (CLI-style):** The server uses a deterministic workflow (`archicad_list_commands` and `archicad_get_command_schema`) that allows AI agents to list available commands and fetch exact parameter schemas on demand. This avoids flooding the model's context window with large schemas.
--   **No Heavy Machine-Learning Dependencies:** Vector-based search has been removed. The server no longer requires heavy packages like PyTorch, `faiss-cpu`, or `sentence-transformers`, dramatically reducing the package size and eliminating server startup delays.
--   **Massive Toolset, Minimal Footprint:** Provides access to a unified toolset of **191+ commands** by merging the community Tapir API and the official Archicad JSON API.
--   **Flexible Network Transports:** Supports `sse` (Server-Sent Events) and `streamable-http` transports in addition to standard input/output (`stdio`), allowing the server to be run on remote host configurations.
--   **Bearer Token Authentication:** Secures HTTP endpoints when using SSE or Streamable-HTTP via an opt-in token validation middleware (`--token` flag or `TAPIR_MCP_TOKEN` environment variable).
--   **Multi-Instance Control:** Connect to and manage multiple running Archicad instances simultaneously, targeting commands to specific instances via port numbers.
--   **Cross-Platform Support:** Compatible with both Windows and macOS systems.
+[![Watch the Archicad modeling demo on YouTube](https://img.youtube.com/vi/LuWmoVjfpUA/hqdefault.jpg)](https://www.youtube.com/watch?v=LuWmoVjfpUA)
 
-## Installation & Setup
+## What can it do?
 
-Follow these steps to get the server running and connected to an MCP client like Claude for Desktop.
+- Inspect open projects, elements, properties, and attributes.
+- Create and modify model elements, and work with views and layouts.
+- Export project data and use supported IFC and Teamwork commands.
+- Access **800+ Archicad commands**, discovered on demand by your assistant.
+- Connect to multiple running Archicad instances.
 
-### 1. Prerequisites
+## Quick start
 
--   **Python 3.12+** and **`uv`**: Ensure you have a modern version of Python and the `uv` package manager installed.
--   **Archicad & Tapir Add-On**: You must have Archicad running (which includes the official JSON API). To access the full set of community-developed tools, the [Tapir Archicad Add-On](https://github.com/ENZYME-APD/tapir-archicad-automation) must also be installed.
--   **MCP Client**: An application that can host MCP servers, such as [Claude for Desktop](https://www.claude.ai/download) or [Gemini CLI](https://github.com/google-gemini/gemini-cli).
+You'll need Archicad running on Windows or macOS, the [Tapir add-on](https://github.com/ENZYME-APD/tapir-archicad-automation), [uv](https://docs.astral.sh/uv/getting-started/installation/), and an MCP client. The server requires Python 3.12–3.14; uv can provision Python for you.
 
-### 2. Configure Your AI Client
+### Ask your AI to install it
 
-Open your client's `config.json` file and add the following configuration. This command works across operating systems:
+Copy this prompt into your AI assistant:
 
--   **macOS:** `~/Library/Application Support/Claude/claude_desktop_config.json`
--   **Windows:** `%APDATA%\Claude\claude_desktop_config.json`
+> Install the Archicad Tapir MCP server for my MCP client, following the instructions at https://github.com/SzamosiMate/tapir-archicad-MCP/blob/master/docs/setup-and-configuration.md. Help me verify that it can connect to my running Archicad instance.
 
-```json
-{
-  "mcpServers": {
-    "ArchicadTapir": {
-      "command": "uvx",
-      "args": [
-        "--from",
-        "tapir-archicad-mcp",
-        "archicad-server"
-      ]
-    }
-  }
-}
+### Install it yourself
+
+If your client supports MCP bundles, download [tapir-archicad.mcpb](https://github.com/SzamosiMate/tapir-archicad-MCP/releases/latest/download/tapir-archicad.mcpb) and open it in your client. The client must be able to find `uv` on its PATH.
+
+Prefer the old-school approach? Follow the [manual setup instructions](docs/setup-and-configuration.md#manual-configuration)—editing a config file is optional hacker cred.
+
+### Try it
+
+With Archicad running, ask your assistant:
+
+> What Archicad projects do I have open?
+
+The assistant can list ready instances, their project names and ports, and report instances that are unavailable. If you have multiple projects open, specify the port when asking it to work on one.
+
+## How it works
+
+Your MCP client runs this server, which connects to Archicad through [`multiconn_archicad`](https://github.com/SzamosiMate/multiconn_archicad). The server exposes five MCP tools for finding instances, listing commands, looking up their schemas, executing commands, and checking long-running jobs. Your assistant discovers the Archicad commands it needs instead of loading all their schemas at once.
+
+## Important to know
+
+The server can create, modify, and delete model elements, export files, and interact with Teamwork. Project names, paths, and model data returned by commands are sent to your MCP client. Review changes made to your projects and use a copy when experimenting.
+
+Available commands depend on your installed Archicad and Tapir versions. Instance discovery reports a missing Tapir add-on as unavailable and warns when the installed Tapir version differs from the version supported by the server.
+
+## Documentation
+
+See [Setup and configuration](docs/setup-and-configuration.md) for client setup, troubleshooting, server options, HTTP transports, jobs, and pagination.
+
+## Development and contributing
+
+Install [uv](https://docs.astral.sh/uv/getting-started/installation/), clone the repository, and run:
+
+```sh
+uv sync --locked
+uv run --locked pytest tests
 ```
 
-### 3. One-click install (optional)
+Contributions are welcome: [open an issue or pull request](https://github.com/SzamosiMate/tapir-archicad-MCP/issues). Command wrappers are generated from the pinned `multiconn-archicad` release; see `scripts/generate_tools.py` and `scripts/generator_config.py` for the generator and its configuration.
 
-If your client supports [MCP Bundles](https://github.com/modelcontextprotocol/mcpb) you can skip the config file above. Claude Desktop, Claude Code and MCP for Windows all install `.mcpb` files.
+## License and acknowledgments
 
-Download [tapir-archicad.mcpb](https://github.com/SzamosiMate/tapir-archicad-MCP/releases/latest/download/tapir-archicad.mcpb) from the latest release and open it in your client. On the Microsoft Store build of Claude Desktop this is the easier route, because the app does not read the `%APPDATA%\Claude\claude_desktop_config.json` that everyone documents.
-
-`uv` still has to be on the PATH your client sees, but it provisions Python and the locked dependencies itself, so there is nothing else to install. The first launch takes 15 to 30 seconds while it builds that environment. The bundle can modify the open project, export files, and send or receive Teamwork, so treat installing it like handing your client your Archicad seat.
-
-<details>
-<summary>If the bundle will not start</summary>
-
--   **"Server disconnected", or the install itself fails.** Uninstall the bundle, restart the client, then install it again. Installing over an existing bundle can leave stale state behind that a straight reinstall does not clear.
--   **Nothing happens for the first half minute.** That is uv building the environment, and antivirus scanning or a slow connection stretches it out. Restart the client once before assuming the bundle is broken.
--   **Claude Desktop logs** are at `%APPDATA%\Claude\logs\mcp-server-Archicad (Tapir).log`. On the Microsoft Store build that path is redirected and the real file is `%LOCALAPPDATA%\Packages\Claude_pzs8sxrjxfjjc\LocalCache\Roaming\Claude\logs\mcp-server-Archicad (Tapir).log`.
-
-</details>
-
-Icon artwork is the official Tapir mark from [ENZYME-APD/tapir-archicad-automation](https://github.com/ENZYME-APD/tapir-archicad-automation) (`branding/logo/png/tapir_logo_black_512.png`), MIT, Copyright 2024 Enzyme APD.
-
-## Configuration Options
-
-You can customize the server via CLI flags or environment variables:
-
-| CLI Flag | Environment Variable | Default | Description |
-| :--- | :--- | :--- | :--- |
-| `--transport` | - | `stdio` | Transport protocol to use (`stdio`, `sse`, or `streamable-http`) |
-| `--host` | `TAPIR_MCP_HOST` | `127.0.0.1` | Bind address for HTTP-based transports |
-| `--port` | `TAPIR_MCP_PORT` | `8000` | Bind port for HTTP-based transports |
-| `--token` | `TAPIR_MCP_TOKEN` | `None` | Optional Bearer token to secure HTTP endpoints |
-| `--async-threshold-seconds` | `TAPIR_MCP_ASYNC_THRESHOLD_SECONDS` | `45` | Seconds to wait before returning a running job handle |
-| `--job-ttl-seconds` | `TAPIR_MCP_JOB_TTL_SECONDS` | `86400` | Seconds to keep finished jobs; `0` disables time-based expiry |
-| `--max-completed-jobs` | `TAPIR_MCP_MAX_COMPLETED_JOBS` | `128` | Maximum number of finished jobs to keep |
-
-CLI flags override environment variables.
-
-## Long-running commands
-
-Commands normally return their result directly. If a command takes longer than 45 seconds, `archicad_call_tool` returns a job handle while execution continues:
-
-```json
-{"status": "running", "jobHandle": "job:83af21..."}
-```
-
-Call `archicad_get_job(job_handle="job:83af21...")` to check progress and retrieve the result. Repeat while the status is `running`; the final status is `completed` or `failed`. If your client times out sooner, lower `--async-threshold-seconds`.
-
-If a response is lost, call `archicad_get_job()` to list recent jobs before repeating a command that changes the project. Cancelling a request does not stop a command already started, and retrying it may duplicate changes.
-
-Jobs remain available across HTTP client reconnects while the server is running, but are lost on server restart. Retention defaults to 24 hours and a maximum of 128 finished jobs.
-
-## Usage
-
-1. **Restart Claude for Desktop** to apply configuration changes.
-2. Ensure at least one instance of Archicad is running.
-3. The client will initially have access to a small set of core tools. Start by asking the AI to find running Archicad instances:
-
-   > "Can you check what Archicad projects I have running?"
-
-   The AI will call `discovery_list_active_archicads` and report the active instances and their `port` numbers.
-
-4. State your main goal:
-
-   > "Using port 19723, get all the Wall elements from the project."
-
-5. The AI will execute a progressive discovery and calling loop:
-   - **Step 1:** It queries `archicad_list_commands` to look up the correct command name for the requested action (identifying `elements_get_elements_by_type`).
-   - **Step 2:** It calls `archicad_get_command_schema` with the target command name to retrieve the exact required JSON parameter structure.
-   - **Step 3:** It calls `archicad_call_tool` with the command name, the targeted `port`, and the required parameter payload.
-
-## How It Works
-
-The server operates through a layered architecture:
-
--   **AI Agent (e.g., Claude):** Interprets user prompts and orchestrates tool discovery.
--   **MCP Client (e.g., Claude for Desktop):** Manages the server process and handles communication.
--   **MCP Server (This Project):** Standardizes tool descriptions, parameters, and results, presenting a clean `list`/`schema`/`call` interface.
--   **`multiconn_archicad` Library:** Resolves active socket connections and handles low-level command dispatch to Archicad instances.
--   **Archicad & Tapir Add-On:** Built-in APIs and Tapir Add-on execute commands and return structured data.
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit an issue or open a pull request.
-
-## License
-
-This project is licensed under the MIT License. See the [LICENSE](./LICENSE) file for details.
+This project is licensed under the [MIT License](LICENSE). The bundle icon uses the Tapir mark from [ENZYME-APD/tapir-archicad-automation](https://github.com/ENZYME-APD/tapir-archicad-automation) (`branding/logo/png/tapir_logo_black_512.png`), MIT, Copyright 2024 Enzyme APD.

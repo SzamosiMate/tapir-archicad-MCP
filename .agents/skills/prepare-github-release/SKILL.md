@@ -15,6 +15,7 @@ repository root; `scripts/release.py` handles deterministic preparation.
 - Finish any requested generation and source reviews before release preparation,
   following the repository's existing workflows. Do not invoke an explicit-only
   generation skill unless it was requested.
+- Review README.md and the setup guide against the release changes; update stale command counts, compatibility, installation, configuration, and user-visible behavior as needed.
 - Run `python scripts/release.py bump VERSION` and inspect the version/lock diff.
   Include it in the reviewed source changes. Preserve unrelated work and follow
   the session's commit/push authorization. A draft requires committed, pushed HEAD.
