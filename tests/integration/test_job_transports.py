@@ -53,7 +53,7 @@ def worker(monkeypatch):
         return {"dispatchCount": len(calls)}
 
     register_tool_for_dispatch(execute, name=COMMAND, title="Test", description="Test-only blocking command")
-    fake = SimpleNamespace(active={19723: object()}, open_port_headers={})
+    fake = SimpleNamespace(active={}, open_port_headers={19723: object()})
     monkeypatch.setattr("tapir_archicad_mcp.app.MultiConn", lambda: fake)
     monkeypatch.setattr("tapir_archicad_mcp.app.job_settings", JobSettings(async_threshold_seconds=0.5))
     yield entered, release, calls
@@ -303,7 +303,7 @@ def execute(conn_header):
     return {"dispatchCount": len(calls)}
 
 register_tool_for_dispatch(execute, name="test_job_transport_command", title="Test", description="Test")
-app.MultiConn = lambda: SimpleNamespace(active={19723: object()}, open_port_headers={})
+app.MultiConn = lambda: SimpleNamespace(active={}, open_port_headers={19723: object()})
 app.job_settings = JobSettings(async_threshold_seconds=2)
 @app.mcp.tool(name="test_release_worker")
 async def release_worker() -> dict:
