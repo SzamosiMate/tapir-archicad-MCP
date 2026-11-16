@@ -316,7 +316,7 @@ def _serialized_parameters(params: Any) -> str:
 
 def _get_header(port: int) -> ConnHeader:
     try:
-        return multi_conn_instance.get().active[Port(port)]
+        return multi_conn_instance.get().open_port_headers[Port(port)]
     except KeyError:
         raise ToolError(f"Port {port} is not an active Archicad connection.") from None
 
