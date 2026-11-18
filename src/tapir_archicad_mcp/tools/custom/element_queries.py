@@ -51,8 +51,11 @@ register_tool_for_dispatch(
     description=(
         "Find elements matching a serialized multiconn query: nested AND/OR conditions on element types, "
         "properties and classifications. Searches the floor plan, or filters supplied elements. "
-        "Discover property GUIDs and metadata with properties_search_properties; discover classification systems "
-        "and items with classification commands. Use the command schema for test kinds, operators and operands. "
+        "Discover property GUIDs and metadata with properties_search_properties; set includeEnumValues=true for "
+        "enumerations and use exact case-sensitive choice labels, not option GUIDs. Discover classification "
+        "systems and items with classification commands. Use the command schema for test kinds and operators. "
+        "Collection tests take arrays: contains requires all requested items; does not contain requires none. "
+        "List equality preserves order and duplicates; multi-enum equality ignores order. "
         "Numeric quantities use SI units, except angles use degrees. Requires Tapir 2.0.0 or newer. "
         "Returns matching element IDs; per-element evaluation errors are omitted. "
         "Invalid queries and query-wide failures fail the command. Does not change selection."

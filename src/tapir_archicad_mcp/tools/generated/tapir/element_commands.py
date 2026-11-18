@@ -38,7 +38,6 @@ from multiconn_archicad.models.tapir.commands import (
     GetElementConnectionsParameters,
     GetElementPreviewImageParameters,
     GetElementsByCriteriaParameters,
-    GetElementsByTypeParameters,
     GetElementsInCreationOrderParameters,
     GetElementsInDrawOrderParameters,
     GetElementTypeNamesParameters,
@@ -1211,34 +1210,6 @@ register_tool_for_dispatch(
         "stamps, the parts of stairs and railings) are left out unless the IncludeSubElemObjects filter is given."
     ),
     params_model=GetElementsByCriteriaParameters,
-    pagination_field="elements",
-)
-
-
-def get_elements_by_type(conn_header: ConnHeader, params: GetElementsByTypeParameters) -> dict:
-    """
-    Returns the identifier of every element of the given type on the plan. It works for any type. Use the optional
-    filter parameter for filtering. Objects that belong to another element (zone stamps, the parts of stairs and
-    railings) are left out unless the IncludeSubElemObjects filter is given.
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
-    """
-    return conn_header.core.post_tapir_command(
-        command="GetElementsByType", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
-    )
-
-
-register_tool_for_dispatch(
-    get_elements_by_type,
-    name="elements_get_elements_by_type",
-    title="GetElementsByType",
-    description=(
-        "Returns the identifier of every element of the given type on the plan. It works for any type. Use the "
-        "optional filter parameter for filtering. Objects that belong to another element (zone stamps, the parts of "
-        "stairs and railings) are left out unless the IncludeSubElemObjects filter is given."
-    ),
-    params_model=GetElementsByTypeParameters,
     pagination_field="elements",
 )
 
