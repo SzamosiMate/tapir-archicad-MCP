@@ -107,7 +107,8 @@ TAPIR_CONFIG = ApiSourceConfig(
         "GetPenTables",  # Pen data, index and active tables available elsewhere
         "GetZoneCategories",  # Same category details; index available elsewhere
         "GetAllClassificationSystems",  # Same contract; prefer Official
-        "GetElementsByClassification",  # Official returns the same IDs with flat pagination
+        "GetElementsByClassification",  # Use elements_query for classification searches
+        "GetElementsByType",  # Use elements_query for type searches
         "GetClassificationOfAttributesInSystem",  # Covered by GetClassificationsOfAttributes
         "GetComponentsOfElements",  # Same contract; prefer Official
         "GetCommands",  # Use curated MCP discovery; avoid the full upstream catalog
@@ -126,7 +127,6 @@ TAPIR_CONFIG = ApiSourceConfig(
     paginated_commands={
         "GetAllElements": "elements",
         "GetSelectedElements": "elements",
-        "GetElementsByType": "elements",
         "GetAllProperties": "properties",
         "GetAttributesByType": "attributes",
         "GetIssues": "issues",
@@ -225,7 +225,8 @@ OFFICIAL_CONFIG = ApiSourceConfig(
         "DeleteAttributeFolders",  # Tapir also supports dry-run checks
         "DeleteNavigatorItems",  # Tapir also supports dry-run checks
         "GetAllElements",  # Tapir command works on more element types
-        "GetElementsByType",  # Tapir command works on more element types
+        "GetElementsByType",  # Use elements_query for type searches
+        "GetElementsByClassification",  # Use elements_query for classification searches
         "GetSelectedElements",  # Tapir command works on more element types
         "GetClassificationsOfElements",  # Tapir command works on subelements
         "SetClassificationsOfElements",  # Tapir command works on subelements
@@ -245,7 +246,6 @@ OFFICIAL_CONFIG = ApiSourceConfig(
         "GetNavigatorItemTree",  # Tapir adds source links and custom-name/ID flags
     },
     paginated_commands={
-        "GetElementsByClassification": "elements",
         "GetAllPropertyIds": "propertyIds",
         "GetAllPropertyNames": "properties",
         "GetDetailsOfProperties": "propertyDefinitions",
