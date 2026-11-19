@@ -40,6 +40,12 @@ def _positive_int(value: str) -> int:
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run the Archicad Tapir MCP server.")
     parser.add_argument(
+        "--command-discovery",
+        choices=("full", "groups", "keyword", "groups-keyword", "names", "chain-lexical", "chain-hybrid"),
+        default="full",
+        help="Implementation of archicad_list_commands to serve. Defaults to the full catalogue.",
+    )
+    parser.add_argument(
         "--transport",
         choices=("stdio", "sse", "streamable-http"),
         default="stdio",
@@ -104,6 +110,11 @@ def sse_paths_from_mount_path(mount_path: str | None) -> dict[str, str]:
 def main():
     args = parse_args()
     import tapir_archicad_mcp.app as app_module
+
+    if args.command_discovery != "full":
+        from tapir_archicad_mcp.tools.custom.command_discovery import configure_command_discovery
+
+        configure_command_discovery(mcp, args.command_discovery)
 
     app_module.job_settings = JobSettings(
         async_threshold_seconds=args.async_threshold_seconds,

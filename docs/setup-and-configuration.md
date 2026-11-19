@@ -67,6 +67,7 @@ Pass flags to `archicad-server` after its name, or set the corresponding environ
 | Flag | Environment variable | Default | Description |
 | --- | --- | --- | --- |
 | `--transport` | — | `stdio` | `stdio`, `sse`, or `streamable-http` |
+| `--command-discovery` | — | `full` | Catalogue mode for `archicad_list_commands`. Experimental chain modes are `chain-lexical` and `chain-hybrid`. Earlier modes are `full`, `groups`, `keyword`, `groups-keyword`, and `names`. |
 | `--host` | `TAPIR_MCP_HOST` | `127.0.0.1` | HTTP bind address |
 | `--port` | `TAPIR_MCP_PORT` | `8000` | HTTP bind port |
 | `--streamable-http-path` | `TAPIR_MCP_STREAMABLE_HTTP_PATH` | `/mcp` | Streamable HTTP endpoint path |
