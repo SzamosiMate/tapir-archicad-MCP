@@ -17,6 +17,7 @@ Astra uses photos and a plan as references to model in Archicad.
 ## What can it do?
 
 - Inspect open projects, elements, properties, and attributes.
+- Find elements that match conditions on type, properties, and classifications.
 - Create and modify model elements, and work with views and layouts.
 - Export project data and use supported IFC and Teamwork commands.
 - Access **800+ Archicad commands**, discovered on demand by your assistant.
@@ -53,7 +54,7 @@ The assistant can list ready instances, their project names and ports, and repor
 
 ## How it works
 
-Your MCP client runs this server, which connects to Archicad through [`multiconn_archicad`](https://github.com/SzamosiMate/multiconn_archicad). The server exposes five MCP tools for finding instances, listing commands, looking up their schemas, executing commands, and checking long-running jobs. Your assistant discovers the Archicad commands it needs instead of loading all their schemas at once.
+Your MCP client runs this server, which connects to Archicad through [`multiconn_archicad`](https://github.com/SzamosiMate/multiconn_archicad). The server exposes five MCP tools for finding instances, searching and browsing commands, looking up their schemas, executing commands, and checking long-running jobs. Your assistant can search for several workflow steps at once and narrow results by command group.
 
 ## Important to know
 
@@ -65,9 +66,9 @@ Available commands depend on your installed Archicad and Tapir versions. Instanc
 
 See [Setup and configuration](docs/setup-and-configuration.md) for client setup, troubleshooting, server options, HTTP transports, jobs, and pagination.
 
-See [Command discovery](docs/command-discovery.md) for lexical search, continuation, and the seven-variant benchmark.
+See [Command discovery](docs/command-discovery.md) for keyword search, follow-up searches, and benchmarks.
 
-See [Element queries](docs/element-queries.md) for the query command and pilot development setup.
+See [Element queries](docs/setup-and-configuration.md#element-queries) for finding and filtering elements.
 
 ## Development and contributing
 

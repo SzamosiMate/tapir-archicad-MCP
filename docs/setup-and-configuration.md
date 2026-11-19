@@ -92,6 +92,14 @@ The HTTP server's port is separate from the port identifying an Archicad instanc
 
 ## Working with results
 
+### Element queries
+
+With Tapir 2.0.0 or newer, ask your assistant to find elements by type, property values, or classification. For example, ask it to find exterior walls with a fire rating of at least 60 minutes using the properties available in your project. The `elements_query` command accepts nested AND/OR conditions and returns matching element IDs in pages when needed.
+
+By default, the command searches the floor plan. Pass `params.elements` to filter a list of candidate IDs while preserving their order and duplicate matches. An empty candidate list yields no matches.
+
+When calling the command directly, look up its schema with `archicad_get_command_schema` and set `params.query.schema_version` to `"1.0"`. Use `properties_search_properties` to find property GUIDs. Set `includeEnumValues` to `true` to look up enumeration choices and pass their exact case-sensitive labels in the query.
+
 ### Long-running commands
 
 Commands normally return their result directly. If a command takes longer than 45 seconds by default, `archicad_call_tool` returns a job handle while execution continues:

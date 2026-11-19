@@ -4,8 +4,8 @@ build-backend = "hatchling.build"
 
 [project]
 name = "tapir-archicad-mcp"
-version = "0.6.9"
-description = "An MCP server that enables AI agents to automate Archicad using natural language via intelligent, semantic tool discovery."
+version = "0.7.0"
+description = "An MCP server for automating Archicad with natural language and on-demand command search."
 readme = "README.md"
 authors = [
     { name = "SzamosiMate", email = "szamimate@yahoo.com" }

@@ -2,9 +2,9 @@
   "manifest_version": "0.4",
   "name": "tapir-archicad",
   "display_name": "Archicad (Tapir)",
-  "version": "0.6.9",
+  "version": "0.7.0",
   "description": "Drive a running Archicad instance through the Tapir add-on and Archicad's JSON API.",
-  "long_description": "Local MCP server for a running Archicad session. Discovers active instances, lists available Archicad API commands, retrieves each command's schema, and executes them.\n\nThis can create, modify, and delete elements; open, close, and save projects; export files (IFC, BCF, favorites); and send or receive Teamwork. Project names, paths, and model data are sent to the MCP client. Requires Archicad open on this machine, and the Tapir Archicad Add-On for the full command set.",
+  "long_description": "Local MCP server for a running Archicad session. Discovers active instances, searches and browses Archicad API commands, retrieves each command's schema, and executes commands.\n\nThis can create, modify, and delete elements; open, close, and save projects; export files (IFC, BCF, favorites); and send or receive Teamwork. Project names, paths, and model data are sent to the MCP client. Requires Archicad open on this machine and the Tapir Archicad Add-On installed for that version.",
   "author": {
     "name": "SzamosiMate",
     "email": "szamimate@yahoo.com",
@@ -49,7 +49,7 @@
     },
     {
       "name": "archicad_list_commands",
-      "description": "Lists all available Archicad API commands."
+      "description": "Searches the Archicad command catalogue by keyword or browses command names by group."
     },
     {
       "name": "archicad_get_command_schema",
