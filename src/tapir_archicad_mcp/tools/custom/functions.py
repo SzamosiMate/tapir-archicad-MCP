@@ -24,7 +24,7 @@ from tapir_archicad_mcp.images import build_result, extract_images, to_tool_resu
 from tapir_archicad_mcp.jobs import JobStore
 from tapir_archicad_mcp.pagination import PaginationRequest, prepare_result
 from tapir_archicad_mcp.request_lifecycle import DispatchLifecycle
-from tapir_archicad_mcp.tools.custom.command_discovery import archicad_list_commands, command_group_directory
+from tapir_archicad_mcp.tools.custom.command_discovery import archicad_list_commands, command_groups
 from tapir_archicad_mcp.tools.custom.models import (
     CommandSchema,
     DiscoveryResult,
@@ -159,7 +159,7 @@ mcp.add_tool(
     title="List Available Archicad Commands",
     description=(
         f"{inspect.getdoc(archicad_list_commands)}\n\n"
-        f"Available groups: {', '.join(entry.group for entry in command_group_directory().groups)}. "
+        f"Available groups: {', '.join(command_groups())}. "
         "Use archicad_get_command_schema before executing a selected command."
     ),
     annotations=ToolAnnotations(

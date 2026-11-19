@@ -28,7 +28,6 @@ from tapir_archicad_mcp.tools.custom.functions import (
     list_active_archicads,
 )
 from tapir_archicad_mcp.tools.custom.models import (
-    CommandOverview,
     CommandSchema,
     DiscoveryResult,
 )
@@ -81,11 +80,9 @@ def set_multi_conn():
 
 def test_archicad_list_commands(fake_archicad):
     names = ["elements_get_selected_elements", "elements_create_slabs"]
-    commands = archicad_list_commands(keywords=names).matches
-    first_cmd = commands[0]
-    assert isinstance(first_cmd, CommandOverview)
-    assert first_cmd.name and first_cmd.description
-    assert [command.name for command in commands] == names
+    page = archicad_list_commands(keywords=names).result
+    assert [match.commands for match in page.matches] == [[name] for name in names]
+    assert page.descriptions == {}
 
 
 def test_archicad_get_command_schema_valid(fake_archicad):

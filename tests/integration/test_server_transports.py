@@ -52,23 +52,26 @@ async def test_command_discovery_exposes_and_continues_lexical_search():
     async with Client(mcp) as client:
         tools = (await client.list_tools()).tools
         discovery = next(tool for tool in tools if tool.name == "archicad_list_commands")
-        assert set(discovery.input_schema["properties"]) == {"groups", "keywords", "query_id", "detail", "list_groups"}
+        assert set(discovery.input_schema["properties"]) == {"groups", "keywords", "query_id"}
         assert "design_options" in discovery.description
 
-        name = "elements_get_selected_elements"
-        args = {"keywords": [name]}
-        first = await client.call_tool("archicad_list_commands", {**args, "detail": "compact"})
+        name = "keynotes_get_keynote_tree"
+        first = await client.call_tool("archicad_list_commands", {"keywords": [name]})
         assert not first.is_error
         page = first.structured_content["result"]
-        assert page["names"] == name
+        assert page["matches"] == [{"keyword_index": 0, "commands": [name], "remaining": 0, "exact_status": "found"}]
+        assert page["descriptions"] == {}
         assert len(page["query_id"]) == 12
 
+        args = {"groups": ["keynotes"], "keywords": ["keynote tree", "keynote tree"]}
         second = await client.call_tool("archicad_list_commands", {**args, "query_id": page["query_id"]})
         page = second.structured_content["result"]
-        assert [match["name"] for match in page["matches"]] == [name]
+        assert [match["keyword_index"] for match in page["matches"]] == [0, 1]
+        assert all(name in match["commands"] for match in page["matches"])
+        assert page["descriptions"][name]
 
         third = await client.call_tool("archicad_list_commands", {**args, "query_id": page["query_id"]})
-        assert third.structured_content["result"]["matches"] == []
+        assert name not in third.structured_content["result"]["descriptions"]
 
 
 @pytest.mark.asyncio

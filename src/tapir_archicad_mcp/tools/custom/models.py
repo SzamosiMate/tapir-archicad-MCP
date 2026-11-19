@@ -62,13 +62,6 @@ class DiscoveryResult(BaseModel):
     )
 
 
-class CommandOverview(BaseModel):
-    """A brief overview of an available Archicad command."""
-
-    name: str = Field(description="The unique, snake-cased name of the tool (e.g., 'elements_get_all_elements').")
-    description: str = Field(description="A brief explanation of the tool's function.")
-
-
 class CommandSchema(BaseModel):
     """The detailed JSON schema required to execute a specific Archicad command."""
 

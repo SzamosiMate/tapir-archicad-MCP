@@ -6,6 +6,7 @@ from pathlib import Path
 from textwrap import dedent, indent
 
 from format import format_docstring, format_string_literal, run_ruff_format
+from generate_discovery_synonyms import generate_synonyms, wordnet_source
 from generator_config import OFFICIAL_CONFIG, TAPIR_CONFIG, ApiSourceConfig
 
 log = logging.getLogger()
@@ -241,7 +242,10 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
     log.info("--- Starting Archicad MCP Tool Generator ---")
 
-    run_generation_for_source(TAPIR_CONFIG)
-    run_generation_for_source(OFFICIAL_CONFIG)
+    source = wordnet_source()
+    for config in (TAPIR_CONFIG, OFFICIAL_CONFIG):
+        if not run_generation_for_source(config):
+            raise SystemExit(f"Tool generation failed for {config.name}.")
+    generate_synonyms(source)
 
     log.info("--- Tool Generation Completed Successfully for All Sources ---")
