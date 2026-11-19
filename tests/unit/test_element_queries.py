@@ -39,7 +39,7 @@ def query_api(fake_archicad):
 
 def test_discovery_schema_includes_query_tree_and_explicit_version(query_api):
     page = archicad_list_commands(keywords=["elements_query"]).result
-    assert page.matches[0].commands == ["elements_query"]
+    assert page.exact_matches[0].commands == ["elements_query"]
     schema = archicad_get_command_schema("elements_query").input_schema
     assert set(schema["properties"]) == {"port", "params", "page_token"}
     assert set(schema["$defs"]["SerializedQuery"]["required"]) == {"schema_version", "where"}
