@@ -81,8 +81,8 @@ def set_multi_conn():
 def test_archicad_list_commands(fake_archicad):
     names = ["elements_get_selected_elements", "elements_create_slabs"]
     page = archicad_list_commands(keywords=names).result
-    assert [match.commands for match in page.matches] == [[name] for name in names]
-    assert page.descriptions == {}
+    assert [match.commands for match in page.exact_matches] == [[name] for name in names]
+    assert page.matches == []
 
 
 def test_archicad_get_command_schema_valid(fake_archicad):

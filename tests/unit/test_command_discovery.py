@@ -18,13 +18,12 @@ def test_unknown_group_is_an_actionable_error():
 
 def test_search_can_page_through_ranked_results():
     keywords = ["publisher set", "drawing"]
-    individual = [archicad_list_commands(keywords=[keyword]).result.matches[0].commands for keyword in keywords]
     first = archicad_list_commands(keywords=keywords).result
-    assert [match.commands for match in first.matches] == individual
-    assert all(len(match.commands) == 3 and match.remaining > 0 for match in first.matches)
+    assert len(first.matches) == 12
+    assert first.remaining > 0
     second = archicad_list_commands(keywords=keywords, query_id=first.query_id).result
-    assert set(first.descriptions).isdisjoint(second.descriptions)
-    assert all(a.remaining > b.remaining for a, b in zip(first.matches, second.matches, strict=True))
+    assert {match.name for match in first.matches}.isdisjoint(match.name for match in second.matches)
+    assert second.remaining == first.remaining - len(second.matches)
 
 
 @pytest.mark.parametrize(
@@ -37,11 +36,11 @@ def test_search_can_page_through_ranked_results():
 )
 def test_search_finds_collisions_using_generated_wordnet_aliases(phrase, groups):
     page = archicad_list_commands(keywords=[phrase], groups=groups).result
-    assert "elements_get_collisions" in page.matches[0].commands
-    assert "elements_get_collisions" in page.descriptions
+    target = next(match for match in page.matches[:3] if match.name == "elements_get_collisions")
+    assert target.description
 
 
-def test_page_limit_applies_to_each_phrase(monkeypatch):
+def test_round_robin_interleaves_before_applying_the_page_limit(monkeypatch):
     phrases = [f"intent{index}" for index in range(8)]
     catalogue = {
         f"actions_{phrase}_{number}": {"description": f"Command for {phrase}."}
@@ -49,12 +48,13 @@ def test_page_limit_applies_to_each_phrase(monkeypatch):
         for number in range(4)
     }
     monkeypatch.setattr(command_discovery, "TOOL_DISCOVERY_CATALOG", catalogue)
+    expected = [f"actions_{phrase}_{number}" for number in range(4) for phrase in phrases]
     page = archicad_list_commands(keywords=phrases).result
-    assert len(page.descriptions) == 24
-    for index, match in enumerate(page.matches):
-        assert match.keyword_index == index
-        assert match.commands == [f"actions_{phrases[index]}_{number}" for number in range(3)]
-        assert match.remaining == 1
+    for start in (0, 12, 24):
+        assert [match.name for match in page.matches] == expected[start : start + 12]
+        assert page.remaining == max(len(expected) - start - 12, 0)
+        if page.remaining:
+            page = archicad_list_commands(keywords=phrases, query_id=page.query_id).result
 
 
 def test_chain_browses_multiple_groups():
@@ -68,13 +68,13 @@ def test_chain_browses_multiple_groups():
 def test_exact_name_returns_a_single_name_without_description():
     name = "keynotes_get_keynote_tree"
     page = archicad_list_commands(keywords=[name.upper()]).result
-    assert page.matches[0].commands == [name]
-    assert page.matches[0].exact_status == "found"
-    assert page.matches[0].remaining == 0
-    assert page.descriptions == {}
+    assert page.exact_matches[0].commands == [name]
+    assert page.exact_matches[0].exact_status == "found"
+    assert page.matches == []
+    assert page.remaining == 0
     repeated = archicad_list_commands(keywords=[name], query_id=page.query_id).result
-    assert repeated.matches[0].commands == []
-    assert repeated.matches[0].exact_status == "found"
+    assert repeated.exact_matches[0].commands == []
+    assert repeated.exact_matches[0].exact_status == "found"
 
 
 def test_chain_can_describe_a_previously_returned_name():
@@ -83,9 +83,9 @@ def test_chain_can_describe_a_previously_returned_name():
     assert name in compact.names.splitlines()
     args = {"groups": ["keynotes"], "keywords": ["keynote tree"]}
     full = archicad_list_commands(**args, query_id=compact.query_id).result
-    assert name in full.matches[0].commands
-    assert full.descriptions[name]
-    assert name not in archicad_list_commands(**args, query_id=full.query_id).result.descriptions
+    assert next(match.description for match in full.matches if match.name == name)
+    repeated = archicad_list_commands(**args, query_id=full.query_id).result
+    assert name not in {match.name for match in repeated.matches}
     assert archicad_list_commands(groups=["keynotes"], query_id=full.query_id).result.names == ""
     replay = archicad_list_commands(**args, query_id=compact.query_id).result
     assert replay.model_dump(exclude={"query_id"}) == full.model_dump(exclude={"query_id"})
@@ -94,21 +94,23 @@ def test_chain_can_describe_a_previously_returned_name():
 
 def test_chain_deduplicates_batches_and_refined_queries():
     first = archicad_list_commands(keywords=["publisher set", "publisher set", "drawing"]).result
-    assert first.matches[0].commands == first.matches[1].commands
-    assert set(first.descriptions) == {name for match in first.matches for name in match.commands}
+    distinct = archicad_list_commands(keywords=["publisher set", "drawing"]).result
+    assert first.matches == distinct.matches
+    first_names = {match.name for match in first.matches}
+    assert len(first_names) == len(first.matches)
     second = archicad_list_commands(
         groups=["navigator"], keywords=["publishing", "drawing"], query_id=first.query_id
     ).result
-    assert second.descriptions
-    assert set(first.descriptions).isdisjoint(second.descriptions)
-    assert all(name.startswith("navigator_") for name in second.descriptions)
+    assert second.matches
+    assert first_names.isdisjoint(match.name for match in second.matches)
+    assert all(match.name.startswith("navigator_") for match in second.matches)
 
 
 def test_chain_reports_missing_and_outside_scope_exact_names():
     results = archicad_list_commands(
         groups=["issues"], keywords=["elements_get_selected_elements", " ", "issues_imaginary_tool"]
     ).result
-    assert [(match.keyword_index, match.exact_status) for match in results.matches] == [
+    assert [(match.keyword_index, match.exact_status) for match in results.exact_matches] == [
         (0, "outside_groups"),
         (2, "missing"),
     ]
@@ -152,8 +154,8 @@ def test_continuation_store_evicts_the_least_recently_used_id(monkeypatch):
     arguments = {"keywords": ["elements_get_selected_elements"]}
     oldest = archicad_list_commands(**arguments).result
     other = archicad_list_commands(**arguments).result
-    assert archicad_list_commands(**arguments, query_id=oldest.query_id).result.matches[0].commands == []
+    assert archicad_list_commands(**arguments, query_id=oldest.query_id).result.exact_matches[0].commands == []
     archicad_list_commands(**arguments)
     with pytest.raises(ToolError, match="Invalid or expired query_id"):
         archicad_list_commands(**arguments, query_id=other.query_id)
-    assert archicad_list_commands(**arguments, query_id=oldest.query_id).result.matches[0].commands == []
+    assert archicad_list_commands(**arguments, query_id=oldest.query_id).result.exact_matches[0].commands == []

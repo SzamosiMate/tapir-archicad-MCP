@@ -7,6 +7,7 @@ from collections import Counter, OrderedDict
 from dataclasses import dataclass
 from functools import cache
 from importlib.resources import files
+from itertools import zip_longest
 from secrets import token_urlsafe
 from threading import Lock
 from time import monotonic
@@ -19,7 +20,7 @@ from tapir_archicad_mcp.search_terms import search_terms, search_words
 from tapir_archicad_mcp.tools.tool_registry import TOOL_DISCOVERY_CATALOG
 
 PAGE_BYTES = 28 * 1024
-HITS_PER_PHRASE = 3
+ROUND_ROBIN_LIMIT = 12
 QUERY_TTL_SECONDS = 30 * 60
 MAX_QUERY_STATES = 1024
 _QUERY_ID_LENGTH = 12
@@ -34,9 +35,15 @@ class PhraseMatches(BaseModel):
     exact_status: Literal["found", "missing", "outside_groups"] | None = None
 
 
+class RankedCommand(BaseModel):
+    name: str
+    description: str
+
+
 class SearchPage(BaseModel):
-    matches: list[PhraseMatches]
-    descriptions: dict[str, str]
+    matches: list[RankedCommand]
+    exact_matches: list[PhraseMatches]
+    remaining: int
     query_id: str
 
 
@@ -71,8 +78,8 @@ def archicad_list_commands(
     For every follow-up on the same user request, pass the latest query_id from the previous response, even when
     replacing all keywords or changing groups. Omit query_id to start a new task or restart an unavailable chain.
 
-    Each entry in matches returns up to three command names for its keyword_index. Ranked hits share the descriptions
-    map keyed by command name. An exact name in scope returns that name and its status. Omit keywords to browse names."""
+    The matches list returns up to 12 pooled ranked command names with descriptions. An exact name in scope
+    returns that name and its status in exact_matches by keyword_index. Omit keywords to browse names."""
     phrases = [(index, keyword.strip()) for index, keyword in enumerate(keywords or []) if keyword.strip()]
     group_ids = {group.strip().casefold() for group in groups or [] if group.strip()}
     scope = list(TOOL_DISCOVERY_CATALOG)
@@ -98,34 +105,31 @@ def _command_group(name: str) -> str:
 def _search_page(phrases: list[tuple[int, str]], scope: list[str], seen: SeenCommands, query_id: str) -> SearchPage:
     scoped = set(scope)
     seen_names = seen.compact | seen.full
-    matches: list[PhraseMatches] = []
-    descriptions: dict[str, str] = {}
+    exact_matches: list[PhraseMatches] = []
     exact_names: set[str] = set()
-    ranked_matches: list[tuple[PhraseMatches, list[str]]] = []
+    rankings: list[list[str]] = []
     for index, phrase in phrases:
         identifier = phrase.casefold()
         if identifier in scoped:
             names = [] if identifier in seen_names else [identifier]
             exact_names.update(names)
-            matches.append(PhraseMatches(keyword_index=index, commands=names, remaining=0, exact_status="found"))
+            exact_matches.append(PhraseMatches(keyword_index=index, commands=names, remaining=0, exact_status="found"))
             continue
 
-        exact_status = None
         if _IDENTIFIER.fullmatch(identifier):
-            exact_status = "outside_groups" if identifier in TOOL_DISCOVERY_CATALOG else "missing"
-        candidates = [name for name in _rank_keywords(phrase, scope) if name not in seen.full]
-        names = candidates[:HITS_PER_PHRASE]
-        match = PhraseMatches(keyword_index=index, commands=names, remaining=0, exact_status=exact_status)
-        matches.append(match)
-        ranked_matches.append((match, candidates))
-        descriptions.update((name, TOOL_DISCOVERY_CATALOG[name]["description"]) for name in names)
+            status = "outside_groups" if identifier in TOOL_DISCOVERY_CATALOG else "missing"
+            exact_matches.append(PhraseMatches(keyword_index=index, commands=[], remaining=0, exact_status=status))
+        rankings.append(_rank_keywords(phrase, scope))
 
-    # A description returned for one phrase has also been seen by the other phrases on the page.
-    for match, candidates in ranked_matches:
-        match.remaining = sum(name not in descriptions for name in candidates)
-    updated = SeenCommands(seen.compact.union(exact_names).difference(descriptions), seen.full.union(descriptions))
-    next_id = _continuations.write(updated) if descriptions or exact_names or not query_id else query_id
-    return SearchPage(matches=matches, descriptions=descriptions, query_id=next_id)
+    pooled = dict.fromkeys(name for row in zip_longest(*rankings) for name in row if name is not None)
+    available = [name for name in pooled if name not in seen.full]
+    selected = available[:ROUND_ROBIN_LIMIT]
+    matches = [RankedCommand(name=name, description=TOOL_DISCOVERY_CATALOG[name]["description"]) for name in selected]
+    updated = SeenCommands(seen.compact.union(exact_names).difference(selected), seen.full.union(selected))
+    next_id = _continuations.write(updated) if selected or exact_names or not query_id else query_id
+    return SearchPage(
+        matches=matches, exact_matches=exact_matches, remaining=len(available) - len(selected), query_id=next_id
+    )
 
 
 def _rank_keywords(query: str, names: list[str]) -> list[str]:
