@@ -1,4 +1,5 @@
 import asyncio
+import inspect
 import json
 import logging
 from typing import Annotated, Any
@@ -23,8 +24,8 @@ from tapir_archicad_mcp.images import build_result, extract_images, to_tool_resu
 from tapir_archicad_mcp.jobs import JobStore
 from tapir_archicad_mcp.pagination import PaginationRequest, prepare_result
 from tapir_archicad_mcp.request_lifecycle import DispatchLifecycle
+from tapir_archicad_mcp.tools.custom.command_discovery import archicad_list_commands, command_group_directory
 from tapir_archicad_mcp.tools.custom.models import (
-    CommandOverview,
     CommandSchema,
     DiscoveryResult,
     ProjectType,
@@ -152,15 +153,14 @@ def _get_tapir_version_warning(tapir: TapirInfo) -> str | None:
     return None
 
 
-@mcp.tool(
+mcp.add_tool(
+    archicad_list_commands,
     name="archicad_list_commands",
     title="List Available Archicad Commands",
     description=(
-        "Returns a comprehensive list of all available Archicad API commands and brief descriptions. "
-        "STEP 1: Use this tool FIRST to search for the right command name for your task. "
-        "Do NOT guess or hallucinate command names. "
-        "STEP 2: Once you find the relevant command name, you MUST use the 'archicad_get_command_schema' "
-        "tool to learn its exact required arguments."
+        f"{inspect.getdoc(archicad_list_commands)}\n\n"
+        f"Available groups: {', '.join(entry.group for entry in command_group_directory().groups)}. "
+        "Use archicad_get_command_schema before executing a selected command."
     ),
     annotations=ToolAnnotations(
         readOnlyHint=True,
@@ -169,15 +169,6 @@ def _get_tapir_version_warning(tapir: TapirInfo) -> str | None:
         openWorldHint=False,
     ),
 )
-def archicad_list_commands() -> list[CommandOverview]:
-    log.info("Executing archicad_list_commands tool...")
-    return [
-        CommandOverview(
-            name=tool["name"],
-            description=tool["description"],
-        )
-        for tool in TOOL_DISCOVERY_CATALOG.values()
-    ]
 
 
 @mcp.tool(

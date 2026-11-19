@@ -65,6 +65,8 @@ Available commands depend on your installed Archicad and Tapir versions. Instanc
 
 See [Setup and configuration](docs/setup-and-configuration.md) for client setup, troubleshooting, server options, HTTP transports, jobs, and pagination.
 
+See [Command discovery](docs/command-discovery.md) for lexical search, continuation, and the seven-variant benchmark.
+
 See [Element queries](docs/element-queries.md) for the query command and pilot development setup.
 
 ## Development and contributing

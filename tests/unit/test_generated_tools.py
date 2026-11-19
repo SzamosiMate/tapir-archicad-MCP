@@ -150,7 +150,9 @@ async def test_component_property_values_use_tapir_and_page_the_outer_list(fake_
 async def test_upstream_command_catalog_is_not_discoverable(fake_archicad):
     from tapir_archicad_mcp.tools.custom.functions import archicad_get_command_schema, archicad_list_commands
 
-    assert "app_get_commands" not in {command.name for command in archicad_list_commands()}
+    page = archicad_list_commands(keywords=["app_get_commands"])
+    assert page.exact_matches[0].status == "missing"
+    assert "app_get_commands" not in {command.name for command in page.matches}
     with pytest.raises(ToolError, match="not found"):
         archicad_get_command_schema("app_get_commands")
 

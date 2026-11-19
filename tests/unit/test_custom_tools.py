@@ -80,18 +80,12 @@ def set_multi_conn():
 
 
 def test_archicad_list_commands(fake_archicad):
-    commands = archicad_list_commands()
-
-    assert isinstance(commands, list)
-    assert len(commands) > 0
-
+    names = ["elements_get_selected_elements", "elements_create_slabs"]
+    commands = archicad_list_commands(keywords=names).matches
     first_cmd = commands[0]
     assert isinstance(first_cmd, CommandOverview)
     assert first_cmd.name and first_cmd.description
-
-    all_names = [cmd.name for cmd in commands]
-    assert "elements_get_selected_elements" in all_names
-    assert "elements_create_slabs" in all_names
+    assert [command.name for command in commands] == names
 
 
 def test_archicad_get_command_schema_valid(fake_archicad):

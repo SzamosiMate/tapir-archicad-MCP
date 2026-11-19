@@ -48,6 +48,30 @@ async def test_tool_execution_in_memory():
 
 
 @pytest.mark.asyncio
+async def test_command_discovery_exposes_and_continues_lexical_search():
+    async with Client(mcp) as client:
+        tools = (await client.list_tools()).tools
+        discovery = next(tool for tool in tools if tool.name == "archicad_list_commands")
+        assert set(discovery.input_schema["properties"]) == {"groups", "keywords", "query_id", "detail", "list_groups"}
+        assert "design_options" in discovery.description
+
+        name = "elements_get_selected_elements"
+        args = {"keywords": [name]}
+        first = await client.call_tool("archicad_list_commands", {**args, "detail": "compact"})
+        assert not first.is_error
+        page = first.structured_content["result"]
+        assert page["names"] == name
+        assert len(page["query_id"]) == 12
+
+        second = await client.call_tool("archicad_list_commands", {**args, "query_id": page["query_id"]})
+        page = second.structured_content["result"]
+        assert [match["name"] for match in page["matches"]] == [name]
+
+        third = await client.call_tool("archicad_list_commands", {**args, "query_id": page["query_id"]})
+        assert third.structured_content["result"]["matches"] == []
+
+
+@pytest.mark.asyncio
 async def test_live_tool_call_over_sse():
     """
     Spins up a real, live Uvicorn SSE server on a local TCP port and uses
