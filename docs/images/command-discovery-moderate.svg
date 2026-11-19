@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 334" role="img" aria-labelledby="title desc">
+  <title id="title">Moderate context with 32,000 cached prior tokens — Mean estimated credits per successful run</title>
+  <desc id="desc">Full catalogue 0.1712 credits, including 0.0000 penalty. Groups only 0.1076 credits, including 0.0000 penalty. Keyword only 0.1455 credits, including 0.0000 penalty. Groups + keyword 0.0825 credits, including 0.0000 penalty. Names only 0.0908 credits, including 0.0029 penalty. Lexical + chain 0.0727 credits, including 0.0009 penalty. Hybrid + chain 0.0703 credits, including 0.0000 penalty.</desc>
+  <style>
+    text { font: 16px Arial, sans-serif; fill: #17233a; }
+    .axis, .legend { font-size: 14px; fill: #516074; }
+    .value { font-size: 15px; font-variant-numeric: tabular-nums; }
+    .selected { font-weight: 650; }
+    .grid { stroke: #cbd5e1; stroke-width: 1; }
+    .search { fill: #3974b1; }
+    .penalty { fill: #bf680f; }
+    @media (prefers-color-scheme: dark) {
+      text { fill: #eff4fc; }
+      .axis, .legend { fill: #b7c5d8; }
+      .grid { stroke: #445269; }
+      .search { fill: #77a9ed; }
+      .penalty { fill: #f6a456; }
+    }
+  </style>
+  <line x1="184.0" x2="184.0" y1="49" y2="271" class="grid" />
+  <text x="184.0" y="293" text-anchor="middle" class="axis">0.00</text>
+  <line x1="296.31" x2="296.31" y1="49" y2="271" class="grid" />
+  <text x="296.31" y="293" text-anchor="middle" class="axis">0.05</text>
+  <line x1="408.62" x2="408.62" y1="49" y2="271" class="grid" />
+  <text x="408.62" y="293" text-anchor="middle" class="axis">0.10</text>
+  <line x1="520.92" x2="520.92" y1="49" y2="271" class="grid" />
+  <text x="520.92" y="293" text-anchor="middle" class="axis">0.15</text>
+  <line x1="633.23" x2="633.23" y1="49" y2="271" class="grid" />
+  <text x="633.23" y="293" text-anchor="middle" class="axis">0.20</text>
+  <line x1="745.54" x2="745.54" y1="49" y2="271" class="grid" />
+  <text x="745.54" y="293" text-anchor="middle" class="axis">0.25</text>
+  <text x="0" y="68">Full catalogue</text>
+  <rect x="184" y="55" width="384.57" height="16" class="search" />
+  <text x="577.57" y="68" class="value">0.1712</text>
+  <text x="0" y="100">Groups only</text>
+  <rect x="184" y="87" width="241.68" height="16" class="search" />
+  <text x="434.68" y="100" class="value">0.1076</text>
+  <text x="0" y="132">Keyword only</text>
+  <rect x="184" y="119" width="326.86" height="16" class="search" />
+  <text x="519.86" y="132" class="value">0.1455</text>
+  <text x="0" y="164">Groups + keyword</text>
+  <rect x="184" y="151" width="185.37" height="16" class="search" />
+  <text x="378.37" y="164" class="value">0.0825</text>
+  <text x="0" y="196">Names only</text>
+  <rect x="184" y="183" width="197.57" height="16" class="search" />
+  <rect x="381.57" y="183" width="6.47" height="16" class="penalty" />
+  <text x="397.04" y="196" class="value">0.0908 (+0.0029)</text>
+  <text x="0" y="228" class="selected">Lexical + chain</text>
+  <rect x="184" y="215" width="161.18" height="16" class="search" />
+  <rect x="345.18" y="215" width="2.12" height="16" class="penalty" />
+  <text x="356.3" y="228" class="value selected">0.0727 (+0.0009)</text>
+  <text x="0" y="260">Hybrid + chain</text>
+  <rect x="184" y="247" width="157.97" height="16" class="search" />
+  <text x="350.97" y="260" class="value">0.0703</text>
+  <text x="476.0" y="322" text-anchor="middle" class="axis">Mean estimated credits per successful run</text>
+  <rect x="184" y="13" width="17" height="11" class="search" />
+  <text x="208" y="23" class="legend">Search and schema probes</text>
+  <rect x="490" y="13" width="17" height="11" class="penalty" />
+  <text x="514" y="23" class="legend">Modeled redundant command penalty</text>
+</svg>
