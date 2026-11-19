@@ -1,0 +1,197 @@
+{
+  "catalogue": {
+    "baseline_commit": "20737a17c69c720fc26ffe76b54bef77e95b700d",
+    "command_count": 801,
+    "sha256": "0e42159f8d511c2f28ee2612d598c94f75ec0cc8429ecc760b3a656d41f83110"
+  },
+  "cases": [
+    {
+      "id": "selection",
+      "group": "obvious",
+      "prompt": "Get the IDs of the elements currently selected in Archicad.",
+      "expected": {
+        "status": "supported",
+        "commands": ["elements_get_selected_elements"]
+      }
+    },
+    {
+      "id": "keynote_tree",
+      "group": "obvious",
+      "prompt": "Show me the complete keynote tree, including its folders and items.",
+      "expected": {
+        "status": "supported",
+        "commands": ["keynotes_get_keynote_tree"]
+      }
+    },
+    {
+      "id": "clash_between_groups",
+      "group": "terminology",
+      "prompt": "I've got two sets of element GUIDs. Check for clashes between the two sets.",
+      "expected": {
+        "status": "supported",
+        "commands": ["elements_get_collisions"]
+      }
+    },
+    {
+      "id": "retired_type_lookup",
+      "group": "missing",
+      "prompt": "An old script used elements_get_elements_by_type to find wall IDs. Is that exact command still available? If it was removed, find its current replacement.",
+      "expected": {
+        "status": "replacement",
+        "commands": ["elements_query"],
+        "alternative_command_sets": [["elements_get_elements_by_criteria"], ["elements_get_details_of_elements"]],
+        "absent_name": "elements_get_elements_by_type"
+      },
+      "grading_note": "The criteria command accepts a Wall type filter. The details command can filter by Wall and return elementId. Both satisfy the requested ID lookup."
+    },
+    {
+      "id": "flythrough_mp4",
+      "group": "missing",
+      "prompt": "Is there a single built-in Tapir command to export an MP4 fly-through from the project's saved camera path? I need the video in one call.",
+      "expected": {
+        "status": "no_direct_match",
+        "commands": []
+      },
+      "grading_note": "PhotoRender saves still images and cannot satisfy the MP4 request."
+    },
+    {
+      "id": "merge_design_options",
+      "group": "missing",
+      "prompt": "Is there a single command to merge two Design Options in the same set into one, keeping the elements from both? I need the merge itself to happen in one call.",
+      "expected": {
+        "status": "no_direct_match",
+        "commands": []
+      },
+      "grading_note": "Moving elements, moving options between sets, and activating options in a combination do not merge two options."
+    },
+    {
+      "id": "publish_tender_set",
+      "group": "multi_command",
+      "prompt": "Can you get the tender PDFs out? I don't know the Publisher Set's name. Find the set already configured to output to Tender/Issued, then publish it to that location.",
+      "expected": {
+        "status": "supported",
+        "commands": ["navigator_get_publisher_sets", "navigator_publish_publisher_set"],
+        "before": [["navigator_get_publisher_sets", "navigator_publish_publisher_set"]]
+      },
+      "grading_note": "Listing only Publisher Set names cannot identify the configured destination."
+    },
+    {
+      "id": "coordination_issue",
+      "group": "multi_command",
+      "prompt": "Can you turn the elements I have highlighted into a new coordination issue called 'Ceiling conflict', attach those elements to it, and leave a comment asking the next reviewer to check headroom?",
+      "expected": {
+        "status": "supported",
+        "commands": [
+          "elements_get_selected_elements",
+          "issues_create_issue",
+          "issues_attach_elements_to_issue",
+          "issues_add_comment_to_issue"
+        ],
+        "before": [
+          ["elements_get_selected_elements", "issues_attach_elements_to_issue"],
+          ["issues_create_issue", "issues_attach_elements_to_issue"],
+          ["issues_create_issue", "issues_add_comment_to_issue"]
+        ]
+      }
+    },
+    {
+      "id": "teamwork_claim_free_elements",
+      "group": "multi_command",
+      "prompt": "I need to work on these elements in Teamwork and already have their IDs. Pull in everyone else's latest changes, find out who has them, then claim the ones that are free.",
+      "expected": {
+        "status": "supported",
+        "commands": [
+          "teamwork_teamwork_receive",
+          "teamwork_get_reservation_status_of_elements",
+          "teamwork_reserve_elements"
+        ],
+        "before": [
+          ["teamwork_teamwork_receive", "teamwork_get_reservation_status_of_elements"],
+          ["teamwork_get_reservation_status_of_elements", "teamwork_reserve_elements"]
+        ]
+      }
+    },
+    {
+      "id": "compare_saved_views",
+      "group": "multi_command",
+      "prompt": "These two saved views don't look comparable. I have their Navigator GUIDs. Check whether they're showing different design variants and whether they're drawn at the same scale.",
+      "expected": {
+        "status": "supported",
+        "commands": ["design_options_get_design_option_combination_of_views", "navigator_get_view_settings"]
+      },
+      "grading_note": "The former identifies the assigned Design Option Combination, and the latter returns the saved drawing scale. Either lookup can come first."
+    },
+    {
+      "id": "story_schedule",
+      "group": "obvious",
+      "prompt": "List the stories in the current Archicad project with each story's name, index and elevation.",
+      "expected": {"status": "supported", "commands": ["project_get_stories"]}
+    },
+    {
+      "id": "missing_library_part_names",
+      "group": "obvious",
+      "prompt": "I have the element IDs of several placed doors with missing library parts. Get their library part names even though their library is unloaded.",
+      "expected": {"status": "supported", "commands": ["library_get_missing_lib_part_names"]}
+    },
+    {
+      "id": "bounding_boxes_3d",
+      "group": "obvious",
+      "prompt": "Get each element's 3D bounding box in global coordinates. I already have the element GUIDs.",
+      "expected": {"status": "supported", "commands": ["elements_get3_d_bounding_boxes"]}
+    },
+    {
+      "id": "refresh_placed_drawings",
+      "group": "terminology",
+      "prompt": "Some placed views on our layouts are showing stale sheets. I have the IDs of the placed drawing elements. Refresh their cached content from their existing links.",
+      "expected": {"status": "supported", "commands": ["navigator_update_drawings"]}
+    },
+    {
+      "id": "active_layer_preset",
+      "group": "terminology",
+      "prompt": "What's the named preset for which layers are on or off in the window I have open? If the current state doesn't match a preset, tell me that.",
+      "expected": {"status": "supported", "commands": ["attributes_get_current_layer_combination"]}
+    },
+    {
+      "id": "room_area_deductions",
+      "group": "terminology",
+      "prompt": "I have the GUIDs for some rooms modelled as zones. Where are we losing square metres in their calculated areas? I want the outlines and areas of the individual deducted pieces.",
+      "expected": {"status": "supported", "commands": ["elements_get_zone_reductions"]}
+    },
+    {
+      "id": "materials_per_solid",
+      "group": "terminology",
+      "prompt": "For these element GUIDs, tell me which building material each solid piece is made from. A composite should give a separate answer for each skin in the 3D model.",
+      "expected": {"status": "supported", "commands": ["elements_get_body_materials_of_elements"]}
+    },
+    {
+      "id": "ocr_scan_on_layout",
+      "group": "missing",
+      "prompt": "Is there a built-in Tapir command that reads the words out of a scanned PDF placed on a layout and returns the recognized text in one call? The PDF is raster-only and has no text layer.",
+      "expected": {"status": "no_direct_match", "commands": []},
+      "grading_note": "Drawing metadata and PDF markup import do not perform OCR."
+    },
+    {
+      "id": "fire_rating_of_selection",
+      "group": "multi_command",
+      "prompt": "For the elements I have selected, show the value and availability of our Fire Rating property. I only know that the property name contains 'Fire Rating'. Search by that substring in Archicad to get its property ID first.",
+      "expected": {
+        "status": "supported",
+        "commands": ["elements_get_selected_elements", "properties_search_properties", "properties_get_property_values_of_elements"],
+        "before": [
+          ["elements_get_selected_elements", "properties_get_property_values_of_elements"],
+          ["properties_search_properties", "properties_get_property_values_of_elements"]
+        ]
+      }
+    },
+    {
+      "id": "render_with_another_scene",
+      "group": "multi_command",
+      "prompt": "I need a PNG of the 3D model using one of the project's other saved rendering scenes. First list the saved scene names and tell me which is active, then render with a different saved scene without changing the active scene.",
+      "expected": {
+        "status": "supported",
+        "commands": ["project_get_rendering_scenes", "project_photo_render"],
+        "before": [["project_get_rendering_scenes", "project_photo_render"]]
+      }
+    }
+  ]
+}
