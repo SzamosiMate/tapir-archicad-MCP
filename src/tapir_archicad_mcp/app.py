@@ -1,23 +1,41 @@
 import asyncio
+import json
 import logging
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager, suppress
+from typing import Any
 
-from mcp.server.mcpserver import MCPServer
+from mcp.server.mcpserver import Context, MCPServer
+from mcp.types import CallToolResult, InputRequiredResult, TextContent
 from multiconn_archicad import MultiConn
 from starlette.applications import Starlette
 
 from tapir_archicad_mcp.context import job_store_instance, mcp_instance, multi_conn_instance
 from tapir_archicad_mcp.jobs import JobSettings, JobStore
+from tapir_archicad_mcp.tool_results import compact_json
 
 log = logging.getLogger(__name__)
 job_settings = JobSettings()
 
 
 class ArchicadMCPServer(MCPServer):
-    """Give SSE resources an application lifetime instead of a session lifetime."""
+    """Serialize compact tool results and give SSE resources an application lifetime."""
 
     _sse_active = False
+
+    async def call_tool(
+        self, name: str, arguments: dict[str, Any], context: Context | None = None
+    ) -> CallToolResult | InputRequiredResult:
+        result = await super().call_tool(name, arguments, context)
+        if isinstance(result, CallToolResult):
+            for block in result.content:
+                # The SDK pretty-prints model returns, including command schemas and discovery results.
+                if isinstance(block, TextContent) and block.text.startswith(("{\n", "[\n")):
+                    try:
+                        block.text = compact_json(json.loads(block.text))
+                    except (ValueError, RecursionError):
+                        continue
+        return result
 
     def sse_app(self, **options) -> Starlette:
         app = super().sse_app(**options)

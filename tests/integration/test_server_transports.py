@@ -45,6 +45,7 @@ async def test_tool_execution_in_memory():
         # Execute a tool (hits our mock_heavy_dependencies fixture)
         result = await client.call_tool("discovery_list_active_archicads")
         assert result.structured_content == {"activeInstances": [], "unavailableInstances": []}
+        assert result.content[0].text == '{"activeInstances":[],"unavailableInstances":[]}'
 
 
 @pytest.mark.asyncio
@@ -58,6 +59,7 @@ async def test_command_discovery_exposes_and_continues_lexical_search():
         name = "keynotes_get_keynote_tree"
         first = await client.call_tool("archicad_list_commands", {"keywords": [name]})
         assert not first.is_error
+        assert first.content[0].text == json.dumps(first.structured_content, ensure_ascii=False, separators=(",", ":"))
         page = first.structured_content["result"]
         assert page["exact_matches"] == [{"keyword_index": 0, "commands": [name], "remaining": 0, "exact_status": "found"}]
         assert page["matches"] == []
@@ -72,6 +74,16 @@ async def test_command_discovery_exposes_and_continues_lexical_search():
 
         third = await client.call_tool("archicad_list_commands", {**args, "query_id": page["query_id"]})
         assert name not in {match["name"] for match in third.structured_content["result"]["matches"]}
+
+
+@pytest.mark.asyncio
+async def test_command_schema_response_uses_compact_json():
+    async with Client(mcp) as client:
+        result = await client.call_tool("archicad_get_command_schema", {"command_name": "elements_query"})
+
+    assert not result.is_error
+    assert "$defs" in result.structured_content["input_schema"]
+    assert result.content[0].text == json.dumps(result.structured_content, ensure_ascii=False, separators=(",", ":"))
 
 
 @pytest.mark.asyncio

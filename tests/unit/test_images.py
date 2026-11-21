@@ -4,7 +4,7 @@ import json
 import pytest
 from mcp.types import CallToolResult
 
-from tapir_archicad_mcp.images import to_tool_result
+from tapir_archicad_mcp.tool_results import to_tool_result
 from tapir_archicad_mcp.tools.custom.functions import archicad_call_tool, archicad_get_job
 from tapir_archicad_mcp.tools.tool_registry import (
     TOOL_CALLABLE_REGISTRY,
@@ -160,7 +160,7 @@ async def test_non_image_results_are_call_tool_results_with_the_same_content(fak
 
     assert isinstance(result, CallToolResult)
     assert [block.type for block in result.content] == ["text"]
-    assert result.content[0].text == json.dumps({"version": "1.7.2", "name": "Wand Ä"}, indent=2, ensure_ascii=False)
+    assert result.content[0].text == '{"version":"1.7.2","name":"Wand Ä"}'
     assert result.structured_content == {"version": "1.7.2", "name": "Wand Ä"}
 
 
