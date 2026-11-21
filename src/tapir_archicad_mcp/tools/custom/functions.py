@@ -20,10 +20,10 @@ from pydantic import ValidationError
 
 from tapir_archicad_mcp.app import mcp
 from tapir_archicad_mcp.context import job_store_instance, multi_conn_instance
-from tapir_archicad_mcp.images import build_result, extract_images, to_tool_result
 from tapir_archicad_mcp.jobs import JobStore
 from tapir_archicad_mcp.pagination import PaginationRequest, prepare_result
 from tapir_archicad_mcp.request_lifecycle import DispatchLifecycle
+from tapir_archicad_mcp.tool_results import build_result, extract_images, to_tool_result
 from tapir_archicad_mcp.tools.custom.command_discovery import archicad_list_commands, command_groups
 from tapir_archicad_mcp.tools.custom.models import (
     CommandSchema,

@@ -1,4 +1,4 @@
-"""Return base64 images from Archicad as MCP image content, so the model can see them and its context stays small."""
+"""Build MCP tool results with compact JSON and separate image blocks."""
 
 from __future__ import annotations
 
@@ -76,11 +76,14 @@ def extract_images(
     return ({**result, **replacements} if replacements else result), images
 
 
+def compact_json(payload: JsonValue) -> str:
+    return json.dumps(payload, ensure_ascii=False, separators=(",", ":"), allow_nan=False)
+
+
 def build_result(payload: dict[str, JsonValue], images: Sequence[ImageContent] = ()) -> CallToolResult:
     """Render a JSON object as text and structured content, followed by its image blocks."""
-    text = json.dumps(payload, ensure_ascii=False, indent=2, allow_nan=False)
     return CallToolResult(
-        content=[TextContent(type="text", text=text), *images],
+        content=[TextContent(type="text", text=compact_json(payload)), *images],
         structured_content=payload,
     )
 
