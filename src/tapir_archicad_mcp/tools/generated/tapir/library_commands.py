@@ -551,8 +551,9 @@ register_tool_for_dispatch(
 def get_library_part_file_info(conn_header: ConnHeader, params: GetLibraryPartFileInfoParameters) -> dict:
     """
     Reads library part files (.gsm) without loading them into the libraries of the project: the unique ID of the part,
-    the unique ID of its subtype and its master, parameter, 2D, 3D and properties scripts. Password protected parts need
-    their password. Available from Archicad 28.
+    the unique ID of its subtype, its master, parameter, 2D, 3D and properties scripts, and, with includeParameters, its
+    parameters with their default values and descriptions (in the format of GetLibraryPartParameterValues). Password
+    protected parts need their password. Available from Archicad 28.
     """
     return conn_header.core.post_tapir_command(
         command="GetLibraryPartFileInfo", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -565,8 +566,9 @@ register_tool_for_dispatch(
     title="GetLibraryPartFileInfo",
     description=(
         "Reads library part files (.gsm) without loading them into the libraries of the project: the unique ID of the "
-        "part, the unique ID of its subtype and its master, parameter, 2D, 3D and properties scripts. Password "
-        "protected parts need their password. Available from Archicad 28."
+        "part, the unique ID of its subtype, its master, parameter, 2D, 3D and properties scripts, and, with "
+        "includeParameters, its parameters with their default values and descriptions (in the format of "
+        "GetLibraryPartParameterValues). Password protected parts need their password. Available from Archicad 28."
     ),
     params_model=GetLibraryPartFileInfoParameters,
 )
@@ -1062,7 +1064,9 @@ register_tool_for_dispatch(
 def set_library_part_custom_section(conn_header: ConnHeader, params: SetLibraryPartCustomSectionParameters) -> dict:
     """
     Creates, replaces or deletes a custom section of a loaded library part. The content is given as base64. A library
-    part that is not editable is refused and left unchanged. Available from Archicad 28.
+    part that is not editable is refused and left unchanged. A part of the embedded library that Archicad does not
+    report editable, as in a saved project, is changed in a temporary copy that then replaces it, keeping its main GUID,
+    and the libraries are reloaded. Available from Archicad 28.
     """
     return conn_header.core.post_tapir_command(
         command="SetLibraryPartCustomSection",
@@ -1076,7 +1080,9 @@ register_tool_for_dispatch(
     title="SetLibraryPartCustomSection",
     description=(
         "Creates, replaces or deletes a custom section of a loaded library part. The content is given as base64. A "
-        "library part that is not editable is refused and left unchanged. Available from Archicad 28."
+        "library part that is not editable is refused and left unchanged. A part of the embedded library that Archicad "
+        "does not report editable, as in a saved project, is changed in a temporary copy that then replaces it, "
+        "keeping its main GUID, and the libraries are reloaded. Available from Archicad 28."
     ),
     params_model=SetLibraryPartCustomSectionParameters,
 )
@@ -1086,8 +1092,9 @@ def set_library_part_metadata(conn_header: ConnHeader, params: SetLibraryPartMet
     """
     Sets the author, keywords, license, license version, password and the placeable, UI default, subtype and
     hierarchical pages flags of loaded library parts. Only the given fields are changed. A library part that is not
-    editable (e.g. a part of a library package or a read-only library) is refused and left unchanged. Available from
-    Archicad 28.
+    editable (e.g. a part of a library package or a read-only library) is refused and left unchanged. A part of the
+    embedded library that Archicad does not report editable, as in a saved project, is changed in a temporary copy that
+    then replaces it, keeping its main GUID, and the libraries are reloaded. Available from Archicad 28.
     """
     return conn_header.core.post_tapir_command(
         command="SetLibraryPartMetadata", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -1101,8 +1108,10 @@ register_tool_for_dispatch(
     description=(
         "Sets the author, keywords, license, license version, password and the placeable, UI default, subtype and "
         "hierarchical pages flags of loaded library parts. Only the given fields are changed. A library part that is "
-        "not editable (e.g. a part of a library package or a read-only library) is refused and left unchanged. "
-        "Available from Archicad 28."
+        "not editable (e.g. a part of a library package or a read-only library) is refused and left unchanged. A part "
+        "of the embedded library that Archicad does not report editable, as in a saved project, is changed in a "
+        "temporary copy that then replaces it, keeping its main GUID, and the libraries are reloaded. Available from "
+        "Archicad 28."
     ),
     params_model=SetLibraryPartMetadataParameters,
 )
@@ -1113,7 +1122,9 @@ def set_library_part_parameters(conn_header: ConnHeader, params: SetLibraryPartP
     Sets the parameter values, and optionally the parameter descriptions, of loaded library parts, in the format of
     SetGDLParametersOfElements. Only the given parameters are changed; with merge, the changed list is merged into the
     parameters of the part instead of replacing them. A library part that is not editable, or with an invalid value
-    given, is left unchanged. Available from Archicad 28.
+    given, is left unchanged. A part of the embedded library that Archicad does not report editable, as in a saved
+    project, is changed in a temporary copy that then replaces it, keeping its main GUID, and the libraries are
+    reloaded. Available from Archicad 28.
     """
     return conn_header.core.post_tapir_command(
         command="SetLibraryPartParameters", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -1128,7 +1139,9 @@ register_tool_for_dispatch(
         "Sets the parameter values, and optionally the parameter descriptions, of loaded library parts, in the format "
         "of SetGDLParametersOfElements. Only the given parameters are changed; with merge, the changed list is merged "
         "into the parameters of the part instead of replacing them. A library part that is not editable, or with an "
-        "invalid value given, is left unchanged. Available from Archicad 28."
+        "invalid value given, is left unchanged. A part of the embedded library that Archicad does not report "
+        "editable, as in a saved project, is changed in a temporary copy that then replaces it, keeping its main GUID, "
+        "and the libraries are reloaded. Available from Archicad 28."
     ),
     params_model=SetLibraryPartParametersParameters,
 )
@@ -1138,7 +1151,9 @@ def set_library_part_picture_images(conn_header: ConnHeader, params: SetLibraryP
     """
     Sets the preview picture and the GDL pictures of a loaded library part from base64 encoded PNGs, and from Archicad
     29 also their dark user interface variants. All pictures are set in one step; an invalid picture changes nothing. A
-    library part that is not editable is refused and left unchanged. Available from Archicad 28.
+    library part that is not editable is refused and left unchanged. A part of the embedded library that Archicad does
+    not report editable, as in a saved project, is changed in a temporary copy that then replaces it, keeping its main
+    GUID, and the libraries are reloaded. Available from Archicad 28.
     """
     return conn_header.core.post_tapir_command(
         command="SetLibraryPartPictureImages",
@@ -1153,8 +1168,9 @@ register_tool_for_dispatch(
     description=(
         "Sets the preview picture and the GDL pictures of a loaded library part from base64 encoded PNGs, and from "
         "Archicad 29 also their dark user interface variants. All pictures are set in one step; an invalid picture "
-        "changes nothing. A library part that is not editable is refused and left unchanged. Available from Archicad "
-        "28."
+        "changes nothing. A library part that is not editable is refused and left unchanged. A part of the embedded "
+        "library that Archicad does not report editable, as in a saved project, is changed in a temporary copy that "
+        "then replaces it, keeping its main GUID, and the libraries are reloaded. Available from Archicad 28."
     ),
     params_model=SetLibraryPartPictureImagesParameters,
 )
@@ -1164,7 +1180,9 @@ def set_library_part_pictures(conn_header: ConnHeader, params: SetLibraryPartPic
     """
     Deletes the preview picture, the GDL pictures (and from Archicad 29 their dark variants) or the 2D symbol of a
     loaded library part, or copies the 2D symbol from another library part. A library part that is not editable is
-    refused and left unchanged. Available from Archicad 28.
+    refused and left unchanged. A part of the embedded library that Archicad does not report editable, as in a saved
+    project, is changed in a temporary copy that then replaces it, keeping its main GUID, and the libraries are
+    reloaded. Available from Archicad 28.
     """
     return conn_header.core.post_tapir_command(
         command="SetLibraryPartPictures", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -1178,7 +1196,9 @@ register_tool_for_dispatch(
     description=(
         "Deletes the preview picture, the GDL pictures (and from Archicad 29 their dark variants) or the 2D symbol of "
         "a loaded library part, or copies the 2D symbol from another library part. A library part that is not editable "
-        "is refused and left unchanged. Available from Archicad 28."
+        "is refused and left unchanged. A part of the embedded library that Archicad does not report editable, as in a "
+        "saved project, is changed in a temporary copy that then replaces it, keeping its main GUID, and the libraries "
+        "are reloaded. Available from Archicad 28."
     ),
     params_model=SetLibraryPartPicturesParameters,
 )
@@ -1189,7 +1209,9 @@ def set_library_part_scripts(conn_header: ConnHeader, params: SetLibraryPartScri
     Sets and deletes the master, parameter, 2D, 3D, properties, interface and forward and backward migration scripts of
     loaded library parts. Only the given scripts are changed; an empty script makes the section empty, deleteScripts
     removes it. A library part that is not editable (e.g. a part of a library package or a read-only library) is refused
-    and left unchanged. Available from Archicad 28.
+    and left unchanged. A part of the embedded library that Archicad does not report editable, as in a saved project, is
+    changed in a temporary copy that then replaces it, keeping its main GUID, and the libraries are reloaded. Available
+    from Archicad 28.
     """
     return conn_header.core.post_tapir_command(
         command="SetLibraryPartScripts", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -1204,7 +1226,9 @@ register_tool_for_dispatch(
         "Sets and deletes the master, parameter, 2D, 3D, properties, interface and forward and backward migration "
         "scripts of loaded library parts. Only the given scripts are changed; an empty script makes the section empty, "
         "deleteScripts removes it. A library part that is not editable (e.g. a part of a library package or a "
-        "read-only library) is refused and left unchanged. Available from Archicad 28."
+        "read-only library) is refused and left unchanged. A part of the embedded library that Archicad does not "
+        "report editable, as in a saved project, is changed in a temporary copy that then replaces it, keeping its "
+        "main GUID, and the libraries are reloaded. Available from Archicad 28."
     ),
     params_model=SetLibraryPartScriptsParameters,
 )

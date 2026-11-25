@@ -13,6 +13,7 @@ from multiconn_archicad.models.tapir.commands import (
     DeleteHotlinkNodesParameters,
     DeleteProjectInfoFieldsParameters,
     DeleteProjectInfoGroupsParameters,
+    DeleteStoryParameters,
     FindDimensionStandardParameters,
     GetAutoTextKeysParameters,
     GetAutoTextNameParameters,
@@ -25,7 +26,10 @@ from multiconn_archicad.models.tapir.commands import (
     GetNoteAutoTextKeywordsParameters,
     GetNoteAutotextsParameters,
     GetProjectPreferencesParameters,
+    InsertStoryParameters,
     InterpretAutoTextsParameters,
+    MergeFileParameters,
+    ModifyStoryParameters,
     MoveProjectInfoFieldsParameters,
     MoveProjectInfoGroupsParameters,
     OpenProjectParameters,
@@ -302,6 +306,32 @@ register_tool_for_dispatch(
         "Archicad 30."
     ),
     params_model=DeleteProjectInfoGroupsParameters,
+)
+
+
+def delete_story(conn_header: ConnHeader, params: DeleteStoryParameters) -> dict:
+    """
+    Deletes one story. Archicad deletes every element whose home story it is together with it, so a story that is the
+    home story of any element is only deleted with deleteElements: true; otherwise it fails and gives the number of
+    those elements. dryRun reports, without changing anything, whether the story would be deleted and how many elements
+    with it.
+    """
+    return conn_header.core.post_tapir_command(
+        command="DeleteStory", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    delete_story,
+    name="project_delete_story",
+    title="DeleteStory",
+    description=(
+        "Deletes one story. Archicad deletes every element whose home story it is together with it, so a story that is "
+        "the home story of any element is only deleted with deleteElements: true; otherwise it fails and gives the "
+        "number of those elements. dryRun reports, without changing anything, whether the story would be deleted and "
+        "how many elements with it."
+    ),
+    params_model=DeleteStoryParameters,
 )
 
 
@@ -891,6 +921,31 @@ register_tool_for_dispatch(
 )
 
 
+def insert_story(conn_header: ConnHeader, params: InsertStoryParameters) -> dict:
+    """
+    Inserts one new story directly above or below an existing story, with its name, height and level line display, and
+    returns the new story as GetStories reports it. Other stories are never deleted; their indices and levels can change
+    with the insertion as in Archicad's Story Settings dialog, so read them again with GetStories.
+    """
+    return conn_header.core.post_tapir_command(
+        command="InsertStory", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    insert_story,
+    name="project_insert_story",
+    title="InsertStory",
+    description=(
+        "Inserts one new story directly above or below an existing story, with its name, height and level line "
+        "display, and returns the new story as GetStories reports it. Other stories are never deleted; their indices "
+        "and levels can change with the insertion as in Archicad's Story Settings dialog, so read them again with "
+        "GetStories."
+    ),
+    params_model=InsertStoryParameters,
+)
+
+
 def interpret_auto_texts(conn_header: ConnHeader, params: InterpretAutoTextsParameters) -> dict:
     """
     Resolves one or more autotexts (e.g. '<LAYOUTID>') to their values, optionally in the context of an element, so a
@@ -910,6 +965,58 @@ register_tool_for_dispatch(
         "so a key can be tested before it is written into a Text or Label."
     ),
     params_model=InterpretAutoTextsParameters,
+)
+
+
+def merge_file(conn_header: ConnHeader, params: MergeFileParameters) -> dict:
+    """
+    Merges an Archicad project or module file into the model, as File > Interoperability > Merge does, at an origin,
+    rotation and mirroring, each story of the file on the story with the same index (or from floorIndex on). The
+    Archicad API has no merge, so the file is placed as a hotlink and the hotlink is broken, in one undo step, and the
+    elements that are new afterwards are returned; Archicad leaves them grouped together. A file the project already
+    hotlinks is refused, because breaking would break that hotlink too.
+    """
+    return conn_header.core.post_tapir_command(
+        command="MergeFile", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    merge_file,
+    name="project_merge_file",
+    title="MergeFile",
+    description=(
+        "Merges an Archicad project or module file into the model, as File > Interoperability > Merge does, at an "
+        "origin, rotation and mirroring, each story of the file on the story with the same index (or from floorIndex "
+        "on). The Archicad API has no merge, so the file is placed as a hotlink and the hotlink is broken, in one undo "
+        "step, and the elements that are new afterwards are returned; Archicad leaves them grouped together. A file "
+        "the project already hotlinks is refused, because breaking would break that hotlink too."
+    ),
+    params_model=MergeFileParameters,
+)
+
+
+def modify_story(conn_header: ConnHeader, params: ModifyStoryParameters) -> dict:
+    """
+    Changes the name, level, height or level line display of one story, and returns the story as GetStories reports it.
+    It never adds or deletes a story. level moves only this story; height moves every story above with the top of this
+    one, as in Archicad's Story Settings dialog. The elements of a moved story move with it.
+    """
+    return conn_header.core.post_tapir_command(
+        command="ModifyStory", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    modify_story,
+    name="project_modify_story",
+    title="ModifyStory",
+    description=(
+        "Changes the name, level, height or level line display of one story, and returns the story as GetStories "
+        "reports it. It never adds or deletes a story. level moves only this story; height moves every story above "
+        "with the top of this one, as in Archicad's Story Settings dialog. The elements of a moved story move with it."
+    ),
+    params_model=ModifyStoryParameters,
 )
 
 
@@ -984,7 +1091,8 @@ def photo_render(conn_header: ConnHeader, params: PhotoRenderParameters) -> dict
     Renders the 3D model with the current rendering scene, or with the given one, as Document > Creative Imaging >
     PhotoRender Projection does, and saves the image to a file (png, jpg, bmp, tiff or gif). The image size, resolution
     and quality come from the scene; a width, height or resolution given here is used for this render only, the scene is
-    not changed. With overwrite false it refuses to replace an existing file.
+    not changed. With overwrite false it refuses to replace an existing file; a folder that does not exist is refused
+    before rendering.
     """
     return conn_header.core.post_tapir_command(
         command="PhotoRender", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -999,7 +1107,8 @@ register_tool_for_dispatch(
         "Renders the 3D model with the current rendering scene, or with the given one, as Document > Creative Imaging "
         "> PhotoRender Projection does, and saves the image to a file (png, jpg, bmp, tiff or gif). The image size, "
         "resolution and quality come from the scene; a width, height or resolution given here is used for this render "
-        "only, the scene is not changed. With overwrite false it refuses to replace an existing file."
+        "only, the scene is not changed. With overwrite false it refuses to replace an existing file; a folder that "
+        "does not exist is refused before rendering."
     ),
     params_model=PhotoRenderParameters,
 )
@@ -1377,7 +1486,12 @@ register_tool_for_dispatch(
 
 
 def set_stories(conn_header: ConnHeader, params: SetStoriesParameters) -> dict:
-    """Sets the story sructure of the currently loaded project."""
+    """
+    Sets the story structure of the currently loaded project to the given list of stories. Existing stories outside the
+    list are deleted, and Archicad deletes every element whose home story they are with them; dryRun lists those stories
+    with the number of elements on each, without changing anything. To add, change or delete a single story, use
+    InsertStory or DeleteStory instead.
+    """
     return conn_header.core.post_tapir_command(
         command="SetStories", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
@@ -1387,7 +1501,12 @@ register_tool_for_dispatch(
     set_stories,
     name="project_set_stories",
     title="SetStories",
-    description="Sets the story sructure of the currently loaded project.",
+    description=(
+        "Sets the story structure of the currently loaded project to the given list of stories. Existing stories "
+        "outside the list are deleted, and Archicad deletes every element whose home story they are with them; dryRun "
+        "lists those stories with the number of elements on each, without changing anything. To add, change or delete "
+        "a single story, use InsertStory or DeleteStory instead."
+    ),
     params_model=SetStoriesParameters,
 )
 

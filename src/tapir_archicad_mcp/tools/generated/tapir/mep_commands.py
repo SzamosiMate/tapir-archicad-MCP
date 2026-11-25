@@ -37,6 +37,7 @@ from multiconn_archicad.models.tapir.commands import (
     ModifyMEPPreferenceTablesParameters,
     ModifyMEPRoutingElementsParameters,
     ModifyMEPSystemGroupsParameters,
+    RebuildMEPRoutingElementsParameters,
     SetMEPRoutingParametersParameters,
     TransferMEPSettingsParameters,
 )
@@ -492,8 +493,9 @@ def get_mep_element_details(conn_header: ConnHeader, params: GetMEPElementDetail
     Retrieves the type-specific details of the given MEP elements: insulation thickness and routing segment of rigid
     segments, control points and polyline of flexible segments, radius factor, insulation thickness, preference table
     and routing node of elbows (from Archicad 29), angle, length and insulation thickness of branches, and offsets,
-    wider and narrower ports, insulation thickness, routing node and (from Archicad 29) preference table of transitions.
-    Available from Archicad 28.
+    wider and narrower ports, insulation thickness, routing node and (from Archicad 29) preference table of transitions;
+    the width and height of flexible segments, and the anchor point, orientation, library part and (from Archicad 30)
+    size of the elements ModifyMEPElements places, with the keys it writes them with. Available from Archicad 28.
     """
     return conn_header.core.post_tapir_command(
         command="GetMEPElementDetails", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -509,7 +511,9 @@ register_tool_for_dispatch(
         "rigid segments, control points and polyline of flexible segments, radius factor, insulation thickness, "
         "preference table and routing node of elbows (from Archicad 29), angle, length and insulation thickness of "
         "branches, and offsets, wider and narrower ports, insulation thickness, routing node and (from Archicad 29) "
-        "preference table of transitions. Available from Archicad 28."
+        "preference table of transitions; the width and height of flexible segments, and the anchor point, "
+        "orientation, library part and (from Archicad 30) size of the elements ModifyMEPElements places, with the keys "
+        "it writes them with. Available from Archicad 28."
     ),
     params_model=GetMEPElementDetailsParameters,
 )
@@ -634,7 +638,8 @@ def get_mep_routing_elements(conn_header: ConnHeader, params: GetMEPRoutingEleme
     polyline, segments with cross section data (shape, size, preference table and reference id), begin and end nodes,
     anchor, reference line offsets, wall thickness, flange size, connection style, insulation thickness and rigid
     segments, and nodes with their incoming and outgoing segments, preferred transition placement, elbows and
-    transitions. Available from Archicad 28.
+    transitions, and the node positions with the key ModifyMEPRoutingElements writes them with. Available from Archicad
+    28.
 
     This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
     and page_token set to that token to get the next page of results.
@@ -655,7 +660,8 @@ register_tool_for_dispatch(
         "from Archicad 29), route polyline, segments with cross section data (shape, size, preference table and "
         "reference id), begin and end nodes, anchor, reference line offsets, wall thickness, flange size, connection "
         "style, insulation thickness and rigid segments, and nodes with their incoming and outgoing segments, "
-        "preferred transition placement, elbows and transitions. Available from Archicad 28."
+        "preferred transition placement, elbows and transitions, and the node positions with the key "
+        "ModifyMEPRoutingElements writes them with. Available from Archicad 28."
     ),
     params_model=GetMEPRoutingElementsParameters,
     pagination_field="routingElements",
@@ -837,11 +843,12 @@ register_tool_for_dispatch(
 def modify_mep_elements(conn_header: ConnHeader, params: ModifyMEPElementsParameters) -> dict:
     """
     Modifies placed MEP elements: the anchor point, orientation and library part of terminals, accessories, equipment,
-    fittings and flexible segments, the control points, polyline (Piping, from Archicad 28), and width and height of
-    flexible segments. Only the given fields are changed, in one undo step with one execution result per element; an
-    item with a field that does not fit its element changes nothing. Archicad reports a 'libraryPartId' it does not find
-    only after the item's other changes were made, so that item's error says which changes stayed. Available from
-    Archicad 27.
+    fittings and flexible segments, their size along the local x and y axes (from Archicad 30), the control points,
+    polyline (Piping, from Archicad 28), and width and height of flexible segments. Only the given fields are changed,
+    in one undo step with one execution result per element; an item with a field that does not fit its element changes
+    nothing. Archicad reports a 'libraryPartId' it does not find, or a library part that keeps its own size, only after
+    the item's other changes were made, so that item's error says which changes stayed. The size of the connections is
+    set with ModifyMEPPorts. Available from Archicad 27.
     """
     return conn_header.core.post_tapir_command(
         command="ModifyMEPElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -854,11 +861,12 @@ register_tool_for_dispatch(
     title="ModifyMEPElements",
     description=(
         "Modifies placed MEP elements: the anchor point, orientation and library part of terminals, accessories, "
-        "equipment, fittings and flexible segments, the control points, polyline (Piping, from Archicad 28), and width "
-        "and height of flexible segments. Only the given fields are changed, in one undo step with one execution "
-        "result per element; an item with a field that does not fit its element changes nothing. Archicad reports a "
-        "'libraryPartId' it does not find only after the item's other changes were made, so that item's error says "
-        "which changes stayed. Available from Archicad 27."
+        "equipment, fittings and flexible segments, their size along the local x and y axes (from Archicad 30), the "
+        "control points, polyline (Piping, from Archicad 28), and width and height of flexible segments. Only the "
+        "given fields are changed, in one undo step with one execution result per element; an item with a field that "
+        "does not fit its element changes nothing. Archicad reports a 'libraryPartId' it does not find, or a library "
+        "part that keeps its own size, only after the item's other changes were made, so that item's error says which "
+        "changes stayed. The size of the connections is set with ModifyMEPPorts. Available from Archicad 27."
     ),
     params_model=ModifyMEPElementsParameters,
 )
@@ -888,9 +896,9 @@ register_tool_for_dispatch(
 
 def modify_mep_ports(conn_header: ConnHeader, params: ModifyMEPPortsParameters) -> dict:
     """
-    Modifies the given MEP ports (as returned by GetMEPPorts): shape, connection style (from Archicad 30), the flow
-    direction of piping and ventilation ports, and the outer diameter and nominal size (from Archicad 30) of piping
-    ports. Only the given fields are changed. Available from Archicad 28.
+    Modifies the given MEP ports (as returned by GetMEPPorts): shape, width, height (not of piping ports), connection
+    style (from Archicad 30), the flow direction of piping and ventilation ports, and the outer diameter and nominal
+    size (from Archicad 30) of piping ports. Only the given fields are changed. Available from Archicad 28.
     """
     return conn_header.core.post_tapir_command(
         command="ModifyMEPPorts", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -902,9 +910,10 @@ register_tool_for_dispatch(
     name="mep_modify_mep_ports",
     title="ModifyMEPPorts",
     description=(
-        "Modifies the given MEP ports (as returned by GetMEPPorts): shape, connection style (from Archicad 30), the "
-        "flow direction of piping and ventilation ports, and the outer diameter and nominal size (from Archicad 30) of "
-        "piping ports. Only the given fields are changed. Available from Archicad 28."
+        "Modifies the given MEP ports (as returned by GetMEPPorts): shape, width, height (not of piping ports), "
+        "connection style (from Archicad 30), the flow direction of piping and ventilation ports, and the outer "
+        "diameter and nominal size (from Archicad 30) of piping ports. Only the given fields are changed. Available "
+        "from Archicad 28."
     ),
     params_model=ModifyMEPPortsParameters,
 )
@@ -980,6 +989,63 @@ register_tool_for_dispatch(
     title="ModifyMEPSystemGroups",
     description="Renames MEP system groups. Available from Archicad 29.",
     params_model=ModifyMEPSystemGroupsParameters,
+)
+
+
+def rebuild_mep_routing_elements(conn_header: ConnHeader, params: RebuildMEPRoutingElementsParameters) -> dict:
+    """
+    Rebuilds the given MEP routing elements along new node coordinates or along their current polyline: this adds or
+    removes nodes (bend points), leaves out with removeCollinearNodes the nodes where the route goes straight on (as
+    Purge Unused MEP Nodes does), and with resetCustomSegments resets customized segments and nodes (as Reset Custom
+    Segments does). Each route is deleted and placed again from its own settings, under its own guid when Archicad
+    allows it and else under a new one, which the response gives. Every segment, node and fitting gets a new guid (see
+    guidMap); labels, dimensions and other things attached to them are not carried over. Use ModifyMEPRoutingElements
+    nodePositions instead when the node count stays the same: it keeps every guid. Kept: each new segment gets the size
+    (shape, width, height, reference id) and the preference table, anchor, reference line offsets, wall thickness,
+    connection style, flange size and rigid segment settings (insulation) of the old segment it lies along most, and
+    each new node the transition placement and elbow and transition settings of the old node at its position (a new
+    segment along old segments of different sizes gets those of the one it overlaps most, with a warning; a segment
+    along no old segment, such as a new end, those of its nearest neighbour along the route); the route's layer, home
+    story, renovation status (given to every part), element ID, classifications and the property values set on it; and
+    its connections at both ends. Not kept: the guids of the segments, rigid segments, nodes, elbows and transitions;
+    the element IDs, classifications, property values and own renovation status of single parts; and the route's design
+    option, which is not set. Refused, with nothing changed: a route that ends at a tee (Branch) or has a take-off on a
+    segment, which Archicad deletes with the route. What could not be carried over is listed in the item's warnings.
+    Nothing is changed when the nodes make a segment without length or the route cannot be deleted. Available from
+    Archicad 28.
+    """
+    return conn_header.core.post_tapir_command(
+        command="RebuildMEPRoutingElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    rebuild_mep_routing_elements,
+    name="mep_rebuild_mep_routing_elements",
+    title="RebuildMEPRoutingElements",
+    description=(
+        "Rebuilds the given MEP routing elements along new node coordinates or along their current polyline: this adds "
+        "or removes nodes (bend points), leaves out with removeCollinearNodes the nodes where the route goes straight "
+        "on (as Purge Unused MEP Nodes does), and with resetCustomSegments resets customized segments and nodes (as "
+        "Reset Custom Segments does). Each route is deleted and placed again from its own settings, under its own guid "
+        "when Archicad allows it and else under a new one, which the response gives. Every segment, node and fitting "
+        "gets a new guid (see guidMap); labels, dimensions and other things attached to them are not carried over. Use "
+        "ModifyMEPRoutingElements nodePositions instead when the node count stays the same: it keeps every guid. Kept: "
+        "each new segment gets the size (shape, width, height, reference id) and the preference table, anchor, "
+        "reference line offsets, wall thickness, connection style, flange size and rigid segment settings (insulation) "
+        "of the old segment it lies along most, and each new node the transition placement and elbow and transition "
+        "settings of the old node at its position (a new segment along old segments of different sizes gets those of "
+        "the one it overlaps most, with a warning; a segment along no old segment, such as a new end, those of its "
+        "nearest neighbour along the route); the route's layer, home story, renovation status (given to every part), "
+        "element ID, classifications and the property values set on it; and its connections at both ends. Not kept: "
+        "the guids of the segments, rigid segments, nodes, elbows and transitions; the element IDs, classifications, "
+        "property values and own renovation status of single parts; and the route's design option, which is not set. "
+        "Refused, with nothing changed: a route that ends at a tee (Branch) or has a take-off on a segment, which "
+        "Archicad deletes with the route. What could not be carried over is listed in the item's warnings. Nothing is "
+        "changed when the nodes make a segment without length or the route cannot be deleted. Available from Archicad "
+        "28."
+    ),
+    params_model=RebuildMEPRoutingElementsParameters,
 )
 
 

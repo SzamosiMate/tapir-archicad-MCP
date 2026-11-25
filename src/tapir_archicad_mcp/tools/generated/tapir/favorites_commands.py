@@ -80,12 +80,16 @@ def apply_favorites_to_elements(conn_header: ConnHeader, params: ApplyFavoritesT
     floor, and dimensions such as a Wall's height) is left untouched, so applying a Favorite never moves the target
     element. A Window or Door keeps its wall, marker and placement, and takes the Favorite's library part and
     parameters, size included. For the hierarchical types (Stair, Railing, Curtain Wall) the settings of the sub-
-    elements are not applied, because they are inseparable from the Favorite's own geometry. By default settings,
-    classifications, categories and properties are all applied; each can be opted out of individually. keepFields lists
-    fields of the target (its ID, layer, an opening's width, height and sill height, a Wall's reference line location,
-    height and top link) that are copied back after the Favorite has been applied, so that e.g. only the library part or
-    the wall type changes. With favorite instead of favoritesToApply, one Favorite is read once and applied to the given
-    elements, or to every element of its type that matches the filter.
+    elements are not applied, because they are inseparable from the Favorite's own geometry. The cross section of a
+    Column or Beam is a Favorite setting and is applied too. By default settings, classifications, categories and
+    properties are all applied; each can be opted out of individually. keepFields lists fields of the target (its ID,
+    layer, an opening's width, height and sill height, a Wall's reference line location, height and top link, a Column's
+    height, top link and cross section width and depth, a Beam's cross section width and height) that are copied back
+    after the Favorite has been applied, so that e.g. only the library part or the wall type changes. settingGroups is
+    the positive list instead: e.g. only FloorPlanAndSection applies just the pens, line types, story visibility and cut
+    and cover fills of a Column or Beam, and nothing else of the Favorite. With favorite instead of favoritesToApply,
+    one Favorite is read once and applied to the given elements, or to every element of its type that matches the
+    filter.
     """
     return conn_header.core.post_tapir_command(
         command="ApplyFavoritesToElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -102,12 +106,15 @@ register_tool_for_dispatch(
         "moves the target element. A Window or Door keeps its wall, marker and placement, and takes the Favorite's "
         "library part and parameters, size included. For the hierarchical types (Stair, Railing, Curtain Wall) the "
         "settings of the sub-elements are not applied, because they are inseparable from the Favorite's own geometry. "
-        "By default settings, classifications, categories and properties are all applied; each can be opted out of "
-        "individually. keepFields lists fields of the target (its ID, layer, an opening's width, height and sill "
-        "height, a Wall's reference line location, height and top link) that are copied back after the Favorite has "
-        "been applied, so that e.g. only the library part or the wall type changes. With favorite instead of "
-        "favoritesToApply, one Favorite is read once and applied to the given elements, or to every element of its "
-        "type that matches the filter."
+        "The cross section of a Column or Beam is a Favorite setting and is applied too. By default settings, "
+        "classifications, categories and properties are all applied; each can be opted out of individually. keepFields "
+        "lists fields of the target (its ID, layer, an opening's width, height and sill height, a Wall's reference "
+        "line location, height and top link, a Column's height, top link and cross section width and depth, a Beam's "
+        "cross section width and height) that are copied back after the Favorite has been applied, so that e.g. only "
+        "the library part or the wall type changes. settingGroups is the positive list instead: e.g. only "
+        "FloorPlanAndSection applies just the pens, line types, story visibility and cut and cover fills of a Column "
+        "or Beam, and nothing else of the Favorite. With favorite instead of favoritesToApply, one Favorite is read "
+        "once and applied to the given elements, or to every element of its type that matches the filter."
     ),
     params_model=ApplyFavoritesToElementsParameters,
 )

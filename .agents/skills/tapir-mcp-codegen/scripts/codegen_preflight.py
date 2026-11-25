@@ -398,7 +398,12 @@ def validate_generated(release, configs, expected):
 
     importlib.import_module("tapir_archicad_mcp.model_configuration")
     registry = importlib.import_module("tapir_archicad_mcp.tools.tool_registry")
-    require(registry.TOOL_CALLABLE_REGISTRY.keys() == expected.keys(), "Runtime registry differs from target metadata")
+    generated_names = {
+        name
+        for name, entry in registry.TOOL_CALLABLE_REGISTRY.items()
+        if entry.callable.__module__.startswith("tapir_archicad_mcp.tools.generated.")
+    }
+    require(generated_names == expected.keys(), "Runtime registry differs from target metadata")
     for name, info in expected.items():
         source, title = info["source"], info["title"]
         entry = registry.TOOL_CALLABLE_REGISTRY[name]
