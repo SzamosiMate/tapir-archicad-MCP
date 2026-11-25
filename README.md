@@ -5,7 +5,7 @@ Connect your AI assistant to Archicad. Use natural language to explore projects 
 [![PyPI version](https://img.shields.io/pypi/v/tapir-archicad-mcp)](https://pypi.org/project/tapir-archicad-mcp/)
 [![CI](https://github.com/SzamosiMate/tapir-archicad-MCP/actions/workflows/test.yml/badge.svg?branch=master)](https://github.com/SzamosiMate/tapir-archicad-MCP/actions/workflows/test.yml)
 ![Platforms: Windows and macOS](https://img.shields.io/badge/platforms-Windows%20%7C%20macOS-blue)
-[![Supported Tapir version](https://img.shields.io/badge/Tapir_Add--On-2.0.0-blue)](https://github.com/ENZYME-APD/tapir-archicad-automation/releases)
+[![Supported Tapir version](https://img.shields.io/badge/Tapir_Add--On-2.0.1-blue)](https://github.com/ENZYME-APD/tapir-archicad-automation/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ## See it in action
@@ -20,7 +20,7 @@ Astra uses photos and a plan as references to model in Archicad.
 - Find elements that match conditions on type, properties, and classifications.
 - Create and modify model elements, and work with views and layouts.
 - Export project data and use supported IFC and Teamwork commands.
-- Access **800+ Archicad commands**, discovered on demand by your assistant.
+- Access **843 Archicad commands**, discovered on demand by your assistant.
 - Connect to multiple running Archicad instances.
 
 ## Quick start
