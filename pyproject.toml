@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "tapir-archicad-mcp"
-version = "0.7.0"
+version = "0.7.1"
 description = "An MCP server for automating Archicad with natural language and on-demand command search."
 readme = "README.md"
 authors = [

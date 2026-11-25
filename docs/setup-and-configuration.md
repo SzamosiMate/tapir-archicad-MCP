@@ -13,7 +13,7 @@ This guide covers installation, troubleshooting, server options, and advanced us
 
 uv can download a compatible Python version if needed. If managing Python yourself, the server supports Python 3.12, 3.13, and 3.14.
 
-The server connects to running Archicad instances on its host. Available commands and parameters depend on the installed Archicad and Tapir versions; discovery reports version warnings.
+The server connects to running Archicad instances on its host and targets Tapir 2.0.1. Available commands and parameters depend on the installed Archicad and Tapir versions; discovery reports version warnings.
 
 ## Installation
 
