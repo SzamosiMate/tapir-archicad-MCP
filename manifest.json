@@ -62,6 +62,10 @@
     {
       "name": "archicad_get_job",
       "description": "Retrieves a running or finished execution by handle, or lists retained jobs to recover a lost response."
+    },
+    {
+      "name": "result_read",
+      "description": "Reads bounded selections from retained Archicad results using a result handle."
     }
   ],
   "compatibility": {

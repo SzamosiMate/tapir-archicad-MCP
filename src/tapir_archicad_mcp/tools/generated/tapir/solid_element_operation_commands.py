@@ -2,15 +2,25 @@
 from multiconn_archicad import ConnHeader
 from multiconn_archicad.models.tapir.commands import (
     CreateSolidElementLinksParameters,
+    CreateSolidElementLinksResult,
     CreateSolidOperationsParameters,
+    CreateSolidOperationsResult,
     GetElementTrimsParameters,
+    GetElementTrimsResult,
     GetMergedElementsParameters,
+    GetMergedElementsResult,
     GetSolidElementLinksParameters,
+    GetSolidElementLinksResult,
     MergeElementsParameters,
+    MergeElementsResult,
     RemoveElementTrimsParameters,
+    RemoveElementTrimsResult,
     RemoveSolidElementLinksParameters,
+    RemoveSolidElementLinksResult,
     TrimElementsParameters,
+    TrimElementsResult,
     UnmergeElementsParameters,
+    UnmergeElementsResult,
 )
 
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
@@ -29,6 +39,8 @@ register_tool_for_dispatch(
     title="CreateSolidElementLinks",
     description="Creates solid element operation links between target and operator elements.",
     params_model=CreateSolidElementLinksParameters,
+    output_model=CreateSolidElementLinksResult,
+    identity=("tapir", "CreateSolidElementLinks"),
 )
 
 
@@ -53,6 +65,8 @@ register_tool_for_dispatch(
         "are replaced by the result. Morphs only; the operations run in one undo step."
     ),
     params_model=CreateSolidOperationsParameters,
+    output_model=CreateSolidOperationsResult,
+    identity=("tapir", "CreateSolidOperations"),
 )
 
 
@@ -69,6 +83,8 @@ register_tool_for_dispatch(
     title="GetElementTrims",
     description=("Which roofs and shells trim each queried element, with the trim type, and which elements it trims."),
     params_model=GetElementTrimsParameters,
+    output_model=GetElementTrimsResult,
+    identity=("tapir", "GetElementTrims"),
 )
 
 
@@ -91,6 +107,8 @@ register_tool_for_dispatch(
         "error item."
     ),
     params_model=GetMergedElementsParameters,
+    output_model=GetMergedElementsResult,
+    identity=("tapir", "GetMergedElements"),
 )
 
 
@@ -109,6 +127,8 @@ register_tool_for_dispatch(
         "Returns solid element operation links for each queried element, grouped by role (target or operator)."
     ),
     params_model=GetSolidElementLinksParameters,
+    output_model=GetSolidElementLinksResult,
+    identity=("tapir", "GetSolidElementLinks"),
 )
 
 
@@ -135,6 +155,8 @@ register_tool_for_dispatch(
         "decides which elements and type combinations it merges), the result is a failure, not a success."
     ),
     params_model=MergeElementsParameters,
+    output_model=MergeElementsResult,
+    identity=("tapir", "MergeElements"),
 )
 
 
@@ -163,6 +185,8 @@ register_tool_for_dispatch(
         "trimming element gets wouldDelete."
     ),
     params_model=RemoveElementTrimsParameters,
+    output_model=RemoveElementTrimsResult,
+    identity=("tapir", "RemoveElementTrims"),
 )
 
 
@@ -186,6 +210,8 @@ register_tool_for_dispatch(
         "wouldDelete."
     ),
     params_model=RemoveSolidElementLinksParameters,
+    output_model=RemoveSolidElementLinksResult,
+    identity=("tapir", "RemoveSolidElementLinks"),
 )
 
 
@@ -213,6 +239,8 @@ register_tool_for_dispatch(
         "with GetElementTrims."
     ),
     params_model=TrimElementsParameters,
+    output_model=TrimElementsResult,
+    identity=("tapir", "TrimElements"),
 )
 
 
@@ -231,4 +259,6 @@ register_tool_for_dispatch(
         "Removes the merge between the two elements of each given pair. Undoable; one execution result per pair."
     ),
     params_model=UnmergeElementsParameters,
+    output_model=UnmergeElementsResult,
+    identity=("tapir", "UnmergeElements"),
 )

@@ -2,7 +2,9 @@
 from multiconn_archicad import ConnHeader
 from multiconn_archicad.models.official.commands import (
     CloneProjectMapItemToViewMapParameters,
+    CloneProjectMapItemToViewMapResult,
     CreateViewMapFolderParameters,
+    CreateViewMapFolderResult,
 )
 
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
@@ -22,6 +24,8 @@ register_tool_for_dispatch(
     title="CloneProjectMapItemToViewMap",
     description="Clones a project map item to the view map.",
     params_model=CloneProjectMapItemToViewMapParameters,
+    output_model=CloneProjectMapItemToViewMapResult,
+    identity=("official", "CloneProjectMapItemToViewMap"),
 )
 
 
@@ -38,4 +42,6 @@ register_tool_for_dispatch(
     title="CreateViewMapFolder",
     description="Creates a view folder item at the given position in the navigator tree.",
     params_model=CreateViewMapFolderParameters,
+    output_model=CreateViewMapFolderResult,
+    identity=("official", "CreateViewMapFolder"),
 )

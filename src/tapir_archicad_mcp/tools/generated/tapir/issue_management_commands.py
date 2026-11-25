@@ -2,15 +2,26 @@
 from multiconn_archicad import ConnHeader
 from multiconn_archicad.models.tapir.commands import (
     AddCommentToIssueParameters,
+    AddCommentToIssueResult,
     AttachElementsToIssueParameters,
+    AttachElementsToIssueResult,
     CreateIssueParameters,
+    CreateIssueResult,
     DeleteIssueParameters,
+    DeleteIssueResult,
     DetachElementsFromIssueParameters,
+    DetachElementsFromIssueResult,
     ExportIssuesToBCFParameters,
+    ExportIssuesToBCFResult,
     GetCommentsFromIssueParameters,
+    GetCommentsFromIssueResult,
     GetElementsAttachedToIssueParameters,
+    GetElementsAttachedToIssueResult,
+    GetIssuesResult,
     ImportIssuesFromBCFParameters,
+    ImportIssuesFromBCFResult,
     ImportMarkupsFromPDFParameters,
+    ImportMarkupsFromPDFResult,
 )
 
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
@@ -29,6 +40,8 @@ register_tool_for_dispatch(
     title="AddCommentToIssue",
     description="Adds a new comment to the specified issue.",
     params_model=AddCommentToIssueParameters,
+    output_model=AddCommentToIssueResult,
+    identity=("tapir", "AddCommentToIssue"),
 )
 
 
@@ -45,6 +58,8 @@ register_tool_for_dispatch(
     title="AttachElementsToIssue",
     description="Attaches elements to the specified issue.",
     params_model=AttachElementsToIssueParameters,
+    output_model=AttachElementsToIssueResult,
+    identity=("tapir", "AttachElementsToIssue"),
 )
 
 
@@ -61,6 +76,8 @@ register_tool_for_dispatch(
     title="CreateIssue",
     description="Creates a new issue.",
     params_model=CreateIssueParameters,
+    output_model=CreateIssueResult,
+    identity=("tapir", "CreateIssue"),
 )
 
 
@@ -83,6 +100,8 @@ register_tool_for_dispatch(
         "has dryRun set to true, and wouldDelete when the issue exists."
     ),
     params_model=DeleteIssueParameters,
+    output_model=DeleteIssueResult,
+    identity=("tapir", "DeleteIssue"),
 )
 
 
@@ -99,6 +118,8 @@ register_tool_for_dispatch(
     title="DetachElementsFromIssue",
     description="Detaches elements from the specified issue.",
     params_model=DetachElementsFromIssueParameters,
+    output_model=DetachElementsFromIssueResult,
+    identity=("tapir", "DetachElementsFromIssue"),
 )
 
 
@@ -117,6 +138,8 @@ register_tool_for_dispatch(
         "Exports specified issues to a BCF file. With overwrite false it refuses to replace an existing file."
     ),
     params_model=ExportIssuesToBCFParameters,
+    output_model=ExportIssuesToBCFResult,
+    identity=("tapir", "ExportIssuesToBCF"),
 )
 
 
@@ -133,6 +156,8 @@ register_tool_for_dispatch(
     title="GetCommentsFromIssue",
     description="Retrieves comments information from the specified issue.",
     params_model=GetCommentsFromIssueParameters,
+    output_model=GetCommentsFromIssueResult,
+    identity=("tapir", "GetCommentsFromIssue"),
 )
 
 
@@ -150,16 +175,13 @@ register_tool_for_dispatch(
     title="GetElementsAttachedToIssue",
     description="Retrieves attached elements of the specified issue, filtered by attachment type.",
     params_model=GetElementsAttachedToIssueParameters,
+    output_model=GetElementsAttachedToIssueResult,
+    identity=("tapir", "GetElementsAttachedToIssue"),
 )
 
 
 def get_issues(conn_header: ConnHeader) -> dict:
-    """
-    Retrieves information about existing issues.
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
-    """
+    """Retrieves information about existing issues."""
     return conn_header.core.post_tapir_command(command="GetIssues", parameters={})
 
 
@@ -169,7 +191,8 @@ register_tool_for_dispatch(
     title="GetIssues",
     description="Retrieves information about existing issues.",
     params_model=None,
-    pagination_field="issues",
+    output_model=GetIssuesResult,
+    identity=("tapir", "GetIssues"),
 )
 
 
@@ -186,6 +209,8 @@ register_tool_for_dispatch(
     title="ImportIssuesFromBCF",
     description="Imports issues from the specified BCF file.",
     params_model=ImportIssuesFromBCFParameters,
+    output_model=ImportIssuesFromBCFResult,
+    identity=("tapir", "ImportIssuesFromBCF"),
 )
 
 
@@ -209,4 +234,6 @@ register_tool_for_dispatch(
         "Archicad 29."
     ),
     params_model=ImportMarkupsFromPDFParameters,
+    output_model=ImportMarkupsFromPDFResult,
+    identity=("tapir", "ImportMarkupsFromPDF"),
 )

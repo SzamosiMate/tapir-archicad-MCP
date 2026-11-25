@@ -2,21 +2,37 @@
 from multiconn_archicad import ConnHeader
 from multiconn_archicad.models.tapir.commands import (
     CreateClassificationItemsParameters,
+    CreateClassificationItemsResult,
     CreateClassificationSystemsParameters,
+    CreateClassificationSystemsResult,
     DeleteClassificationItemsParameters,
+    DeleteClassificationItemsResult,
     DeleteClassificationSystemsParameters,
+    DeleteClassificationSystemsResult,
     GetClassificationItemParentsParameters,
+    GetClassificationItemParentsResult,
     GetClassificationItemVisibilityParameters,
+    GetClassificationItemVisibilityResult,
     GetClassificationsOfAttributesParameters,
+    GetClassificationsOfAttributesResult,
     GetClassificationsOfElementDefaultsParameters,
+    GetClassificationsOfElementDefaultsResult,
     GetClassificationsOfElementsParameters,
+    GetClassificationsOfElementsResult,
     GetClassificationsOfToolDefaultsParameters,
+    GetClassificationsOfToolDefaultsResult,
     ImportClassificationsXmlParameters,
+    ImportClassificationsXmlResult,
     SetClassificationsOfAttributesParameters,
+    SetClassificationsOfAttributesResult,
     SetClassificationsOfElementDefaultsParameters,
+    SetClassificationsOfElementDefaultsResult,
     SetClassificationsOfElementsParameters,
+    SetClassificationsOfElementsResult,
     UpdateClassificationItemsParameters,
+    UpdateClassificationItemsResult,
     UpdateClassificationSystemsParameters,
+    UpdateClassificationSystemsResult,
 )
 
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
@@ -35,6 +51,8 @@ register_tool_for_dispatch(
     title="CreateClassificationItems",
     description="Creates Classification Items in the given Classification Systems based on the given parameters.",
     params_model=CreateClassificationItemsParameters,
+    output_model=CreateClassificationItemsResult,
+    identity=("tapir", "CreateClassificationItems"),
 )
 
 
@@ -52,6 +70,8 @@ register_tool_for_dispatch(
     title="CreateClassificationSystems",
     description="Creates Classification Systems including Classification Items based on the given parameters.",
     params_model=CreateClassificationSystemsParameters,
+    output_model=CreateClassificationSystemsResult,
+    identity=("tapir", "CreateClassificationSystems"),
 )
 
 
@@ -74,6 +94,8 @@ register_tool_for_dispatch(
         "response has dryRun set to true, and each classification item that exists gets wouldDelete."
     ),
     params_model=DeleteClassificationItemsParameters,
+    output_model=DeleteClassificationItemsResult,
+    identity=("tapir", "DeleteClassificationItems"),
 )
 
 
@@ -97,6 +119,8 @@ register_tool_for_dispatch(
         "the response has dryRun set to true, and each classification system that exists gets wouldDelete."
     ),
     params_model=DeleteClassificationSystemsParameters,
+    output_model=DeleteClassificationSystemsResult,
+    identity=("tapir", "DeleteClassificationSystems"),
 )
 
 
@@ -120,6 +144,8 @@ register_tool_for_dispatch(
         "no parent. The output is aligned with the input array of items."
     ),
     params_model=GetClassificationItemParentsParameters,
+    output_model=GetClassificationItemParentsResult,
+    identity=("tapir", "GetClassificationItemParents"),
 )
 
 
@@ -149,6 +175,8 @@ register_tool_for_dispatch(
         "be visible even if its parent item is not."
     ),
     params_model=GetClassificationItemVisibilityParameters,
+    output_model=GetClassificationItemVisibilityResult,
+    identity=("tapir", "GetClassificationItemVisibility"),
 )
 
 
@@ -174,6 +202,8 @@ register_tool_for_dispatch(
         "classification system they are classified in."
     ),
     params_model=GetClassificationsOfAttributesParameters,
+    output_model=GetClassificationsOfAttributesResult,
+    identity=("tapir", "GetClassificationsOfAttributes"),
 )
 
 
@@ -199,6 +229,8 @@ register_tool_for_dispatch(
         "the given classification systems."
     ),
     params_model=GetClassificationsOfElementDefaultsParameters,
+    output_model=GetClassificationsOfElementDefaultsResult,
+    identity=("tapir", "GetClassificationsOfElementDefaults"),
 )
 
 
@@ -222,6 +254,8 @@ register_tool_for_dispatch(
         "subelements of hierarchal elements also."
     ),
     params_model=GetClassificationsOfElementsParameters,
+    output_model=GetClassificationsOfElementsResult,
+    identity=("tapir", "GetClassificationsOfElements"),
 )
 
 
@@ -249,6 +283,8 @@ register_tool_for_dispatch(
         "classification systems; systems in which a default is unclassified are left out."
     ),
     params_model=GetClassificationsOfToolDefaultsParameters,
+    output_model=GetClassificationsOfToolDefaultsResult,
+    identity=("tapir", "GetClassificationsOfToolDefaults"),
 )
 
 
@@ -271,6 +307,8 @@ register_tool_for_dispatch(
         "exist. Returns the systems and items it created and removed."
     ),
     params_model=ImportClassificationsXmlParameters,
+    output_model=ImportClassificationsXmlResult,
+    identity=("tapir", "ImportClassificationsXml"),
 )
 
 
@@ -298,6 +336,8 @@ register_tool_for_dispatch(
         "of an attribute to unclassified in a system, omit the classificationItemId field."
     ),
     params_model=SetClassificationsOfAttributesParameters,
+    output_model=SetClassificationsOfAttributesResult,
+    identity=("tapir", "SetClassificationsOfAttributes"),
 )
 
 
@@ -323,6 +363,8 @@ register_tool_for_dispatch(
         "order to set a default to unclassified, omit the classificationItemId field."
     ),
     params_model=SetClassificationsOfElementDefaultsParameters,
+    output_model=SetClassificationsOfElementDefaultsResult,
+    identity=("tapir", "SetClassificationsOfElementDefaults"),
 )
 
 
@@ -352,6 +394,8 @@ register_tool_for_dispatch(
         "(oldValue) and the one a real run would set (newValue)."
     ),
     params_model=SetClassificationsOfElementsParameters,
+    output_model=SetClassificationsOfElementsResult,
+    identity=("tapir", "SetClassificationsOfElements"),
 )
 
 
@@ -374,6 +418,8 @@ register_tool_for_dispatch(
         "the elements classified with them. Items cannot be moved to another parent."
     ),
     params_model=UpdateClassificationItemsParameters,
+    output_model=UpdateClassificationItemsResult,
+    identity=("tapir", "UpdateClassificationItems"),
 )
 
 
@@ -396,4 +442,6 @@ register_tool_for_dispatch(
         "guid."
     ),
     params_model=UpdateClassificationSystemsParameters,
+    output_model=UpdateClassificationSystemsResult,
+    identity=("tapir", "UpdateClassificationSystems"),
 )

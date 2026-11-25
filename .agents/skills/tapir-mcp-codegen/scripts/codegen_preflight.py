@@ -331,7 +331,6 @@ def validate_config(release, configs):
             )
             expected[public_name] = {"source": config.name, "title": name, "module": module}
         for setting, mapping in (
-            ("pagination", config.paginated_commands),
             ("image", config.image_fields),
             ("image_list", config.image_lists),
         ):
@@ -397,8 +396,26 @@ def validate_generated(release, configs, expected):
     require(set(declarations) == expected.keys(), "Generated declarations differ from target metadata")
 
     importlib.import_module("tapir_archicad_mcp.model_configuration")
+    from tapir_archicad_mcp.command_metadata import COMMAND_METADATA
+    from tapir_archicad_mcp.metadata_types import MatrixAdapter
+
     registry = importlib.import_module("tapir_archicad_mcp.tools.tool_registry")
-    require(registry.TOOL_CALLABLE_REGISTRY.keys() == expected.keys(), "Runtime registry differs from target metadata")
+    entries = registry.TOOL_CALLABLE_REGISTRY
+    require(
+        {name for name, entry in entries.items() if entry.identity and entry.identity[0] != "custom"} == expected.keys(),
+        "Generated runtime registry differs from target metadata",
+    )
+    identities = [entry.identity for entry in entries.values()]
+    require(len(identities) == len(set(identities)) and set(identities) == COMMAND_METADATA.keys(),
+            "Runtime command identities differ from the maintained metadata")
+    for name, entry in entries.items():
+        require(entry.metadata is COMMAND_METADATA[entry.identity], f"Wrong metadata object: {name}")
+        if entry.identity[0] == "custom":
+            require(entry.metadata.adapter is None or isinstance(entry.metadata.adapter, MatrixAdapter),
+                    f"Invalid matrix adapter: {name}")
+            require(entry.output_model is not None, f"Missing custom result schema: {name}")
+            registry.get_tool_input_schema(name)
+            registry.get_tool_output_schema(name)
     for name, info in expected.items():
         source, title = info["source"], info["title"]
         entry = registry.TOOL_CALLABLE_REGISTRY[name]
@@ -406,6 +423,10 @@ def validate_generated(release, configs, expected):
         model_name = title + "Parameters"
         model = getattr(models, model_name) if model_name in release["models"][source] else None
         require(entry.params_model is model, f"Wrong parameter contract: {name}")
+        result_model = title + "Result"
+        require(entry.output_model is (
+            getattr(models, result_model) if result_model in release["models"][source] else None
+        ), f"Wrong output model: {name}")
         require(
             entry.callable.__module__ == f"tapir_archicad_mcp.tools.generated.{source}.{info['module']}",
             f"Wrong dispatch source: {name}",
@@ -413,12 +434,12 @@ def validate_generated(release, configs, expected):
         require(registry.TOOL_DISCOVERY_CATALOG[name]["title"] == title, f"Wrong discovery title: {name}")
         config = next(c for c in configs if c.name == source)
         for attribute, setting in (
-            ("pagination_field", "paginated_commands"),
             ("image_field", "image_fields"),
             ("image_list_field", "image_lists"),
         ):
             require(getattr(entry, attribute) == getattr(config, setting).get(title), f"Wrong {attribute}: {name}")
         registry.get_tool_input_schema(name)
+        registry.get_tool_output_schema(name)
     return len(expected)
 
 
@@ -436,7 +457,9 @@ def main(argv=None):
     args = parser.parse_args(argv)
     try:
         from generator_config import MULTICONN_VERSION, OFFICIAL_CONFIG, TAPIR_CONFIG
+        from metadata_check import check_duplicate_identities, validate_source
         from multiconn_archicad.constants import SUPPORTED_TAPIR_VERSION
+        from tapir_archicad_mcp.command_metadata import COMMAND_METADATA
 
         require(not (args.offline and args.refresh), "--offline and --refresh cannot be combined")
         direct_url = json.loads(distribution("multiconn-archicad").read_text("direct_url.json") or "{}")
@@ -466,11 +489,28 @@ def main(argv=None):
             result["previous_multiconn"] = args.previous
             result["previous_tapir"] = previous["tapir_version"]
             result["comparison"] = compare_releases(previous, target)
-        if args.check_generated:
+        metadata_errors = []
+        try:
+            check_duplicate_identities()
+        except ValueError as error:
+            metadata_errors.append(str(error))
+        for config in configs:
+            source = config.name
+            exposed = {
+                name: command for name, command in target["commands"][source].items()
+                if name not in config.commands_to_exclude
+            }
+            try:
+                validate_source(source, exposed, target["schemas"][source], COMMAND_METADATA)
+            except ValueError as error:
+                metadata_errors.append(str(error))
+        result["metadata_errors"] = metadata_errors
+        if args.check_generated and not metadata_errors:
             result["generated_schema_count"] = validate_generated(target, configs, expected)
         if args.output:
             args.output.parent.mkdir(parents=True, exist_ok=True)
             args.output.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
+        require(not metadata_errors, "\n".join(metadata_errors))
         print(
             f"multiconn {MULTICONN_VERSION} / Tapir {target['tapir_version']}: {len(expected)} intended tools; config valid"
         )
@@ -479,7 +519,7 @@ def main(argv=None):
                 f"{source}: +{len(change['added'])} -{len(change['removed'])}, {len(change['changed'])} structurally changed commands"
             )
         if args.check_generated:
-            print(f"All {result['generated_schema_count']} generated registrations and input schemas valid")
+            print(f"All {result['generated_schema_count']} generated registrations and command schemas valid")
         return 0
     except (PreflightError, OSError, ValueError, RuntimeError, ImportError, KeyError, TypeError) as error:
         print(f"Codegen preflight failed: {error}", file=sys.stderr)

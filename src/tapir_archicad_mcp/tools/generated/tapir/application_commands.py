@@ -2,27 +2,67 @@
 from multiconn_archicad import ConnHeader
 from multiconn_archicad.models.tapir.commands import (
     ChangeWindowParameters,
+    ChangeWindowResult,
     CloseWindowsParameters,
+    CloseWindowsResult,
     ConvertImagesParameters,
+    ConvertImagesResult,
     DeleteGhostRecordsParameters,
+    DeleteGhostRecordsResult,
+    Get3DCutawayStatusResult,
+    GetAddOnVersionResult,
     GetArcFromUserParameters,
+    GetArcFromUserResult,
+    GetArchicadLicenseInfoResult,
+    GetArchicadLocationResult,
+    GetArchicadReleaseInfoResult,
+    GetArchicadVisibilityResult,
     GetContainingDatabasesParameters,
+    GetContainingDatabasesResult,
+    GetCurrentToolResult,
+    GetCurrentWindowDrawingScaleResult,
+    GetCurrentWindowTypeResult,
+    GetDialogAutoCloseResult,
+    GetEditModeStateResult,
     GetElementFromUserParameters,
+    GetElementFromUserResult,
     GetLineFromUserParameters,
+    GetLineFromUserResult,
+    GetMagicWandSettingsResult,
     GetPointFromUserParameters,
+    GetPointFromUserResult,
     GetPolygonFromUserParameters,
+    GetPolygonFromUserResult,
+    GetPrinterAndPlotterInfoResult,
+    GetPrinterInfoResult,
+    GetProductVersionInfoResult,
     GetSpecialFoldersParameters,
+    GetSpecialFoldersResult,
     GetToolboxItemsParameters,
+    GetToolboxItemsResult,
+    GetUserGSIDResult,
     ModelToScreenParameters,
+    ModelToScreenResult,
+    RebuildCurrentDatabaseResult,
+    RedrawCurrentDatabaseResult,
     RunActionCenterChecksParameters,
+    RunActionCenterChecksResult,
     ScreenToModelParameters,
+    ScreenToModelResult,
     Set3DCutawayStatusParameters,
+    Set3DCutawayStatusResult,
     SetArchicadVisibilityParameters,
+    SetArchicadVisibilityResult,
     SetCurrentToolParameters,
+    SetCurrentToolResult,
     SetCurrentWindowDrawingScaleParameters,
+    SetCurrentWindowDrawingScaleResult,
     SetDialogAutoCloseParameters,
+    SetDialogAutoCloseResult,
     ShowAlertParameters,
+    ShowAlertResult,
     ShowNotificationBubbleParameters,
+    ShowNotificationBubbleResult,
 )
 
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
@@ -53,6 +93,8 @@ register_tool_for_dispatch(
         "26); its text cannot be read through the Archicad API."
     ),
     params_model=ChangeWindowParameters,
+    output_model=ChangeWindowResult,
+    identity=("tapir", "ChangeWindow"),
 )
 
 
@@ -77,6 +119,8 @@ register_tool_for_dispatch(
         "Requires Archicad 27 or later."
     ),
     params_model=CloseWindowsParameters,
+    output_model=CloseWindowsResult,
+    identity=("tapir", "CloseWindows"),
 )
 
 
@@ -102,6 +146,8 @@ register_tool_for_dispatch(
         "nothing in the project."
     ),
     params_model=ConvertImagesParameters,
+    output_model=ConvertImagesResult,
+    identity=("tapir", "ConvertImages"),
     image_list_field="images",
 )
 
@@ -125,6 +171,8 @@ register_tool_for_dispatch(
         "that database's window. A database without a trace reference gets a failed execution result. Not undoable."
     ),
     params_model=DeleteGhostRecordsParameters,
+    output_model=DeleteGhostRecordsResult,
+    identity=("tapir", "DeleteGhostRecords"),
 )
 
 
@@ -145,6 +193,8 @@ register_tool_for_dispatch(
         "the 3D window may need to be open."
     ),
     params_model=None,
+    output_model=Get3DCutawayStatusResult,
+    identity=("tapir", "Get3DCutawayStatus"),
 )
 
 
@@ -159,6 +209,8 @@ register_tool_for_dispatch(
     title="GetAddOnVersion",
     description="Retrieves the version of the Tapir Additional JSON Commands Add-On.",
     params_model=None,
+    output_model=GetAddOnVersionResult,
+    identity=("tapir", "GetAddOnVersion"),
 )
 
 
@@ -186,6 +238,8 @@ register_tool_for_dispatch(
         "cancelled."
     ),
     params_model=GetArcFromUserParameters,
+    output_model=GetArcFromUserResult,
+    identity=("tapir", "GetArcFromUser"),
 )
 
 
@@ -210,6 +264,8 @@ register_tool_for_dispatch(
         "available in Archicad 25."
     ),
     params_model=None,
+    output_model=GetArchicadLicenseInfoResult,
+    identity=("tapir", "GetArchicadLicenseInfo"),
 )
 
 
@@ -224,6 +280,8 @@ register_tool_for_dispatch(
     title="GetArchicadLocation",
     description="Retrieves the location of the currently running Archicad executable.",
     params_model=None,
+    output_model=GetArchicadLocationResult,
+    identity=("tapir", "GetArchicadLocation"),
 )
 
 
@@ -244,6 +302,8 @@ register_tool_for_dispatch(
         "window."
     ),
     params_model=None,
+    output_model=GetArchicadReleaseInfoResult,
+    identity=("tapir", "GetArchicadReleaseInfo"),
 )
 
 
@@ -264,6 +324,8 @@ register_tool_for_dispatch(
         "an error."
     ),
     params_model=None,
+    output_model=GetArchicadVisibilityResult,
+    identity=("tapir", "GetArchicadVisibility"),
 )
 
 
@@ -288,6 +350,8 @@ register_tool_for_dispatch(
         "example to find an element placed on a layout."
     ),
     params_model=GetContainingDatabasesParameters,
+    output_model=GetContainingDatabasesResult,
+    identity=("tapir", "GetContainingDatabases"),
 )
 
 
@@ -310,6 +374,8 @@ register_tool_for_dispatch(
         "accepts. Nothing is returned when the active tool makes no element, e.g. the Arrow or the Marquee."
     ),
     params_model=None,
+    output_model=GetCurrentToolResult,
+    identity=("tapir", "GetCurrentTool"),
 )
 
 
@@ -334,6 +400,8 @@ register_tool_for_dispatch(
         "3D document window, each of which has its own. Layouts always return 1.0."
     ),
     params_model=None,
+    output_model=GetCurrentWindowDrawingScaleResult,
+    identity=("tapir", "GetCurrentWindowDrawingScale"),
 )
 
 
@@ -356,6 +424,8 @@ register_tool_for_dispatch(
         "view (View Map item) the window was opened from is not returned, as Archicad does not tell which one it was."
     ),
     params_model=None,
+    output_model=GetCurrentWindowTypeResult,
+    identity=("tapir", "GetCurrentWindowType"),
 )
 
 
@@ -380,6 +450,8 @@ register_tool_for_dispatch(
         "shared by every add-on and script in that Archicad."
     ),
     params_model=None,
+    output_model=GetDialogAutoCloseResult,
+    identity=("tapir", "GetDialogAutoClose"),
 )
 
 
@@ -404,6 +476,8 @@ register_tool_for_dispatch(
         "later; the command requires Archicad 27 or later."
     ),
     params_model=None,
+    output_model=GetEditModeStateResult,
+    identity=("tapir", "GetEditModeState"),
 )
 
 
@@ -429,6 +503,8 @@ register_tool_for_dispatch(
         "cancelled."
     ),
     params_model=GetElementFromUserParameters,
+    output_model=GetElementFromUserResult,
+    identity=("tapir", "GetElementFromUser"),
 )
 
 
@@ -447,6 +523,8 @@ register_tool_for_dispatch(
         "Waits for the user to input a line in the active Archicad window and returns start and end coordinates."
     ),
     params_model=GetLineFromUserParameters,
+    output_model=GetLineFromUserResult,
+    identity=("tapir", "GetLineFromUser"),
 )
 
 
@@ -470,6 +548,8 @@ register_tool_for_dispatch(
         "project."
     ),
     params_model=None,
+    output_model=GetMagicWandSettingsResult,
+    identity=("tapir", "GetMagicWandSettings"),
 )
 
 
@@ -493,6 +573,8 @@ register_tool_for_dispatch(
         "cancelled."
     ),
     params_model=GetPointFromUserParameters,
+    output_model=GetPointFromUserResult,
+    identity=("tapir", "GetPointFromUser"),
 )
 
 
@@ -511,6 +593,8 @@ register_tool_for_dispatch(
         "Waits for the user to input a polygon in the active Archicad window and returns its points and arcs."
     ),
     params_model=GetPolygonFromUserParameters,
+    output_model=GetPolygonFromUserResult,
+    identity=("tapir", "GetPolygonFromUser"),
 )
 
 
@@ -531,6 +615,8 @@ register_tool_for_dispatch(
         "name and model."
     ),
     params_model=None,
+    output_model=GetPrinterAndPlotterInfoResult,
+    identity=("tapir", "GetPrinterAndPlotterInfo"),
 )
 
 
@@ -551,6 +637,8 @@ register_tool_for_dispatch(
         "PrintView takes)."
     ),
     params_model=None,
+    output_model=GetPrinterInfoResult,
+    identity=("tapir", "GetPrinterInfo"),
 )
 
 
@@ -574,6 +662,8 @@ register_tool_for_dispatch(
         "28 or later."
     ),
     params_model=None,
+    output_model=GetProductVersionInfoResult,
+    identity=("tapir", "GetProductVersionInfo"),
 )
 
 
@@ -596,6 +686,8 @@ register_tool_for_dispatch(
         "temporary, application, defaults, templates, help, embedded project library, etc.)."
     ),
     params_model=GetSpecialFoldersParameters,
+    output_model=GetSpecialFoldersResult,
+    identity=("tapir", "GetSpecialFolders"),
 )
 
 
@@ -618,6 +710,8 @@ register_tool_for_dispatch(
         "active tool. includeHidden also lists the tools without an icon, e.g. the Slab Accessory."
     ),
     params_model=GetToolboxItemsParameters,
+    output_model=GetToolboxItemsResult,
+    identity=("tapir", "GetToolboxItems"),
 )
 
 
@@ -632,6 +726,8 @@ register_tool_for_dispatch(
     title="GetUserGSID",
     description="Get the current registered User-GSID and OrganizationsID. Requires Archicad 27 or later.",
     params_model=None,
+    output_model=GetUserGSIDResult,
+    identity=("tapir", "GetUserGSID"),
 )
 
 
@@ -656,6 +752,8 @@ register_tool_for_dispatch(
         "projected with the current camera; in other windows z is disregarded. Available from Archicad 29."
     ),
     params_model=ModelToScreenParameters,
+    output_model=ModelToScreenResult,
+    identity=("tapir", "ModelToScreen"),
 )
 
 
@@ -672,6 +770,8 @@ register_tool_for_dispatch(
         "Rebuilds the current database, the one the API works on (see ChangeWindow). Requires Archicad 27 or later."
     ),
     params_model=None,
+    output_model=RebuildCurrentDatabaseResult,
+    identity=("tapir", "RebuildCurrentDatabase"),
 )
 
 
@@ -692,6 +792,8 @@ register_tool_for_dispatch(
         "window is updated."
     ),
     params_model=None,
+    output_model=RedrawCurrentDatabaseResult,
+    identity=("tapir", "RedrawCurrentDatabase"),
 )
 
 
@@ -716,6 +818,8 @@ register_tool_for_dispatch(
         "Action Center tab when the check found an issue."
     ),
     params_model=RunActionCenterChecksParameters,
+    output_model=RunActionCenterChecksResult,
+    identity=("tapir", "RunActionCenterChecks"),
 )
 
 
@@ -740,6 +844,8 @@ register_tool_for_dispatch(
         "reconstruct a 3D point, and several model coordinates can map to the same pixel."
     ),
     params_model=ScreenToModelParameters,
+    output_model=ScreenToModelResult,
+    identity=("tapir", "ScreenToModel"),
 )
 
 
@@ -762,6 +868,8 @@ register_tool_for_dispatch(
         "window may need to be open."
     ),
     params_model=Set3DCutawayStatusParameters,
+    output_model=Set3DCutawayStatusResult,
+    identity=("tapir", "Set3DCutawayStatus"),
 )
 
 
@@ -786,6 +894,8 @@ register_tool_for_dispatch(
         "only; on macOS it returns an error."
     ),
     params_model=SetArchicadVisibilityParameters,
+    output_model=SetArchicadVisibilityResult,
+    identity=("tapir", "SetArchicadVisibility"),
 )
 
 
@@ -810,6 +920,8 @@ register_tool_for_dispatch(
         "return the previous tool right after this command."
     ),
     params_model=SetCurrentToolParameters,
+    output_model=SetCurrentToolResult,
+    identity=("tapir", "SetCurrentTool"),
 )
 
 
@@ -837,6 +949,8 @@ register_tool_for_dispatch(
         "are always 1:1 and are rejected. The scale must be between 1 and 30000. The change is undoable."
     ),
     params_model=SetCurrentWindowDrawingScaleParameters,
+    output_model=SetCurrentWindowDrawingScaleResult,
+    identity=("tapir", "SetCurrentWindowDrawingScale"),
 )
 
 
@@ -863,6 +977,8 @@ register_tool_for_dispatch(
         "variable to true for the Archicad process before starting it."
     ),
     params_model=SetDialogAutoCloseParameters,
+    output_model=SetDialogAutoCloseResult,
+    identity=("tapir", "SetDialogAutoClose"),
 )
 
 
@@ -879,6 +995,8 @@ register_tool_for_dispatch(
     title="ShowAlert",
     description="Display a dialog with up to three buttons.",
     params_model=ShowAlertParameters,
+    output_model=ShowAlertResult,
+    identity=("tapir", "ShowAlert"),
 )
 
 
@@ -909,4 +1027,6 @@ register_tool_for_dispatch(
         "from Archicad. Requires Archicad 29 or later."
     ),
     params_model=ShowNotificationBubbleParameters,
+    output_model=ShowNotificationBubbleResult,
+    identity=("tapir", "ShowNotificationBubble"),
 )

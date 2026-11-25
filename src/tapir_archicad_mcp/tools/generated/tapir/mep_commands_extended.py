@@ -2,11 +2,17 @@
 from multiconn_archicad import ConnHeader
 from multiconn_archicad.models.tapir.commands import (
     AddMEPPreferenceTableRowsParameters,
+    AddMEPPreferenceTableRowsResult,
     CreateMEPPreferenceTablesParameters,
+    CreateMEPPreferenceTablesResult,
     DeleteMEPPreferenceTableRowsParameters,
+    DeleteMEPPreferenceTableRowsResult,
     GetMEPPreferenceTableContainersParameters,
+    GetMEPPreferenceTableContainersResult,
     GetMEPPreferenceTableRowsParameters,
+    GetMEPPreferenceTableRowsResult,
     SetMEPPreferenceTableRowsParameters,
+    SetMEPPreferenceTableRowsResult,
 )
 
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
@@ -36,6 +42,8 @@ register_tool_for_dispatch(
         "from Archicad 27."
     ),
     params_model=AddMEPPreferenceTableRowsParameters,
+    output_model=AddMEPPreferenceTableRowsResult,
+    identity=("tapir", "AddMEPPreferenceTableRows"),
 )
 
 
@@ -58,6 +66,8 @@ register_tool_for_dispatch(
         "27 and returns their id, in one undo step. Only for Archicad 27."
     ),
     params_model=CreateMEPPreferenceTablesParameters,
+    output_model=CreateMEPPreferenceTablesResult,
+    identity=("tapir", "CreateMEPPreferenceTables"),
 )
 
 
@@ -85,6 +95,8 @@ register_tool_for_dispatch(
         "its shape and index. Available from Archicad 27."
     ),
     params_model=DeleteMEPPreferenceTableRowsParameters,
+    output_model=DeleteMEPPreferenceTableRowsResult,
+    identity=("tapir", "DeleteMEPPreferenceTableRows"),
 )
 
 
@@ -112,6 +124,8 @@ register_tool_for_dispatch(
         "exists. Only for Archicad 27; from Archicad 28 use GetMEPPreferenceTables."
     ),
     params_model=GetMEPPreferenceTableContainersParameters,
+    output_model=GetMEPPreferenceTableContainersResult,
+    identity=("tapir", "GetMEPPreferenceTableContainers"),
 )
 
 
@@ -143,6 +157,8 @@ register_tool_for_dispatch(
         "Available from Archicad 27."
     ),
     params_model=GetMEPPreferenceTableRowsParameters,
+    output_model=GetMEPPreferenceTableRowsResult,
+    identity=("tapir", "GetMEPPreferenceTableRows"),
 )
 
 
@@ -171,4 +187,6 @@ register_tool_for_dispatch(
         "Available from Archicad 27."
     ),
     params_model=SetMEPPreferenceTableRowsParameters,
+    output_model=SetMEPPreferenceTableRowsResult,
+    identity=("tapir", "SetMEPPreferenceTableRows"),
 )

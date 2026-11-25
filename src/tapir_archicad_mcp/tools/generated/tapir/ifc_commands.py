@@ -2,30 +2,40 @@
 from multiconn_archicad import ConnHeader
 from multiconn_archicad.models.tapir.commands import (
     GetElementsByIFCIdsParameters,
+    GetElementsByIFCIdsResult,
+    GetIFCAssignmentsResult,
     GetIFCAttributesOfElementsParameters,
+    GetIFCAttributesOfElementsResult,
     GetIFCClassificationReferencesOfElementsParameters,
+    GetIFCClassificationReferencesOfElementsResult,
+    GetIFCExportTranslatorsResult,
     GetIFCIdsOfElementsParameters,
+    GetIFCIdsOfElementsResult,
     GetIFCPropertiesOfElementsParameters,
+    GetIFCPropertiesOfElementsResult,
     GetIFCSpatialStructureParameters,
+    GetIFCSpatialStructureResult,
     GetIFCTypeOfElementsParameters,
+    GetIFCTypeOfElementsResult,
     IFCFileOperationParameters,
+    IFCFileOperationResult,
     RemoveIFCClassificationReferencesOfElementsParameters,
+    RemoveIFCClassificationReferencesOfElementsResult,
     RemoveIFCPropertiesOfElementsParameters,
+    RemoveIFCPropertiesOfElementsResult,
     SetIFCAttributesOfElementsParameters,
+    SetIFCAttributesOfElementsResult,
     SetIFCClassificationReferencesOfElementsParameters,
+    SetIFCClassificationReferencesOfElementsResult,
     SetIFCPropertiesOfElementsParameters,
+    SetIFCPropertiesOfElementsResult,
 )
 
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
 
 
 def get_elements_by_ifc_ids(conn_header: ConnHeader, params: GetElementsByIFCIdsParameters) -> dict:
-    """
-    Retrieves the elements by the given IFC identifiers. Accepts IFC GlobalIds in every Archicad version.
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
-    """
+    """Retrieves the elements by the given IFC identifiers. Accepts IFC GlobalIds in every Archicad version."""
     return conn_header.core.post_tapir_command(
         command="GetElementsByIFCIds", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
@@ -39,7 +49,8 @@ register_tool_for_dispatch(
         "Retrieves the elements by the given IFC identifiers. Accepts IFC GlobalIds in every Archicad version."
     ),
     params_model=GetElementsByIFCIdsParameters,
-    pagination_field="elementsByIFCIds",
+    output_model=GetElementsByIFCIdsResult,
+    identity=("tapir", "GetElementsByIFCIds"),
 )
 
 
@@ -62,6 +73,8 @@ register_tool_for_dispatch(
         "element where it belongs to one, its IFC type and its GlobalId. Available from Archicad 28."
     ),
     params_model=None,
+    output_model=GetIFCAssignmentsResult,
+    identity=("tapir", "GetIFCAssignments"),
 )
 
 
@@ -70,9 +83,6 @@ def get_ifc_attributes_of_elements(conn_header: ConnHeader, params: GetIFCAttrib
     Retrieves the IFC attributes (Name, Description, ObjectType, Tag, PredefinedType, LongName, ...) of the given
     elements, subelements included: the name, the IFC value type and the value of each attribute. On Archicad 25, 26 and
     27 storedOnly returns only the attributes stored on the elements.
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
     """
     return conn_header.core.post_tapir_command(
         command="GetIFCAttributesOfElements",
@@ -90,7 +100,8 @@ register_tool_for_dispatch(
         "26 and 27 storedOnly returns only the attributes stored on the elements."
     ),
     params_model=GetIFCAttributesOfElementsParameters,
-    pagination_field="elementIFCAttributes",
+    output_model=GetIFCAttributesOfElementsResult,
+    identity=("tapir", "GetIFCAttributesOfElements"),
 )
 
 
@@ -122,6 +133,8 @@ register_tool_for_dispatch(
         "the source is not given and storedOnly returns only the references stored on the elements."
     ),
     params_model=GetIFCClassificationReferencesOfElementsParameters,
+    output_model=GetIFCClassificationReferencesOfElementsResult,
+    identity=("tapir", "GetIFCClassificationReferencesOfElements"),
 )
 
 
@@ -146,6 +159,8 @@ register_tool_for_dispatch(
         "of the names to IFCFileOperation as translatorName."
     ),
     params_model=None,
+    output_model=GetIFCExportTranslatorsResult,
+    identity=("tapir", "GetIFCExportTranslators"),
 )
 
 
@@ -164,16 +179,13 @@ register_tool_for_dispatch(
         "Retrieves the IFC identifiers of the given elements. Before Archicad 28 it also returns their IFC GlobalIds."
     ),
     params_model=GetIFCIdsOfElementsParameters,
+    output_model=GetIFCIdsOfElementsResult,
+    identity=("tapir", "GetIFCIdsOfElements"),
 )
 
 
 def get_ifc_properties_of_elements(conn_header: ConnHeader, params: GetIFCPropertiesOfElementsParameters) -> dict:
-    """
-    Retrieves the IFC properties of the given elements.
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
-    """
+    """Retrieves the IFC properties of the given elements."""
     return conn_header.core.post_tapir_command(
         command="GetIFCPropertiesOfElements",
         parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
@@ -186,7 +198,8 @@ register_tool_for_dispatch(
     title="GetIFCPropertiesOfElements",
     description="Retrieves the IFC properties of the given elements.",
     params_model=GetIFCPropertiesOfElementsParameters,
-    pagination_field="elementIFCProperties",
+    output_model=GetIFCPropertiesOfElementsResult,
+    identity=("tapir", "GetIFCPropertiesOfElements"),
 )
 
 
@@ -211,6 +224,8 @@ register_tool_for_dispatch(
         "from Archicad 28."
     ),
     params_model=GetIFCSpatialStructureParameters,
+    output_model=GetIFCSpatialStructureResult,
+    identity=("tapir", "GetIFCSpatialStructure"),
 )
 
 
@@ -227,6 +242,8 @@ register_tool_for_dispatch(
     title="GetIFCTypeOfElements",
     description="Retrieves the IFC types of the given elements.",
     params_model=GetIFCTypeOfElementsParameters,
+    output_model=GetIFCTypeOfElementsResult,
+    identity=("tapir", "GetIFCTypeOfElements"),
 )
 
 
@@ -251,6 +268,8 @@ register_tool_for_dispatch(
         "false a save refuses to replace an existing file."
     ),
     params_model=IFCFileOperationParameters,
+    output_model=IFCFileOperationResult,
+    identity=("tapir", "IFCFileOperation"),
 )
 
 
@@ -281,6 +300,8 @@ register_tool_for_dispatch(
         "gets wouldDelete."
     ),
     params_model=RemoveIFCClassificationReferencesOfElementsParameters,
+    output_model=RemoveIFCClassificationReferencesOfElementsResult,
+    identity=("tapir", "RemoveIFCClassificationReferencesOfElements"),
 )
 
 
@@ -306,6 +327,8 @@ register_tool_for_dispatch(
         "has dryRun set to true, and each element that has the local IFC property gets wouldDelete."
     ),
     params_model=RemoveIFCPropertiesOfElementsParameters,
+    output_model=RemoveIFCPropertiesOfElementsResult,
+    identity=("tapir", "RemoveIFCPropertiesOfElements"),
 )
 
 
@@ -331,6 +354,8 @@ register_tool_for_dispatch(
         "Archicad 25, 26 and 27 for now."
     ),
     params_model=SetIFCAttributesOfElementsParameters,
+    output_model=SetIFCAttributesOfElementsResult,
+    identity=("tapir", "SetIFCAttributesOfElements"),
 )
 
 
@@ -358,6 +383,8 @@ register_tool_for_dispatch(
         "27 for now."
     ),
     params_model=SetIFCClassificationReferencesOfElementsParameters,
+    output_model=SetIFCClassificationReferencesOfElementsResult,
+    identity=("tapir", "SetIFCClassificationReferencesOfElements"),
 )
 
 
@@ -381,4 +408,6 @@ register_tool_for_dispatch(
         "properties in the given property sets. Available only in Archicad 25, 26 and 27 for now."
     ),
     params_model=SetIFCPropertiesOfElementsParameters,
+    output_model=SetIFCPropertiesOfElementsResult,
+    identity=("tapir", "SetIFCPropertiesOfElements"),
 )

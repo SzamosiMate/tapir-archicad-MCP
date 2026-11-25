@@ -2,6 +2,7 @@
 from multiconn_archicad import ConnHeader
 from multiconn_archicad.models.official.commands import (
     GetElementsRelatedToZonesParameters,
+    GetElementsRelatedToZonesResult,
 )
 
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
@@ -27,4 +28,6 @@ register_tool_for_dispatch(
         "was given, then the order of the returned list is that of the given zones."
     ),
     params_model=GetElementsRelatedToZonesParameters,
+    output_model=GetElementsRelatedToZonesResult,
+    identity=("official", "GetElementsRelatedToZones"),
 )

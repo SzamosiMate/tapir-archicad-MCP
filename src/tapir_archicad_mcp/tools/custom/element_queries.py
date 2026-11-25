@@ -29,6 +29,10 @@ class ElementQueryParameters(BaseModel):
     )
 
 
+class ElementQueryResult(BaseModel):
+    elements: list[ElementIdArrayItem]
+
+
 def query_elements(conn_header: ConnHeader, params: ElementQueryParameters) -> dict:
     """Return matching IDs using multiconn's search or supplied-element filtering."""
     utilities = conn_header.unified.utilities.element
@@ -61,5 +65,6 @@ register_tool_for_dispatch(
         "Invalid queries and query-wide failures fail the command. Does not change selection."
     ),
     params_model=ElementQueryParameters,
-    pagination_field="elements",
+    output_model=ElementQueryResult,
+    identity=("custom", "QueryElements"),
 )

@@ -2,43 +2,83 @@
 from multiconn_archicad import ConnHeader
 from multiconn_archicad.models.tapir.commands import (
     CheckMEPPortConnectabilityParameters,
+    CheckMEPPortConnectabilityResult,
     ConnectMEPElementsParameters,
+    ConnectMEPElementsResult,
     ConnectToElectricalCircuitsParameters,
+    ConnectToElectricalCircuitsResult,
     CreateElectricalCircuitsParameters,
+    CreateElectricalCircuitsResult,
     CreateElectricalDevicesParameters,
+    CreateElectricalDevicesResult,
     CreateElectricalPanelsParameters,
+    CreateElectricalPanelsResult,
     CreateMEPElementsParameters,
+    CreateMEPElementsResult,
     CreateMEPFlexibleSegmentsParameters,
+    CreateMEPFlexibleSegmentsResult,
     CreateMEPPhysicalSystemsParameters,
+    CreateMEPPhysicalSystemsResult,
     CreateMEPRoutingElementsParameters,
+    CreateMEPRoutingElementsResult,
     CreateMEPSystemGroupsParameters,
+    CreateMEPSystemGroupsResult,
     CreateMEPTakeOffsParameters,
+    CreateMEPTakeOffsResult,
     DeleteElectricalCircuitsParameters,
+    DeleteElectricalCircuitsResult,
     DeleteMEPPhysicalSystemsParameters,
+    DeleteMEPPhysicalSystemsResult,
     GetElectricalCircuitsParameters,
+    GetElectricalCircuitsResult,
     GetElectricalDevicesParameters,
+    GetElectricalDevicesResult,
     GetElectricalPanelsParameters,
+    GetElectricalPanelsResult,
+    GetElectricalProjectSettingsResult,
     GetMEPDistributionSystemsParameters,
+    GetMEPDistributionSystemsResult,
     GetMEPElementDetailsParameters,
+    GetMEPElementDetailsResult,
     GetMEPElementsParameters,
+    GetMEPElementsResult,
     GetMEPPhysicalSystemsOfElementsParameters,
+    GetMEPPhysicalSystemsOfElementsResult,
     GetMEPPortsParameters,
+    GetMEPPortsResult,
     GetMEPPreferenceTablesParameters,
+    GetMEPPreferenceTablesResult,
     GetMEPRoutingElementsParameters,
+    GetMEPRoutingElementsResult,
     GetMEPRoutingParametersParameters,
+    GetMEPRoutingParametersResult,
+    GetMEPSystemGroupsResult,
     GetMEPToolDefaultsParameters,
+    GetMEPToolDefaultsResult,
     ModifyElectricalCircuitsParameters,
+    ModifyElectricalCircuitsResult,
     ModifyElectricalDevicesParameters,
+    ModifyElectricalDevicesResult,
     ModifyElectricalPanelsParameters,
+    ModifyElectricalPanelsResult,
     ModifyElectricalProjectSettingsParameters,
+    ModifyElectricalProjectSettingsResult,
     ModifyMEPElementsParameters,
+    ModifyMEPElementsResult,
     ModifyMEPPhysicalSystemsParameters,
+    ModifyMEPPhysicalSystemsResult,
     ModifyMEPPortsParameters,
+    ModifyMEPPortsResult,
     ModifyMEPPreferenceTablesParameters,
+    ModifyMEPPreferenceTablesResult,
     ModifyMEPRoutingElementsParameters,
+    ModifyMEPRoutingElementsResult,
     ModifyMEPSystemGroupsParameters,
+    ModifyMEPSystemGroupsResult,
     SetMEPRoutingParametersParameters,
+    SetMEPRoutingParametersResult,
     TransferMEPSettingsParameters,
+    TransferMEPSettingsResult,
 )
 
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
@@ -64,6 +104,8 @@ register_tool_for_dispatch(
         "check the physical connection. Available from Archicad 27."
     ),
     params_model=CheckMEPPortConnectabilityParameters,
+    output_model=CheckMEPPortConnectabilityResult,
+    identity=("tapir", "CheckMEPPortConnectability"),
 )
 
 
@@ -92,6 +134,8 @@ register_tool_for_dispatch(
         "split or created elements. Available from Archicad 27."
     ),
     params_model=ConnectMEPElementsParameters,
+    output_model=ConnectMEPElementsResult,
+    identity=("tapir", "ConnectMEPElements"),
 )
 
 
@@ -111,6 +155,8 @@ register_tool_for_dispatch(
         "Connects electrical devices, or panels as sub-panels, to electrical circuits. Available from Archicad 30."
     ),
     params_model=ConnectToElectricalCircuitsParameters,
+    output_model=ConnectToElectricalCircuitsResult,
+    identity=("tapir", "ConnectToElectricalCircuits"),
 )
 
 
@@ -133,6 +179,8 @@ register_tool_for_dispatch(
         "phases. Available from Archicad 30."
     ),
     params_model=CreateElectricalCircuitsParameters,
+    output_model=CreateElectricalCircuitsResult,
+    identity=("tapir", "CreateElectricalCircuits"),
 )
 
 
@@ -157,6 +205,8 @@ register_tool_for_dispatch(
         "circuit. Available from Archicad 30."
     ),
     params_model=CreateElectricalDevicesParameters,
+    output_model=CreateElectricalDevicesResult,
+    identity=("tapir", "CreateElectricalDevices"),
 )
 
 
@@ -179,6 +229,8 @@ register_tool_for_dispatch(
         "library part, size, rotation, mirroring, panel name and circuit naming. Available from Archicad 30."
     ),
     params_model=CreateElectricalPanelsParameters,
+    output_model=CreateElectricalPanelsResult,
+    identity=("tapir", "CreateElectricalPanels"),
 )
 
 
@@ -203,6 +255,8 @@ register_tool_for_dispatch(
         "which apply only to what is placed. Available from Archicad 28."
     ),
     params_model=CreateMEPElementsParameters,
+    output_model=CreateMEPElementsResult,
+    identity=("tapir", "CreateMEPElements"),
 )
 
 
@@ -227,6 +281,8 @@ register_tool_for_dispatch(
         "with the orientation (control points) or direction (polyline) at both ends. Available from Archicad 28."
     ),
     params_model=CreateMEPFlexibleSegmentsParameters,
+    output_model=CreateMEPFlexibleSegmentsResult,
+    identity=("tapir", "CreateMEPFlexibleSegments"),
 )
 
 
@@ -249,6 +305,8 @@ register_tool_for_dispatch(
         "category. Available from Archicad 29."
     ),
     params_model=CreateMEPPhysicalSystemsParameters,
+    output_model=CreateMEPPhysicalSystemsResult,
+    identity=("tapir", "CreateMEPPhysicalSystems"),
 )
 
 
@@ -275,6 +333,8 @@ register_tool_for_dispatch(
         "radius factor, from Archicad 29) that apply only to what is placed. Available from Archicad 28."
     ),
     params_model=CreateMEPRoutingElementsParameters,
+    output_model=CreateMEPRoutingElementsResult,
+    identity=("tapir", "CreateMEPRoutingElements"),
 )
 
 
@@ -291,6 +351,8 @@ register_tool_for_dispatch(
     title="CreateMEPSystemGroups",
     description="Creates MEP system groups. Available from Archicad 29.",
     params_model=CreateMEPSystemGroupsParameters,
+    output_model=CreateMEPSystemGroupsResult,
+    identity=("tapir", "CreateMEPSystemGroups"),
 )
 
 
@@ -319,6 +381,8 @@ register_tool_for_dispatch(
         "Ventilation take-offs. Available from Archicad 28."
     ),
     params_model=CreateMEPTakeOffsParameters,
+    output_model=CreateMEPTakeOffsResult,
+    identity=("tapir", "CreateMEPTakeOffs"),
 )
 
 
@@ -335,6 +399,8 @@ register_tool_for_dispatch(
     title="DeleteElectricalCircuits",
     description="Removes electrical circuits from their panels. Available from Archicad 30.",
     params_model=DeleteElectricalCircuitsParameters,
+    output_model=DeleteElectricalCircuitsResult,
+    identity=("tapir", "DeleteElectricalCircuits"),
 )
 
 
@@ -357,6 +423,8 @@ register_tool_for_dispatch(
         "Archicad 29."
     ),
     params_model=DeleteMEPPhysicalSystemsParameters,
+    output_model=DeleteMEPPhysicalSystemsResult,
+    identity=("tapir", "DeleteMEPPhysicalSystems"),
 )
 
 
@@ -365,9 +433,6 @@ def get_electrical_circuits(conn_header: ConnHeader, params: GetElectricalCircui
     Gets the given electrical circuits, the circuits of the given panels, or every circuit of the project: name,
     description, owner panel, connected devices and panels, voltage, phases, wiring type, loads, voltage drop and
     estimated cable length. Available from Archicad 30.
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
     """
     return conn_header.core.post_tapir_command(
         command="GetElectricalCircuits", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -384,7 +449,8 @@ register_tool_for_dispatch(
         "estimated cable length. Available from Archicad 30."
     ),
     params_model=GetElectricalCircuitsParameters,
-    pagination_field="electricalCircuits",
+    output_model=GetElectricalCircuitsResult,
+    identity=("tapir", "GetElectricalCircuits"),
 )
 
 
@@ -393,9 +459,6 @@ def get_electrical_devices(conn_header: ConnHeader, params: GetElectricalDevices
     Gets the electrical devices (lights, sockets and other consumers) of the project or the given ones: parent circuit,
     placement, apparent power, load classification, demand load and directly connected MEP elements. Available from
     Archicad 30.
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
     """
     return conn_header.core.post_tapir_command(
         command="GetElectricalDevices", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -412,7 +475,8 @@ register_tool_for_dispatch(
         "Available from Archicad 30."
     ),
     params_model=GetElectricalDevicesParameters,
-    pagination_field="electricalDevices",
+    output_model=GetElectricalDevicesResult,
+    identity=("tapir", "GetElectricalDevices"),
 )
 
 
@@ -420,9 +484,6 @@ def get_electrical_panels(conn_header: ConnHeader, params: GetElectricalPanelsPa
     """
     Gets the electrical panels (distribution boards) of the project or the given ones: name, circuit naming, circuits,
     parent circuit, placement and the connected and demand loads in total and per phase. Available from Archicad 30.
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
     """
     return conn_header.core.post_tapir_command(
         command="GetElectricalPanels", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -439,7 +500,8 @@ register_tool_for_dispatch(
         "Archicad 30."
     ),
     params_model=GetElectricalPanelsParameters,
-    pagination_field="electricalPanels",
+    output_model=GetElectricalPanelsResult,
+    identity=("tapir", "GetElectricalPanels"),
 )
 
 
@@ -460,6 +522,8 @@ register_tool_for_dispatch(
         "and the load classifications with their demand factor. Available from Archicad 30."
     ),
     params_model=None,
+    output_model=GetElectricalProjectSettingsResult,
+    identity=("tapir", "GetElectricalProjectSettings"),
 )
 
 
@@ -484,6 +548,8 @@ register_tool_for_dispatch(
         "on, each with its previous and next elements and the connecting ports. Available from Archicad 28."
     ),
     params_model=GetMEPDistributionSystemsParameters,
+    output_model=GetMEPDistributionSystemsResult,
+    identity=("tapir", "GetMEPDistributionSystems"),
 )
 
 
@@ -512,6 +578,8 @@ register_tool_for_dispatch(
         "preference table of transitions. Available from Archicad 28."
     ),
     params_model=GetMEPElementDetailsParameters,
+    output_model=GetMEPElementDetailsResult,
+    identity=("tapir", "GetMEPElementDetails"),
 )
 
 
@@ -521,9 +589,6 @@ def get_mep_elements(conn_header: ConnHeader, params: GetMEPElementsParameters) 
     from Archicad 30 the electrical panels and devices), optionally filtered by type and domain. MEP elements are
     ordinary elements, so the generic element commands work on them as well (for example they can be deleted with the
     DeleteElements command). Available from Archicad 28.
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
     """
     return conn_header.core.post_tapir_command(
         command="GetMEPElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -541,7 +606,8 @@ register_tool_for_dispatch(
         "deleted with the DeleteElements command). Available from Archicad 28."
     ),
     params_model=GetMEPElementsParameters,
-    pagination_field="elements",
+    output_model=GetMEPElementsResult,
+    identity=("tapir", "GetMEPElements"),
 )
 
 
@@ -561,6 +627,8 @@ register_tool_for_dispatch(
     title="GetMEPPhysicalSystemsOfElements",
     description=("Returns the physical systems each of the given MEP elements is part of. Available from Archicad 29."),
     params_model=GetMEPPhysicalSystemsOfElementsParameters,
+    output_model=GetMEPPhysicalSystemsOfElementsResult,
+    identity=("tapir", "GetMEPPhysicalSystemsOfElements"),
 )
 
 
@@ -589,6 +657,8 @@ register_tool_for_dispatch(
         "piping and ventilation ports. Available from Archicad 27."
     ),
     params_model=GetMEPPortsParameters,
+    output_model=GetMEPPortsResult,
+    identity=("tapir", "GetMEPPorts"),
 )
 
 
@@ -623,6 +693,8 @@ register_tool_for_dispatch(
         "in the table, as ModifyMEPPreferenceTables expects it. Available from Archicad 28."
     ),
     params_model=GetMEPPreferenceTablesParameters,
+    output_model=GetMEPPreferenceTablesResult,
+    identity=("tapir", "GetMEPPreferenceTables"),
 )
 
 
@@ -635,9 +707,6 @@ def get_mep_routing_elements(conn_header: ConnHeader, params: GetMEPRoutingEleme
     anchor, reference line offsets, wall thickness, flange size, connection style, insulation thickness and rigid
     segments, and nodes with their incoming and outgoing segments, preferred transition placement, elbows and
     transitions. Available from Archicad 28.
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
     """
     return conn_header.core.post_tapir_command(
         command="GetMEPRoutingElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -658,7 +727,8 @@ register_tool_for_dispatch(
         "preferred transition placement, elbows and transitions. Available from Archicad 28."
     ),
     params_model=GetMEPRoutingElementsParameters,
-    pagination_field="routingElements",
+    output_model=GetMEPRoutingElementsResult,
+    identity=("tapir", "GetMEPRoutingElements"),
 )
 
 
@@ -687,6 +757,8 @@ register_tool_for_dispatch(
         "parameters (Archicad 28 only). Available from Archicad 28."
     ),
     params_model=GetMEPRoutingParametersParameters,
+    output_model=GetMEPRoutingParametersResult,
+    identity=("tapir", "GetMEPRoutingParameters"),
 )
 
 
@@ -694,9 +766,6 @@ def get_mep_system_groups(conn_header: ConnHeader) -> dict:
     """
     Gets the MEP system groups of the project with their physical systems: name, editable flag, root element and MEP
     system. Available from Archicad 29.
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
     """
     return conn_header.core.post_tapir_command(command="GetMEPSystemGroups", parameters={})
 
@@ -710,7 +779,8 @@ register_tool_for_dispatch(
         "MEP system. Available from Archicad 29."
     ),
     params_model=None,
-    pagination_field="systemGroups",
+    output_model=GetMEPSystemGroupsResult,
+    identity=("tapir", "GetMEPSystemGroups"),
 )
 
 
@@ -741,6 +811,8 @@ register_tool_for_dispatch(
         "27 gives fewer settings, and only the shape of the ports. Available from Archicad 27."
     ),
     params_model=GetMEPToolDefaultsParameters,
+    output_model=GetMEPToolDefaultsResult,
+    identity=("tapir", "GetMEPToolDefaults"),
 )
 
 
@@ -762,6 +834,8 @@ register_tool_for_dispatch(
         "Archicad 30."
     ),
     params_model=ModifyElectricalCircuitsParameters,
+    output_model=ModifyElectricalCircuitsResult,
+    identity=("tapir", "ModifyElectricalCircuits"),
 )
 
 
@@ -784,6 +858,8 @@ register_tool_for_dispatch(
         "mirroring, library part, size) of electrical devices. Available from Archicad 30."
     ),
     params_model=ModifyElectricalDevicesParameters,
+    output_model=ModifyElectricalDevicesResult,
+    identity=("tapir", "ModifyElectricalDevices"),
 )
 
 
@@ -806,6 +882,8 @@ register_tool_for_dispatch(
         "part, size) of electrical panels. Available from Archicad 30."
     ),
     params_model=ModifyElectricalPanelsParameters,
+    output_model=ModifyElectricalPanelsResult,
+    identity=("tapir", "ModifyElectricalPanels"),
 )
 
 
@@ -831,6 +909,8 @@ register_tool_for_dispatch(
         "and load classifications. Available from Archicad 30."
     ),
     params_model=ModifyElectricalProjectSettingsParameters,
+    output_model=ModifyElectricalProjectSettingsResult,
+    identity=("tapir", "ModifyElectricalProjectSettings"),
 )
 
 
@@ -861,6 +941,8 @@ register_tool_for_dispatch(
         "which changes stayed. Available from Archicad 27."
     ),
     params_model=ModifyMEPElementsParameters,
+    output_model=ModifyMEPElementsResult,
+    identity=("tapir", "ModifyMEPElements"),
 )
 
 
@@ -883,6 +965,8 @@ register_tool_for_dispatch(
         "fields are changed. Available from Archicad 29."
     ),
     params_model=ModifyMEPPhysicalSystemsParameters,
+    output_model=ModifyMEPPhysicalSystemsResult,
+    identity=("tapir", "ModifyMEPPhysicalSystems"),
 )
 
 
@@ -907,6 +991,8 @@ register_tool_for_dispatch(
         "piping ports. Only the given fields are changed. Available from Archicad 28."
     ),
     params_model=ModifyMEPPortsParameters,
+    output_model=ModifyMEPPortsResult,
+    identity=("tapir", "ModifyMEPPorts"),
 )
 
 
@@ -935,6 +1021,8 @@ register_tool_for_dispatch(
         "table is changed in one undoable step. Available from Archicad 28."
     ),
     params_model=ModifyMEPPreferenceTablesParameters,
+    output_model=ModifyMEPPreferenceTablesResult,
+    identity=("tapir", "ModifyMEPPreferenceTables"),
 )
 
 
@@ -964,6 +1052,8 @@ register_tool_for_dispatch(
         "from Archicad 28."
     ),
     params_model=ModifyMEPRoutingElementsParameters,
+    output_model=ModifyMEPRoutingElementsResult,
+    identity=("tapir", "ModifyMEPRoutingElements"),
 )
 
 
@@ -980,6 +1070,8 @@ register_tool_for_dispatch(
     title="ModifyMEPSystemGroups",
     description="Renames MEP system groups. Available from Archicad 29.",
     params_model=ModifyMEPSystemGroupsParameters,
+    output_model=ModifyMEPSystemGroupsResult,
+    identity=("tapir", "ModifyMEPSystemGroups"),
 )
 
 
@@ -1011,6 +1103,8 @@ register_tool_for_dispatch(
         "Archicad 28."
     ),
     params_model=SetMEPRoutingParametersParameters,
+    output_model=SetMEPRoutingParametersResult,
+    identity=("tapir", "SetMEPRoutingParameters"),
 )
 
 
@@ -1037,4 +1131,6 @@ register_tool_for_dispatch(
         "target is changed in its own undoable step. Available from Archicad 28."
     ),
     params_model=TransferMEPSettingsParameters,
+    output_model=TransferMEPSettingsResult,
+    identity=("tapir", "TransferMEPSettings"),
 )

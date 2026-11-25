@@ -2,14 +2,24 @@
 from multiconn_archicad import ConnHeader
 from multiconn_archicad.models.official.commands import (
     GetBuiltInContainerNavigatorItemsParameters,
+    GetBuiltInContainerNavigatorItemsResult,
     GetDetailNavigatorItemsParameters,
+    GetDetailNavigatorItemsResult,
     GetDocument3DNavigatorItemsParameters,
+    GetDocument3DNavigatorItemsResult,
     GetElevationNavigatorItemsParameters,
+    GetElevationNavigatorItemsResult,
     GetInteriorElevationNavigatorItemsParameters,
+    GetInteriorElevationNavigatorItemsResult,
     GetNavigatorItemsTypeParameters,
+    GetNavigatorItemsTypeResult,
+    GetPublisherSetNamesResult,
     GetSectionNavigatorItemsParameters,
+    GetSectionNavigatorItemsResult,
     GetStoryNavigatorItemsParameters,
+    GetStoryNavigatorItemsResult,
     GetWorksheetNavigatorItemsParameters,
+    GetWorksheetNavigatorItemsResult,
     MoveNavigatorItemParameters,
 )
 
@@ -32,6 +42,8 @@ register_tool_for_dispatch(
     title="GetBuiltInContainerNavigatorItems",
     description="Returns the details of the built-in container navigator items identified by their Ids.",
     params_model=GetBuiltInContainerNavigatorItemsParameters,
+    output_model=GetBuiltInContainerNavigatorItemsResult,
+    identity=("official", "GetBuiltInContainerNavigatorItems"),
 )
 
 
@@ -49,6 +61,8 @@ register_tool_for_dispatch(
     title="GetDetailNavigatorItems",
     description="Returns the details of the detail navigator items identified by their Ids.",
     params_model=GetDetailNavigatorItemsParameters,
+    output_model=GetDetailNavigatorItemsResult,
+    identity=("official", "GetDetailNavigatorItems"),
 )
 
 
@@ -66,6 +80,8 @@ register_tool_for_dispatch(
     title="GetDocument3DNavigatorItems",
     description="Returns the details of the 3D document navigator items identified by their Ids.",
     params_model=GetDocument3DNavigatorItemsParameters,
+    output_model=GetDocument3DNavigatorItemsResult,
+    identity=("official", "GetDocument3DNavigatorItems"),
 )
 
 
@@ -83,6 +99,8 @@ register_tool_for_dispatch(
     title="GetElevationNavigatorItems",
     description="Returns the detailed elevation navigator items identified by their Ids.",
     params_model=GetElevationNavigatorItemsParameters,
+    output_model=GetElevationNavigatorItemsResult,
+    identity=("official", "GetElevationNavigatorItems"),
 )
 
 
@@ -102,6 +120,8 @@ register_tool_for_dispatch(
     title="GetInteriorElevationNavigatorItems",
     description="Returns the details of the interior elevation navigator items identified by their Ids.",
     params_model=GetInteriorElevationNavigatorItemsParameters,
+    output_model=GetInteriorElevationNavigatorItemsResult,
+    identity=("official", "GetInteriorElevationNavigatorItems"),
 )
 
 
@@ -124,6 +144,8 @@ register_tool_for_dispatch(
         "identifier that is not found."
     ),
     params_model=GetNavigatorItemsTypeParameters,
+    output_model=GetNavigatorItemsTypeResult,
+    identity=("official", "GetNavigatorItemsType"),
 )
 
 
@@ -138,6 +160,8 @@ register_tool_for_dispatch(
     title="GetPublisherSetNames",
     description="Returns the names of available publisher sets.",
     params_model=None,
+    output_model=GetPublisherSetNamesResult,
+    identity=("official", "GetPublisherSetNames"),
 )
 
 
@@ -155,6 +179,8 @@ register_tool_for_dispatch(
     title="GetSectionNavigatorItems",
     description="Returns the details of the section navigator items identified by their Ids.",
     params_model=GetSectionNavigatorItemsParameters,
+    output_model=GetSectionNavigatorItemsResult,
+    identity=("official", "GetSectionNavigatorItems"),
 )
 
 
@@ -172,6 +198,8 @@ register_tool_for_dispatch(
     title="GetStoryNavigatorItems",
     description="Returns the details of the story navigator items identified by their Ids.",
     params_model=GetStoryNavigatorItemsParameters,
+    output_model=GetStoryNavigatorItemsResult,
+    identity=("official", "GetStoryNavigatorItems"),
 )
 
 
@@ -189,6 +217,8 @@ register_tool_for_dispatch(
     title="GetWorksheetNavigatorItems",
     description="Returns the details of the worksheet navigator items identified by their Ids.",
     params_model=GetWorksheetNavigatorItemsParameters,
+    output_model=GetWorksheetNavigatorItemsResult,
+    identity=("official", "GetWorksheetNavigatorItems"),
 )
 
 
@@ -213,4 +243,6 @@ register_tool_for_dispatch(
         "given then inserts it after this navigator item."
     ),
     params_model=MoveNavigatorItemParameters,
+    output_model=None,
+    identity=("official", "MoveNavigatorItem"),
 )

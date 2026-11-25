@@ -2,18 +2,33 @@
 from multiconn_archicad import ConnHeader
 from multiconn_archicad.models.tapir.commands import (
     CreateElementSetsParameters,
+    CreateElementSetsResult,
     CreateGroupsParameters,
+    CreateGroupsResult,
     DeleteElementSetsParameters,
+    DeleteElementSetsResult,
     GetAllElementsOfGroupsParameters,
+    GetAllElementsOfGroupsResult,
+    GetAutoGroupModeResult,
     GetElementSetDataParameters,
+    GetElementSetDataResult,
     GetElementSetsOfElementsParameters,
+    GetElementSetsOfElementsResult,
     GetElementsOfGroupsParameters,
+    GetElementsOfGroupsResult,
     GetGroupsOfElementsParameters,
+    GetGroupsOfElementsResult,
     GetMainGroupsParameters,
+    GetMainGroupsResult,
+    GetSuspendGroupsModeResult,
     GetUserDataOfGroupsParameters,
+    GetUserDataOfGroupsResult,
     SetSuspendGroupsModeParameters,
+    SetSuspendGroupsModeResult,
     SetUserDataOfGroupsParameters,
+    SetUserDataOfGroupsResult,
     UngroupElementsParameters,
+    UngroupElementsResult,
 )
 
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
@@ -38,6 +53,8 @@ register_tool_for_dispatch(
         "is not a group and has no effect on selection or editing)."
     ),
     params_model=CreateElementSetsParameters,
+    output_model=CreateElementSetsResult,
+    identity=("tapir", "CreateElementSets"),
 )
 
 
@@ -54,6 +71,8 @@ register_tool_for_dispatch(
     title="CreateGroups",
     description="Creates groups of the passed elements",
     params_model=CreateGroupsParameters,
+    output_model=CreateGroupsResult,
+    identity=("tapir", "CreateGroups"),
 )
 
 
@@ -80,6 +99,8 @@ register_tool_for_dispatch(
         "run would delete gets wouldDelete."
     ),
     params_model=DeleteElementSetsParameters,
+    output_model=DeleteElementSetsResult,
+    identity=("tapir", "DeleteElementSets"),
 )
 
 
@@ -96,6 +117,8 @@ register_tool_for_dispatch(
     title="GetAllElementsOfGroups",
     description="Gets all the elements of each given group, including the elements of its nested groups.",
     params_model=GetAllElementsOfGroupsParameters,
+    output_model=GetAllElementsOfGroupsResult,
+    identity=("tapir", "GetAllElementsOfGroups"),
 )
 
 
@@ -110,6 +133,8 @@ register_tool_for_dispatch(
     title="GetAutoGroupMode",
     description="Gets the current state of the Auto Group mode.",
     params_model=None,
+    output_model=GetAutoGroupModeResult,
+    identity=("tapir", "GetAutoGroupMode"),
 )
 
 
@@ -132,6 +157,8 @@ register_tool_for_dispatch(
         "elements together; the custom data is returned as Base64 encoded bytes."
     ),
     params_model=GetElementSetDataParameters,
+    output_model=GetElementSetDataResult,
+    identity=("tapir", "GetElementSetData"),
 )
 
 
@@ -139,9 +166,6 @@ def get_element_sets_of_elements(conn_header: ConnHeader, params: GetElementSets
     """
     Gets the element sets that contain each given element. Only element sets created by the Tapir Add-On are examined;
     sets created by other add-ons are not found.
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
     """
     return conn_header.core.post_tapir_command(
         command="GetElementSetsOfElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -157,7 +181,8 @@ register_tool_for_dispatch(
         "examined; sets created by other add-ons are not found."
     ),
     params_model=GetElementSetsOfElementsParameters,
-    pagination_field="elementSetsOfElements",
+    output_model=GetElementSetsOfElementsResult,
+    identity=("tapir", "GetElementSetsOfElements"),
 )
 
 
@@ -174,6 +199,8 @@ register_tool_for_dispatch(
     title="GetElementsOfGroups",
     description="Gets the elements directly contained by each given group.",
     params_model=GetElementsOfGroupsParameters,
+    output_model=GetElementsOfGroupsResult,
+    identity=("tapir", "GetElementsOfGroups"),
 )
 
 
@@ -196,6 +223,8 @@ register_tool_for_dispatch(
         "that are not part of any group."
     ),
     params_model=GetGroupsOfElementsParameters,
+    output_model=GetGroupsOfElementsResult,
+    identity=("tapir", "GetGroupsOfElements"),
 )
 
 
@@ -218,6 +247,8 @@ register_tool_for_dispatch(
         "level group."
     ),
     params_model=GetMainGroupsParameters,
+    output_model=GetMainGroupsResult,
+    identity=("tapir", "GetMainGroups"),
 )
 
 
@@ -232,6 +263,8 @@ register_tool_for_dispatch(
     title="GetSuspendGroupsMode",
     description="Gets the current state of the Suspend Groups mode.",
     params_model=None,
+    output_model=GetSuspendGroupsModeResult,
+    identity=("tapir", "GetSuspendGroupsMode"),
 )
 
 
@@ -240,9 +273,6 @@ def get_user_data_of_groups(conn_header: ConnHeader, params: GetUserDataOfGroups
     Gets the user data an add-on attached to each given group: its version, platform sign, flags and bytes (base64
     encoded), and, when its version is 1 (the layout SetUserDataOfGroups writes), its key-value pairs. Returns an error
     for groups that have no user data.
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
     """
     return conn_header.core.post_tapir_command(
         command="GetUserDataOfGroups", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -259,7 +289,8 @@ register_tool_for_dispatch(
         "Returns an error for groups that have no user data."
     ),
     params_model=GetUserDataOfGroupsParameters,
-    pagination_field="userDataOfGroups",
+    output_model=GetUserDataOfGroupsResult,
+    identity=("tapir", "GetUserDataOfGroups"),
 )
 
 
@@ -282,6 +313,8 @@ register_tool_for_dispatch(
         "group; remember to restore the previous state afterwards."
     ),
     params_model=SetSuspendGroupsModeParameters,
+    output_model=SetSuspendGroupsModeResult,
+    identity=("tapir", "SetSuspendGroupsMode"),
 )
 
 
@@ -310,6 +343,8 @@ register_tool_for_dispatch(
         "reported as an error. One undo step per call."
     ),
     params_model=SetUserDataOfGroupsParameters,
+    output_model=SetUserDataOfGroupsResult,
+    identity=("tapir", "SetUserDataOfGroups"),
 )
 
 
@@ -334,4 +369,6 @@ register_tool_for_dispatch(
         "containing group first. Returns an execution result per group."
     ),
     params_model=UngroupElementsParameters,
+    output_model=UngroupElementsResult,
+    identity=("tapir", "UngroupElements"),
 )

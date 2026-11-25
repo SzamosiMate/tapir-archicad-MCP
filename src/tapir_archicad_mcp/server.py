@@ -10,6 +10,7 @@ from tapir_archicad_mcp.app import mcp
 from tapir_archicad_mcp.jobs import JobSettings
 from tapir_archicad_mcp.logging_config import setup_logging
 from tapir_archicad_mcp.middleware import BearerTokenMiddleware
+from tapir_archicad_mcp.result_budget import ResultBudget
 
 setup_logging()
 
@@ -72,21 +73,44 @@ def parse_args() -> argparse.Namespace:
         help="Bearer token required for HTTP-based transports. Ignored for stdio.",
     )
     parser.add_argument(
-        "--async-threshold-seconds", type=_positive_float,
+        "--async-threshold-seconds",
+        type=_positive_float,
         default=os.getenv("TAPIR_MCP_ASYNC_THRESHOLD_SECONDS", "45"),
         help="Maximum execution/poll wait before returning a running JobHandle (default: 45 seconds).",
     )
     parser.add_argument(
-        "--job-ttl-seconds", type=_nonnegative_float,
+        "--job-ttl-seconds",
+        type=_nonnegative_float,
         default=os.getenv("TAPIR_MCP_JOB_TTL_SECONDS", "86400"),
-        help="Completed-job and page lifetime after completion; 0 disables age expiry (default: 86400).",
+        help="Lifetime of completed jobs and their results; 0 disables age expiry (default: 86400).",
     )
     parser.add_argument(
-        "--max-completed-jobs", type=_positive_int,
+        "--max-completed-jobs",
+        type=_positive_int,
         default=os.getenv("TAPIR_MCP_MAX_COMPLETED_JOBS", "128"),
-        help="Maximum retained completed/failed jobs; oldest are evicted with their pages (default: 128).",
+        help="Maximum retained completed/failed jobs, including their results (default: 128).",
     )
-    return parser.parse_args()
+    defaults = ResultBudget()
+    for flag, variable, default, help_text in (
+        ("auto-max-tokens", "AUTO_MAX_TOKENS", defaults.auto_tokens, "Reference token limit for auto and result_read."),
+        (
+            "inline-max-tokens",
+            "INLINE_MAX_TOKENS",
+            defaults.inline_tokens,
+            "Reference token limit for explicit inline.",
+        ),
+        ("inline-max-bytes", "INLINE_MAX_BYTES", defaults.max_bytes, "Independent UTF-8 JSON ceiling."),
+    ):
+        parser.add_argument(
+            "--result-" + flag,
+            type=_positive_int,
+            default=os.getenv("TAPIR_MCP_RESULT_" + variable, str(default)),
+            help=help_text,
+        )
+    args = parser.parse_args()
+    if args.result_auto_max_tokens > args.result_inline_max_tokens:
+        parser.error("--result-auto-max-tokens cannot exceed --result-inline-max-tokens.")
+    return args
 
 
 def sse_paths_from_mount_path(mount_path: str | None) -> dict[str, str]:
@@ -109,6 +133,11 @@ def main():
         async_threshold_seconds=args.async_threshold_seconds,
         job_ttl_seconds=args.job_ttl_seconds,
         max_completed_jobs=args.max_completed_jobs,
+        result_budget=ResultBudget(
+            args.result_auto_max_tokens,
+            args.result_inline_max_tokens,
+            args.result_inline_max_bytes,
+        ),
     )
     sys.argv = [sys.argv[0]]
 
@@ -118,7 +147,7 @@ def main():
         args.host,
         args.port,
         args.streamable_http_path,
-        args.mount_path
+        args.mount_path,
     )
 
     # MCPServer configures HTTP options on its transport methods.
@@ -142,6 +171,7 @@ def main():
         mcp.run(transport="stdio")
     else:
         mcp.run(transport=args.transport, port=args.port, **http_options)
+
 
 if __name__ == "__main__":
     main()

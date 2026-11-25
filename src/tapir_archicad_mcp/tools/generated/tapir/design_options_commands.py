@@ -2,31 +2,60 @@
 from multiconn_archicad import ConnHeader
 from multiconn_archicad.models.tapir.commands import (
     ActivateDesignOptionsInCombinationsParameters,
+    ActivateDesignOptionsInCombinationsResult,
     CanMoveElementsToDesignOptionsParameters,
+    CanMoveElementsToDesignOptionsResult,
     CreateDesignOptionCombinationsParameters,
+    CreateDesignOptionCombinationsResult,
     CreateDesignOptionSetsParameters,
+    CreateDesignOptionSetsResult,
     CreateDesignOptionsParameters,
+    CreateDesignOptionsResult,
     DeactivateDesignOptionsInCombinationsParameters,
+    DeactivateDesignOptionsInCombinationsResult,
     DeleteDesignOptionCombinationsParameters,
+    DeleteDesignOptionCombinationsResult,
     DeleteDesignOptionSetsParameters,
+    DeleteDesignOptionSetsResult,
     DeleteDesignOptionsParameters,
+    DeleteDesignOptionsResult,
     DuplicateDesignOptionCombinationsParameters,
+    DuplicateDesignOptionCombinationsResult,
     GetDesignOptionCombinationOfViewsParameters,
+    GetDesignOptionCombinationOfViewsResult,
+    GetDesignOptionCombinationsResult,
     GetDesignOptionForElementsParameters,
+    GetDesignOptionForElementsResult,
+    GetDesignOptionSetsResult,
+    GetDesignOptionsResult,
     GetElementsOfDesignOptionsParameters,
+    GetElementsOfDesignOptionsResult,
     GetHotlinkDesignOptionTableDetailsParameters,
+    GetHotlinkDesignOptionTableDetailsResult,
     GetHotlinkDesignOptionTablesParameters,
+    GetHotlinkDesignOptionTablesResult,
     MoveDesignOptionsToAnotherSetParameters,
+    MoveDesignOptionsToAnotherSetResult,
     MoveElementsToDesignOptionsParameters,
+    MoveElementsToDesignOptionsResult,
     RenameDesignOptionCombinationsParameters,
+    RenameDesignOptionCombinationsResult,
     RenameDesignOptionSetsParameters,
+    RenameDesignOptionSetsResult,
     RenameDesignOptionsParameters,
+    RenameDesignOptionsResult,
     ReorderDesignOptionSetsParameters,
+    ReorderDesignOptionSetsResult,
     ReorderDesignOptionsInSetParameters,
+    ReorderDesignOptionsInSetResult,
     SetActiveDesignOptionsInCombinationsParameters,
+    SetActiveDesignOptionsInCombinationsResult,
     SetDefaultDesignOptionParameters,
+    SetDefaultDesignOptionResult,
     SetDesignOptionCombinationOfViewsParameters,
+    SetDesignOptionCombinationOfViewsResult,
     SetHotlinkDesignOptionTablesParameters,
+    SetHotlinkDesignOptionTablesResult,
 )
 
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
@@ -54,6 +83,8 @@ register_tool_for_dispatch(
         "the combination. Available from Archicad 29."
     ),
     params_model=ActivateDesignOptionsInCombinationsParameters,
+    output_model=ActivateDesignOptionsInCombinationsResult,
+    identity=("tapir", "ActivateDesignOptionsInCombinations"),
 )
 
 
@@ -79,6 +110,8 @@ register_tool_for_dispatch(
         "when they cannot. Available from Archicad 29."
     ),
     params_model=CanMoveElementsToDesignOptionsParameters,
+    output_model=CanMoveElementsToDesignOptionsResult,
+    identity=("tapir", "CanMoveElementsToDesignOptions"),
 )
 
 
@@ -98,6 +131,8 @@ register_tool_for_dispatch(
     title="CreateDesignOptionCombinations",
     description="Creates new design option combinations with the given parameters. Available from Archicad 29.",
     params_model=CreateDesignOptionCombinationsParameters,
+    output_model=CreateDesignOptionCombinationsResult,
+    identity=("tapir", "CreateDesignOptionCombinations"),
 )
 
 
@@ -114,6 +149,8 @@ register_tool_for_dispatch(
     title="CreateDesignOptionSets",
     description="Creates new design option sets with the given names. Available from Archicad 29.",
     params_model=CreateDesignOptionSetsParameters,
+    output_model=CreateDesignOptionSetsResult,
+    identity=("tapir", "CreateDesignOptionSets"),
 )
 
 
@@ -130,6 +167,8 @@ register_tool_for_dispatch(
     title="CreateDesignOptions",
     description="Creates new design options with the given parameters. Available from Archicad 29.",
     params_model=CreateDesignOptionsParameters,
+    output_model=CreateDesignOptionsResult,
+    identity=("tapir", "CreateDesignOptions"),
 )
 
 
@@ -155,6 +194,8 @@ register_tool_for_dispatch(
         "Available from Archicad 29."
     ),
     params_model=DeactivateDesignOptionsInCombinationsParameters,
+    output_model=DeactivateDesignOptionsInCombinationsResult,
+    identity=("tapir", "DeactivateDesignOptionsInCombinations"),
 )
 
 
@@ -174,6 +215,8 @@ register_tool_for_dispatch(
     title="DeleteDesignOptionCombinations",
     description="Deletes the given design option combinations. Available from Archicad 29.",
     params_model=DeleteDesignOptionCombinationsParameters,
+    output_model=DeleteDesignOptionCombinationsResult,
+    identity=("tapir", "DeleteDesignOptionCombinations"),
 )
 
 
@@ -190,6 +233,8 @@ register_tool_for_dispatch(
     title="DeleteDesignOptionSets",
     description="Deletes the given design option sets. Available from Archicad 29.",
     params_model=DeleteDesignOptionSetsParameters,
+    output_model=DeleteDesignOptionSetsResult,
+    identity=("tapir", "DeleteDesignOptionSets"),
 )
 
 
@@ -206,6 +251,8 @@ register_tool_for_dispatch(
     title="DeleteDesignOptions",
     description="Deletes the given design options. Available from Archicad 29.",
     params_model=DeleteDesignOptionsParameters,
+    output_model=DeleteDesignOptionsResult,
+    identity=("tapir", "DeleteDesignOptions"),
 )
 
 
@@ -231,6 +278,8 @@ register_tool_for_dispatch(
         "Available from Archicad 29."
     ),
     params_model=DuplicateDesignOptionCombinationsParameters,
+    output_model=DuplicateDesignOptionCombinationsResult,
+    identity=("tapir", "DuplicateDesignOptionCombinations"),
 )
 
 
@@ -256,6 +305,8 @@ register_tool_for_dispatch(
         "set of design options or a deleted combination. Available from Archicad 27."
     ),
     params_model=GetDesignOptionCombinationOfViewsParameters,
+    output_model=GetDesignOptionCombinationOfViewsResult,
+    identity=("tapir", "GetDesignOptionCombinationOfViews"),
 )
 
 
@@ -270,6 +321,8 @@ register_tool_for_dispatch(
     title="GetDesignOptionCombinations",
     description="Retrieves information about existing design option combinations.",
     params_model=None,
+    output_model=GetDesignOptionCombinationsResult,
+    identity=("tapir", "GetDesignOptionCombinations"),
 )
 
 
@@ -287,6 +340,8 @@ register_tool_for_dispatch(
     title="GetDesignOptionForElements",
     description="Retrieves the design option association for the specified elements. Available from Archicad 29.",
     params_model=GetDesignOptionForElementsParameters,
+    output_model=GetDesignOptionForElementsResult,
+    identity=("tapir", "GetDesignOptionForElements"),
 )
 
 
@@ -307,6 +362,8 @@ register_tool_for_dispatch(
         "the design options. Available from Archicad 29."
     ),
     params_model=None,
+    output_model=GetDesignOptionSetsResult,
+    identity=("tapir", "GetDesignOptionSets"),
 )
 
 
@@ -321,6 +378,8 @@ register_tool_for_dispatch(
     title="GetDesignOptions",
     description="Retrieves information about existing design options. Available from Archicad 29.",
     params_model=None,
+    output_model=GetDesignOptionsResult,
+    identity=("tapir", "GetDesignOptions"),
 )
 
 
@@ -338,6 +397,8 @@ register_tool_for_dispatch(
     title="GetElementsOfDesignOptions",
     description="Retrieves the elements associated with the given design options. Available from Archicad 29.",
     params_model=GetElementsOfDesignOptionsParameters,
+    output_model=GetElementsOfDesignOptionsResult,
+    identity=("tapir", "GetElementsOfDesignOptions"),
 )
 
 
@@ -363,6 +424,8 @@ register_tool_for_dispatch(
         "hotlinked source file, and which of them the node shows. Available from Archicad 29."
     ),
     params_model=GetHotlinkDesignOptionTableDetailsParameters,
+    output_model=GetHotlinkDesignOptionTableDetailsResult,
+    identity=("tapir", "GetHotlinkDesignOptionTableDetails"),
 )
 
 
@@ -388,6 +451,8 @@ register_tool_for_dispatch(
         "hotlinked module and which of them are active. Available from Archicad 29."
     ),
     params_model=GetHotlinkDesignOptionTablesParameters,
+    output_model=GetHotlinkDesignOptionTablesResult,
+    identity=("tapir", "GetHotlinkDesignOptionTables"),
 )
 
 
@@ -407,6 +472,8 @@ register_tool_for_dispatch(
     title="MoveDesignOptionsToAnotherSet",
     description="Moves the given design options to another sets. Available from Archicad 29.",
     params_model=MoveDesignOptionsToAnotherSetParameters,
+    output_model=MoveDesignOptionsToAnotherSetResult,
+    identity=("tapir", "MoveDesignOptionsToAnotherSet"),
 )
 
 
@@ -430,6 +497,8 @@ register_tool_for_dispatch(
         "from any design options and move it to the main model. Available from Archicad 29."
     ),
     params_model=MoveElementsToDesignOptionsParameters,
+    output_model=MoveElementsToDesignOptionsResult,
+    identity=("tapir", "MoveElementsToDesignOptions"),
 )
 
 
@@ -449,6 +518,8 @@ register_tool_for_dispatch(
     title="RenameDesignOptionCombinations",
     description="Changes the name of the given design option combinations. Available from Archicad 29.",
     params_model=RenameDesignOptionCombinationsParameters,
+    output_model=RenameDesignOptionCombinationsResult,
+    identity=("tapir", "RenameDesignOptionCombinations"),
 )
 
 
@@ -465,6 +536,8 @@ register_tool_for_dispatch(
     title="RenameDesignOptionSets",
     description="Changes the name of the given design option sets. Available from Archicad 29.",
     params_model=RenameDesignOptionSetsParameters,
+    output_model=RenameDesignOptionSetsResult,
+    identity=("tapir", "RenameDesignOptionSets"),
 )
 
 
@@ -481,6 +554,8 @@ register_tool_for_dispatch(
     title="RenameDesignOptions",
     description="Changes the name and/or the string id of the given design options. Available from Archicad 29.",
     params_model=RenameDesignOptionsParameters,
+    output_model=RenameDesignOptionsResult,
+    identity=("tapir", "RenameDesignOptions"),
 )
 
 
@@ -499,6 +574,8 @@ register_tool_for_dispatch(
         "Moves the given design option sets before another set or to the end of the list. Available from Archicad 29."
     ),
     params_model=ReorderDesignOptionSetsParameters,
+    output_model=ReorderDesignOptionSetsResult,
+    identity=("tapir", "ReorderDesignOptionSets"),
 )
 
 
@@ -521,6 +598,8 @@ register_tool_for_dispatch(
         "Available from Archicad 29."
     ),
     params_model=ReorderDesignOptionsInSetParameters,
+    output_model=ReorderDesignOptionsInSetResult,
+    identity=("tapir", "ReorderDesignOptionsInSet"),
 )
 
 
@@ -540,6 +619,8 @@ register_tool_for_dispatch(
     title="SetActiveDesignOptionsInCombinations",
     description="Sets active design options in the given combinations. Available from Archicad 29.",
     params_model=SetActiveDesignOptionsInCombinationsParameters,
+    output_model=SetActiveDesignOptionsInCombinationsResult,
+    identity=("tapir", "SetActiveDesignOptionsInCombinations"),
 )
 
 
@@ -562,6 +643,8 @@ register_tool_for_dispatch(
         "Archicad 29."
     ),
     params_model=SetDefaultDesignOptionParameters,
+    output_model=SetDefaultDesignOptionResult,
+    identity=("tapir", "SetDefaultDesignOption"),
 )
 
 
@@ -587,6 +670,8 @@ register_tool_for_dispatch(
         "from Archicad 27."
     ),
     params_model=SetDesignOptionCombinationOfViewsParameters,
+    output_model=SetDesignOptionCombinationOfViewsResult,
+    identity=("tapir", "SetDesignOptionCombinationOfViews"),
 )
 
 
@@ -610,4 +695,6 @@ register_tool_for_dispatch(
         "given placed hotlink instances. Available from Archicad 29."
     ),
     params_model=SetHotlinkDesignOptionTablesParameters,
+    output_model=SetHotlinkDesignOptionTablesResult,
+    identity=("tapir", "SetHotlinkDesignOptionTables"),
 )

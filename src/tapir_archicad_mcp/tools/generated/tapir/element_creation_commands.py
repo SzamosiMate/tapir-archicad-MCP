@@ -2,38 +2,71 @@
 from multiconn_archicad import ConnHeader
 from multiconn_archicad.models.tapir.commands import (
     CreateArcsParameters,
+    CreateArcsResult,
     CreateAssociativeDimensionsOnSectionParameters,
+    CreateAssociativeDimensionsOnSectionResult,
     CreateAssociativeDimensionsParameters,
+    CreateAssociativeDimensionsResult,
     CreateBeamsParameters,
+    CreateBeamsResult,
     CreateCirclesParameters,
+    CreateCirclesResult,
     CreateColumnsParameters,
+    CreateColumnsResult,
     CreateCurtainWallsParameters,
+    CreateCurtainWallsResult,
     CreateDoorsParameters,
+    CreateDoorsResult,
     CreateGridElementsParameters,
+    CreateGridElementsResult,
     CreateHatchesParameters,
+    CreateHatchesResult,
     CreateHotspotsParameters,
+    CreateHotspotsResult,
     CreateLabelsParameters,
+    CreateLabelsResult,
     CreateLampsParameters,
+    CreateLampsResult,
     CreateLevelDimensionsParameters,
+    CreateLevelDimensionsResult,
     CreateLineElementsParameters,
+    CreateLineElementsResult,
     CreateMeshesParameters,
+    CreateMeshesResult,
     CreateMorphsParameters,
+    CreateMorphsResult,
     CreateObjectsParameters,
+    CreateObjectsResult,
     CreateOpeningsParameters,
+    CreateOpeningsResult,
     CreatePolylinesParameters,
+    CreatePolylinesResult,
     CreateRailingsFromPolylineParameters,
+    CreateRailingsFromPolylineResult,
     CreateRailingsParameters,
+    CreateRailingsResult,
     CreateRoofsParameters,
+    CreateRoofsResult,
     CreateShellsParameters,
+    CreateShellsResult,
     CreateSkylightsParameters,
+    CreateSkylightsResult,
     CreateSlabsParameters,
+    CreateSlabsResult,
     CreateSplinesParameters,
+    CreateSplinesResult,
     CreateStairsParameters,
+    CreateStairsResult,
     CreateTextsParameters,
+    CreateTextsResult,
     CreateWallsParameters,
+    CreateWallsResult,
     CreateWallThicknessDimensionsParameters,
+    CreateWallThicknessDimensionsResult,
     CreateWindowsParameters,
+    CreateWindowsResult,
     CreateZonesParameters,
+    CreateZonesResult,
 )
 
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
@@ -52,6 +85,8 @@ register_tool_for_dispatch(
     title="CreateArcs",
     description="Creates Arc elements based on the given parameters.",
     params_model=CreateArcsParameters,
+    output_model=CreateArcsResult,
+    identity=("tapir", "CreateArcs"),
 )
 
 
@@ -77,6 +112,8 @@ register_tool_for_dispatch(
         "instead of an element."
     ),
     params_model=CreateAssociativeDimensionsParameters,
+    output_model=CreateAssociativeDimensionsResult,
+    identity=("tapir", "CreateAssociativeDimensions"),
 )
 
 
@@ -108,6 +145,8 @@ register_tool_for_dispatch(
         "OpeningEdges preset places fixed points at their edges instead."
     ),
     params_model=CreateAssociativeDimensionsOnSectionParameters,
+    output_model=CreateAssociativeDimensionsOnSectionResult,
+    identity=("tapir", "CreateAssociativeDimensionsOnSection"),
 )
 
 
@@ -134,6 +173,8 @@ register_tool_for_dispatch(
         "pens before Archicad 27."
     ),
     params_model=CreateBeamsParameters,
+    output_model=CreateBeamsResult,
+    identity=("tapir", "CreateBeams"),
 )
 
 
@@ -150,6 +191,8 @@ register_tool_for_dispatch(
     title="CreateCircles",
     description="Creates Circle elements based on the given parameters.",
     params_model=CreateCirclesParameters,
+    output_model=CreateCirclesResult,
+    identity=("tapir", "CreateCircles"),
 )
 
 
@@ -176,6 +219,8 @@ register_tool_for_dispatch(
         "the cut fill pens before Archicad 27."
     ),
     params_model=CreateColumnsParameters,
+    output_model=CreateColumnsResult,
+    identity=("tapir", "CreateColumns"),
 )
 
 
@@ -200,6 +245,8 @@ register_tool_for_dispatch(
         "can assign them to the grid."
     ),
     params_model=CreateCurtainWallsParameters,
+    output_model=CreateCurtainWallsResult,
+    identity=("tapir", "CreateCurtainWalls"),
 )
 
 
@@ -216,6 +263,8 @@ register_tool_for_dispatch(
     title="CreateDoors",
     description="Creates Door elements in host walls based on the given parameters.",
     params_model=CreateDoorsParameters,
+    output_model=CreateDoorsResult,
+    identity=("tapir", "CreateDoors"),
 )
 
 
@@ -238,6 +287,8 @@ register_tool_for_dispatch(
         "story, layer and GDL parameters. Needs Archicad 26 or later."
     ),
     params_model=CreateGridElementsParameters,
+    output_model=CreateGridElementsResult,
+    identity=("tapir", "CreateGridElements"),
 )
 
 
@@ -260,6 +311,8 @@ register_tool_for_dispatch(
         "SetDetailsOfElements accepts for hatches."
     ),
     params_model=CreateHatchesParameters,
+    output_model=CreateHatchesResult,
+    identity=("tapir", "CreateHatches"),
 )
 
 
@@ -276,6 +329,8 @@ register_tool_for_dispatch(
     title="CreateHotspots",
     description="Creates Hotspot elements based on the given parameters.",
     params_model=CreateHotspotsParameters,
+    output_model=CreateHotspotsResult,
+    identity=("tapir", "CreateHotspots"),
 )
 
 
@@ -292,6 +347,8 @@ register_tool_for_dispatch(
     title="CreateLabels",
     description="Creates Label elements based on the given parameters.",
     params_model=CreateLabelsParameters,
+    output_model=CreateLabelsResult,
+    identity=("tapir", "CreateLabels"),
 )
 
 
@@ -318,6 +375,8 @@ register_tool_for_dispatch(
         "databaseId the lamps are placed in that database, e.g. a worksheet, instead of the current one."
     ),
     params_model=CreateLampsParameters,
+    output_model=CreateLampsResult,
+    identity=("tapir", "CreateLamps"),
 )
 
 
@@ -342,6 +401,8 @@ register_tool_for_dispatch(
         "...) at its position and follows the element when it changes."
     ),
     params_model=CreateLevelDimensionsParameters,
+    output_model=CreateLevelDimensionsResult,
+    identity=("tapir", "CreateLevelDimensions"),
 )
 
 
@@ -358,6 +419,8 @@ register_tool_for_dispatch(
     title="CreateLineElements",
     description="Creates Line elements based on the given parameters.",
     params_model=CreateLineElementsParameters,
+    output_model=CreateLineElementsResult,
+    identity=("tapir", "CreateLineElements"),
 )
 
 
@@ -374,6 +437,8 @@ register_tool_for_dispatch(
     title="CreateMeshes",
     description="Creates Mesh elements based on the given parameters.",
     params_model=CreateMeshesParameters,
+    output_model=CreateMeshesResult,
+    identity=("tapir", "CreateMeshes"),
 )
 
 
@@ -397,6 +462,8 @@ register_tool_for_dispatch(
         "kept."
     ),
     params_model=CreateMorphsParameters,
+    output_model=CreateMorphsResult,
+    identity=("tapir", "CreateMorphs"),
 )
 
 
@@ -423,6 +490,8 @@ register_tool_for_dispatch(
         "With databaseId the objects are placed in that database, e.g. a worksheet, instead of the current one."
     ),
     params_model=CreateObjectsParameters,
+    output_model=CreateObjectsResult,
+    identity=("tapir", "CreateObjects"),
 )
 
 
@@ -439,6 +508,8 @@ register_tool_for_dispatch(
     title="CreateOpenings",
     description="Creates Opening elements in the given host elements.",
     params_model=CreateOpeningsParameters,
+    output_model=CreateOpeningsResult,
+    identity=("tapir", "CreateOpenings"),
 )
 
 
@@ -455,6 +526,8 @@ register_tool_for_dispatch(
     title="CreatePolylines",
     description="Creates Polyline elements based on the given parameters.",
     params_model=CreatePolylinesParameters,
+    output_model=CreatePolylinesResult,
+    identity=("tapir", "CreatePolylines"),
 )
 
 
@@ -479,6 +552,8 @@ register_tool_for_dispatch(
         "Archicad generates one node per vertex and one segment per pair of consecutive vertices."
     ),
     params_model=CreateRailingsParameters,
+    output_model=CreateRailingsResult,
+    identity=("tapir", "CreateRailings"),
 )
 
 
@@ -503,6 +578,8 @@ register_tool_for_dispatch(
         "defaults."
     ),
     params_model=CreateRailingsFromPolylineParameters,
+    output_model=CreateRailingsFromPolylineResult,
+    identity=("tapir", "CreateRailingsFromPolyline"),
 )
 
 
@@ -525,6 +602,8 @@ register_tool_for_dispatch(
         "pass 'pivotLine' (and optionally 'angle') to create a single-plane roof instead."
     ),
     params_model=CreateRoofsParameters,
+    output_model=CreateRoofsResult,
+    identity=("tapir", "CreateRoofs"),
 )
 
 
@@ -547,6 +626,8 @@ register_tool_for_dispatch(
         "optional clipping contour and holes."
     ),
     params_model=CreateShellsParameters,
+    output_model=CreateShellsResult,
+    identity=("tapir", "CreateShells"),
 )
 
 
@@ -575,6 +656,8 @@ register_tool_for_dispatch(
         "handled by Archicad and has not yet been verified for this command."
     ),
     params_model=CreateSkylightsParameters,
+    output_model=CreateSkylightsResult,
+    identity=("tapir", "CreateSkylights"),
 )
 
 
@@ -602,6 +685,8 @@ register_tool_for_dispatch(
         "the API."
     ),
     params_model=CreateSlabsParameters,
+    output_model=CreateSlabsResult,
+    identity=("tapir", "CreateSlabs"),
 )
 
 
@@ -618,6 +703,8 @@ register_tool_for_dispatch(
     title="CreateSplines",
     description="Creates Spline elements based on the given parameters.",
     params_model=CreateSplinesParameters,
+    output_model=CreateSplinesResult,
+    identity=("tapir", "CreateSplines"),
 )
 
 
@@ -646,6 +733,8 @@ register_tool_for_dispatch(
         "flights and the landings; settings not given come from the Stair tool defaults or the favorite."
     ),
     params_model=CreateStairsParameters,
+    output_model=CreateStairsResult,
+    identity=("tapir", "CreateStairs"),
 )
 
 
@@ -662,6 +751,8 @@ register_tool_for_dispatch(
     title="CreateTexts",
     description="Creates standalone Text elements based on the given parameters.",
     params_model=CreateTextsParameters,
+    output_model=CreateTextsResult,
+    identity=("tapir", "CreateTexts"),
 )
 
 
@@ -679,6 +770,8 @@ register_tool_for_dispatch(
     title="CreateWallThicknessDimensions",
     description="Creates associative wall thickness dimensions for the given walls.",
     params_model=CreateWallThicknessDimensionsParameters,
+    output_model=CreateWallThicknessDimensionsResult,
+    identity=("tapir", "CreateWallThicknessDimensions"),
 )
 
 
@@ -709,6 +802,8 @@ register_tool_for_dispatch(
         "and on Archicad 29 any story visibility other than 'Home story only' and 'All relevant stories'."
     ),
     params_model=CreateWallsParameters,
+    output_model=CreateWallsResult,
+    identity=("tapir", "CreateWalls"),
 )
 
 
@@ -725,6 +820,8 @@ register_tool_for_dispatch(
     title="CreateWindows",
     description="Creates Window elements in host walls based on the given parameters.",
     params_model=CreateWindowsParameters,
+    output_model=CreateWindowsResult,
+    identity=("tapir", "CreateWindows"),
 )
 
 
@@ -752,4 +849,6 @@ register_tool_for_dispatch(
         "allowOverlap is true."
     ),
     params_model=CreateZonesParameters,
+    output_model=CreateZonesResult,
+    identity=("tapir", "CreateZones"),
 )

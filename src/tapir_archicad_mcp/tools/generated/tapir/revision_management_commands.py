@@ -2,8 +2,15 @@
 from multiconn_archicad import ConnHeader
 from multiconn_archicad.models.tapir.commands import (
     GetCurrentRevisionChangesOfLayoutsParameters,
+    GetCurrentRevisionChangesOfLayoutsResult,
+    GetDocumentRevisionsResult,
+    GetRevisionChangeCustomSchemeResult,
     GetRevisionChangesOfElementsParameters,
+    GetRevisionChangesOfElementsResult,
+    GetRevisionChangesResult,
+    GetRevisionIssuesResult,
     ModifyRevisionIssuesParameters,
+    ModifyRevisionIssuesResult,
 )
 
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
@@ -25,6 +32,8 @@ register_tool_for_dispatch(
     title="GetCurrentRevisionChangesOfLayouts",
     description="Retrieves all changes belong to the last revision of the given layouts.",
     params_model=GetCurrentRevisionChangesOfLayoutsParameters,
+    output_model=GetCurrentRevisionChangesOfLayoutsResult,
+    identity=("tapir", "GetCurrentRevisionChangesOfLayouts"),
 )
 
 
@@ -39,6 +48,8 @@ register_tool_for_dispatch(
     title="GetDocumentRevisions",
     description="Retrieves all document revisions.",
     params_model=None,
+    output_model=GetDocumentRevisionsResult,
+    identity=("tapir", "GetDocumentRevisions"),
 )
 
 
@@ -59,6 +70,8 @@ register_tool_for_dispatch(
         "keys are the customSchemeKey values in the customSchemeData of changes."
     ),
     params_model=None,
+    output_model=GetRevisionChangeCustomSchemeResult,
+    identity=("tapir", "GetRevisionChangeCustomScheme"),
 )
 
 
@@ -73,6 +86,8 @@ register_tool_for_dispatch(
     title="GetRevisionChanges",
     description="Retrieves all changes.",
     params_model=None,
+    output_model=GetRevisionChangesResult,
+    identity=("tapir", "GetRevisionChanges"),
 )
 
 
@@ -90,6 +105,8 @@ register_tool_for_dispatch(
     title="GetRevisionChangesOfElements",
     description="Retrieves the changes belong to the given elements.",
     params_model=GetRevisionChangesOfElementsParameters,
+    output_model=GetRevisionChangesOfElementsResult,
+    identity=("tapir", "GetRevisionChangesOfElements"),
 )
 
 
@@ -104,6 +121,8 @@ register_tool_for_dispatch(
     title="GetRevisionIssues",
     description="Retrieves all issues.",
     params_model=None,
+    output_model=GetRevisionIssuesResult,
+    identity=("tapir", "GetRevisionIssues"),
 )
 
 
@@ -126,4 +145,6 @@ register_tool_for_dispatch(
         "given fields are changed. Issued revision issues may refuse the change."
     ),
     params_model=ModifyRevisionIssuesParameters,
+    output_model=ModifyRevisionIssuesResult,
+    identity=("tapir", "ModifyRevisionIssues"),
 )

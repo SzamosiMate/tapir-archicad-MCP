@@ -2,61 +2,124 @@
 from multiconn_archicad import ConnHeader
 from multiconn_archicad.models.tapir.commands import (
     ActivateLayerCombinationParameters,
+    ActivateLayerCombinationResult,
+    ConsolidateFillsResult,
+    ConsolidateLinesResult,
     CreateAttributeFoldersParameters,
+    CreateAttributeFoldersResult,
     CreateBuildingMaterialsParameters,
+    CreateBuildingMaterialsResult,
     CreateCompositesParameters,
+    CreateCompositesResult,
     CreateFillsParameters,
+    CreateFillsResult,
     CreateGraphicOverrideCombinationsParameters,
+    CreateGraphicOverrideCombinationsResult,
     CreateGraphicOverrideRuleGroupsParameters,
+    CreateGraphicOverrideRuleGroupsResult,
     CreateGraphicOverrideRulesParameters,
+    CreateGraphicOverrideRulesResult,
     CreateLayerCombinationsParameters,
+    CreateLayerCombinationsResult,
     CreateLayersParameters,
+    CreateLayersResult,
     CreateLinesParameters,
+    CreateLinesResult,
     CreateMEPSystemsParameters,
+    CreateMEPSystemsResult,
     CreatePenTablesParameters,
+    CreatePenTablesResult,
     CreateProfilesParameters,
+    CreateProfilesResult,
     CreateSurfacesParameters,
+    CreateSurfacesResult,
     CreateZoneCategoriesParameters,
+    CreateZoneCategoriesResult,
     DeleteAndReplaceAttributesParameters,
+    DeleteAndReplaceAttributesResult,
     DeleteAttributeFoldersParameters,
+    DeleteAttributeFoldersResult,
     DeleteAttributesParameters,
+    DeleteAttributesResult,
     DeleteGraphicOverrideCombinationsParameters,
+    DeleteGraphicOverrideCombinationsResult,
     DeleteGraphicOverrideRuleGroupsParameters,
+    DeleteGraphicOverrideRuleGroupsResult,
     DeleteGraphicOverrideRulesParameters,
+    DeleteGraphicOverrideRulesResult,
     DeleteUserDataOfAttributesParameters,
+    DeleteUserDataOfAttributesResult,
     GetAttributeIndexesParameters,
+    GetAttributeIndexesResult,
     GetAttributesByTypeParameters,
+    GetAttributesByTypeResult,
     GetAttributesFromProjectParameters,
+    GetAttributesFromProjectResult,
     GetBuildingMaterialPhysicalPropertiesParameters,
+    GetBuildingMaterialPhysicalPropertiesResult,
     GetBuildingMaterialsParameters,
+    GetBuildingMaterialsResult,
+    GetCurrentLayerCombinationResult,
+    GetCurrentPenTableResult,
     GetFillsParameters,
+    GetFillsResult,
     GetFontsByNameParameters,
+    GetFontsByNameResult,
+    GetGraphicOverrideCombinationsResult,
+    GetGraphicOverrideRuleGroupsResult,
     GetGraphicOverrideRulesByNameParameters,
+    GetGraphicOverrideRulesByNameResult,
     GetGraphicOverrideRulesParameters,
+    GetGraphicOverrideRulesResult,
     GetLayerCombinationsParameters,
+    GetLayerCombinationsResult,
     GetLayerOfElementDefaultsParameters,
+    GetLayerOfElementDefaultsResult,
     GetMEPSystemsParameters,
+    GetMEPSystemsResult,
     GetMissingAttributesParameters,
+    GetMissingAttributesResult,
     GetPensParameters,
+    GetPensResult,
     GetProfilesParameters,
+    GetProfilesResult,
     GetSurfacesParameters,
+    GetSurfacesResult,
     GetUnusedAttributesParameters,
+    GetUnusedAttributesResult,
+    GetUsedAttributesResult,
     GetUserDataOfAttributesParameters,
+    GetUserDataOfAttributesResult,
     ImportAttributesFromProjectParameters,
+    ImportAttributesFromProjectResult,
     ModifyGraphicOverrideCombinationsParameters,
+    ModifyGraphicOverrideCombinationsResult,
     ModifyGraphicOverrideRulesParameters,
+    ModifyGraphicOverrideRulesResult,
     ModifyPensParameters,
+    ModifyPensResult,
     MoveAttributesAndFoldersParameters,
+    MoveAttributesAndFoldersResult,
     MoveGraphicOverrideRulesParameters,
+    MoveGraphicOverrideRulesResult,
     ReindexAttributesParameters,
+    ReindexAttributesResult,
     ReindexLayersParameters,
+    ReindexLayersResult,
     RenameAttributesParameters,
+    RenameAttributesResult,
     RenameGraphicOverrideRuleGroupsParameters,
+    RenameGraphicOverrideRuleGroupsResult,
     SetGraphicOverrideRuleGroupOrderParameters,
+    SetGraphicOverrideRuleGroupOrderResult,
     SetGraphicOverrideRuleOrderParameters,
+    SetGraphicOverrideRuleOrderResult,
     SetLayerOfElementDefaultsParameters,
+    SetLayerOfElementDefaultsResult,
     SetPensParameters,
+    SetPensResult,
     SetUserDataOfAttributesParameters,
+    SetUserDataOfAttributesResult,
 )
 
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
@@ -81,6 +144,8 @@ register_tool_for_dispatch(
         "Saved views are not changed."
     ),
     params_model=ActivateLayerCombinationParameters,
+    output_model=ActivateLayerCombinationResult,
+    identity=("tapir", "ActivateLayerCombination"),
 )
 
 
@@ -101,6 +166,8 @@ register_tool_for_dispatch(
         "whether it ran together with what Archicad answered. Available from Archicad 27."
     ),
     params_model=None,
+    output_model=ConsolidateFillsResult,
+    identity=("tapir", "ConsolidateFills"),
 )
 
 
@@ -121,6 +188,8 @@ register_tool_for_dispatch(
         "whether it ran together with what Archicad answered. Available from Archicad 27."
     ),
     params_model=None,
+    output_model=ConsolidateLinesResult,
+    identity=("tapir", "ConsolidateLines"),
 )
 
 
@@ -145,6 +214,8 @@ register_tool_for_dispatch(
         "Available from Archicad 26."
     ),
     params_model=CreateAttributeFoldersParameters,
+    output_model=CreateAttributeFoldersResult,
+    identity=("tapir", "CreateAttributeFolders"),
 )
 
 
@@ -161,6 +232,8 @@ register_tool_for_dispatch(
     title="CreateBuildingMaterials",
     description="Creates or overwrites Building Material attributes based on the given parameters.",
     params_model=CreateBuildingMaterialsParameters,
+    output_model=CreateBuildingMaterialsResult,
+    identity=("tapir", "CreateBuildingMaterials"),
 )
 
 
@@ -177,6 +250,8 @@ register_tool_for_dispatch(
     title="CreateComposites",
     description="Creates or overwrites Composite attributes based on the given parameters.",
     params_model=CreateCompositesParameters,
+    output_model=CreateCompositesResult,
+    identity=("tapir", "CreateComposites"),
 )
 
 
@@ -193,6 +268,8 @@ register_tool_for_dispatch(
     title="CreateFills",
     description="Creates or overwrites Fill attributes based on the given parameters.",
     params_model=CreateFillsParameters,
+    output_model=CreateFillsResult,
+    identity=("tapir", "CreateFills"),
 )
 
 
@@ -212,6 +289,8 @@ register_tool_for_dispatch(
     title="CreateGraphicOverrideCombinations",
     description="Creates graphic override combinations from existing rules. Available from Archicad 27.",
     params_model=CreateGraphicOverrideCombinationsParameters,
+    output_model=CreateGraphicOverrideCombinationsResult,
+    identity=("tapir", "CreateGraphicOverrideCombinations"),
 )
 
 
@@ -231,6 +310,8 @@ register_tool_for_dispatch(
     title="CreateGraphicOverrideRuleGroups",
     description="Creates empty graphic override rule groups. Available from Archicad 27.",
     params_model=CreateGraphicOverrideRuleGroupsParameters,
+    output_model=CreateGraphicOverrideRuleGroupsResult,
+    identity=("tapir", "CreateGraphicOverrideRuleGroups"),
 )
 
 
@@ -254,6 +335,8 @@ register_tool_for_dispatch(
         "conditions. The rule group is created when no rule group has the given name. Available from Archicad 27."
     ),
     params_model=CreateGraphicOverrideRulesParameters,
+    output_model=CreateGraphicOverrideRulesResult,
+    identity=("tapir", "CreateGraphicOverrideRules"),
 )
 
 
@@ -270,6 +353,8 @@ register_tool_for_dispatch(
     title="CreateLayerCombinations",
     description="Creates or overwrites Layer Combination attributes based on the given parameters.",
     params_model=CreateLayerCombinationsParameters,
+    output_model=CreateLayerCombinationsResult,
+    identity=("tapir", "CreateLayerCombinations"),
 )
 
 
@@ -286,6 +371,8 @@ register_tool_for_dispatch(
     title="CreateLayers",
     description="Creates or overwrites Layer attributes based on the given parameters.",
     params_model=CreateLayersParameters,
+    output_model=CreateLayersResult,
+    identity=("tapir", "CreateLayers"),
 )
 
 
@@ -302,6 +389,8 @@ register_tool_for_dispatch(
     title="CreateLines",
     description="Creates or overwrites Line attributes based on the given parameters.",
     params_model=CreateLinesParameters,
+    output_model=CreateLinesResult,
+    identity=("tapir", "CreateLines"),
 )
 
 
@@ -324,6 +413,8 @@ register_tool_for_dispatch(
         "surface) based on the given parameters."
     ),
     params_model=CreateMEPSystemsParameters,
+    output_model=CreateMEPSystemsResult,
+    identity=("tapir", "CreateMEPSystems"),
 )
 
 
@@ -340,6 +431,8 @@ register_tool_for_dispatch(
     title="CreatePenTables",
     description="Creates or overwrites Pen Table attributes based on the given parameters.",
     params_model=CreatePenTablesParameters,
+    output_model=CreatePenTablesResult,
+    identity=("tapir", "CreatePenTables"),
 )
 
 
@@ -361,6 +454,8 @@ register_tool_for_dispatch(
         "parameters."
     ),
     params_model=CreateProfilesParameters,
+    output_model=CreateProfilesResult,
+    identity=("tapir", "CreateProfiles"),
 )
 
 
@@ -377,6 +472,8 @@ register_tool_for_dispatch(
     title="CreateSurfaces",
     description="Creates or overwrites Surface attributes based on the given parameters.",
     params_model=CreateSurfacesParameters,
+    output_model=CreateSurfacesResult,
+    identity=("tapir", "CreateSurfaces"),
 )
 
 
@@ -393,6 +490,8 @@ register_tool_for_dispatch(
     title="CreateZoneCategories",
     description="Creates or overwrites Zone Category attributes based on the given parameters.",
     params_model=CreateZoneCategoriesParameters,
+    output_model=CreateZoneCategoriesResult,
+    identity=("tapir", "CreateZoneCategories"),
 )
 
 
@@ -443,6 +542,8 @@ register_tool_for_dispatch(
         "graphic override rules, elements from hotlinked modules). Available from Archicad 27."
     ),
     params_model=DeleteAndReplaceAttributesParameters,
+    output_model=DeleteAndReplaceAttributesResult,
+    identity=("tapir", "DeleteAndReplaceAttributes"),
 )
 
 
@@ -469,6 +570,8 @@ register_tool_for_dispatch(
         "folder that exists and is not the root folder gets wouldDelete. Available from Archicad 26."
     ),
     params_model=DeleteAttributeFoldersParameters,
+    output_model=DeleteAttributeFoldersResult,
+    identity=("tapir", "DeleteAttributeFolders"),
 )
 
 
@@ -493,6 +596,8 @@ register_tool_for_dispatch(
         "(valid attribute type, attribute exists) gets wouldDelete."
     ),
     params_model=DeleteAttributesParameters,
+    output_model=DeleteAttributesResult,
+    identity=("tapir", "DeleteAttributes"),
 )
 
 
@@ -512,6 +617,8 @@ register_tool_for_dispatch(
     title="DeleteGraphicOverrideCombinations",
     description="Deletes graphic override combinations. Their rules are kept. Available from Archicad 27.",
     params_model=DeleteGraphicOverrideCombinationsParameters,
+    output_model=DeleteGraphicOverrideCombinationsResult,
+    identity=("tapir", "DeleteGraphicOverrideCombinations"),
 )
 
 
@@ -537,6 +644,8 @@ register_tool_for_dispatch(
         "rules are moved to another group or deleted with it. Available from Archicad 27."
     ),
     params_model=DeleteGraphicOverrideRuleGroupsParameters,
+    output_model=DeleteGraphicOverrideRuleGroupsResult,
+    identity=("tapir", "DeleteGraphicOverrideRuleGroups"),
 )
 
 
@@ -560,6 +669,8 @@ register_tool_for_dispatch(
         "Archicad 27."
     ),
     params_model=DeleteGraphicOverrideRulesParameters,
+    output_model=DeleteGraphicOverrideRulesResult,
+    identity=("tapir", "DeleteGraphicOverrideRules"),
 )
 
 
@@ -585,6 +696,8 @@ register_tool_for_dispatch(
         "each attribute that exists gets wouldDelete."
     ),
     params_model=DeleteUserDataOfAttributesParameters,
+    output_model=DeleteUserDataOfAttributesResult,
+    identity=("tapir", "DeleteUserDataOfAttributes"),
 )
 
 
@@ -607,6 +720,8 @@ register_tool_for_dispatch(
         "use, and the free indexes between them (for example those of deleted attributes). Available from Archicad 27."
     ),
     params_model=GetAttributeIndexesParameters,
+    output_model=GetAttributeIndexesResult,
+    identity=("tapir", "GetAttributeIndexes"),
 )
 
 
@@ -615,9 +730,6 @@ def get_attributes_by_type(conn_header: ConnHeader, params: GetAttributesByTypeP
     Returns the details of every attribute of the given type, including the path of the attribute folder holding it
     (Archicad 26 and newer). From Archicad 30 an attribute that Archicad keeps a creation record of also carries
     creationInfo: how (method), from where (source), by whom and when it was created.
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
     """
     return conn_header.core.post_tapir_command(
         command="GetAttributesByType", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -634,7 +746,8 @@ register_tool_for_dispatch(
         "carries creationInfo: how (method), from where (source), by whom and when it was created."
     ),
     params_model=GetAttributesByTypeParameters,
-    pagination_field="attributes",
+    output_model=GetAttributesByTypeResult,
+    identity=("tapir", "GetAttributesByType"),
 )
 
 
@@ -663,6 +776,8 @@ register_tool_for_dispatch(
         "item instead of an empty list. Available from Archicad 27."
     ),
     params_model=GetAttributesFromProjectParameters,
+    output_model=GetAttributesFromProjectResult,
+    identity=("tapir", "GetAttributesFromProject"),
 )
 
 
@@ -682,6 +797,8 @@ register_tool_for_dispatch(
     title="GetBuildingMaterialPhysicalProperties",
     description="Retrieves the physical properties of the given Building Materials.",
     params_model=GetBuildingMaterialPhysicalPropertiesParameters,
+    output_model=GetBuildingMaterialPhysicalPropertiesResult,
+    identity=("tapir", "GetBuildingMaterialPhysicalProperties"),
 )
 
 
@@ -698,6 +815,8 @@ register_tool_for_dispatch(
     title="GetBuildingMaterials",
     description="Returns the details of the given Building Material attributes.",
     params_model=GetBuildingMaterialsParameters,
+    output_model=GetBuildingMaterialsResult,
+    identity=("tapir", "GetBuildingMaterials"),
 )
 
 
@@ -718,6 +837,8 @@ register_tool_for_dispatch(
         "current state of the layers matches none."
     ),
     params_model=None,
+    output_model=GetCurrentLayerCombinationResult,
+    identity=("tapir", "GetCurrentLayerCombination"),
 )
 
 
@@ -738,6 +859,8 @@ register_tool_for_dispatch(
         "returned attributeId to GetPenTables to read the pens."
     ),
     params_model=None,
+    output_model=GetCurrentPenTableResult,
+    identity=("tapir", "GetCurrentPenTable"),
 )
 
 
@@ -754,6 +877,8 @@ register_tool_for_dispatch(
     title="GetFills",
     description="Returns the details of the given Fill attributes.",
     params_model=GetFillsParameters,
+    output_model=GetFillsResult,
+    identity=("tapir", "GetFills"),
 )
 
 
@@ -776,16 +901,13 @@ register_tool_for_dispatch(
         "reference fonts in fontIndex) and name, or an error for a name no loaded font has."
     ),
     params_model=GetFontsByNameParameters,
+    output_model=GetFontsByNameResult,
+    identity=("tapir", "GetFontsByName"),
 )
 
 
 def get_graphic_override_combinations(conn_header: ConnHeader) -> dict:
-    """
-    Gets all graphic override combinations of the project with the rules they contain. Available from Archicad 27.
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
-    """
+    """Gets all graphic override combinations of the project with the rules they contain. Available from Archicad 27."""
     return conn_header.core.post_tapir_command(command="GetGraphicOverrideCombinations", parameters={})
 
 
@@ -794,10 +916,12 @@ register_tool_for_dispatch(
     name="attributes_get_graphic_override_combinations",
     title="GetGraphicOverrideCombinations",
     description=(
-        "Gets all graphic override combinations of the project with the rules they contain. Available from Archicad 27."
+        "Gets all graphic override combinations of the project with the rules they contain. Available from Archicad "
+        "27."
     ),
     params_model=None,
-    pagination_field="graphicOverrideCombinations",
+    output_model=GetGraphicOverrideCombinationsResult,
+    identity=("tapir", "GetGraphicOverrideCombinations"),
 )
 
 
@@ -805,9 +929,6 @@ def get_graphic_override_rule_groups(conn_header: ConnHeader) -> dict:
     """
     Gets all graphic override rule groups of the project with the rules they contain, empty groups included. Available
     from Archicad 27.
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
     """
     return conn_header.core.post_tapir_command(command="GetGraphicOverrideRuleGroups", parameters={})
 
@@ -821,7 +942,8 @@ register_tool_for_dispatch(
         "Available from Archicad 27."
     ),
     params_model=None,
-    pagination_field="graphicOverrideRuleGroups",
+    output_model=GetGraphicOverrideRuleGroupsResult,
+    identity=("tapir", "GetGraphicOverrideRuleGroups"),
 )
 
 
@@ -830,9 +952,6 @@ def get_graphic_override_rules(conn_header: ConnHeader, params: GetGraphicOverri
     Gets all graphic override rules of the project, with their rule group, criterion and style. With includeCriterion
     the criterion also comes as structured conditions, which CreateGraphicOverrideRules and ModifyGraphicOverrideRules
     take back. Available from Archicad 27.
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
     """
     return conn_header.core.post_tapir_command(
         command="GetGraphicOverrideRules", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -849,7 +968,8 @@ register_tool_for_dispatch(
         "ModifyGraphicOverrideRules take back. Available from Archicad 27."
     ),
     params_model=GetGraphicOverrideRulesParameters,
-    pagination_field="graphicOverrideRules",
+    output_model=GetGraphicOverrideRulesResult,
+    identity=("tapir", "GetGraphicOverrideRules"),
 )
 
 
@@ -860,9 +980,6 @@ def get_graphic_override_rules_by_name(
     Gets graphic override rules by name, with their rule group, criterion and style. The rule group narrows the search;
     without it the rule is searched in every rule group. With includeCriterion the criterion also comes as structured
     conditions. Available from Archicad 27.
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
     """
     return conn_header.core.post_tapir_command(
         command="GetGraphicOverrideRulesByName",
@@ -880,7 +997,8 @@ register_tool_for_dispatch(
         "as structured conditions. Available from Archicad 27."
     ),
     params_model=GetGraphicOverrideRulesByNameParameters,
-    pagination_field="graphicOverrideRules",
+    output_model=GetGraphicOverrideRulesByNameResult,
+    identity=("tapir", "GetGraphicOverrideRulesByName"),
 )
 
 
@@ -897,6 +1015,8 @@ register_tool_for_dispatch(
     title="GetLayerCombinations",
     description="Returns the details of layer combination attributes.",
     params_model=GetLayerCombinationsParameters,
+    output_model=GetLayerCombinationsResult,
+    identity=("tapir", "GetLayerCombinations"),
 )
 
 
@@ -919,6 +1039,8 @@ register_tool_for_dispatch(
         "placed on."
     ),
     params_model=GetLayerOfElementDefaultsParameters,
+    output_model=GetLayerOfElementDefaultsResult,
+    identity=("tapir", "GetLayerOfElementDefaults"),
 )
 
 
@@ -941,6 +1063,8 @@ register_tool_for_dispatch(
         "insulation surface)."
     ),
     params_model=GetMEPSystemsParameters,
+    output_model=GetMEPSystemsResult,
+    identity=("tapir", "GetMEPSystems"),
 )
 
 
@@ -965,9 +1089,6 @@ def get_missing_attributes(conn_header: ConnHeader, params: GetMissingAttributes
     name, for a Model View Options combination its guid and name (and the library part option set), for an attribute its
     type, guid and name; then the attribute type, the missing index and the field or GDL parameter that holds it. Index
     0 counts as no attribute. Read only. Available from Archicad 27.
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
     """
     return conn_header.core.post_tapir_command(
         command="GetMissingAttributes", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -1002,7 +1123,8 @@ register_tool_for_dispatch(
         "Available from Archicad 27."
     ),
     params_model=GetMissingAttributesParameters,
-    pagination_field="missingAttributes",
+    output_model=GetMissingAttributesResult,
+    identity=("tapir", "GetMissingAttributes"),
 )
 
 
@@ -1025,6 +1147,8 @@ register_tool_for_dispatch(
         "It also works when the pens in effect are not a Pen Table attribute. Available from Archicad 27."
     ),
     params_model=GetPensParameters,
+    output_model=GetPensResult,
+    identity=("tapir", "GetPens"),
 )
 
 
@@ -1041,6 +1165,8 @@ register_tool_for_dispatch(
     title="GetProfiles",
     description="Returns the details of the given Profile attributes.",
     params_model=GetProfilesParameters,
+    output_model=GetProfilesResult,
+    identity=("tapir", "GetProfiles"),
 )
 
 
@@ -1057,6 +1183,8 @@ register_tool_for_dispatch(
     title="GetSurfaces",
     description="Returns the details of the given Surface attributes.",
     params_model=GetSurfacesParameters,
+    output_model=GetSurfacesResult,
+    identity=("tapir", "GetSurfaces"),
 )
 
 
@@ -1098,6 +1226,8 @@ register_tool_for_dispatch(
         "difference shows. Read only. Available from Archicad 27."
     ),
     params_model=GetUnusedAttributesParameters,
+    output_model=GetUnusedAttributesResult,
+    identity=("tapir", "GetUnusedAttributes"),
 )
 
 
@@ -1120,6 +1250,8 @@ register_tool_for_dispatch(
         "raw. Available from Archicad 27."
     ),
     params_model=None,
+    output_model=GetUsedAttributesResult,
+    identity=("tapir", "GetUsedAttributes"),
 )
 
 
@@ -1142,6 +1274,8 @@ register_tool_for_dispatch(
         "returns no pairs; one holding user data in another layout returns an error."
     ),
     params_model=GetUserDataOfAttributesParameters,
+    output_model=GetUserDataOfAttributesResult,
+    identity=("tapir", "GetUserDataOfAttributes"),
 )
 
 
@@ -1180,6 +1314,8 @@ register_tool_for_dispatch(
         "Archicad 27."
     ),
     params_model=ImportAttributesFromProjectParameters,
+    output_model=ImportAttributesFromProjectResult,
+    identity=("tapir", "ImportAttributesFromProject"),
 )
 
 
@@ -1205,6 +1341,8 @@ register_tool_for_dispatch(
         "Archicad 27."
     ),
     params_model=ModifyGraphicOverrideCombinationsParameters,
+    output_model=ModifyGraphicOverrideCombinationsResult,
+    identity=("tapir", "ModifyGraphicOverrideCombinations"),
 )
 
 
@@ -1229,6 +1367,8 @@ register_tool_for_dispatch(
         "Archicad 27."
     ),
     params_model=ModifyGraphicOverrideRulesParameters,
+    output_model=ModifyGraphicOverrideRulesResult,
+    identity=("tapir", "ModifyGraphicOverrideRules"),
 )
 
 
@@ -1254,6 +1394,8 @@ register_tool_for_dispatch(
         "ReserveLockableObjectSet)."
     ),
     params_model=ModifyPensParameters,
+    output_model=ModifyPensResult,
+    identity=("tapir", "ModifyPens"),
 )
 
 
@@ -1279,6 +1421,8 @@ register_tool_for_dispatch(
         "from Archicad 26."
     ),
     params_model=MoveAttributesAndFoldersParameters,
+    output_model=MoveAttributesAndFoldersResult,
+    identity=("tapir", "MoveAttributesAndFolders"),
 )
 
 
@@ -1301,6 +1445,8 @@ register_tool_for_dispatch(
         "Archicad 27."
     ),
     params_model=MoveGraphicOverrideRulesParameters,
+    output_model=MoveGraphicOverrideRulesResult,
+    identity=("tapir", "MoveGraphicOverrideRules"),
 )
 
 
@@ -1356,6 +1502,8 @@ register_tool_for_dispatch(
         "types are not supported. Available from Archicad 27."
     ),
     params_model=ReindexAttributesParameters,
+    output_model=ReindexAttributesResult,
+    identity=("tapir", "ReindexAttributes"),
 )
 
 
@@ -1399,6 +1547,8 @@ register_tool_for_dispatch(
         "27."
     ),
     params_model=ReindexLayersParameters,
+    output_model=ReindexLayersResult,
+    identity=("tapir", "ReindexLayers"),
 )
 
 
@@ -1424,6 +1574,8 @@ register_tool_for_dispatch(
         "the Solid and Empty fills)."
     ),
     params_model=RenameAttributesParameters,
+    output_model=RenameAttributesResult,
+    identity=("tapir", "RenameAttributes"),
 )
 
 
@@ -1445,6 +1597,8 @@ register_tool_for_dispatch(
         "Renames graphic override rule groups, found by name. Their rules are kept. Available from Archicad 27."
     ),
     params_model=RenameGraphicOverrideRuleGroupsParameters,
+    output_model=RenameGraphicOverrideRuleGroupsResult,
+    identity=("tapir", "RenameGraphicOverrideRuleGroups"),
 )
 
 
@@ -1470,6 +1624,8 @@ register_tool_for_dispatch(
         "follow the listed ones. Available from Archicad 27."
     ),
     params_model=SetGraphicOverrideRuleGroupOrderParameters,
+    output_model=SetGraphicOverrideRuleGroupOrderResult,
+    identity=("tapir", "SetGraphicOverrideRuleGroupOrder"),
 )
 
 
@@ -1493,6 +1649,8 @@ register_tool_for_dispatch(
         "the given order; the other rules of the group keep their order after them. Available from Archicad 27."
     ),
     params_model=SetGraphicOverrideRuleOrderParameters,
+    output_model=SetGraphicOverrideRuleOrderResult,
+    identity=("tapir", "SetGraphicOverrideRuleOrder"),
 )
 
 
@@ -1515,6 +1673,8 @@ register_tool_for_dispatch(
         "it. Only the layer of the defaults is changed."
     ),
     params_model=SetLayerOfElementDefaultsParameters,
+    output_model=SetLayerOfElementDefaultsResult,
+    identity=("tapir", "SetLayerOfElementDefaults"),
 )
 
 
@@ -1541,6 +1701,8 @@ register_tool_for_dispatch(
         "ReserveLockableObjectSet). Available from Archicad 27."
     ),
     params_model=SetPensParameters,
+    output_model=SetPensResult,
+    identity=("tapir", "SetPens"),
 )
 
 
@@ -1570,4 +1732,6 @@ register_tool_for_dispatch(
         "revert it."
     ),
     params_model=SetUserDataOfAttributesParameters,
+    output_model=SetUserDataOfAttributesResult,
+    identity=("tapir", "SetUserDataOfAttributes"),
 )

@@ -7,10 +7,12 @@ from unittest.mock import patch
 import pytest
 from mcp.server.mcpserver.exceptions import ToolError
 from multiconn_archicad.errors import APIConnectionError, TapirCommandError
+from payloads import archicad_call_tool, archicad_get_job
 
 from tapir_archicad_mcp.context import multi_conn_instance
 from tapir_archicad_mcp.jobs import JobSettings, JobStore, arguments_preview
-from payloads import archicad_call_tool, archicad_get_job
+from tapir_archicad_mcp.result_reading import ReadSelection
+from tapir_archicad_mcp.tools.custom.result_tools import result_read
 
 
 @pytest.fixture
@@ -92,7 +94,7 @@ async def test_late_error_is_retained_and_communication_outcome_is_explicit(stor
             assert "outcome may be unknown" in response["error"]["message"]
         else:
             assert response["error"]["code"] == 7
-        with pytest.raises(type(error)):
+        with pytest.raises(ToolError):
             store.initial_result(job)
     finally:
         release.set()
@@ -151,7 +153,7 @@ async def test_overlapping_same_port_and_admission_limit(stores):
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("cleanup", ["prune", "completion"])
-async def test_ttl_starts_at_completion_and_jobs_remain_until_cleanup(stores, cleanup):
+async def test_ttl_starts_at_completion(stores, cleanup):
     now = [100.0]
     store = stores(JobSettings(job_ttl_seconds=10), clock=lambda: now[0])
     entered, release = Event(), Event()
@@ -167,8 +169,6 @@ async def test_ttl_starts_at_completion_and_jobs_remain_until_cleanup(stores, cl
         store.prune()
         assert store.response(store.get(job.handle))["status"] == "completed"
         now[0] = 1010
-        assert store.response(store.get(job.handle))["status"] == "completed"
-        assert store.list_jobs()["jobs"][0]["jobHandle"] == job.handle
         if cleanup == "prune":
             store.prune()
         else:
@@ -240,43 +240,28 @@ async def test_validation_does_not_admit_a_job(fake_archicad):
 
 
 @pytest.mark.asyncio
-async def test_job_and_pages_remain_until_cleanup_even_after_instance_closes(job_store, job_clock, fake_archicad):
+async def test_result_survives_instance_close_and_expires_with_job(job_store, job_clock, fake_archicad):
     job_store.settings = JobSettings(job_ttl_seconds=3600)
     fake_archicad.on_tapir_command("GetSelectedElements", {"elements": list(range(250))})
     first = await archicad_call_tool("elements_get_selected_elements", {"port": 19723})
-    handle = (await archicad_get_job())["jobs"][0]["jobHandle"]
+    job_handle = (await archicad_get_job())["jobs"][0]["jobHandle"]
+    handle = first["resultHandle"]
     job_clock.now += 1800
     multi_conn_instance.get().active.clear()
-    assert (await archicad_get_job(handle))["result"] == first
-    second = await archicad_call_tool(
-        "elements_get_selected_elements",
-        {"port": 19723, "page_token": first["next_page_token"]},
-    )
-    assert second["elements"] == list(range(100, 200))
-    assert len(job_store.list_jobs()["jobs"]) == 1
-    assert len(fake_archicad.calls) == 1
+    assert (await archicad_get_job(job_handle))["resultHandle"] == handle
+    selection = ReadSelection(paths=[["elements"]], indices=[100, 150])
+    read = (await result_read(handle, selection)).structured_content
+    assert [entry["value"] for entry in read["entries"]] == [100, 150]
+    assert len(job_store.list_jobs()["jobs"]) == len(fake_archicad.calls) == 1
     job_clock.now += 1800
-    assert (await archicad_get_job(handle))["result"] == first
-    assert (
-        await archicad_call_tool(
-            "elements_get_selected_elements",
-            {"port": 19723, "page_token": first["next_page_token"]},
-        )
-        == second
-    )
-    job_store.prune()
-    with pytest.raises(ToolError, match="page_token"):
-        await archicad_call_tool(
-            "elements_get_selected_elements",
-            {"port": 19723, "page_token": first["next_page_token"]},
-        )
     with pytest.raises(ToolError, match="expired"):
-        await archicad_get_job(handle)
-    assert len(fake_archicad.calls) == 1
+        await archicad_get_job(job_handle)
+    with pytest.raises(ToolError, match="expired"):
+        await result_read(handle, selection)
 
 
 @pytest.mark.asyncio
-async def test_capacity_removes_entire_job_and_its_pages(job_store, fake_archicad):
+async def test_capacity_removes_job_and_result(job_store, fake_archicad):
     job_store.settings = JobSettings(max_completed_jobs=1)
     fake_archicad.on_tapir_command("GetSelectedElements", {"elements": list(range(150))})
     first = await archicad_call_tool("elements_get_selected_elements", {"port": 19723})
@@ -284,22 +269,8 @@ async def test_capacity_removes_entire_job_and_its_pages(job_store, fake_archica
     await archicad_call_tool("elements_get_selected_elements", {"port": 19723})
     with pytest.raises(ToolError, match="expired"):
         await archicad_get_job(handle)
-    with pytest.raises(ToolError, match="page_token"):
-        await archicad_call_tool(
-            "elements_get_selected_elements",
-            {"port": 19723, "page_token": first["next_page_token"]},
-        )
-
-
-@pytest.mark.asyncio
-async def test_page_token_cannot_be_used_on_a_different_port(job_store, fake_archicad):
-    fake_archicad.on_tapir_command("GetSelectedElements", {"elements": list(range(150))})
-    first = await archicad_call_tool("elements_get_selected_elements", {"port": 19723})
-    with pytest.raises(ToolError, match="page_token"):
-        await archicad_call_tool(
-            "elements_get_selected_elements",
-            {"port": 19724, "page_token": first["next_page_token"]},
-        )
+    with pytest.raises(ToolError, match="expired"):
+        await result_read(first["resultHandle"])
 
 
 @pytest.mark.asyncio
@@ -325,4 +296,4 @@ async def test_shutdown_stops_admission_and_drains_before_clearing(stores):
 
 def test_bundle_declares_job_tool():
     manifest = json.loads((Path(__file__).parents[2] / "manifest.json").read_text())
-    assert "archicad_get_job" in {tool["name"] for tool in manifest["tools"]}
+    assert {"archicad_get_job", "result_read"} <= {tool["name"] for tool in manifest["tools"]}

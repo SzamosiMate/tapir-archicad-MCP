@@ -2,16 +2,33 @@
 from multiconn_archicad import ConnHeader
 from multiconn_archicad.models.tapir.commands import (
     GetLockableObjectSetStatusParameters,
+    GetLockableObjectSetStatusResult,
     GetReservationStatusOfElementsParameters,
+    GetReservationStatusOfElementsResult,
     GetTeamworkAccessRightsParameters,
+    GetTeamworkAccessRightsResult,
     GetTeamworkOwnersOfDatabasesParameters,
+    GetTeamworkOwnersOfDatabasesResult,
+    GetTeamworkProjectInfoResult,
     GetTeamworkRightsOfObjectsParameters,
+    GetTeamworkRightsOfObjectsResult,
+    GetTeamworkStatusResult,
     GrantElementsParameters,
+    GrantElementsResult,
     ReleaseElementsParameters,
+    ReleaseElementsResult,
+    ReleaseHotlinkCacheManagementResult,
     ReleaseLockableObjectSetParameters,
+    ReleaseLockableObjectSetResult,
     ReserveElementsParameters,
+    ReserveElementsResult,
+    ReserveHotlinkCacheManagementResult,
     ReserveLockableObjectSetParameters,
+    ReserveLockableObjectSetResult,
+    TeamworkReceiveResult,
+    TeamworkSendResult,
     UploadLibrariesToBIMcloudParameters,
+    UploadLibrariesToBIMcloudResult,
 )
 
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
@@ -33,6 +50,8 @@ register_tool_for_dispatch(
         "Returns the Teamwork reservation status of a non-element lockable object set and the users who hold it."
     ),
     params_model=GetLockableObjectSetStatusParameters,
+    output_model=GetLockableObjectSetStatusResult,
+    identity=("tapir", "GetLockableObjectSetStatus"),
 )
 
 
@@ -60,6 +79,8 @@ register_tool_for_dispatch(
         "by the user who created them until they are released."
     ),
     params_model=GetReservationStatusOfElementsParameters,
+    output_model=GetReservationStatusOfElementsResult,
+    identity=("tapir", "GetReservationStatusOfElements"),
 )
 
 
@@ -82,6 +103,8 @@ register_tool_for_dispatch(
         "without the API prefix, e.g. LayersCreate), all of them when no names are given."
     ),
     params_model=GetTeamworkAccessRightsParameters,
+    output_model=GetTeamworkAccessRightsResult,
+    identity=("tapir", "GetTeamworkAccessRights"),
 )
 
 
@@ -105,6 +128,8 @@ register_tool_for_dispatch(
         "The user id is 0 when nobody owns the database."
     ),
     params_model=GetTeamworkOwnersOfDatabasesParameters,
+    output_model=GetTeamworkOwnersOfDatabasesResult,
+    identity=("tapir", "GetTeamworkOwnersOfDatabases"),
 )
 
 
@@ -125,6 +150,8 @@ register_tool_for_dispatch(
         "server, project name and the current user (id and name)."
     ),
     params_model=None,
+    output_model=GetTeamworkProjectInfoResult,
+    identity=("tapir", "GetTeamworkProjectInfo"),
 )
 
 
@@ -148,6 +175,8 @@ register_tool_for_dispatch(
         "create objects of its kind and to delete or modify it."
     ),
     params_model=GetTeamworkRightsOfObjectsParameters,
+    output_model=GetTeamworkRightsOfObjectsResult,
+    identity=("tapir", "GetTeamworkRightsOfObjects"),
 )
 
 
@@ -169,6 +198,8 @@ register_tool_for_dispatch(
         "false."
     ),
     params_model=None,
+    output_model=GetTeamworkStatusResult,
+    identity=("tapir", "GetTeamworkStatus"),
 )
 
 
@@ -191,6 +222,8 @@ register_tool_for_dispatch(
         "Available from Archicad 27."
     ),
     params_model=GrantElementsParameters,
+    output_model=GrantElementsResult,
+    identity=("tapir", "GrantElements"),
 )
 
 
@@ -213,6 +246,8 @@ register_tool_for_dispatch(
         "other elements are released."
     ),
     params_model=ReleaseElementsParameters,
+    output_model=ReleaseElementsResult,
+    identity=("tapir", "ReleaseElements"),
 )
 
 
@@ -227,6 +262,8 @@ register_tool_for_dispatch(
     title="ReleaseHotlinkCacheManagement",
     description="Releases the Hotlink and XRef management in Teamwork mode.",
     params_model=None,
+    output_model=ReleaseHotlinkCacheManagementResult,
+    identity=("tapir", "ReleaseHotlinkCacheManagement"),
 )
 
 
@@ -243,6 +280,8 @@ register_tool_for_dispatch(
     title="ReleaseLockableObjectSet",
     description=("Releases a non-element lockable object set reserved with ReserveLockableObjectSet in Teamwork mode."),
     params_model=ReleaseLockableObjectSetParameters,
+    output_model=ReleaseLockableObjectSetResult,
+    identity=("tapir", "ReleaseLockableObjectSet"),
 )
 
 
@@ -265,6 +304,8 @@ register_tool_for_dispatch(
         "be reserved with it: they are returned in notElements and the execution result fails."
     ),
     params_model=ReserveElementsParameters,
+    output_model=ReserveElementsResult,
+    identity=("tapir", "ReserveElements"),
 )
 
 
@@ -281,6 +322,8 @@ register_tool_for_dispatch(
         "Reserves the Hotlink and XRef management in Teamwork mode, which is needed before changing hotlink nodes."
     ),
     params_model=None,
+    output_model=ReserveHotlinkCacheManagementResult,
+    identity=("tapir", "ReserveHotlinkCacheManagement"),
 )
 
 
@@ -305,6 +348,8 @@ register_tool_for_dispatch(
         "or 'ProjectInfo'."
     ),
     params_model=ReserveLockableObjectSetParameters,
+    output_model=ReserveLockableObjectSetResult,
+    identity=("tapir", "ReserveLockableObjectSet"),
 )
 
 
@@ -319,6 +364,8 @@ register_tool_for_dispatch(
     title="TeamworkReceive",
     description="Performs a receive operation on the currently opened Teamwork project.",
     params_model=None,
+    output_model=TeamworkReceiveResult,
+    identity=("tapir", "TeamworkReceive"),
 )
 
 
@@ -333,6 +380,8 @@ register_tool_for_dispatch(
     title="TeamworkSend",
     description="Performs a send operation on the currently opened Teamwork project.",
     params_model=None,
+    output_model=TeamworkSendResult,
+    identity=("tapir", "TeamworkSend"),
 )
 
 
@@ -355,4 +404,6 @@ register_tool_for_dispatch(
         "BIMcloud libraries. Returns a result per library. Available from Archicad 29."
     ),
     params_model=UploadLibrariesToBIMcloudParameters,
+    output_model=UploadLibrariesToBIMcloudResult,
+    identity=("tapir", "UploadLibrariesToBIMcloud"),
 )

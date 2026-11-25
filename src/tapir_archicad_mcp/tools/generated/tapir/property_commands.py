@@ -2,35 +2,65 @@
 from multiconn_archicad import ConnHeader
 from multiconn_archicad.models.tapir.commands import (
     AddPropertyToAttributesParameters,
+    AddPropertyToAttributesResult,
     CheckPropertyValuesParameters,
+    CheckPropertyValuesResult,
     CreatePropertyDefinitionsParameters,
+    CreatePropertyDefinitionsResult,
     CreatePropertyGroupsParameters,
+    CreatePropertyGroupsResult,
     DeletePropertyDefinitionsParameters,
+    DeletePropertyDefinitionsResult,
     DeletePropertyGroupsParameters,
+    DeletePropertyGroupsResult,
     GetAllPropertiesParameters,
+    GetAllPropertiesResult,
     GetPropertiesOfToolDefaultsParameters,
+    GetPropertiesOfToolDefaultsResult,
     GetPropertyAvailabilityOfDefaultsParameters,
+    GetPropertyAvailabilityOfDefaultsResult,
     GetPropertyDefinitionsOfAttributesParameters,
+    GetPropertyDefinitionsOfAttributesResult,
     GetPropertyDefinitionsOfElementComponentsParameters,
+    GetPropertyDefinitionsOfElementComponentsResult,
     GetPropertyEditabilityParameters,
+    GetPropertyEditabilityResult,
     GetPropertyExpressionReferencesParameters,
+    GetPropertyExpressionReferencesResult,
     GetPropertyValuesOfAttributesParameters,
+    GetPropertyValuesOfAttributesResult,
     GetPropertyValuesOfElementComponentsParameters,
+    GetPropertyValuesOfElementComponentsResult,
     GetPropertyValuesOfElementDefaultsParameters,
+    GetPropertyValuesOfElementDefaultsResult,
     GetPropertyValuesOfElementsParameters,
+    GetPropertyValuesOfElementsResult,
     ImportPropertiesXmlParameters,
+    ImportPropertiesXmlResult,
     MakePropertyAvailableForElementsParameters,
+    MakePropertyAvailableForElementsResult,
     MakePropertyUnavailableForElementsParameters,
+    MakePropertyUnavailableForElementsResult,
     ModifyPropertyValueOfElementsParameters,
+    ModifyPropertyValueOfElementsResult,
     RemovePropertyFromAttributesParameters,
+    RemovePropertyFromAttributesResult,
     SearchPropertiesParameters,
+    SearchPropertiesResult,
     SetBuiltInPropertyValuesOfAttributesParameters,
+    SetBuiltInPropertyValuesOfAttributesResult,
     SetPropertyValueOfAttributesParameters,
+    SetPropertyValueOfAttributesResult,
     SetPropertyValuesOfAttributesParameters,
+    SetPropertyValuesOfAttributesResult,
     SetPropertyValuesOfElementDefaultsParameters,
+    SetPropertyValuesOfElementDefaultsResult,
     SetPropertyValuesOfElementsParameters,
+    SetPropertyValuesOfElementsResult,
     UpdatePropertyDefinitionsParameters,
+    UpdatePropertyDefinitionsResult,
     UpdatePropertyGroupsParameters,
+    UpdatePropertyGroupsResult,
 )
 
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
@@ -55,6 +85,8 @@ register_tool_for_dispatch(
         "undo step. Available in Archicad 25, 26 and 27 only."
     ),
     params_model=AddPropertyToAttributesParameters,
+    output_model=AddPropertyToAttributesResult,
+    identity=("tapir", "AddPropertyToAttributes"),
 )
 
 
@@ -73,6 +105,8 @@ register_tool_for_dispatch(
         "Checks whether the given values are acceptable for the given property definitions, without changing anything."
     ),
     params_model=CheckPropertyValuesParameters,
+    output_model=CheckPropertyValuesResult,
+    identity=("tapir", "CheckPropertyValues"),
 )
 
 
@@ -89,6 +123,8 @@ register_tool_for_dispatch(
     title="CreatePropertyDefinitions",
     description="Creates Custom Property Definitions based on the given parameters.",
     params_model=CreatePropertyDefinitionsParameters,
+    output_model=CreatePropertyDefinitionsResult,
+    identity=("tapir", "CreatePropertyDefinitions"),
 )
 
 
@@ -105,6 +141,8 @@ register_tool_for_dispatch(
     title="CreatePropertyGroups",
     description="Creates Property Groups based on the given parameters.",
     params_model=CreatePropertyGroupsParameters,
+    output_model=CreatePropertyGroupsResult,
+    identity=("tapir", "CreatePropertyGroups"),
 )
 
 
@@ -127,6 +165,8 @@ register_tool_for_dispatch(
         "created: the response has dryRun set to true, and each property that exists gets wouldDelete."
     ),
     params_model=DeletePropertyDefinitionsParameters,
+    output_model=DeletePropertyDefinitionsResult,
+    identity=("tapir", "DeletePropertyDefinitions"),
 )
 
 
@@ -149,6 +189,8 @@ register_tool_for_dispatch(
         "the response has dryRun set to true, and each property group that exists gets wouldDelete."
     ),
     params_model=DeletePropertyGroupsParameters,
+    output_model=DeletePropertyGroupsResult,
+    identity=("tapir", "DeletePropertyGroups"),
 )
 
 
@@ -156,9 +198,6 @@ def get_all_properties(conn_header: ConnHeader, params: GetAllPropertiesParamete
     """
     Returns all user defined and built-in properties. Optionally only the given properties or property types, and
     without the availability lists.
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
     """
     return conn_header.core.post_tapir_command(
         command="GetAllProperties", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -174,7 +213,8 @@ register_tool_for_dispatch(
         "without the availability lists."
     ),
     params_model=GetAllPropertiesParameters,
-    pagination_field="properties",
+    output_model=GetAllPropertiesResult,
+    identity=("tapir", "GetAllProperties"),
 )
 
 
@@ -198,6 +238,8 @@ register_tool_for_dispatch(
         "types, filtered by kind (all by default), and optionally the value of each property in the tool default."
     ),
     params_model=GetPropertiesOfToolDefaultsParameters,
+    output_model=GetPropertiesOfToolDefaultsResult,
+    identity=("tapir", "GetPropertiesOfToolDefaults"),
 )
 
 
@@ -225,6 +267,8 @@ register_tool_for_dispatch(
         "not applied. Unknown properties are reported as errors, not as unavailable. Available from Archicad 26."
     ),
     params_model=GetPropertyAvailabilityOfDefaultsParameters,
+    output_model=GetPropertyAvailabilityOfDefaultsResult,
+    identity=("tapir", "GetPropertyAvailabilityOfDefaults"),
 )
 
 
@@ -234,9 +278,6 @@ def get_property_definitions_of_attributes(
     """
     Returns the property definitions of the given attributes (for example Building Materials): the user defined, the
     fundamental built-in, or all of them.
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
     """
     return conn_header.core.post_tapir_command(
         command="GetPropertyDefinitionsOfAttributes",
@@ -253,7 +294,8 @@ register_tool_for_dispatch(
         "the fundamental built-in, or all of them."
     ),
     params_model=GetPropertyDefinitionsOfAttributesParameters,
-    pagination_field="propertyDefinitionsOfAttributes",
+    output_model=GetPropertyDefinitionsOfAttributesResult,
+    identity=("tapir", "GetPropertyDefinitionsOfAttributes"),
 )
 
 
@@ -279,6 +321,8 @@ register_tool_for_dispatch(
         "defined or built-in ones."
     ),
     params_model=GetPropertyDefinitionsOfElementComponentsParameters,
+    output_model=GetPropertyDefinitionsOfElementComponentsResult,
+    identity=("tapir", "GetPropertyDefinitionsOfElementComponents"),
 )
 
 
@@ -305,6 +349,8 @@ register_tool_for_dispatch(
         "types and properties are reported as errors, not as locked properties."
     ),
     params_model=GetPropertyEditabilityParameters,
+    output_model=GetPropertyEditabilityResult,
+    identity=("tapir", "GetPropertyEditability"),
 )
 
 
@@ -324,6 +370,8 @@ register_tool_for_dispatch(
     title="GetPropertyExpressionReferences",
     description="Returns the strings that refer to the given properties in property expressions.",
     params_model=GetPropertyExpressionReferencesParameters,
+    output_model=GetPropertyExpressionReferencesResult,
+    identity=("tapir", "GetPropertyExpressionReferences"),
 )
 
 
@@ -347,6 +395,8 @@ register_tool_for_dispatch(
         "whether each property is available, editable and visible for the attribute (from 1.7.3)."
     ),
     params_model=GetPropertyValuesOfAttributesParameters,
+    output_model=GetPropertyValuesOfAttributesResult,
+    identity=("tapir", "GetPropertyValuesOfAttributes"),
 )
 
 
@@ -356,9 +406,6 @@ def get_property_values_of_element_components(
     """
     Returns the property values of the given element components for the given properties, in the shape of
     GetPropertyValuesOfElements. Use GetComponentsOfElements to list the components of an element.
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
     """
     return conn_header.core.post_tapir_command(
         command="GetPropertyValuesOfElementComponents",
@@ -375,7 +422,8 @@ register_tool_for_dispatch(
         "GetPropertyValuesOfElements. Use GetComponentsOfElements to list the components of an element."
     ),
     params_model=GetPropertyValuesOfElementComponentsParameters,
-    pagination_field="propertyValuesForElementComponents",
+    output_model=GetPropertyValuesOfElementComponentsResult,
+    identity=("tapir", "GetPropertyValuesOfElementComponents"),
 )
 
 
@@ -403,6 +451,8 @@ register_tool_for_dispatch(
         "is not applied. A property that is not available for the tool default is reported as an error."
     ),
     params_model=GetPropertyValuesOfElementDefaultsParameters,
+    output_model=GetPropertyValuesOfElementDefaultsResult,
+    identity=("tapir", "GetPropertyValuesOfElementDefaults"),
 )
 
 
@@ -410,9 +460,6 @@ def get_property_values_of_elements(conn_header: ConnHeader, params: GetProperty
     """
     Returns the property values of the elements for the given property. It works for subelements of hierarchal elements
     also. With includeAvailability it also tells whether each property is available for the element.
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
     """
     return conn_header.core.post_tapir_command(
         command="GetPropertyValuesOfElements",
@@ -426,10 +473,13 @@ register_tool_for_dispatch(
     title="GetPropertyValuesOfElements",
     description=(
         "Returns the property values of the elements for the given property. It works for subelements of hierarchal "
-        "elements also. With includeAvailability it also tells whether each property is available for the element."
+        "elements also. With includeAvailability it also tells whether each property is available for the element. "
+        "This low-level command uses API property options and per-element records. Use properties_read_grid and "
+        "properties_write_grid for cell-aligned workflows."
     ),
     params_model=GetPropertyValuesOfElementsParameters,
-    pagination_field="propertyValuesForElements",
+    output_model=GetPropertyValuesOfElementsResult,
+    identity=("tapir", "GetPropertyValuesOfElements"),
 )
 
 
@@ -452,6 +502,8 @@ register_tool_for_dispatch(
         "property definitions it created and removed."
     ),
     params_model=ImportPropertiesXmlParameters,
+    output_model=ImportPropertiesXmlResult,
+    identity=("tapir", "ImportPropertiesXml"),
 )
 
 
@@ -473,6 +525,8 @@ register_tool_for_dispatch(
         "Makes a property definition available for all the given elements. Available in Archicad 25, 26 and 27."
     ),
     params_model=MakePropertyAvailableForElementsParameters,
+    output_model=MakePropertyAvailableForElementsResult,
+    identity=("tapir", "MakePropertyAvailableForElements"),
 )
 
 
@@ -494,6 +548,8 @@ register_tool_for_dispatch(
         "Makes a property definition unavailable for all the given elements. Available in Archicad 25, 26 and 27."
     ),
     params_model=MakePropertyUnavailableForElementsParameters,
+    output_model=MakePropertyUnavailableForElementsResult,
+    identity=("tapir", "MakePropertyUnavailableForElements"),
 )
 
 
@@ -517,6 +573,8 @@ register_tool_for_dispatch(
         "of the elements, none of them is changed."
     ),
     params_model=ModifyPropertyValueOfElementsParameters,
+    output_model=ModifyPropertyValueOfElementsResult,
+    identity=("tapir", "ModifyPropertyValueOfElements"),
 )
 
 
@@ -542,6 +600,8 @@ register_tool_for_dispatch(
         "created: the response has dryRun set to true, and wouldDelete when the property and every attribute exist."
     ),
     params_model=RemovePropertyFromAttributesParameters,
+    output_model=RemovePropertyFromAttributesResult,
+    identity=("tapir", "RemovePropertyFromAttributes"),
 )
 
 
@@ -564,6 +624,8 @@ register_tool_for_dispatch(
         "collection type."
     ),
     params_model=SearchPropertiesParameters,
+    output_model=SearchPropertiesResult,
+    identity=("tapir", "SearchProperties"),
 )
 
 
@@ -589,6 +651,8 @@ register_tool_for_dispatch(
         "are refused; set them with SetPropertyValuesOfAttributes. Returns one execution result per value."
     ),
     params_model=SetBuiltInPropertyValuesOfAttributesParameters,
+    output_model=SetBuiltInPropertyValuesOfAttributesResult,
+    identity=("tapir", "SetBuiltInPropertyValuesOfAttributes"),
 )
 
 
@@ -612,6 +676,8 @@ register_tool_for_dispatch(
         "property is not available for any of the given attributes, no attribute is changed."
     ),
     params_model=SetPropertyValueOfAttributesParameters,
+    output_model=SetPropertyValueOfAttributesResult,
+    identity=("tapir", "SetPropertyValueOfAttributes"),
 )
 
 
@@ -629,6 +695,8 @@ register_tool_for_dispatch(
     title="SetPropertyValuesOfAttributes",
     description="Sets the property values of attributes.",
     params_model=SetPropertyValuesOfAttributesParameters,
+    output_model=SetPropertyValuesOfAttributesResult,
+    identity=("tapir", "SetPropertyValuesOfAttributes"),
 )
 
 
@@ -654,6 +722,8 @@ register_tool_for_dispatch(
         "element placed afterwards gets them, without saving and applying a favorite."
     ),
     params_model=SetPropertyValuesOfElementDefaultsParameters,
+    output_model=SetPropertyValuesOfElementDefaultsResult,
+    identity=("tapir", "SetPropertyValuesOfElementDefaults"),
 )
 
 
@@ -681,9 +751,12 @@ register_tool_for_dispatch(
         "(UserUndefined, from 1.8.1). With dryRun true nothing is changed and no undo step is created: the response "
         "has dryRun set to true, and each item that passes the checks made before writing gets wouldChange, with the "
         "element's value now (oldValue) and the value a real run would write (newValue), both as "
-        "GetPropertyValuesOfElements gives them."
+        "GetPropertyValuesOfElements gives them. This low-level command uses API property options and per-element "
+        "records. Use properties_read_grid and properties_write_grid for cell-aligned workflows."
     ),
     params_model=SetPropertyValuesOfElementsParameters,
+    output_model=SetPropertyValuesOfElementsResult,
+    identity=("tapir", "SetPropertyValuesOfElements"),
 )
 
 
@@ -706,6 +779,8 @@ register_tool_for_dispatch(
         "value or expressions, availability, and enum options (add, rename, remove, reorder)."
     ),
     params_model=UpdatePropertyDefinitionsParameters,
+    output_model=UpdatePropertyDefinitionsResult,
+    identity=("tapir", "UpdatePropertyDefinitions"),
 )
 
 
@@ -722,4 +797,6 @@ register_tool_for_dispatch(
     title="UpdatePropertyGroups",
     description="Updates the name and/or description of existing Custom Property Groups, keeping their guid.",
     params_model=UpdatePropertyGroupsParameters,
+    output_model=UpdatePropertyGroupsResult,
+    identity=("tapir", "UpdatePropertyGroups"),
 )

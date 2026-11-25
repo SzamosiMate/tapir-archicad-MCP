@@ -2,28 +2,51 @@
 from multiconn_archicad import ConnHeader
 from multiconn_archicad.models.tapir.commands import (
     ModifyAssociativeDimensionsParameters,
+    ModifyAssociativeDimensionsResult,
     ModifyBeamsParameters,
+    ModifyBeamsResult,
     ModifyColumnsParameters,
+    ModifyColumnsResult,
     ModifyCurtainWallFramesParameters,
+    ModifyCurtainWallFramesResult,
     ModifyCurtainWallsParameters,
+    ModifyCurtainWallsResult,
     ModifyDoorsParameters,
+    ModifyDoorsResult,
     ModifyLabelsParameters,
+    ModifyLabelsResult,
     ModifyLampsParameters,
+    ModifyLampsResult,
     ModifyLevelDimensionsParameters,
+    ModifyLevelDimensionsResult,
     ModifyMeshesParameters,
+    ModifyMeshesResult,
     ModifyMorphsParameters,
+    ModifyMorphsResult,
     ModifyObjectsParameters,
+    ModifyObjectsResult,
     ModifyOpeningsParameters,
+    ModifyOpeningsResult,
     ModifyRailingsParameters,
+    ModifyRailingsResult,
     ModifyRoofsParameters,
+    ModifyRoofsResult,
     ModifyShellsParameters,
+    ModifyShellsResult,
     ModifySkylightsParameters,
+    ModifySkylightsResult,
     ModifySlabsParameters,
+    ModifySlabsResult,
     ModifyStairsParameters,
+    ModifyStairsResult,
     ModifyTextsParameters,
+    ModifyTextsResult,
     ModifyWallsParameters,
+    ModifyWallsResult,
     ModifyWindowsParameters,
+    ModifyWindowsResult,
     ModifyZonesParameters,
+    ModifyZonesResult,
 )
 
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
@@ -57,6 +80,8 @@ register_tool_for_dispatch(
         "extension line, the layout and the hole and composite wall dimensioning settings."
     ),
     params_model=ModifyAssociativeDimensionsParameters,
+    output_model=ModifyAssociativeDimensionsResult,
+    identity=("tapir", "ModifyAssociativeDimensions"),
 )
 
 
@@ -81,6 +106,8 @@ register_tool_for_dispatch(
         "surfaces of the beam segments, and the cut fill pens before Archicad 27."
     ),
     params_model=ModifyBeamsParameters,
+    output_model=ModifyBeamsResult,
+    identity=("tapir", "ModifyBeams"),
 )
 
 
@@ -103,6 +130,8 @@ register_tool_for_dispatch(
         "fill. Not written: the surfaces of the column segments, and the cut fill pens before Archicad 27."
     ),
     params_model=ModifyColumnsParameters,
+    output_model=ModifyColumnsResult,
+    identity=("tapir", "ModifyColumns"),
 )
 
 
@@ -127,6 +156,8 @@ register_tool_for_dispatch(
         "written through the memo of the owner curtain wall, and read back to check that Archicad applied it."
     ),
     params_model=ModifyCurtainWallFramesParameters,
+    output_model=ModifyCurtainWallFramesResult,
+    identity=("tapir", "ModifyCurtainWallFrames"),
 )
 
 
@@ -151,6 +182,8 @@ register_tool_for_dispatch(
         "and row (secondary) pattern with its cell assignments, in the fields of CreateCurtainWalls."
     ),
     params_model=ModifyCurtainWallsParameters,
+    output_model=ModifyCurtainWallsResult,
+    identity=("tapir", "ModifyCurtainWalls"),
 )
 
 
@@ -167,6 +200,8 @@ register_tool_for_dispatch(
     title="ModifyDoors",
     description="Modifies Door elements based on the given parameters.",
     params_model=ModifyDoorsParameters,
+    output_model=ModifyDoorsResult,
+    identity=("tapir", "ModifyDoors"),
 )
 
 
@@ -183,6 +218,8 @@ register_tool_for_dispatch(
     title="ModifyLabels",
     description="Modifies Label elements based on the given parameters.",
     params_model=ModifyLabelsParameters,
+    output_model=ModifyLabelsResult,
+    identity=("tapir", "ModifyLabels"),
 )
 
 
@@ -199,6 +236,8 @@ register_tool_for_dispatch(
     title="ModifyLamps",
     description="Modifies Lamp elements based on the given parameters.",
     params_model=ModifyLampsParameters,
+    output_model=ModifyLampsResult,
+    identity=("tapir", "ModifyLamps"),
 )
 
 
@@ -225,6 +264,8 @@ register_tool_for_dispatch(
         "content and the hide-with-base-element setting."
     ),
     params_model=ModifyLevelDimensionsParameters,
+    output_model=ModifyLevelDimensionsResult,
+    identity=("tapir", "ModifyLevelDimensions"),
 )
 
 
@@ -241,6 +282,8 @@ register_tool_for_dispatch(
     title="ModifyMeshes",
     description="Modifies the attributes of Mesh elements based on the given parameters.",
     params_model=ModifyMeshesParameters,
+    output_model=ModifyMeshesResult,
+    identity=("tapir", "ModifyMeshes"),
 )
 
 
@@ -257,6 +300,8 @@ register_tool_for_dispatch(
     title="ModifyMorphs",
     description="Modifies Morph elements based on the given parameters.",
     params_model=ModifyMorphsParameters,
+    output_model=ModifyMorphsResult,
+    identity=("tapir", "ModifyMorphs"),
 )
 
 
@@ -273,6 +318,8 @@ register_tool_for_dispatch(
     title="ModifyObjects",
     description="Modifies Object elements based on the given parameters.",
     params_model=ModifyObjectsParameters,
+    output_model=ModifyObjectsResult,
+    identity=("tapir", "ModifyObjects"),
 )
 
 
@@ -297,6 +344,8 @@ register_tool_for_dispatch(
         "changes the size and the position of an opening there."
     ),
     params_model=ModifyOpeningsParameters,
+    output_model=ModifyOpeningsResult,
+    identity=("tapir", "ModifyOpenings"),
 )
 
 
@@ -321,6 +370,8 @@ register_tool_for_dispatch(
         "read back after the change, and a value Archicad did not apply gets a failed execution result."
     ),
     params_model=ModifyRailingsParameters,
+    output_model=ModifyRailingsResult,
+    identity=("tapir", "ModifyRailings"),
 )
 
 
@@ -345,6 +396,8 @@ register_tool_for_dispatch(
         "single-plane roofs; levels, eavesOverhang and pivotEdges only to multi-plane roofs."
     ),
     params_model=ModifyRoofsParameters,
+    output_model=ModifyRoofsResult,
+    identity=("tapir", "ModifyRoofs"),
 )
 
 
@@ -367,6 +420,8 @@ register_tool_for_dispatch(
         "given parameters."
     ),
     params_model=ModifyShellsParameters,
+    output_model=ModifyShellsResult,
+    identity=("tapir", "ModifyShells"),
 )
 
 
@@ -399,6 +454,8 @@ register_tool_for_dispatch(
         "SetGDLParametersOfElements). Archicad may set the elevation angle again from the owner."
     ),
     params_model=ModifySkylightsParameters,
+    output_model=ModifySkylightsResult,
+    identity=("tapir", "ModifySkylights"),
 )
 
 
@@ -425,6 +482,8 @@ register_tool_for_dispatch(
         "matrix that did not stick gets a failed execution result, while the other details are applied."
     ),
     params_model=ModifySlabsParameters,
+    output_model=ModifySlabsResult,
+    identity=("tapir", "ModifySlabs"),
 )
 
 
@@ -464,6 +523,8 @@ register_tool_for_dispatch(
         "one through the API."
     ),
     params_model=ModifyStairsParameters,
+    output_model=ModifyStairsResult,
+    identity=("tapir", "ModifyStairs"),
 )
 
 
@@ -480,6 +541,8 @@ register_tool_for_dispatch(
     title="ModifyTexts",
     description="Modifies standalone Text elements based on the given parameters.",
     params_model=ModifyTextsParameters,
+    output_model=ModifyTextsResult,
+    identity=("tapir", "ModifyTexts"),
 )
 
 
@@ -508,6 +571,8 @@ register_tool_for_dispatch(
         "any story visibility other than 'Home story only' and 'All relevant stories'."
     ),
     params_model=ModifyWallsParameters,
+    output_model=ModifyWallsResult,
+    identity=("tapir", "ModifyWalls"),
 )
 
 
@@ -524,6 +589,8 @@ register_tool_for_dispatch(
     title="ModifyWindows",
     description="Modifies Window elements based on the given parameters.",
     params_model=ModifyWindowsParameters,
+    output_model=ModifyWindowsResult,
+    identity=("tapir", "ModifyWindows"),
 )
 
 
@@ -550,4 +617,6 @@ register_tool_for_dispatch(
         "nor the reference point of an automatic one (SetDetailsOfElements moves it)."
     ),
     params_model=ModifyZonesParameters,
+    output_model=ModifyZonesResult,
+    identity=("tapir", "ModifyZones"),
 )

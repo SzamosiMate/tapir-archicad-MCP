@@ -2,6 +2,7 @@
 from multiconn_archicad import ConnHeader
 from multiconn_archicad.models.tapir.commands import (
     GetGraphicalOverrideStyleOfElementsParameters,
+    GetGraphicalOverrideStyleOfElementsResult,
 )
 
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
@@ -31,4 +32,6 @@ register_tool_for_dispatch(
         "it, and with what. Needs Archicad 27 or later."
     ),
     params_model=GetGraphicalOverrideStyleOfElementsParameters,
+    output_model=GetGraphicalOverrideStyleOfElementsResult,
+    identity=("tapir", "GetGraphicalOverrideStyleOfElements"),
 )

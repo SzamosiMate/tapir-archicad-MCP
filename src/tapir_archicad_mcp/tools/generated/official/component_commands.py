@@ -2,6 +2,7 @@
 from multiconn_archicad import ConnHeader
 from multiconn_archicad.models.official.commands import (
     GetComponentsOfElementsParameters,
+    GetComponentsOfElementsResult,
 )
 
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
@@ -27,4 +28,6 @@ register_tool_for_dispatch(
         "as the given elements."
     ),
     params_model=GetComponentsOfElementsParameters,
+    output_model=GetComponentsOfElementsResult,
+    identity=("official", "GetComponentsOfElements"),
 )

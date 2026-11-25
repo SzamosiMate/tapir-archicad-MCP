@@ -2,8 +2,11 @@
 from multiconn_archicad import ConnHeader
 from multiconn_archicad.models.official.commands import (
     CreateLayoutParameters,
+    CreateLayoutResult,
     CreateLayoutSubsetParameters,
+    CreateLayoutSubsetResult,
     GetLayoutSettingsParameters,
+    GetLayoutSettingsResult,
     SetLayoutSettingsParameters,
 )
 
@@ -23,6 +26,8 @@ register_tool_for_dispatch(
     title="CreateLayout",
     description="Creates a new layout.",
     params_model=CreateLayoutParameters,
+    output_model=CreateLayoutResult,
+    identity=("official", "CreateLayout"),
 )
 
 
@@ -39,6 +44,8 @@ register_tool_for_dispatch(
     title="CreateLayoutSubset",
     description="Creates a new layout subset.",
     params_model=CreateLayoutSubsetParameters,
+    output_model=CreateLayoutSubsetResult,
+    identity=("official", "CreateLayoutSubset"),
 )
 
 
@@ -55,6 +62,8 @@ register_tool_for_dispatch(
     title="GetLayoutSettings",
     description="Returns the parameters (settings) of the given layout.",
     params_model=GetLayoutSettingsParameters,
+    output_model=GetLayoutSettingsResult,
+    identity=("official", "GetLayoutSettings"),
 )
 
 
@@ -71,4 +80,6 @@ register_tool_for_dispatch(
     title="SetLayoutSettings",
     description="Sets the parameters (settings) of the given layout.",
     params_model=SetLayoutSettingsParameters,
+    output_model=None,
+    identity=("official", "SetLayoutSettings"),
 )

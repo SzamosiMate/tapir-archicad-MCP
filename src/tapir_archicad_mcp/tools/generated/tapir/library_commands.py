@@ -2,49 +2,100 @@
 from multiconn_archicad import ConnHeader
 from multiconn_archicad.models.tapir.commands import (
     AddFilesToEmbeddedLibraryParameters,
+    AddFilesToEmbeddedLibraryResult,
     AddLibrariesParameters,
+    AddLibrariesResult,
+    CheckLibrariesResult,
     CompareLibraryPartUnIdsParameters,
+    CompareLibraryPartUnIdsResult,
     CopyFilesIntoEmbeddedLibraryParameters,
+    CopyFilesIntoEmbeddedLibraryResult,
     CopyLibraryPartsParameters,
+    CopyLibraryPartsResult,
     CreateFolderInEmbeddedLibraryParameters,
+    CreateFolderInEmbeddedLibraryResult,
     CreateLibraryPartFromElementsParameters,
+    CreateLibraryPartFromElementsResult,
     CreateLibraryPartParameters,
+    CreateLibraryPartResult,
     CreateLibraryPartsParameters,
+    CreateLibraryPartsResult,
     DeleteEmbeddedLibraryItemsParameters,
+    DeleteEmbeddedLibraryItemsResult,
     FindLibraryPartsParameters,
+    FindLibraryPartsResult,
     GetAvailableLibraryPartsParameters,
+    GetAvailableLibraryPartsResult,
+    GetGDLDateResult,
     GetGDLParametersOfLibraryPartsParameters,
+    GetGDLParametersOfLibraryPartsResult,
+    GetGDLUserGlobalsResult,
+    GetLastValidEmbeddedLibraryPartNameResult,
     GetLibrariesOfLibPartsParameters,
+    GetLibrariesOfLibPartsResult,
+    GetLibrariesResult,
     GetLibraryPart2DPrimitivesParameters,
+    GetLibraryPart2DPrimitivesResult,
     GetLibraryPartCustomSectionParameters,
+    GetLibraryPartCustomSectionResult,
     GetLibraryPartDetailsParameters,
+    GetLibraryPartDetailsResult,
     GetLibraryPartFileInfoParameters,
+    GetLibraryPartFileInfoResult,
     GetLibraryPartIdentitiesParameters,
+    GetLibraryPartIdentitiesResult,
     GetLibraryPartMetadataParameters,
+    GetLibraryPartMetadataResult,
     GetLibraryPartOriginalLocationsParameters,
+    GetLibraryPartOriginalLocationsResult,
     GetLibraryPartParameterValuesParameters,
+    GetLibraryPartParameterValuesResult,
     GetLibraryPartPicturesParameters,
+    GetLibraryPartPicturesResult,
     GetLibraryPartScriptsParameters,
+    GetLibraryPartScriptsResult,
     GetLibraryPartSectionParameters,
+    GetLibraryPartSectionResult,
     GetLibraryPartSectionsParameters,
+    GetLibraryPartSectionsResult,
     GetLibraryPartTypeDetailsParameters,
+    GetLibraryPartTypeDetailsResult,
     GetMissingLibPartNamesParameters,
+    GetMissingLibPartNamesResult,
     GetUnusedLibraryPartsParameters,
+    GetUnusedLibraryPartsResult,
     InterpretGDLScript3DParameters,
+    InterpretGDLScript3DResult,
     IsLibraryPartSubtypeOfParameters,
+    IsLibraryPartSubtypeOfResult,
     IsUsableGDLStringParameters,
+    IsUsableGDLStringResult,
     ModifyLibraryListParameters,
+    ModifyLibraryListResult,
     OpenLibraryPartInEditorParameters,
+    OpenLibraryPartInEditorResult,
+    ReloadLibrariesResult,
+    ResetLibrariesResult,
     SearchLibraryPartsParameters,
+    SearchLibraryPartsResult,
     SetGDLDateParameters,
+    SetGDLDateResult,
     SetLibrariesParameters,
+    SetLibrariesResult,
     SetLibraryPartCustomSectionParameters,
+    SetLibraryPartCustomSectionResult,
     SetLibraryPartMetadataParameters,
+    SetLibraryPartMetadataResult,
     SetLibraryPartParametersParameters,
+    SetLibraryPartParametersResult,
     SetLibraryPartPictureImagesParameters,
+    SetLibraryPartPictureImagesResult,
     SetLibraryPartPicturesParameters,
+    SetLibraryPartPicturesResult,
     SetLibraryPartScriptsParameters,
+    SetLibraryPartScriptsResult,
     UpdateLibraryPartSectionsParameters,
+    UpdateLibraryPartSectionsResult,
 )
 
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
@@ -69,6 +120,8 @@ register_tool_for_dispatch(
         "already existing on an outputPath is replaced (Archicad 27 or newer)."
     ),
     params_model=AddFilesToEmbeddedLibraryParameters,
+    output_model=AddFilesToEmbeddedLibraryResult,
+    identity=("tapir", "AddFilesToEmbeddedLibrary"),
 )
 
 
@@ -85,6 +138,8 @@ register_tool_for_dispatch(
     title="AddLibraries",
     description="Adds the given folders to the project's local libraries, skipping any already loaded.",
     params_model=AddLibrariesParameters,
+    output_model=AddLibrariesResult,
+    identity=("tapir", "AddLibraries"),
 )
 
 
@@ -101,6 +156,8 @@ register_tool_for_dispatch(
         "Checks the loaded libraries with the Archicad API's library check. Returns the error the API reports, if any."
     ),
     params_model=None,
+    output_model=CheckLibrariesResult,
+    identity=("tapir", "CheckLibraries"),
 )
 
 
@@ -123,6 +180,8 @@ register_tool_for_dispatch(
         "GUIDs are the same."
     ),
     params_model=CompareLibraryPartUnIdsParameters,
+    output_model=CompareLibraryPartUnIdsResult,
+    identity=("tapir", "CompareLibraryPartUnIds"),
 )
 
 
@@ -148,6 +207,8 @@ register_tool_for_dispatch(
         "in that folder is replaced."
     ),
     params_model=CopyFilesIntoEmbeddedLibraryParameters,
+    output_model=CopyFilesIntoEmbeddedLibraryResult,
+    identity=("tapir", "CopyFilesIntoEmbeddedLibrary"),
 )
 
 
@@ -174,6 +235,8 @@ register_tool_for_dispatch(
         "name. Available from Archicad 28."
     ),
     params_model=CopyLibraryPartsParameters,
+    output_model=CopyLibraryPartsResult,
+    identity=("tapir", "CopyLibraryParts"),
 )
 
 
@@ -197,6 +260,8 @@ register_tool_for_dispatch(
         "the embedded library, like the outputPath of AddFilesToEmbeddedLibrary."
     ),
     params_model=CreateFolderInEmbeddedLibraryParameters,
+    output_model=CreateFolderInEmbeddedLibraryResult,
+    identity=("tapir", "CreateFolderInEmbeddedLibrary"),
 )
 
 
@@ -219,6 +284,8 @@ register_tool_for_dispatch(
         "whether it is loaded with its index and names. Available from Archicad 28."
     ),
     params_model=CreateLibraryPartParameters,
+    output_model=CreateLibraryPartResult,
+    identity=("tapir", "CreateLibraryPart"),
 )
 
 
@@ -248,6 +315,8 @@ register_tool_for_dispatch(
         "themselves are not changed."
     ),
     params_model=CreateLibraryPartFromElementsParameters,
+    output_model=CreateLibraryPartFromElementsResult,
+    identity=("tapir", "CreateLibraryPartFromElements"),
 )
 
 
@@ -274,6 +343,8 @@ register_tool_for_dispatch(
         "the path of a new part is replaced (Archicad 27 or newer)."
     ),
     params_model=CreateLibraryPartsParameters,
+    output_model=CreateLibraryPartsResult,
+    identity=("tapir", "CreateLibraryParts"),
 )
 
 
@@ -297,6 +368,8 @@ register_tool_for_dispatch(
         "AddFilesToEmbeddedLibrary takes as outputPath. Available from Archicad 27."
     ),
     params_model=DeleteEmbeddedLibraryItemsParameters,
+    output_model=DeleteEmbeddedLibraryItemsResult,
+    identity=("tapir", "DeleteEmbeddedLibraryItems"),
 )
 
 
@@ -304,9 +377,6 @@ def find_library_parts(conn_header: ConnHeader, params: FindLibraryPartsParamete
     """
     Finds loaded library parts with the Library Manager: all of them, GDL objects, images or text files, optionally only
     those whose name contains a text. Returns the name, path and index of each. Available from Archicad 28.
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
     """
     return conn_header.core.post_tapir_command(
         command="FindLibraryParts", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -323,16 +393,14 @@ register_tool_for_dispatch(
         "Archicad 28."
     ),
     params_model=FindLibraryPartsParameters,
-    pagination_field="libraryParts",
+    output_model=FindLibraryPartsResult,
+    identity=("tapir", "FindLibraryParts"),
 )
 
 
 def get_available_library_parts(conn_header: ConnHeader, params: GetAvailableLibraryPartsParameters) -> dict:
     """
     Lists library parts currently available to the project. Filter by typeId (e.g. 'Door', 'Window', 'Object', 'Lamp').
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
     """
     return conn_header.core.post_tapir_command(
         command="GetAvailableLibraryParts", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -348,7 +416,8 @@ register_tool_for_dispatch(
         "'Lamp')."
     ),
     params_model=GetAvailableLibraryPartsParameters,
-    pagination_field="libraryParts",
+    output_model=GetAvailableLibraryPartsResult,
+    identity=("tapir", "GetAvailableLibraryParts"),
 )
 
 
@@ -363,6 +432,8 @@ register_tool_for_dispatch(
     title="GetGDLDate",
     description="Gets the date GDL scripts see: year, month, day, hour, minute and second.",
     params_model=None,
+    output_model=GetGDLDateResult,
+    identity=("tapir", "GetGDLDate"),
 )
 
 
@@ -393,6 +464,8 @@ register_tool_for_dispatch(
         "GetLibraryPartParameterValues."
     ),
     params_model=GetGDLParametersOfLibraryPartsParameters,
+    output_model=GetGDLParametersOfLibraryPartsResult,
+    identity=("tapir", "GetGDLParametersOfLibraryParts"),
 )
 
 
@@ -413,6 +486,8 @@ register_tool_for_dispatch(
         "Available from Archicad 28."
     ),
     params_model=None,
+    output_model=GetGDLUserGlobalsResult,
+    identity=("tapir", "GetGDLUserGlobals"),
 )
 
 
@@ -427,6 +502,8 @@ register_tool_for_dispatch(
     title="GetLastValidEmbeddedLibraryPartName",
     description="Gets the name and file path of the last valid library part of the embedded library.",
     params_model=None,
+    output_model=GetLastValidEmbeddedLibraryPartNameResult,
+    identity=("tapir", "GetLastValidEmbeddedLibraryPartName"),
 )
 
 
@@ -447,6 +524,8 @@ register_tool_for_dispatch(
         "versions, minimum Archicad version and dependencies)."
     ),
     params_model=None,
+    output_model=GetLibrariesResult,
+    identity=("tapir", "GetLibraries"),
 )
 
 
@@ -469,6 +548,8 @@ register_tool_for_dispatch(
         "embedded/built-in/package/local/missing flags and the Library Manager tree path. Available from Archicad 29."
     ),
     params_model=GetLibrariesOfLibPartsParameters,
+    output_model=GetLibrariesOfLibPartsResult,
+    identity=("tapir", "GetLibrariesOfLibParts"),
 )
 
 
@@ -476,9 +557,6 @@ def get_library_part2_d_primitives(conn_header: ConnHeader, params: GetLibraryPa
     """
     Gets the lines, arcs and polygons (with their holes, and whether they are fills) of the 2D symbol of a loaded
     library part, drawn with its default parameters or with the parameters of a placed instance.
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
     """
     return conn_header.core.post_tapir_command(
         command="GetLibraryPart2DPrimitives",
@@ -495,7 +573,8 @@ register_tool_for_dispatch(
         "library part, drawn with its default parameters or with the parameters of a placed instance."
     ),
     params_model=GetLibraryPart2DPrimitivesParameters,
-    pagination_field="primitives",
+    output_model=GetLibraryPart2DPrimitivesResult,
+    identity=("tapir", "GetLibraryPart2DPrimitives"),
 )
 
 
@@ -519,6 +598,8 @@ register_tool_for_dispatch(
         "data version and its content as base64. Available from Archicad 28."
     ),
     params_model=GetLibraryPartCustomSectionParameters,
+    output_model=GetLibraryPartCustomSectionResult,
+    identity=("tapir", "GetLibraryPartCustomSection"),
 )
 
 
@@ -545,6 +626,8 @@ register_tool_for_dispatch(
         "library part. Available from Archicad 28."
     ),
     params_model=GetLibraryPartDetailsParameters,
+    output_model=GetLibraryPartDetailsResult,
+    identity=("tapir", "GetLibraryPartDetails"),
 )
 
 
@@ -569,6 +652,8 @@ register_tool_for_dispatch(
         "protected parts need their password. Available from Archicad 28."
     ),
     params_model=GetLibraryPartFileInfoParameters,
+    output_model=GetLibraryPartFileInfoResult,
+    identity=("tapir", "GetLibraryPartFileInfo"),
 )
 
 
@@ -591,6 +676,8 @@ register_tool_for_dispatch(
         "given by index or file path, and whether they are in a server library."
     ),
     params_model=GetLibraryPartIdentitiesParameters,
+    output_model=GetLibraryPartIdentitiesResult,
+    identity=("tapir", "GetLibraryPartIdentities"),
 )
 
 
@@ -615,6 +702,8 @@ register_tool_for_dispatch(
         "tell placeable parts from macros. Available from Archicad 28."
     ),
     params_model=GetLibraryPartMetadataParameters,
+    output_model=GetLibraryPartMetadataResult,
+    identity=("tapir", "GetLibraryPartMetadata"),
 )
 
 
@@ -641,6 +730,8 @@ register_tool_for_dispatch(
         "Available from Archicad 27."
     ),
     params_model=GetLibraryPartOriginalLocationsParameters,
+    output_model=GetLibraryPartOriginalLocationsResult,
+    identity=("tapir", "GetLibraryPartOriginalLocations"),
 )
 
 
@@ -670,6 +761,8 @@ register_tool_for_dispatch(
         "Manager. Available from Archicad 28."
     ),
     params_model=GetLibraryPartParameterValuesParameters,
+    output_model=GetLibraryPartParameterValuesResult,
+    identity=("tapir", "GetLibraryPartParameterValues"),
 )
 
 
@@ -692,6 +785,8 @@ register_tool_for_dispatch(
         "Archicad 29 also their dark user interface variants. Available from Archicad 28."
     ),
     params_model=GetLibraryPartPicturesParameters,
+    output_model=GetLibraryPartPicturesResult,
+    identity=("tapir", "GetLibraryPartPictures"),
     image_field=("previewPicture", "darkPreviewPicture"),
     image_list_field=("gdlPictures", "darkGdlPictures"),
 )
@@ -718,6 +813,8 @@ register_tool_for_dispatch(
         "reported as not present. Password protected parts need their password. Available from Archicad 28."
     ),
     params_model=GetLibraryPartScriptsParameters,
+    output_model=GetLibraryPartScriptsResult,
+    identity=("tapir", "GetLibraryPartScripts"),
 )
 
 
@@ -740,6 +837,8 @@ register_tool_for_dispatch(
         "it in the GDL editor. Takes the password of a protected library part."
     ),
     params_model=GetLibraryPartSectionParameters,
+    output_model=GetLibraryPartSectionResult,
+    identity=("tapir", "GetLibraryPartSection"),
 )
 
 
@@ -762,6 +861,8 @@ register_tool_for_dispatch(
         "whether they are text (scripts, comments) or binary (previews)."
     ),
     params_model=GetLibraryPartSectionsParameters,
+    output_model=GetLibraryPartSectionsResult,
+    identity=("tapir", "GetLibraryPartSections"),
 )
 
 
@@ -788,6 +889,8 @@ register_tool_for_dispatch(
         "For their path, library, GUID, license and scripts see GetLibraryPartDetails."
     ),
     params_model=GetLibraryPartTypeDetailsParameters,
+    output_model=GetLibraryPartTypeDetailsResult,
+    identity=("tapir", "GetLibraryPartTypeDetails"),
 )
 
 
@@ -812,6 +915,8 @@ register_tool_for_dispatch(
         "library part is missing."
     ),
     params_model=GetMissingLibPartNamesParameters,
+    output_model=GetMissingLibPartNamesResult,
+    identity=("tapir", "GetMissingLibPartNames"),
 )
 
 
@@ -824,9 +929,6 @@ def get_unused_library_parts(conn_header: ConnHeader, params: GetUnusedLibraryPa
     another way (called as a macro, linked as a property object, as an interior elevation marker, in stairs and
     railings, in the tool defaults or in Favorites) is listed as unused. Library parts that cannot be placed (e.g.
     macros) are only listed with includeNotPlaceable.
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
     """
     return conn_header.core.post_tapir_command(
         command="GetUnusedLibraryParts", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -847,7 +949,8 @@ register_tool_for_dispatch(
         "parts that cannot be placed (e.g. macros) are only listed with includeNotPlaceable."
     ),
     params_model=GetUnusedLibraryPartsParameters,
-    pagination_field="unusedLibraryParts",
+    output_model=GetUnusedLibraryPartsResult,
+    identity=("tapir", "GetUnusedLibraryParts"),
 )
 
 
@@ -872,6 +975,8 @@ register_tool_for_dispatch(
         "model elements it generated and their bounding box. The API returns no GDL error message or line number."
     ),
     params_model=InterpretGDLScript3DParameters,
+    output_model=InterpretGDLScript3DResult,
+    identity=("tapir", "InterpretGDLScript3D"),
 )
 
 
@@ -896,6 +1001,8 @@ register_tool_for_dispatch(
         "itself. With matchAncestorByMainId any revision of the ancestor matches."
     ),
     params_model=IsLibraryPartSubtypeOfParameters,
+    output_model=IsLibraryPartSubtypeOfResult,
+    identity=("tapir", "IsLibraryPartSubtypeOf"),
 )
 
 
@@ -918,6 +1025,8 @@ register_tool_for_dispatch(
         "script. Returns one boolean for each string."
     ),
     params_model=IsUsableGDLStringParameters,
+    output_model=IsUsableGDLStringResult,
+    identity=("tapir", "IsUsableGDLString"),
 )
 
 
@@ -940,6 +1049,8 @@ register_tool_for_dispatch(
         "Returns the result of each addition and removal. Available from Archicad 28."
     ),
     params_model=ModifyLibraryListParameters,
+    output_model=ModifyLibraryListResult,
+    identity=("tapir", "ModifyLibraryList"),
 )
 
 
@@ -962,6 +1073,8 @@ register_tool_for_dispatch(
         "in Archicad's library part editor. Available from Archicad 27."
     ),
     params_model=OpenLibraryPartInEditorParameters,
+    output_model=OpenLibraryPartInEditorResult,
+    identity=("tapir", "OpenLibraryPartInEditor"),
 )
 
 
@@ -976,6 +1089,8 @@ register_tool_for_dispatch(
     title="ReloadLibraries",
     description="Executes the reload libraries command.",
     params_model=None,
+    output_model=ReloadLibrariesResult,
+    identity=("tapir", "ReloadLibraries"),
 )
 
 
@@ -990,6 +1105,8 @@ register_tool_for_dispatch(
     title="ResetLibraries",
     description="Resets the loaded libraries with the Archicad API's library reset.",
     params_model=None,
+    output_model=ResetLibrariesResult,
+    identity=("tapir", "ResetLibraries"),
 )
 
 
@@ -1012,6 +1129,8 @@ register_tool_for_dispatch(
         "pattern with * wildcards. Archicad returns at most 50 of them."
     ),
     params_model=SearchLibraryPartsParameters,
+    output_model=SearchLibraryPartsResult,
+    identity=("tapir", "SearchLibraryParts"),
 )
 
 
@@ -1034,6 +1153,8 @@ register_tool_for_dispatch(
         "to test date-dependent library parts; set the value read with GetGDLDate back to restore it."
     ),
     params_model=SetGDLDateParameters,
+    output_model=SetGDLDateResult,
+    identity=("tapir", "SetGDLDate"),
 )
 
 
@@ -1056,6 +1177,8 @@ register_tool_for_dispatch(
         "Set the libraries before opening a file that needs them and the missing-library dialog does not appear."
     ),
     params_model=SetLibrariesParameters,
+    output_model=SetLibrariesResult,
+    identity=("tapir", "SetLibraries"),
 )
 
 
@@ -1079,6 +1202,8 @@ register_tool_for_dispatch(
         "library part that is not editable is refused and left unchanged. Available from Archicad 28."
     ),
     params_model=SetLibraryPartCustomSectionParameters,
+    output_model=SetLibraryPartCustomSectionResult,
+    identity=("tapir", "SetLibraryPartCustomSection"),
 )
 
 
@@ -1105,6 +1230,8 @@ register_tool_for_dispatch(
         "Available from Archicad 28."
     ),
     params_model=SetLibraryPartMetadataParameters,
+    output_model=SetLibraryPartMetadataResult,
+    identity=("tapir", "SetLibraryPartMetadata"),
 )
 
 
@@ -1131,6 +1258,8 @@ register_tool_for_dispatch(
         "invalid value given, is left unchanged. Available from Archicad 28."
     ),
     params_model=SetLibraryPartParametersParameters,
+    output_model=SetLibraryPartParametersResult,
+    identity=("tapir", "SetLibraryPartParameters"),
 )
 
 
@@ -1157,6 +1286,8 @@ register_tool_for_dispatch(
         "28."
     ),
     params_model=SetLibraryPartPictureImagesParameters,
+    output_model=SetLibraryPartPictureImagesResult,
+    identity=("tapir", "SetLibraryPartPictureImages"),
 )
 
 
@@ -1181,6 +1312,8 @@ register_tool_for_dispatch(
         "is refused and left unchanged. Available from Archicad 28."
     ),
     params_model=SetLibraryPartPicturesParameters,
+    output_model=SetLibraryPartPicturesResult,
+    identity=("tapir", "SetLibraryPartPictures"),
 )
 
 
@@ -1207,6 +1340,8 @@ register_tool_for_dispatch(
         "read-only library) is refused and left unchanged. Available from Archicad 28."
     ),
     params_model=SetLibraryPartScriptsParameters,
+    output_model=SetLibraryPartScriptsResult,
+    identity=("tapir", "SetLibraryPartScripts"),
 )
 
 
@@ -1230,4 +1365,6 @@ register_tool_for_dispatch(
         "section."
     ),
     params_model=UpdateLibraryPartSectionsParameters,
+    output_model=UpdateLibraryPartSectionsResult,
+    identity=("tapir", "UpdateLibraryPartSections"),
 )

@@ -2,9 +2,15 @@
 from multiconn_archicad import ConnHeader
 from multiconn_archicad.models.official.commands import (
     GetAllClassificationsInSystemParameters,
+    GetAllClassificationsInSystemResult,
+    GetAllClassificationSystemsResult,
     GetClassificationItemAvailabilityParameters,
+    GetClassificationItemAvailabilityResult,
+    GetClassificationSystemIdsResult,
     GetClassificationSystemsParameters,
+    GetClassificationSystemsResult,
     GetDetailsOfClassificationItemsParameters,
+    GetDetailsOfClassificationItemsResult,
 )
 
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
@@ -21,6 +27,8 @@ register_tool_for_dispatch(
     title="GetAllClassificationSystems",
     description="Returns the list of available classification systems.",
     params_model=None,
+    output_model=GetAllClassificationSystemsResult,
+    identity=("official", "GetAllClassificationSystems"),
 )
 
 
@@ -38,6 +46,8 @@ register_tool_for_dispatch(
     title="GetAllClassificationsInSystem",
     description="Returns the tree of classifications in the given classification system.",
     params_model=GetAllClassificationsInSystemParameters,
+    output_model=GetAllClassificationsInSystemResult,
+    identity=("official", "GetAllClassificationsInSystem"),
 )
 
 
@@ -57,6 +67,8 @@ register_tool_for_dispatch(
     title="GetClassificationItemAvailability",
     description="Returns the ids of property definitions available for a given classification item.",
     params_model=GetClassificationItemAvailabilityParameters,
+    output_model=GetClassificationItemAvailabilityResult,
+    identity=("official", "GetClassificationItemAvailability"),
 )
 
 
@@ -71,6 +83,8 @@ register_tool_for_dispatch(
     title="GetClassificationSystemIds",
     description="Returns the list of available classification systems.",
     params_model=None,
+    output_model=GetClassificationSystemIdsResult,
+    identity=("official", "GetClassificationSystemIds"),
 )
 
 
@@ -88,6 +102,8 @@ register_tool_for_dispatch(
     title="GetClassificationSystems",
     description="Returns the details of classification systems identified by their GUIDs.",
     params_model=GetClassificationSystemsParameters,
+    output_model=GetClassificationSystemsResult,
+    identity=("official", "GetClassificationSystems"),
 )
 
 
@@ -107,4 +123,6 @@ register_tool_for_dispatch(
     title="GetDetailsOfClassificationItems",
     description="Returns the details of classification items.",
     params_model=GetDetailsOfClassificationItemsParameters,
+    output_model=GetDetailsOfClassificationItemsResult,
+    identity=("official", "GetDetailsOfClassificationItems"),
 )

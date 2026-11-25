@@ -2,115 +2,232 @@
 from multiconn_archicad import ConnHeader
 from multiconn_archicad.models.tapir.commands import (
     AlignElementsParameters,
+    AlignElementsResult,
     CaptureElementStateParameters,
+    CaptureElementStateResult,
     ChangeLibraryPartOfElementsParameters,
+    ChangeLibraryPartOfElementsResult,
     ChangeSelectionOfElementsParameters,
+    ChangeSelectionOfElementsResult,
     ChangeTextContentParameters,
+    ChangeTextContentResult,
     ConvertRevealOffsetsParameters,
+    ConvertRevealOffsetsResult,
     CopyElementsParameters,
+    CopyElementsResult,
     CopyElementsToDatabaseParameters,
+    CopyElementsToDatabaseResult,
     DeleteElementsParameters,
+    DeleteElementsResult,
     DeleteSelectedElementsParameters,
+    DeleteSelectedElementsResult,
     DeleteUserDataOfElementsParameters,
+    DeleteUserDataOfElementsResult,
+    DeselectAllResult,
     DistributeElementsParameters,
+    DistributeElementsResult,
     EditHierarchicalElementParameters,
+    EditHierarchicalElementResult,
     ElevateElementsParameters,
+    ElevateElementsResult,
     FilterElementsParameters,
+    FilterElementsResult,
     FinishHierarchicalEditingParameters,
+    FinishHierarchicalEditingResult,
     Get2DBoundingBoxesParameters,
+    Get2DBoundingBoxesResult,
     Get3DBoundingBoxesParameters,
+    Get3DBoundingBoxesResult,
     Get3DGeometryOfElementsParameters,
+    Get3DGeometryOfElementsResult,
+    Get3DModelCountsResult,
     GetAllElementsParameters,
+    GetAllElementsResult,
     GetBodyMaterialsOfElementsParameters,
+    GetBodyMaterialsOfElementsResult,
     GetCalculatedParametersOfCurtainWallSubElementsParameters,
+    GetCalculatedParametersOfCurtainWallSubElementsResult,
     GetCategoryValuesOfDefaultsParameters,
+    GetCategoryValuesOfDefaultsResult,
     GetCategoryValuesOfElementsParameters,
+    GetCategoryValuesOfElementsResult,
     GetCollisionsParameters,
+    GetCollisionsResult,
     GetConnectedElementsParameters,
+    GetConnectedElementsResult,
     GetCurtainWallAbsoluteBottomsParameters,
+    GetCurtainWallAbsoluteBottomsResult,
     GetCutPolygonsOfElementsParameters,
+    GetCutPolygonsOfElementsResult,
     GetDescriptorsOfElementsParameters,
+    GetDescriptorsOfElementsResult,
     GetDetailsOfElementsParameters,
+    GetDetailsOfElementsResult,
     GetDimensionDataParameters,
+    GetDimensionDataResult,
     GetDrawingPrimitivesOfElementsParameters,
+    GetDrawingPrimitivesOfElementsResult,
     GetElementAtCoordinateParameters,
+    GetElementAtCoordinateResult,
+    GetElementCategoriesResult,
     GetElementChangesSinceParameters,
+    GetElementChangesSinceResult,
     GetElementConnectionsParameters,
+    GetElementConnectionsResult,
     GetElementPreviewImageParameters,
+    GetElementPreviewImageResult,
     GetElementsByCriteriaParameters,
+    GetElementsByCriteriaResult,
     GetElementsInCreationOrderParameters,
+    GetElementsInCreationOrderResult,
     GetElementsInDrawOrderParameters,
+    GetElementsInDrawOrderResult,
     GetElementTypeNamesParameters,
+    GetElementTypeNamesResult,
     GetGDLParametersOfElementsParameters,
+    GetGDLParametersOfElementsResult,
     GetGridElementDefaultsParameters,
+    GetGridElementDefaultsResult,
     GetGridElementsParameters,
+    GetGridElementsResult,
     GetHierarchicalElementOwnersParameters,
+    GetHierarchicalElementOwnersResult,
     GetHotspotsOfElementsParameters,
+    GetHotspotsOfElementsResult,
     GetLibPartTransformationsParameters,
+    GetLibPartTransformationsResult,
     GetLinkedPropertyObjectsOfElementsParameters,
+    GetLinkedPropertyObjectsOfElementsResult,
     GetLinksOfElementsParameters,
+    GetLinksOfElementsResult,
     GetMarkerParametersOfElementsParameters,
+    GetMarkerParametersOfElementsResult,
+    GetMarqueeResult,
+    GetModelExtentResult,
     GetOpeningDefaultParameters,
+    GetOpeningDefaultResult,
     GetOpeningDetailsParameters,
+    GetOpeningDetailsResult,
     GetOpeningFloorPlanParametersParameters,
+    GetOpeningFloorPlanParametersResult,
     GetOpeningSymbolParametersParameters,
+    GetOpeningSymbolParametersResult,
     GetOpeningTransformationsParameters,
+    GetOpeningTransformationsResult,
     GetPropertyObjectsOfElementsParameters,
+    GetPropertyObjectsOfElementsResult,
     GetQuantitiesOfElementsParameters,
+    GetQuantitiesOfElementsResult,
     GetRelationsOfElementsParameters,
+    GetRelationsOfElementsResult,
     GetRoofPlanesParameters,
+    GetRoofPlanesResult,
     GetRoomImageParameters,
+    GetRoomImageResult,
     GetSectionElementsParameters,
+    GetSectionElementsResult,
+    GetSelectedElementsResult,
     GetShapePrimitivesOfElementsParameters,
+    GetShapePrimitivesOfElementsResult,
     GetSkylightHolePolygonsParameters,
+    GetSkylightHolePolygonsResult,
     GetSnapPointsOfElementsParameters,
+    GetSnapPointsOfElementsResult,
     GetSplineMaxDistancesParameters,
+    GetSplineMaxDistancesResult,
     GetStoryControlPrimitivesParameters,
+    GetStoryControlPrimitivesResult,
     GetSubelementsOfHierarchicalElementsParameters,
+    GetSubelementsOfHierarchicalElementsResult,
     GetSurfaceQuantitiesOfElementsParameters,
+    GetSurfaceQuantitiesOfElementsResult,
     GetSurfaceTypesOfElementsParameters,
+    GetSurfaceTypesOfElementsResult,
     GetTextureCoordinatesParameters,
+    GetTextureCoordinatesResult,
     GetURLReferencesOfElementsParameters,
+    GetURLReferencesOfElementsResult,
     GetVisibleSkinStatusParameters,
+    GetVisibleSkinStatusResult,
     GetZoneBoundariesParameters,
+    GetZoneBoundariesResult,
+    GetZoneLabelingSettingsResult,
     GetZoneReductionsParameters,
+    GetZoneReductionsResult,
     HighlightElementsParameters,
+    HighlightElementsResult,
     LinkElementsParameters,
+    LinkElementsResult,
     LockElementsParameters,
+    LockElementsResult,
     MeasureTextsParameters,
+    MeasureTextsResult,
     MirrorElementsParameters,
+    MirrorElementsResult,
     MoveElementsParameters,
+    MoveElementsResult,
     PlaceOpeningsParameters,
+    PlaceOpeningsResult,
     RefreshElementsParameters,
+    RefreshElementsResult,
     RegularizePolygonsParameters,
+    RegularizePolygonsResult,
     RegularizePolylinesParameters,
+    RegularizePolylinesResult,
     ReleaseElementStateParameters,
+    ReleaseElementStateResult,
     RemoveElementNotificationClientParameters,
+    RemoveElementNotificationClientResult,
     RotateCopyElementsParameters,
+    RotateCopyElementsResult,
     RotateElementsParameters,
+    RotateElementsResult,
     RunParameterScriptOfElementsParameters,
+    RunParameterScriptOfElementsResult,
     ScaleElementsParameters,
+    ScaleElementsResult,
     SetCategoryValuesOfElementsParameters,
+    SetCategoryValuesOfElementsResult,
     SetDetailsOfElementsParameters,
+    SetDetailsOfElementsResult,
     SetElementInfoStringsParameters,
+    SetElementInfoStringsResult,
     SetElementNotificationClientParameters,
+    SetElementNotificationClientResult,
     SetGDLParametersOfElementsParameters,
+    SetGDLParametersOfElementsResult,
     SetLinkedPropertyObjectsOfElementsParameters,
+    SetLinkedPropertyObjectsOfElementsResult,
     SetMarkerLibraryPartOfElementsParameters,
+    SetMarkerLibraryPartOfElementsResult,
     SetMarkerParametersOfElementsParameters,
+    SetMarkerParametersOfElementsResult,
     SetMarqueeParameters,
+    SetMarqueeResult,
     SetOpeningDefaultParameters,
+    SetOpeningDefaultResult,
     SetOpeningDetailsParameters,
+    SetOpeningDetailsResult,
     SetOpeningFloorPlanParametersParameters,
+    SetOpeningFloorPlanParametersResult,
     SetOpeningSymbolParametersParameters,
+    SetOpeningSymbolParametersResult,
     SetURLReferencesOfElementsParameters,
+    SetURLReferencesOfElementsResult,
     SetZoneLabelingSettingsParameters,
+    SetZoneLabelingSettingsResult,
     SolveStairBaselineParameters,
+    SolveStairBaselineResult,
     SplitElementsParameters,
+    SplitElementsResult,
     TriangulatePolygonsOfElementsParameters,
+    TriangulatePolygonsOfElementsResult,
     UnlinkElementsParameters,
+    UnlinkElementsResult,
     UnlockElementsParameters,
+    UnlockElementsResult,
     UpdateZonesParameters,
+    UpdateZonesResult,
 )
 
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
@@ -145,6 +262,8 @@ register_tool_for_dispatch(
         "edited gets a failed execution result naming the reason, and the other elements are still aligned."
     ),
     params_model=AlignElementsParameters,
+    output_model=AlignElementsResult,
+    identity=("tapir", "AlignElements"),
 )
 
 
@@ -173,6 +292,8 @@ register_tool_for_dispatch(
         "restarts, and ReleaseElementState frees it earlier."
     ),
     params_model=CaptureElementStateParameters,
+    output_model=CaptureElementStateResult,
+    identity=("tapir", "CaptureElementState"),
 )
 
 
@@ -202,6 +323,8 @@ register_tool_for_dispatch(
         "the values of the GDL parameters with the same name and type, and the size (A and B)."
     ),
     params_model=ChangeLibraryPartOfElementsParameters,
+    output_model=ChangeLibraryPartOfElementsResult,
+    identity=("tapir", "ChangeLibraryPartOfElements"),
 )
 
 
@@ -218,6 +341,8 @@ register_tool_for_dispatch(
     title="ChangeSelectionOfElements",
     description="Adds/removes a number of elements to/from the current selection.",
     params_model=ChangeSelectionOfElementsParameters,
+    output_model=ChangeSelectionOfElementsResult,
+    identity=("tapir", "ChangeSelectionOfElements"),
 )
 
 
@@ -240,6 +365,8 @@ register_tool_for_dispatch(
         "autotexts in the rest of the content."
     ),
     params_model=ChangeTextContentParameters,
+    output_model=ChangeTextContentResult,
+    identity=("tapir", "ChangeTextContent"),
 )
 
 
@@ -266,6 +393,8 @@ register_tool_for_dispatch(
         "equal. The output is aligned with the input array of openings. Available from Archicad 27."
     ),
     params_model=ConvertRevealOffsetsParameters,
+    output_model=ConvertRevealOffsetsResult,
+    identity=("tapir", "ConvertRevealOffsets"),
 )
 
 
@@ -294,6 +423,8 @@ register_tool_for_dispatch(
         "elements are still copied. All copies are one undo step."
     ),
     params_model=CopyElementsParameters,
+    output_model=CopyElementsResult,
+    identity=("tapir", "CopyElements"),
 )
 
 
@@ -318,6 +449,8 @@ register_tool_for_dispatch(
         "optionally moved by an offset. Returns the new elements in the order of the given ones."
     ),
     params_model=CopyElementsToDatabaseParameters,
+    output_model=CopyElementsToDatabaseResult,
+    identity=("tapir", "CopyElementsToDatabase"),
 )
 
 
@@ -353,6 +486,8 @@ register_tool_for_dispatch(
         "script can preview a deletion before making it."
     ),
     params_model=DeleteElementsParameters,
+    output_model=DeleteElementsResult,
+    identity=("tapir", "DeleteElements"),
 )
 
 
@@ -379,6 +514,8 @@ register_tool_for_dispatch(
         "(Archicad then deletes none of them)."
     ),
     params_model=DeleteSelectedElementsParameters,
+    output_model=DeleteSelectedElementsResult,
+    identity=("tapir", "DeleteSelectedElements"),
 )
 
 
@@ -406,6 +543,8 @@ register_tool_for_dispatch(
         "wouldDelete."
     ),
     params_model=DeleteUserDataOfElementsParameters,
+    output_model=DeleteUserDataOfElementsResult,
+    identity=("tapir", "DeleteUserDataOfElements"),
 )
 
 
@@ -420,6 +559,8 @@ register_tool_for_dispatch(
     title="DeselectAll",
     description="Clears the selection in the current window.",
     params_model=None,
+    output_model=DeselectAllResult,
+    identity=("tapir", "DeselectAll"),
 )
 
 
@@ -455,6 +596,8 @@ register_tool_for_dispatch(
         "the other elements are still distributed."
     ),
     params_model=DistributeElementsParameters,
+    output_model=DistributeElementsResult,
+    identity=("tapir", "DistributeElements"),
 )
 
 
@@ -483,6 +626,8 @@ register_tool_for_dispatch(
         "Archicad, with the button of its edit mode palette (reported for Archicad 29). Requires Archicad 27 or later."
     ),
     params_model=EditHierarchicalElementParameters,
+    output_model=EditHierarchicalElementResult,
+    identity=("tapir", "EditHierarchicalElement"),
 )
 
 
@@ -507,6 +652,8 @@ register_tool_for_dispatch(
         "execution result naming the reason instead of being skipped silently."
     ),
     params_model=ElevateElementsParameters,
+    output_model=ElevateElementsResult,
+    identity=("tapir", "ElevateElements"),
 )
 
 
@@ -531,6 +678,8 @@ register_tool_for_dispatch(
         "Within one criterion any of the listed values matches; an omitted criterion does not filter."
     ),
     params_model=FilterElementsParameters,
+    output_model=FilterElementsResult,
+    identity=("tapir", "FilterElements"),
 )
 
 
@@ -561,6 +710,8 @@ register_tool_for_dispatch(
         "leave it in Archicad instead. Requires Archicad 27 or later."
     ),
     params_model=FinishHierarchicalEditingParameters,
+    output_model=FinishHierarchicalEditingResult,
+    identity=("tapir", "FinishHierarchicalEditing"),
 )
 
 
@@ -589,6 +740,8 @@ register_tool_for_dispatch(
         "element. The output is the array of the bounding boxes respective to the input array of elements."
     ),
     params_model=Get2DBoundingBoxesParameters,
+    output_model=Get2DBoundingBoxesResult,
+    identity=("tapir", "Get2DBoundingBoxes"),
 )
 
 
@@ -617,6 +770,8 @@ register_tool_for_dispatch(
         "window does not need to show the element: it works with a layout or a section open as well."
     ),
     params_model=Get3DBoundingBoxesParameters,
+    output_model=Get3DBoundingBoxesResult,
+    identity=("tapir", "Get3DBoundingBoxes"),
 )
 
 
@@ -627,9 +782,6 @@ def get3_d_geometry_of_elements(conn_header: ConnHeader, params: Get3DGeometryOf
     attribute. The bodies of the subelements of a Stair, Railing or Curtain Wall, and of the segments of a Column or
     Beam, are included. The output is aligned with the input array of elements. The 3D model of the elements is
     generated as needed, so many elements can take a while.
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
     """
     return conn_header.core.post_tapir_command(
         command="Get3DGeometryOfElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -648,7 +800,8 @@ register_tool_for_dispatch(
         "elements is generated as needed, so many elements can take a while."
     ),
     params_model=Get3DGeometryOfElementsParameters,
-    pagination_field="geometries3D",
+    output_model=Get3DGeometryOfElementsResult,
+    identity=("tapir", "Get3DGeometryOfElements"),
 )
 
 
@@ -675,6 +828,8 @@ register_tool_for_dispatch(
         "Available from Archicad 27."
     ),
     params_model=None,
+    output_model=Get3DModelCountsResult,
+    identity=("tapir", "Get3DModelCounts"),
 )
 
 
@@ -683,9 +838,6 @@ def get_all_elements(conn_header: ConnHeader, params: GetAllElementsParameters) 
     Returns the identifier of all elements on the plan. Use the optional filter parameter for filtering. Objects that
     belong to another element (zone stamps, the parts of stairs and railings) are left out unless the
     IncludeSubElemObjects filter is given.
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
     """
     return conn_header.core.post_tapir_command(
         command="GetAllElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -702,7 +854,8 @@ register_tool_for_dispatch(
         "IncludeSubElemObjects filter is given."
     ),
     params_model=GetAllElementsParameters,
-    pagination_field="elements",
+    output_model=GetAllElementsResult,
+    identity=("tapir", "GetAllElements"),
 )
 
 
@@ -728,6 +881,8 @@ register_tool_for_dispatch(
         "not changed. The output is aligned with the input array of elements. Available from Archicad 28."
     ),
     params_model=GetBodyMaterialsOfElementsParameters,
+    output_model=GetBodyMaterialsOfElementsResult,
+    identity=("tapir", "GetBodyMaterialsOfElements"),
 )
 
 
@@ -755,6 +910,8 @@ register_tool_for_dispatch(
         "the parameters the sub-element was set up with instead."
     ),
     params_model=GetCalculatedParametersOfCurtainWallSubElementsParameters,
+    output_model=GetCalculatedParametersOfCurtainWallSubElementsResult,
+    identity=("tapir", "GetCalculatedParametersOfCurtainWallSubElements"),
 )
 
 
@@ -783,6 +940,8 @@ register_tool_for_dispatch(
         "scripts."
     ),
     params_model=GetCategoryValuesOfDefaultsParameters,
+    output_model=GetCategoryValuesOfDefaultsResult,
+    identity=("tapir", "GetCategoryValuesOfDefaults"),
 )
 
 
@@ -791,9 +950,6 @@ def get_category_values_of_elements(conn_header: ConnHeader, params: GetCategory
     Gets the category values (Structural Function, Position, Renovation Status ...) of the given elements, optionally
     only for the given category types. An element that has none of the requested categories (an annotation, for example)
     gets an error item. The names are localized: use the type and the categoryValueId in scripts.
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
     """
     return conn_header.core.post_tapir_command(
         command="GetCategoryValuesOfElements",
@@ -812,17 +968,13 @@ register_tool_for_dispatch(
         "scripts."
     ),
     params_model=GetCategoryValuesOfElementsParameters,
-    pagination_field="categoryValuesOfElements",
+    output_model=GetCategoryValuesOfElementsResult,
+    identity=("tapir", "GetCategoryValuesOfElements"),
 )
 
 
 def get_collisions(conn_header: ConnHeader, params: GetCollisionsParameters) -> dict:
-    """
-    Detect collisions between the given two groups of elements.
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
-    """
+    """Detect collisions between the given two groups of elements."""
     return conn_header.core.post_tapir_command(
         command="GetCollisions", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
@@ -834,7 +986,8 @@ register_tool_for_dispatch(
     title="GetCollisions",
     description="Detect collisions between the given two groups of elements.",
     params_model=GetCollisionsParameters,
-    pagination_field="collisions",
+    output_model=GetCollisionsResult,
+    identity=("tapir", "GetCollisions"),
 )
 
 
@@ -859,6 +1012,8 @@ register_tool_for_dispatch(
         "risers, treads and structures of a Stair, or the posts, rails and panels of a Railing."
     ),
     params_model=GetConnectedElementsParameters,
+    output_model=GetConnectedElementsResult,
+    identity=("tapir", "GetConnectedElements"),
 )
 
 
@@ -882,6 +1037,8 @@ register_tool_for_dispatch(
         "accessories). The output is aligned with the input array of elements."
     ),
     params_model=GetCurtainWallAbsoluteBottomsParameters,
+    output_model=GetCurtainWallAbsoluteBottomsResult,
+    identity=("tapir", "GetCurtainWallAbsoluteBottoms"),
 )
 
 
@@ -912,6 +1069,8 @@ register_tool_for_dispatch(
         "output is aligned with the input array of elements."
     ),
     params_model=GetCutPolygonsOfElementsParameters,
+    output_model=GetCutPolygonsOfElementsResult,
+    identity=("tapir", "GetCutPolygonsOfElements"),
 )
 
 
@@ -936,6 +1095,8 @@ register_tool_for_dispatch(
         "their status (Normal, Deleted or Local). The output is aligned with the input array of elements."
     ),
     params_model=GetDescriptorsOfElementsParameters,
+    output_model=GetDescriptorsOfElementsResult,
+    identity=("tapir", "GetDescriptorsOfElements"),
 )
 
 
@@ -948,9 +1109,6 @@ def get_details_of_elements(conn_header: ConnHeader, params: GetDetailsOfElement
     the info string, the compound info string, the library part unique ID and the creator tool unique ID. An element of
     another database (a layout, a section, a worksheet ...) returns only its header fields (type, floor index, layer,
     draw index) with fromOtherDatabase set to true.
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
     """
     return conn_header.core.post_tapir_command(
         command="GetDetailsOfElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -971,7 +1129,8 @@ register_tool_for_dispatch(
         "only its header fields (type, floor index, layer, draw index) with fromOtherDatabase set to true."
     ),
     params_model=GetDetailsOfElementsParameters,
-    pagination_field="detailsOfElements",
+    output_model=GetDetailsOfElementsResult,
+    identity=("tapir", "GetDetailsOfElements"),
 )
 
 
@@ -994,6 +1153,8 @@ register_tool_for_dispatch(
         "line, and per witness point the coordinates, measured value, witness line and the text height, pen and frame."
     ),
     params_model=GetDimensionDataParameters,
+    output_model=GetDimensionDataResult,
+    identity=("tapir", "GetDimensionData"),
 )
 
 
@@ -1029,6 +1190,8 @@ register_tool_for_dispatch(
         "current database. The output is aligned with the input array of elements."
     ),
     params_model=GetDrawingPrimitivesOfElementsParameters,
+    output_model=GetDrawingPrimitivesOfElementsResult,
+    identity=("tapir", "GetDrawingPrimitivesOfElements"),
 )
 
 
@@ -1057,6 +1220,8 @@ register_tool_for_dispatch(
         "together with GetPointFromUser."
     ),
     params_model=GetElementAtCoordinateParameters,
+    output_model=GetElementAtCoordinateResult,
+    identity=("tapir", "GetElementAtCoordinate"),
 )
 
 
@@ -1079,6 +1244,8 @@ register_tool_for_dispatch(
         "are localized: identify a category by its type and a value by its categoryValueId, never by name."
     ),
     params_model=None,
+    output_model=GetElementCategoriesResult,
+    identity=("tapir", "GetElementCategories"),
 )
 
 
@@ -1109,6 +1276,8 @@ register_tool_for_dispatch(
         "never captured, released, or lost because the project was closed or Archicad restarted."
     ),
     params_model=GetElementChangesSinceParameters,
+    output_model=GetElementChangesSinceResult,
+    identity=("tapir", "GetElementChangesSince"),
 )
 
 
@@ -1118,9 +1287,6 @@ def get_element_connections(conn_header: ConnHeader, params: GetElementConnectio
     where they touch, in world coordinates. The 3D model of the elements is generated with separate components in a
     temporary sight, so the 3D window is not changed. Also returns, aligned with the input array of elements, whether
     each element was found. Available from Archicad 28.
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
     """
     return conn_header.core.post_tapir_command(
         command="GetElementConnections", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -1138,7 +1304,8 @@ register_tool_for_dispatch(
         "of elements, whether each element was found. Available from Archicad 28."
     ),
     params_model=GetElementConnectionsParameters,
-    pagination_field="connections",
+    output_model=GetElementConnectionsResult,
+    identity=("tapir", "GetElementConnections"),
 )
 
 
@@ -1155,6 +1322,8 @@ register_tool_for_dispatch(
     title="GetElementPreviewImage",
     description="Returns the preview image of the given element.",
     params_model=GetElementPreviewImageParameters,
+    output_model=GetElementPreviewImageResult,
+    identity=("tapir", "GetElementPreviewImage"),
     image_field="previewImage",
 )
 
@@ -1179,6 +1348,8 @@ register_tool_for_dispatch(
         "Archicad 27."
     ),
     params_model=GetElementTypeNamesParameters,
+    output_model=GetElementTypeNamesResult,
+    identity=("tapir", "GetElementTypeNames"),
 )
 
 
@@ -1189,9 +1360,6 @@ def get_elements_by_criteria(conn_header: ConnHeader, params: GetElementsByCrite
     value status such as hasValue, isUserUndefined, isNotAvailable, isDefault or hasCustomValue). An unknown type,
     property or operator is an error, not ignored. Objects that belong to another element (zone stamps, the parts of
     stairs and railings) are left out unless the IncludeSubElemObjects filter is given.
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
     """
     return conn_header.core.post_tapir_command(
         command="GetElementsByCriteria", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -1210,7 +1378,8 @@ register_tool_for_dispatch(
         "stamps, the parts of stairs and railings) are left out unless the IncludeSubElemObjects filter is given."
     ),
     params_model=GetElementsByCriteriaParameters,
-    pagination_field="elements",
+    output_model=GetElementsByCriteriaResult,
+    identity=("tapir", "GetElementsByCriteria"),
 )
 
 
@@ -1218,9 +1387,6 @@ def get_elements_in_creation_order(conn_header: ConnHeader, params: GetElementsI
     """
     Returns the identifier of every element of the current database, or of the given databases, in the order the
     elements were created.
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
     """
     return conn_header.core.post_tapir_command(
         command="GetElementsInCreationOrder",
@@ -1237,7 +1403,8 @@ register_tool_for_dispatch(
         "elements were created."
     ),
     params_model=GetElementsInCreationOrderParameters,
-    pagination_field="elements",
+    output_model=GetElementsInCreationOrderResult,
+    identity=("tapir", "GetElementsInCreationOrder"),
 )
 
 
@@ -1247,9 +1414,6 @@ def get_elements_in_draw_order(conn_header: ConnHeader, params: GetElementsInDra
     order (the order set by Bring to Front and Send to Back), as ACAPI_DrawOrder_DrawOrderGetNext walks it. Use the
     optional elementType and filters parameters for filtering. Objects that belong to another element (zone stamps, the
     parts of stairs and railings) are left out unless the IncludeSubElemObjects filter is given.
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
     """
     return conn_header.core.post_tapir_command(
         command="GetElementsInDrawOrder", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -1268,17 +1432,13 @@ register_tool_for_dispatch(
         "given."
     ),
     params_model=GetElementsInDrawOrderParameters,
-    pagination_field="elements",
+    output_model=GetElementsInDrawOrderResult,
+    identity=("tapir", "GetElementsInDrawOrder"),
 )
 
 
 def get_gdl_parameters_of_elements(conn_header: ConnHeader, params: GetGDLParametersOfElementsParameters) -> dict:
-    """
-    Gets all the GDL parameters (name, type, value) of the given elements.
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
-    """
+    """Gets all the GDL parameters (name, type, value) of the given elements."""
     return conn_header.core.post_tapir_command(
         command="GetGDLParametersOfElements",
         parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
@@ -1291,7 +1451,8 @@ register_tool_for_dispatch(
     title="GetGDLParametersOfElements",
     description="Gets all the GDL parameters (name, type, value) of the given elements.",
     params_model=GetGDLParametersOfElementsParameters,
-    pagination_field="gdlParametersOfElements",
+    output_model=GetGDLParametersOfElementsResult,
+    identity=("tapir", "GetGDLParametersOfElements"),
 )
 
 
@@ -1314,6 +1475,8 @@ register_tool_for_dispatch(
         "26 or later."
     ),
     params_model=GetGridElementDefaultsParameters,
+    output_model=GetGridElementDefaultsResult,
+    identity=("tapir", "GetGridElementDefaults"),
 )
 
 
@@ -1321,9 +1484,6 @@ def get_grid_elements(conn_header: ConnHeader, params: GetGridElementsParameters
     """
     Lists the grid elements (placed with the Grid Tool or created by CreateGridElements) with their position, angle,
     size, library part and optionally GDL parameters. Needs Archicad 26 or later.
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
     """
     return conn_header.core.post_tapir_command(
         command="GetGridElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -1339,7 +1499,8 @@ register_tool_for_dispatch(
         "angle, size, library part and optionally GDL parameters. Needs Archicad 26 or later."
     ),
     params_model=GetGridElementsParameters,
-    pagination_field="gridElements",
+    output_model=GetGridElementsResult,
+    identity=("tapir", "GetGridElements"),
 )
 
 
@@ -1365,6 +1526,8 @@ register_tool_for_dispatch(
         "element, a subelement or not part of a hierarchical element."
     ),
     params_model=GetHierarchicalElementOwnersParameters,
+    output_model=GetHierarchicalElementOwnersResult,
+    identity=("tapir", "GetHierarchicalElementOwners"),
 )
 
 
@@ -1387,6 +1550,8 @@ register_tool_for_dispatch(
         "Curtain Wall parts, etc.), e.g. to dimension to them."
     ),
     params_model=GetHotspotsOfElementsParameters,
+    output_model=GetHotspotsOfElementsResult,
+    identity=("tapir", "GetHotspotsOfElements"),
 )
 
 
@@ -1410,6 +1575,8 @@ register_tool_for_dispatch(
         "of elements."
     ),
     params_model=GetLibPartTransformationsParameters,
+    output_model=GetLibPartTransformationsResult,
+    identity=("tapir", "GetLibPartTransformations"),
 )
 
 
@@ -1440,6 +1607,8 @@ register_tool_for_dispatch(
         "array of elements."
     ),
     params_model=GetLinkedPropertyObjectsOfElementsParameters,
+    output_model=GetLinkedPropertyObjectsOfElementsResult,
+    identity=("tapir", "GetLinkedPropertyObjectsOfElements"),
 )
 
 
@@ -1448,9 +1617,6 @@ def get_links_of_elements(conn_header: ConnHeader, params: GetLinksOfElementsPar
     Gets the links created by LinkElements that start from the given elements: the linked element and the flags of each
     link. Links pointing to an element are not returned; query the elements they start from. Returns an error item for
     an element that does not exist.
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
     """
     return conn_header.core.post_tapir_command(
         command="GetLinksOfElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -1467,7 +1633,8 @@ register_tool_for_dispatch(
         "error item for an element that does not exist."
     ),
     params_model=GetLinksOfElementsParameters,
-    pagination_field="linksOfElements",
+    output_model=GetLinksOfElementsResult,
+    identity=("tapir", "GetLinksOfElements"),
 )
 
 
@@ -1476,9 +1643,6 @@ def get_marker_parameters_of_elements(conn_header: ConnHeader, params: GetMarker
     Gets the marker library part and the marker's GDL parameters (name, type, value) of the given Window and Door
     elements. The marker is the stamp drawn next to the opening on the floor plan; its parameters are separate from the
     opening's own GDL parameters, which GetGDLParametersOfElements returns.
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
     """
     return conn_header.core.post_tapir_command(
         command="GetMarkerParametersOfElements",
@@ -1496,7 +1660,8 @@ register_tool_for_dispatch(
         "from the opening's own GDL parameters, which GetGDLParametersOfElements returns."
     ),
     params_model=GetMarkerParametersOfElementsParameters,
-    pagination_field="markerParametersOfElements",
+    output_model=GetMarkerParametersOfElementsResult,
+    identity=("tapir", "GetMarkerParametersOfElements"),
 )
 
 
@@ -1517,6 +1682,8 @@ register_tool_for_dispatch(
         "multi-story, and its outline as a polygon. Returns the type 'none' when there is no marquee."
     ),
     params_model=None,
+    output_model=GetMarqueeResult,
+    identity=("tapir", "GetMarquee"),
 )
 
 
@@ -1537,6 +1704,8 @@ register_tool_for_dispatch(
         "in Window would show."
     ),
     params_model=None,
+    output_model=GetModelExtentResult,
+    identity=("tapir", "GetModelExtent"),
 )
 
 
@@ -1560,6 +1729,8 @@ register_tool_for_dispatch(
         "29."
     ),
     params_model=GetOpeningDefaultParameters,
+    output_model=GetOpeningDefaultResult,
+    identity=("tapir", "GetOpeningDefault"),
 )
 
 
@@ -1568,9 +1739,6 @@ def get_opening_details(conn_header: ConnHeader, params: GetOpeningDetailsParame
     Returns the details of Opening elements: whether they exist, the parent element, the cut and connected elements, the
     geometry (anchor point, extrusion direction, axes, polygon) and the extrusion parameters (constraint, limit type,
     linked status, shape type, size, anchor, offsets, surface overrides). Available from Archicad 29.
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
     """
     return conn_header.core.post_tapir_command(
         command="GetOpeningDetails", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -1588,7 +1756,8 @@ register_tool_for_dispatch(
         "Archicad 29."
     ),
     params_model=GetOpeningDetailsParameters,
-    pagination_field="openings",
+    output_model=GetOpeningDetailsResult,
+    identity=("tapir", "GetOpeningDetails"),
 )
 
 
@@ -1597,9 +1766,6 @@ def get_opening_floor_plan_parameters(conn_header: ConnHeader, params: GetOpenin
     Returns the floor plan parameters of Opening elements: the floor plan display mode, the divided opening mode, the
     open edge style, the reference axis, the cut surface and outline lines, the cover fills and the cut and uncut
     symbols. Available from Archicad 29.
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
     """
     return conn_header.core.post_tapir_command(
         command="GetOpeningFloorPlanParameters",
@@ -1617,7 +1783,8 @@ register_tool_for_dispatch(
         "uncut symbols. Available from Archicad 29."
     ),
     params_model=GetOpeningFloorPlanParametersParameters,
-    pagination_field="openings",
+    output_model=GetOpeningFloorPlanParametersResult,
+    identity=("tapir", "GetOpeningFloorPlanParameters"),
 )
 
 
@@ -1641,6 +1808,8 @@ register_tool_for_dispatch(
         "GetGDLParametersOfElements. A symbol the opening does not have is left out. Available from Archicad 29."
     ),
     params_model=GetOpeningSymbolParametersParameters,
+    output_model=GetOpeningSymbolParametersResult,
+    identity=("tapir", "GetOpeningSymbolParameters"),
 )
 
 
@@ -1671,6 +1840,8 @@ register_tool_for_dispatch(
         "against the extrusion direction. Needs Archicad 27 or later."
     ),
     params_model=GetOpeningTransformationsParameters,
+    output_model=GetOpeningTransformationsResult,
+    identity=("tapir", "GetOpeningTransformations"),
 )
 
 
@@ -1698,6 +1869,8 @@ register_tool_for_dispatch(
         "is aligned with the input array of elements."
     ),
     params_model=GetPropertyObjectsOfElementsParameters,
+    output_model=GetPropertyObjectsOfElementsResult,
+    identity=("tapir", "GetPropertyObjectsOfElements"),
 )
 
 
@@ -1708,9 +1881,6 @@ def get_quantities_of_elements(conn_header: ConnHeader, params: GetQuantitiesOfE
     one item for basic elements). Supported types: Wall, Column, Beam, Slab, Roof, Shell, Morph, Zone, ColumnSegment,
     BeamSegment. Use the optional minOpeningSize parameter to control the conditional values, and calculateInOneCall to
     calculate all the elements in one Archicad call.
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
     """
     return conn_header.core.post_tapir_command(
         command="GetQuantitiesOfElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -1729,7 +1899,8 @@ register_tool_for_dispatch(
         "calculateInOneCall to calculate all the elements in one Archicad call."
     ),
     params_model=GetQuantitiesOfElementsParameters,
-    pagination_field="quantitiesOfElements",
+    output_model=GetQuantitiesOfElementsResult,
+    identity=("tapir", "GetQuantitiesOfElements"),
 )
 
 
@@ -1738,9 +1909,6 @@ def get_relations_of_elements(conn_header: ConnHeader, params: GetRelationsOfEle
     Gets the type-specific relations of the given elements: endpoint and reference line connections of walls, beams and
     beam segments, boundary elements and boundary sections of zones, the zones on the two sides of windows, doors,
     skylights and curtain wall panels, and the zones connected to roofs and shells. Available from Archicad 26.
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
     """
     return conn_header.core.post_tapir_command(
         command="GetRelationsOfElements", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -1758,7 +1926,8 @@ register_tool_for_dispatch(
         "from Archicad 26."
     ),
     params_model=GetRelationsOfElementsParameters,
-    pagination_field="relations",
+    output_model=GetRelationsOfElementsResult,
+    identity=("tapir", "GetRelationsOfElements"),
 )
 
 
@@ -1785,6 +1954,8 @@ register_tool_for_dispatch(
         "aligned with the input array of elements."
     ),
     params_model=GetRoofPlanesParameters,
+    output_model=GetRoofPlanesResult,
+    identity=("tapir", "GetRoofPlanes"),
 )
 
 
@@ -1801,6 +1972,8 @@ register_tool_for_dispatch(
     title="GetRoomImage",
     description="Returns the room image of the given zone.",
     params_model=GetRoomImageParameters,
+    output_model=GetRoomImageResult,
+    identity=("tapir", "GetRoomImage"),
     image_field="roomImage",
 )
 
@@ -1828,16 +2001,13 @@ register_tool_for_dispatch(
         "CreateAssociativeDimensionsOnSection requires."
     ),
     params_model=GetSectionElementsParameters,
+    output_model=GetSectionElementsResult,
+    identity=("tapir", "GetSectionElements"),
 )
 
 
 def get_selected_elements(conn_header: ConnHeader) -> dict:
-    """
-    Gets the list of the currently selected elements.
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
-    """
+    """Gets the list of the currently selected elements."""
     return conn_header.core.post_tapir_command(command="GetSelectedElements", parameters={})
 
 
@@ -1847,7 +2017,8 @@ register_tool_for_dispatch(
     title="GetSelectedElements",
     description="Gets the list of the currently selected elements.",
     params_model=None,
-    pagination_field="elements",
+    output_model=GetSelectedElementsResult,
+    identity=("tapir", "GetSelectedElements"),
 )
 
 
@@ -1879,6 +2050,8 @@ register_tool_for_dispatch(
         "plan must be the current database. The output is aligned with the input array of elements."
     ),
     params_model=GetShapePrimitivesOfElementsParameters,
+    output_model=GetShapePrimitivesOfElementsResult,
+    identity=("tapir", "GetShapePrimitivesOfElements"),
 )
 
 
@@ -1903,6 +2076,8 @@ register_tool_for_dispatch(
         "Skylight gets an error item."
     ),
     params_model=GetSkylightHolePolygonsParameters,
+    output_model=GetSkylightHolePolygonsResult,
+    identity=("tapir", "GetSkylightHolePolygons"),
 )
 
 
@@ -1931,6 +2106,8 @@ register_tool_for_dispatch(
         "aligned with the input array of elements."
     ),
     params_model=GetSnapPointsOfElementsParameters,
+    output_model=GetSnapPointsOfElementsResult,
+    identity=("tapir", "GetSnapPointsOfElements"),
 )
 
 
@@ -1955,6 +2132,8 @@ register_tool_for_dispatch(
         "follows the spline. The output is aligned with the input array. Changes nothing in the project."
     ),
     params_model=GetSplineMaxDistancesParameters,
+    output_model=GetSplineMaxDistancesResult,
+    identity=("tapir", "GetSplineMaxDistances"),
 )
 
 
@@ -1980,6 +2159,8 @@ register_tool_for_dispatch(
         "GetDatabaseIdFromNavigatorItemId."
     ),
     params_model=GetStoryControlPrimitivesParameters,
+    output_model=GetStoryControlPrimitivesResult,
+    identity=("tapir", "GetStoryControlPrimitives"),
 )
 
 
@@ -1989,9 +2170,6 @@ def get_subelements_of_hierarchical_elements(
     """
     Gets the subelements of the given hierarchical elements. From Archicad 28 the subelements of external hierarchical
     elements (for example MEP elements or elements of other add-ons) are returned as externalSubelements.
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
     """
     return conn_header.core.post_tapir_command(
         command="GetSubelementsOfHierarchicalElements",
@@ -2009,7 +2187,8 @@ register_tool_for_dispatch(
         "externalSubelements."
     ),
     params_model=GetSubelementsOfHierarchicalElementsParameters,
-    pagination_field="subelements",
+    output_model=GetSubelementsOfHierarchicalElementsResult,
+    identity=("tapir", "GetSubelementsOfHierarchicalElements"),
 )
 
 
@@ -2021,9 +2200,6 @@ def get_surface_quantities_of_elements(
     attribute and building material pair with the area that is not covered by the covering elements (for example the
     wall area behind a slab is taken off the wall's surface). The covering elements are the optional coverElements; by
     default every construction element of the project. The output is aligned with the input array of elements.
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
     """
     return conn_header.core.post_tapir_command(
         command="GetSurfaceQuantitiesOfElements",
@@ -2043,7 +2219,8 @@ register_tool_for_dispatch(
         "array of elements."
     ),
     params_model=GetSurfaceQuantitiesOfElementsParameters,
-    pagination_field="surfaceQuantitiesOfElements",
+    output_model=GetSurfaceQuantitiesOfElementsResult,
+    identity=("tapir", "GetSurfaceQuantitiesOfElements"),
 )
 
 
@@ -2071,6 +2248,8 @@ register_tool_for_dispatch(
         "Available from Archicad 28."
     ),
     params_model=GetSurfaceTypesOfElementsParameters,
+    output_model=GetSurfaceTypesOfElementsResult,
+    identity=("tapir", "GetSurfaceTypesOfElements"),
 )
 
 
@@ -2093,6 +2272,8 @@ register_tool_for_dispatch(
         "face, at the first vertex of the face. The output is aligned with the input array of elements."
     ),
     params_model=GetTextureCoordinatesParameters,
+    output_model=GetTextureCoordinatesResult,
+    identity=("tapir", "GetTextureCoordinates"),
 )
 
 
@@ -2117,6 +2298,8 @@ register_tool_for_dispatch(
         "APIERR_NOUSERDATA."
     ),
     params_model=GetURLReferencesOfElementsParameters,
+    output_model=GetURLReferencesOfElementsResult,
+    identity=("tapir", "GetURLReferencesOfElements"),
 )
 
 
@@ -2141,6 +2324,8 @@ register_tool_for_dispatch(
         "is not changed. The output is aligned with the input array of elements."
     ),
     params_model=GetVisibleSkinStatusParameters,
+    output_model=GetVisibleSkinStatusResult,
+    identity=("tapir", "GetVisibleSkinStatus"),
 )
 
 
@@ -2165,6 +2350,8 @@ register_tool_for_dispatch(
         "so querying many Zones in one call is much faster than calling the command once per Zone."
     ),
     params_model=GetZoneBoundariesParameters,
+    output_model=GetZoneBoundariesResult,
+    identity=("tapir", "GetZoneBoundaries"),
 )
 
 
@@ -2185,6 +2372,8 @@ register_tool_for_dispatch(
         "from Archicad 28."
     ),
     params_model=None,
+    output_model=GetZoneLabelingSettingsResult,
+    identity=("tapir", "GetZoneLabelingSettings"),
 )
 
 
@@ -2194,9 +2383,6 @@ def get_zone_reductions(conn_header: ConnHeader, params: GetZoneReductionsParame
     Zone covered by Walls, Columns, reducing Fills, sloping Roofs and low ceilings, each with its type, the percentage
     it is reduced by, its area and its outline with holes. Area calculations by local standards need these parts, which
     GetQuantitiesOfElements only gives as totals. The output is aligned with the input array of elements.
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
     """
     return conn_header.core.post_tapir_command(
         command="GetZoneReductions", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -2215,7 +2401,8 @@ register_tool_for_dispatch(
         "of elements."
     ),
     params_model=GetZoneReductionsParameters,
-    pagination_field="reductionsOfZones",
+    output_model=GetZoneReductionsResult,
+    identity=("tapir", "GetZoneReductions"),
 )
 
 
@@ -2238,6 +2425,8 @@ register_tool_for_dispatch(
         "set highlights. On Archicad 25 nonHighlightedColor is ignored."
     ),
     params_model=HighlightElementsParameters,
+    output_model=HighlightElementsResult,
+    identity=("tapir", "HighlightElements"),
 )
 
 
@@ -2267,6 +2456,8 @@ register_tool_for_dispatch(
         "and removed by UnlinkElements. Undoable."
     ),
     params_model=LinkElementsParameters,
+    output_model=LinkElementsResult,
+    identity=("tapir", "LinkElements"),
 )
 
 
@@ -2283,6 +2474,8 @@ register_tool_for_dispatch(
     title="LockElements",
     description="Locks the given elements. Manual lock, not teamwork!",
     params_model=LockElementsParameters,
+    output_model=LockElementsResult,
+    identity=("tapir", "LockElements"),
 )
 
 
@@ -2306,6 +2499,8 @@ register_tool_for_dispatch(
         "nothing."
     ),
     params_model=MeasureTextsParameters,
+    output_model=MeasureTextsResult,
+    identity=("tapir", "MeasureTexts"),
 )
 
 
@@ -2330,6 +2525,8 @@ register_tool_for_dispatch(
         "failed execution result naming the reason instead of being skipped silently."
     ),
     params_model=MirrorElementsParameters,
+    output_model=MirrorElementsResult,
+    identity=("tapir", "MirrorElements"),
 )
 
 
@@ -2354,6 +2551,8 @@ register_tool_for_dispatch(
         "skipped silently."
     ),
     params_model=MoveElementsParameters,
+    output_model=MoveElementsResult,
+    identity=("tapir", "MoveElements"),
 )
 
 
@@ -2379,6 +2578,8 @@ register_tool_for_dispatch(
         "29."
     ),
     params_model=PlaceOpeningsParameters,
+    output_model=PlaceOpeningsResult,
+    identity=("tapir", "PlaceOpenings"),
 )
 
 
@@ -2405,6 +2606,8 @@ register_tool_for_dispatch(
         "section or detail window). Returns an execution result for each input element. The refresh cannot be undone."
     ),
     params_model=RefreshElementsParameters,
+    output_model=RefreshElementsResult,
+    identity=("tapir", "RefreshElements"),
 )
 
 
@@ -2431,6 +2634,8 @@ register_tool_for_dispatch(
         "vertex and edge each result vertex and edge came from. Changes nothing in the project."
     ),
     params_model=RegularizePolygonsParameters,
+    output_model=RegularizePolygonsResult,
+    identity=("tapir", "RegularizePolygons"),
 )
 
 
@@ -2455,6 +2660,8 @@ register_tool_for_dispatch(
         "result point and segment came from. Changes nothing in the project."
     ),
     params_model=RegularizePolylinesParameters,
+    output_model=RegularizePolylinesResult,
+    identity=("tapir", "RegularizePolylines"),
 )
 
 
@@ -2477,6 +2684,8 @@ register_tool_for_dispatch(
         "Archicad quits."
     ),
     params_model=ReleaseElementStateParameters,
+    output_model=ReleaseElementStateResult,
+    identity=("tapir", "ReleaseElementState"),
 )
 
 
@@ -2496,6 +2705,8 @@ register_tool_for_dispatch(
     title="RemoveElementNotificationClient",
     description="Removes an element notification client.",
     params_model=RemoveElementNotificationClientParameters,
+    output_model=RemoveElementNotificationClientResult,
+    identity=("tapir", "RemoveElementNotificationClient"),
 )
 
 
@@ -2523,6 +2734,8 @@ register_tool_for_dispatch(
         "one undo step."
     ),
     params_model=RotateCopyElementsParameters,
+    output_model=RotateCopyElementsResult,
+    identity=("tapir", "RotateCopyElements"),
 )
 
 
@@ -2547,6 +2760,8 @@ register_tool_for_dispatch(
         "being skipped silently."
     ),
     params_model=RotateElementsParameters,
+    output_model=RotateElementsResult,
+    identity=("tapir", "RotateElements"),
 )
 
 
@@ -2570,6 +2785,8 @@ register_tool_for_dispatch(
         "so that parameter values that depend on other parameters are updated, e.g. after SetGDLParametersOfElements."
     ),
     params_model=RunParameterScriptOfElementsParameters,
+    output_model=RunParameterScriptOfElementsResult,
+    identity=("tapir", "RunParameterScriptOfElements"),
 )
 
 
@@ -2600,6 +2817,8 @@ register_tool_for_dispatch(
         "cannot be edited gets a failed execution result naming the reason, and the other elements are still scaled."
     ),
     params_model=ScaleElementsParameters,
+    output_model=ScaleElementsResult,
+    identity=("tapir", "ScaleElements"),
 )
 
 
@@ -2632,6 +2851,8 @@ register_tool_for_dispatch(
         "would set (newValue)."
     ),
     params_model=SetCategoryValuesOfElementsParameters,
+    output_model=SetCategoryValuesOfElementsResult,
+    identity=("tapir", "SetCategoryValuesOfElements"),
 )
 
 
@@ -2685,6 +2906,8 @@ register_tool_for_dispatch(
         "unchanged is named in a failed execution result too."
     ),
     params_model=SetDetailsOfElementsParameters,
+    output_model=SetDetailsOfElementsResult,
+    identity=("tapir", "SetDetailsOfElements"),
 )
 
 
@@ -2707,6 +2930,8 @@ register_tool_for_dispatch(
         "returns as id. Returns one execution result per element."
     ),
     params_model=SetElementInfoStringsParameters,
+    output_model=SetElementInfoStringsResult,
+    identity=("tapir", "SetElementInfoStrings"),
 )
 
 
@@ -2724,6 +2949,8 @@ register_tool_for_dispatch(
     title="SetElementNotificationClient",
     description="Sets up a new notification client to receive element events.",
     params_model=SetElementNotificationClientParameters,
+    output_model=SetElementNotificationClientResult,
+    identity=("tapir", "SetElementNotificationClient"),
 )
 
 
@@ -2766,6 +2993,8 @@ register_tool_for_dispatch(
         "changes with them) with their old and new values."
     ),
     params_model=SetGDLParametersOfElementsParameters,
+    output_model=SetGDLParametersOfElementsResult,
+    identity=("tapir", "SetGDLParametersOfElements"),
 )
 
 
@@ -2795,6 +3024,8 @@ register_tool_for_dispatch(
         "given stays unchanged. All changes are made in one undoable step."
     ),
     params_model=SetLinkedPropertyObjectsOfElementsParameters,
+    output_model=SetLinkedPropertyObjectsOfElementsResult,
+    identity=("tapir", "SetLinkedPropertyObjectsOfElements"),
 )
 
 
@@ -2824,6 +3055,8 @@ register_tool_for_dispatch(
         "afterwards; the opening's own settings are left as they are."
     ),
     params_model=SetMarkerLibraryPartOfElementsParameters,
+    output_model=SetMarkerLibraryPartOfElementsResult,
+    identity=("tapir", "SetMarkerLibraryPartOfElements"),
 )
 
 
@@ -2847,6 +3080,8 @@ register_tool_for_dispatch(
         "and the other marker parameters are left as they are."
     ),
     params_model=SetMarkerParametersOfElementsParameters,
+    output_model=SetMarkerParametersOfElementsResult,
+    identity=("tapir", "SetMarkerParametersOfElements"),
 )
 
 
@@ -2869,6 +3104,8 @@ register_tool_for_dispatch(
         "Called without polygon and box it removes the marquee."
     ),
     params_model=SetMarqueeParameters,
+    output_model=SetMarqueeResult,
+    identity=("tapir", "SetMarquee"),
 )
 
 
@@ -2891,6 +3128,8 @@ register_tool_for_dispatch(
         "settings change. Available from Archicad 29."
     ),
     params_model=SetOpeningDefaultParameters,
+    output_model=SetOpeningDefaultResult,
+    identity=("tapir", "SetOpeningDefault"),
 )
 
 
@@ -2915,6 +3154,8 @@ register_tool_for_dispatch(
         "anchor, offsets, surface overrides) returned by GetOpeningDetails. Available from Archicad 29."
     ),
     params_model=SetOpeningDetailsParameters,
+    output_model=SetOpeningDetailsResult,
+    identity=("tapir", "SetOpeningDetails"),
 )
 
 
@@ -2938,6 +3179,8 @@ register_tool_for_dispatch(
         "removes their cut and uncut symbols. Available from Archicad 29."
     ),
     params_model=SetOpeningFloorPlanParametersParameters,
+    output_model=SetOpeningFloorPlanParametersResult,
+    identity=("tapir", "SetOpeningFloorPlanParameters"),
 )
 
 
@@ -2961,6 +3204,8 @@ register_tool_for_dispatch(
         "SetGDLParametersOfElements. Only the given parameters are changed. Available from Archicad 29."
     ),
     params_model=SetOpeningSymbolParametersParameters,
+    output_model=SetOpeningSymbolParametersResult,
+    identity=("tapir", "SetOpeningSymbolParameters"),
 )
 
 
@@ -2986,6 +3231,8 @@ register_tool_for_dispatch(
         "holds a link."
     ),
     params_model=SetURLReferencesOfElementsParameters,
+    output_model=SetURLReferencesOfElementsResult,
+    identity=("tapir", "SetURLReferencesOfElements"),
 )
 
 
@@ -3008,6 +3255,8 @@ register_tool_for_dispatch(
         "settings are changed. Available from Archicad 28."
     ),
     params_model=SetZoneLabelingSettingsParameters,
+    output_model=SetZoneLabelingSettingsResult,
+    identity=("tapir", "SetZoneLabelingSettings"),
 )
 
 
@@ -3032,6 +3281,8 @@ register_tool_for_dispatch(
         "the baseline and the main stair settings after solving. Available from Archicad 27."
     ),
     params_model=SolveStairBaselineParameters,
+    output_model=SolveStairBaselineResult,
+    identity=("tapir", "SolveStairBaseline"),
 )
 
 
@@ -3071,6 +3322,8 @@ register_tool_for_dispatch(
         "unsupported one as an error naming its type. One undo step."
     ),
     params_model=SplitElementsParameters,
+    output_model=SplitElementsResult,
+    identity=("tapir", "SplitElements"),
 )
 
 
@@ -3081,9 +3334,6 @@ def triangulate_polygons_of_elements(conn_header: ConnHeader, params: Triangulat
     With convex: true, the faces of the 3D model of the elements (of any type) are decomposed into convex polygons
     instead, given by the 3D coordinates of their vertices. The output is aligned with the input array of elements; an
     element of another type gets an error item.
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
     """
     return conn_header.core.post_tapir_command(
         command="TriangulatePolygonsOfElements",
@@ -3103,7 +3353,8 @@ register_tool_for_dispatch(
         "input array of elements; an element of another type gets an error item."
     ),
     params_model=TriangulatePolygonsOfElementsParameters,
-    pagination_field="triangulations",
+    output_model=TriangulatePolygonsOfElementsResult,
+    identity=("tapir", "TriangulatePolygonsOfElements"),
 )
 
 
@@ -3126,6 +3377,8 @@ register_tool_for_dispatch(
         "link starting from fromElementId and pointing to toElementId is removed. Undoable."
     ),
     params_model=UnlinkElementsParameters,
+    output_model=UnlinkElementsResult,
+    identity=("tapir", "UnlinkElements"),
 )
 
 
@@ -3142,6 +3395,8 @@ register_tool_for_dispatch(
     title="UnlockElements",
     description="Unlocks the given elements. Manual lock, not teamwork!",
     params_model=UnlockElementsParameters,
+    output_model=UnlockElementsResult,
+    identity=("tapir", "UnlockElements"),
 )
 
 
@@ -3168,4 +3423,6 @@ register_tool_for_dispatch(
         "read with a later command."
     ),
     params_model=UpdateZonesParameters,
+    output_model=UpdateZonesResult,
+    identity=("tapir", "UpdateZones"),
 )

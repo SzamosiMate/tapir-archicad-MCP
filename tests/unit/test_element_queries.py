@@ -13,7 +13,9 @@ from multiconn_archicad.utilities.queries import TestRegistry as QueryTestRegist
 from multiconn_archicad.utilities.results.batch_results import BatchResult, BatchSlot
 from payloads import archicad_call_tool
 
+from tapir_archicad_mcp.result_reading import ReadSelection
 from tapir_archicad_mcp.tools.custom.functions import archicad_get_command_schema, archicad_list_commands
+from tapir_archicad_mcp.tools.custom.result_tools import result_read
 
 QUERY = {
     "schema_version": "1.0",
@@ -41,7 +43,7 @@ def test_discovery_schema_includes_query_tree_and_explicit_version(query_api):
     page = archicad_list_commands(keywords=["elements_query"]).result
     assert page.exact_matches[0].commands == ["elements_query"]
     schema = archicad_get_command_schema("elements_query").input_schema
-    assert set(schema["properties"]) == {"port", "params", "page_token"}
+    assert set(schema["properties"]) == {"port", "params"}
     assert set(schema["$defs"]["SerializedQuery"]["required"]) == {"schema_version", "where"}
     assert schema["$defs"]["ElementQueryParameters"]["additionalProperties"] is False
     for family in ("RealTest", "RealListTest"):
@@ -66,7 +68,11 @@ def test_discovery_schema_includes_query_tree_and_explicit_version(query_api):
 
 def test_discovery_schema_exposes_property_families_and_operand_shapes(query_api):
     definitions = archicad_get_command_schema("elements_query").input_schema["$defs"]
-    mapping = definitions["PropertyPredicate"]["properties"]["test"]["discriminator"]["mapping"]
+
+    def literal(schema):
+        return schema["anyOf"][0]
+
+    mapping = literal(definitions["PropertyPredicate"]["properties"]["test"])["discriminator"]["mapping"]
     for kind, family, value_type, item_type in (
         ("enum", "EnumTest", "string", None),
         ("guid", "GuidTest", "string", None),
@@ -76,12 +82,12 @@ def test_discovery_schema_exposes_property_families_and_operand_shapes(query_api
         ("real_list", "RealListTest", "array", "number"),
     ):
         assert mapping[kind] == f"#/$defs/{family}"
-        value_schema = definitions[family]["properties"]["value"]
+        value_schema = literal(definitions[family]["properties"]["value"])
         assert value_schema["type"] == value_type
         if item_type:
-            assert value_schema["items"]["type"] == item_type
-    assert definitions["GuidTest"]["properties"]["value"]["format"] == "uuid"
-    assert definitions["MultiEnumTest"]["properties"]["value"]["uniqueItems"] is True
+            assert literal(value_schema["items"])["type"] == item_type
+    assert literal(definitions["GuidTest"]["properties"]["value"])["format"] == "uuid"
+    assert literal(definitions["MultiEnumTest"]["properties"]["value"])["uniqueItems"] is True
 
 
 @pytest.mark.asyncio
@@ -107,7 +113,7 @@ async def test_property_operands_survive_mcp_validation_and_dispatch(query_api, 
     if supplied:
         request["params"]["elements"] = [element(1).model_dump(mode="json")]
         query_api.filter_elements_by_query_result.return_value = BatchResult((BatchSlot.success(element(1)),))
-    response = await archicad_call_tool("elements_query", request)
+    response = await archicad_call_tool("elements_query", request, resultMode="inline")
     assert response["elements"] == [element(1).model_dump(mode="json")]
     if supplied:
         query = query_api.filter_elements_by_query_result.call_args.args[1]
@@ -117,8 +123,7 @@ async def test_property_operands_survive_mcp_validation_and_dispatch(query_api, 
         query_api.filter_elements_by_query_result.assert_not_called()
     assert query.where.test.kind == kind
     assert query.where.test.value == parsed
-    # Pagination serializes the validated parameters to identify continuations.
-    # Verify that the parsed UUID/tuple operands stay valid executable JSON.
+    # Parsed UUIDs and tuple operands stay valid executable JSON.
     loaded = Query.model_validate_json(query.model_dump_json())
     assert loaded.model_dump(mode="json") == query.model_dump(mode="json")
 
@@ -186,7 +191,7 @@ async def test_enum_choices_are_validated_against_current_metadata(fake_archicad
         "test": {"kind": "multi_enum" if multi else "enum", "operator": "is", "value": [label] if multi else label},
     }
     if valid:
-        response = await archicad_call_tool("elements_query", request)
+        response = await archicad_call_tool("elements_query", request, resultMode="inline")
         assert response["elements"] == []
     else:
         with pytest.raises(ToolError, match="not a choice"):
@@ -199,7 +204,7 @@ async def test_enum_choices_are_validated_against_current_metadata(fake_archicad
 @pytest.mark.asyncio
 @pytest.mark.parametrize("params", [{}, {"elements": None}])
 async def test_search_uses_find_elements(query_api, params):
-    result = await archicad_call_tool("elements_query", arguments(**params))
+    result = await archicad_call_tool("elements_query", arguments(**params), resultMode="inline")
     assert result["elements"] == [element(1).model_dump(mode="json")]
     query = query_api.find_elements.call_args.args[0]
     assert isinstance(query, Query)
@@ -223,7 +228,7 @@ async def test_supplied_elements_preserve_matching_duplicates_and_omit_errors(qu
     )
     query_api.filter_elements_by_query_result.return_value = BatchResult(slots)
     result = await archicad_call_tool(
-        "elements_query", arguments(elements=[item.model_dump(mode="json") for item in candidates])
+        "elements_query", arguments(elements=[item.model_dump(mode="json") for item in candidates]), resultMode="inline"
     )
     assert result["elements"] == ([] if empty else [element(1).model_dump(mode="json")] * 2)
     assert query_api.filter_elements_by_query_result.call_args.args[0] == candidates
@@ -260,13 +265,13 @@ async def test_query_wide_failure_remains_an_error(query_api):
 
 
 @pytest.mark.asyncio
-async def test_pagination_reads_retained_matches_without_reexecution(query_api):
+async def test_query_handle_reads_retained_matches_without_reexecution(query_api):
     query_api.find_elements.return_value = [element(i) for i in range(1, 102)]
-    request = arguments()
-    first = await archicad_call_tool("elements_query", request)
-    assert len(first["elements"]) == 100
-    second = await archicad_call_tool("elements_query", {**request, "page_token": first["next_page_token"]})
-    assert second["elements"] == [element(101).model_dump(mode="json")]
+    first = await archicad_call_tool("elements_query", arguments())
+    assert first["summary"]["itemCount"] == 101
+    selection = ReadSelection(paths=[["elements"]], indices=[100])
+    read = (await result_read(first["resultHandle"], selection)).structured_content
+    assert read["entries"] == [{"path": ["elements", 100], "value": element(101).model_dump(mode="json")}]
     query_api.find_elements.assert_called_once()
 
 
@@ -286,7 +291,7 @@ async def test_dispatch_runs_real_multiconn_nested_query(fake_archicad):
     door = {"kind": "element_type", "test": {"kind": "element_type", "types": ["Door"]}}
     request = arguments()
     request["params"]["query"]["where"] = {"kind": "any", "items": [{"kind": "all", "items": [wall, door]}, wall]}
-    result = await archicad_call_tool("elements_query", request)
+    result = await archicad_call_tool("elements_query", request, resultMode="inline")
     assert result["elements"] == [element(1).model_dump(mode="json")]
     assert api.tapir.element.get_elements_by_type.call_args.args == (tapir.ElementType.WALL,)
     api.tapir.element.change_selection_of_elements.assert_not_called()
@@ -309,6 +314,6 @@ async def test_discovered_instance_does_not_need_batch_worklist_membership(query
     from tapir_archicad_mcp.context import multi_conn_instance
 
     multi_conn_instance.get().active = {}
-    result = await archicad_call_tool("elements_query", arguments())
+    result = await archicad_call_tool("elements_query", arguments(), resultMode="inline")
     assert result["elements"] == [element(1).model_dump(mode="json")]
     query_api.find_elements.assert_called_once()

@@ -28,6 +28,9 @@ def _clear_http_env(monkeypatch):
         "TAPIR_MCP_ASYNC_THRESHOLD_SECONDS",
         "TAPIR_MCP_JOB_TTL_SECONDS",
         "TAPIR_MCP_MAX_COMPLETED_JOBS",
+        "TAPIR_MCP_RESULT_AUTO_MAX_TOKENS",
+        "TAPIR_MCP_RESULT_INLINE_MAX_TOKENS",
+        "TAPIR_MCP_RESULT_INLINE_MAX_BYTES",
     ):
         monkeypatch.delenv(name, raising=False)
 
@@ -44,6 +47,7 @@ def test_server_defaults_configuration(monkeypatch, mock_server_run):
 
     # Run main entrypoint
     from tapir_archicad_mcp.server import main
+
     main()
 
     mock_server_run.assert_called_once_with(transport="stdio")
@@ -58,6 +62,7 @@ def test_http_transport_defaults_configuration(monkeypatch, mock_server_run):
     monkeypatch.setattr(sys, "argv", ["server.py", "--transport", "streamable-http"])
 
     from tapir_archicad_mcp.server import main
+
     main()
 
     mock_server_run.assert_called_once_with(
@@ -78,6 +83,7 @@ def test_server_env_fallback_configuration(monkeypatch, mock_server_run):
     monkeypatch.setattr(sys, "argv", ["server.py", "--transport", "streamable-http"])
 
     from tapir_archicad_mcp.server import main
+
     main()
 
     mock_server_run.assert_called_once_with(
@@ -107,11 +113,12 @@ def test_server_cli_override_configuration(monkeypatch, mock_server_run):
             "--port",
             "7070",
             "--mount-path",
-            "/cli-sse-path"
-        ]
+            "/cli-sse-path",
+        ],
     )
 
     from tapir_archicad_mcp.server import main
+
     main()
 
     # Assert CLI overrides took precedence over ENVs
@@ -151,21 +158,39 @@ def test_job_configuration_defaults_and_environment_cli_precedence(monkeypatch):
     monkeypatch.setenv("TAPIR_MCP_MAX_COMPLETED_JOBS", "20")
     args = parse_args()
     assert (args.async_threshold_seconds, args.job_ttl_seconds, args.max_completed_jobs) == (12.5, 3600, 20)
-    monkeypatch.setattr(sys, "argv", [
-        "server.py", "--async-threshold-seconds", "5", "--job-ttl-seconds", "0", "--max-completed-jobs", "2",
-    ])
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "server.py",
+            "--async-threshold-seconds",
+            "5",
+            "--job-ttl-seconds",
+            "0",
+            "--max-completed-jobs",
+            "2",
+        ],
+    )
     args = parse_args()
     assert (args.async_threshold_seconds, args.job_ttl_seconds, args.max_completed_jobs) == (5, 0, 2)
 
 
-@pytest.mark.parametrize("flag,value", [
-    ("--async-threshold-seconds", "0"), ("--async-threshold-seconds", "-1"),
-    ("--async-threshold-seconds", "nan"), ("--async-threshold-seconds", "inf"),
-    ("--async-threshold-seconds", "invalid"), ("--job-ttl-seconds", "-1"),
-    ("--job-ttl-seconds", "nan"), ("--job-ttl-seconds", "inf"),
-    ("--max-completed-jobs", "0"), ("--max-completed-jobs", "-1"),
-    ("--max-completed-jobs", "1.5"),
-])
+@pytest.mark.parametrize(
+    "flag,value",
+    [
+        ("--async-threshold-seconds", "0"),
+        ("--async-threshold-seconds", "-1"),
+        ("--async-threshold-seconds", "nan"),
+        ("--async-threshold-seconds", "inf"),
+        ("--async-threshold-seconds", "invalid"),
+        ("--job-ttl-seconds", "-1"),
+        ("--job-ttl-seconds", "nan"),
+        ("--job-ttl-seconds", "inf"),
+        ("--max-completed-jobs", "0"),
+        ("--max-completed-jobs", "-1"),
+        ("--max-completed-jobs", "1.5"),
+    ],
+)
 def test_invalid_job_configuration_fails_at_startup(monkeypatch, flag, value):
     from tapir_archicad_mcp.server import parse_args
 
@@ -196,3 +221,28 @@ def test_invalid_environment_is_rejected(monkeypatch):
     monkeypatch.setattr(sys, "argv", ["server.py"])
     with pytest.raises(SystemExit):
         parse_args()
+
+
+def test_result_budget_cli_overrides_environment_and_validates_order(monkeypatch):
+    from tapir_archicad_mcp.server import parse_args
+
+    _clear_http_env(monkeypatch)
+    monkeypatch.setattr(sys, "argv", ["server.py"])
+    args = parse_args()
+    assert (args.result_auto_max_tokens, args.result_inline_max_tokens, args.result_inline_max_bytes) == (
+        8000,
+        32000,
+        131072,
+    )
+    monkeypatch.setenv("TAPIR_MCP_RESULT_INLINE_MAX_TOKENS", "300")
+    monkeypatch.setenv("TAPIR_MCP_RESULT_AUTO_MAX_TOKENS", "1000")
+    monkeypatch.setenv("TAPIR_MCP_RESULT_INLINE_MAX_BYTES", "10000")
+    with pytest.raises(SystemExit):
+        parse_args()
+    monkeypatch.setattr(sys, "argv", ["server.py", "--result-auto-max-tokens", "300"])
+    args = parse_args()
+    assert (args.result_auto_max_tokens, args.result_inline_max_tokens, args.result_inline_max_bytes) == (
+        300,
+        300,
+        10000,
+    )

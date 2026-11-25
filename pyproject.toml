@@ -30,6 +30,7 @@ classifiers = [
 dependencies = [
     "mcp>=2,<3",
     "multiconn-archicad==0.10.0",
+    "tiktoken>=0.14.0",
     "uvicorn>=0.35.0",
 ]
 

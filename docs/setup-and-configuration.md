@@ -75,8 +75,11 @@ Pass flags to `archicad-server` after its name, or set the corresponding environ
 | `--mount-path` | `TAPIR_MCP_MOUNT_PATH` | None | Optional SSE route prefix |
 | `--token` | `TAPIR_MCP_TOKEN` | None | Optional bearer token for HTTP; ignored for stdio |
 | `--async-threshold-seconds` | `TAPIR_MCP_ASYNC_THRESHOLD_SECONDS` | `45` | Maximum wait before returning a running job handle |
-| `--job-ttl-seconds` | `TAPIR_MCP_JOB_TTL_SECONDS` | `86400` | Finished job and page lifetime; `0` disables age expiry |
+| `--job-ttl-seconds` | `TAPIR_MCP_JOB_TTL_SECONDS` | `86400` | Lifetime of finished jobs and their results. Set to `0` to disable age expiry. |
 | `--max-completed-jobs` | `TAPIR_MCP_MAX_COMPLETED_JOBS` | `128` | Maximum retained finished jobs |
+| `--result-auto-max-tokens` | `TAPIR_MCP_RESULT_AUTO_MAX_TOKENS` | `8000` | Reference token limit for automatic inline delivery and result reads |
+| `--result-inline-max-tokens` | `TAPIR_MCP_RESULT_INLINE_MAX_TOKENS` | `32000` | Reference token limit for explicit inline delivery |
+| `--result-inline-max-bytes` | `TAPIR_MCP_RESULT_INLINE_MAX_BYTES` | `131072` | Independent byte limit for inline JSON and result reads |
 
 ## HTTP transports
 
@@ -94,7 +97,7 @@ The HTTP server's port is separate from the port identifying an Archicad instanc
 
 ### Element queries
 
-With Tapir 2.0.0 or newer, ask your assistant to find elements by type, property values, or classification. For example, ask it to find exterior walls with a fire rating of at least 60 minutes using the properties available in your project. The `elements_query` command accepts nested AND/OR conditions and returns matching element IDs in pages when needed.
+With Tapir 2.0.0 or newer, ask your assistant to find elements by type, property values, or classification. For example, ask it to find exterior walls with a fire rating of at least 60 minutes using the properties available in your project. The `elements_query` command accepts nested AND/OR conditions and returns a reusable handle to the matching element IDs in automatic mode.
 
 By default, the command searches the floor plan. Pass `params.elements` to filter a list of candidate IDs while preserving their order and duplicate matches. An empty candidate list yields no matches.
 
@@ -112,6 +115,33 @@ Call `archicad_get_job(job_handle="job:83af21...")` to check it; repeat while th
 
 If a response is lost, call `archicad_get_job()` to list recent jobs before repeating a command that changes the project. Cancelling a request does not stop a command already started, and retrying it may duplicate changes. Jobs remain available across HTTP client reconnects while the server is running, but are lost on restart. Finished jobs expire after 24 hours by default, with at most 128 retained.
 
-### Pagination
+### Reusing and reading results
 
-Some commands return results in pages. If a result includes `next_page_token`, call `archicad_call_tool` again with the same command and arguments, adding `page_token` to the arguments dictionary. Repeat until there is no next token. Page snapshots share the job retention settings and do not survive a server restart.
+Set `resultMode` alongside the `name` and `arguments` of `archicad_call_tool`. `auto` returns small informative results inline and delivers large results, bare ID lists, and many acknowledgement batches by handle. `inline` requests inline data up to the configured byte and token limits. If either limit is exceeded, the response includes a result handle and the reason. `handle` always returns a result handle on successful completion. A slow command first returns a job handle in any mode. Poll with `archicad_get_job` to receive the originally requested delivery mode.
+
+A fast inline response contains the command data directly. A completed inline poll puts the same data in its `result` field. Handle delivery includes `resultHandle` and a summary.
+
+The server counts reference tokens locally using the bundled `o200k_base` encoding and compact JSON. These counts estimate context use. CLI flags override environment values. Limits must be positive, and the automatic token limit must be at most the explicit inline token limit.
+
+To pass stored element IDs from `elements_get_selected_elements` or `elements_query` into `elements_get_details_of_elements`, use this execution request with your result handle and port.
+
+```json
+{
+  "name": "elements_get_details_of_elements",
+  "resultMode": "handle",
+  "arguments": {
+    "port": 19723,
+    "params": {"elements": {"$handle": "result:example", "path": ["elements"]}}
+  }
+}
+```
+
+Paths use field names and zero-based indices. Omit a path to select the root. Declared positional arrays contain records with `coordinate` and `state`. A successful record contains `value` and a failed record contains `error`. Selecting the batch field as a command argument passes its successful values or the identifiers declared by its contract. For an acknowledgement batch, add `"view": "inputs"` to the reference to pass the successful originating inputs or their declared identifiers. Chaining into another aligned command preserves positions. Previously failed slots become `upstream_failed` and filtered slots stay `filtered`. Request `include_output: true` on `archicad_get_command_schema` to see the command data schema.
+
+For a property grid, call `properties_read_grid` with ordered `elements` and `properties` and use `resultMode: "handle"`. Values are strings. `useSIUnits: true` requests SI quantities with angles in degrees. To write the successful cells, pass `"params": {"grid": {"$handle": "result:example"}}` to `properties_write_grid`. The write keeps the original row and column coordinates and reports each attempted write independently.
+
+To inspect a snapshot, call `result_read` with `resultHandle` and a selection, for example `{"paths": [["detailsOfElements"]], "view": "errors"}` or `{"rows": [0, 2], "columns": {"start": 1, "stop": 3}, "view": "outcomes"}`. Ranges have exclusive stops. Repeat the same selection with the returned `continuation` while `truncated` is true. Each entry identifies its original path. A large object can span several entries at child paths, and a long string can span entries with character offsets.
+
+Handle summaries group errors by category and Archicad code. Counts distinguish failed items or cells, failures inherited from an earlier command, and intentionally filtered positions. Matrix summaries also report affected rows and whole-row errors. If there are more groups than fit in the summary, use the omitted counts and inspect the errors through `result_read`.
+
+Clients migrating from `page_token` and `next_page_token` can request `resultMode: "handle"` once and read the retained result through `result_read`. Both handles expire together, and retained results can be read after the original Archicad instance closes.

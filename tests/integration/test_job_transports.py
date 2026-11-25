@@ -161,7 +161,7 @@ async def test_jobs_survive_other_clients_and_reconnect_with_no_clients(worker, 
     async with live_server(transport, token) as url:
         try:
             async with connect_session(url, transport, token) as first:
-                promoted = payload(await first.call_tool("archicad_call_tool", ARGUMENTS))
+                promoted = payload(await first.call_tool("archicad_call_tool", {**ARGUMENTS, "resultMode": "handle"}))
                 handle = promoted["jobHandle"]
                 assert entered.is_set()
                 async with connect_session(url, transport, token) as second:
@@ -177,11 +177,19 @@ async def test_jobs_survive_other_clients_and_reconnect_with_no_clients(worker, 
             # Finish while the application has no connected clients.
             release.set()
             async with connect_session(url, transport, token) as reconnected:
-                assert await completed_response(reconnected, handle) == {
-                    "jobHandle": handle,
-                    "status": "completed",
-                    "result": {"dispatchCount": 1},
-                }
+                finished = await completed_response(reconnected, handle)
+                assert finished["jobHandle"] == handle and finished["status"] == "completed"
+                assert "result" not in finished and finished["resultHandle"].startswith("result:")
+                retained = payload(
+                    await reconnected.call_tool(
+                        "result_read",
+                        {
+                            "resultHandle": finished["resultHandle"],
+                            "selection": {"paths": [["dispatchCount"]]},
+                        },
+                    )
+                )
+                assert retained["entries"] == [{"path": ["dispatchCount"], "value": 1}]
         finally:
             release.set()
     assert len(calls) == 1
@@ -218,8 +226,9 @@ async def test_expected_job_errors_reach_http_clients(worker, monkeypatch, trans
                         "name": "elements_get_selected_elements",
                         "arguments": {"port": 19723, "page_token": "forged"},
                     },
-                    "Invalid or expired page_token",
+                    "Invalid arguments",
                 ),
+                ("result_read", {"resultHandle": "result:forged"}, "Unknown or expired resultHandle"),
             ]:
                 error = await session.call_tool(name, arguments)
                 assert error.is_error and expected in error.content[0].text
@@ -245,8 +254,8 @@ async def test_expected_job_errors_reach_http_clients(worker, monkeypatch, trans
         (AddOnCommandUnavailable("Unknown Add-On command."), "upgrade Tapir"),
         (APIConnectionError("Connection lost"), "Connection lost"),
         (TapirCommandError("Rejected", 7), "Rejected"),
-        (RuntimeError("private internal detail"), "Error executing tool archicad_call_tool"),
-        (ValueError("private internal detail"), "Error executing tool archicad_call_tool"),
+        (RuntimeError("private internal detail"), "Unexpected execution error"),
+        (ValueError("private internal detail"), "Unexpected execution error"),
     ],
 )
 async def test_immediate_errors_expose_expected_messages_and_hide_unexpected_details(worker, error, expected):

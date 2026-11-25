@@ -2,31 +2,58 @@
 from multiconn_archicad import ConnHeader
 from multiconn_archicad.models.tapir.commands import (
     ApplyFavoritesToElementDefaultsParameters,
+    ApplyFavoritesToElementDefaultsResult,
     ApplyFavoritesToElementsParameters,
+    ApplyFavoritesToElementsResult,
     ApplyFavoriteToToolDefaultParameters,
+    ApplyFavoriteToToolDefaultResult,
     ChangeFavoriteParameters,
+    ChangeFavoriteResult,
     CreateFavoriteFolderParameters,
+    CreateFavoriteFolderResult,
     CreateFavoriteParameters,
+    CreateFavoriteResult,
     CreateFavoritesFromElementsParameters,
+    CreateFavoritesFromElementsResult,
     DeleteFavoriteFolderParameters,
+    DeleteFavoriteFolderResult,
     DeleteFavoritesParameters,
+    DeleteFavoritesResult,
     DeleteFavoritesWithManagerParameters,
+    DeleteFavoritesWithManagerResult,
     ExportFavoritesParameters,
+    ExportFavoritesResult,
     GetAllFavoritesParameters,
+    GetAllFavoritesResult,
     GetFavoriteContentsParameters,
+    GetFavoriteContentsResult,
     GetFavoriteDefaultsParameters,
+    GetFavoriteDefaultsResult,
     GetFavoriteDetailsParameters,
+    GetFavoriteDetailsResult,
+    GetFavoriteFoldersResult,
     GetFavoritePreviewImageParameters,
+    GetFavoritePreviewImageResult,
     GetFavoritesByTypeParameters,
+    GetFavoritesByTypeResult,
     GetFavoriteSettingsParameters,
+    GetFavoriteSettingsResult,
     ImportFavoritesParameters,
+    ImportFavoritesResult,
     MoveFavoriteFolderParameters,
+    MoveFavoriteFolderResult,
     MoveFavoritesParameters,
+    MoveFavoritesResult,
     ReadFavoritesFileParameters,
+    ReadFavoritesFileResult,
     RenameFavoriteFolderParameters,
+    RenameFavoriteFolderResult,
     RenameFavoritesParameters,
+    RenameFavoritesResult,
     SearchFavoritesParameters,
+    SearchFavoritesResult,
     UpdateFavoritesFromElementsParameters,
+    UpdateFavoritesFromElementsResult,
 )
 
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
@@ -52,6 +79,8 @@ register_tool_for_dispatch(
         "Available from Archicad 29."
     ),
     params_model=ApplyFavoriteToToolDefaultParameters,
+    output_model=ApplyFavoriteToToolDefaultResult,
+    identity=("tapir", "ApplyFavoriteToToolDefault"),
 )
 
 
@@ -71,6 +100,8 @@ register_tool_for_dispatch(
     title="ApplyFavoritesToElementDefaults",
     description="Apply the given favorites to element defaults.",
     params_model=ApplyFavoritesToElementDefaultsParameters,
+    output_model=ApplyFavoritesToElementDefaultsResult,
+    identity=("tapir", "ApplyFavoritesToElementDefaults"),
 )
 
 
@@ -110,6 +141,8 @@ register_tool_for_dispatch(
         "type that matches the filter."
     ),
     params_model=ApplyFavoritesToElementsParameters,
+    output_model=ApplyFavoritesToElementsResult,
+    identity=("tapir", "ApplyFavoritesToElements"),
 )
 
 
@@ -132,6 +165,8 @@ register_tool_for_dispatch(
         "from Archicad 29."
     ),
     params_model=ChangeFavoriteParameters,
+    output_model=ChangeFavoriteResult,
+    identity=("tapir", "ChangeFavorite"),
 )
 
 
@@ -156,6 +191,8 @@ register_tool_for_dispatch(
         "Favorite's settings or create the new one under a free name. Available from Archicad 29."
     ),
     params_model=CreateFavoriteParameters,
+    output_model=CreateFavoriteResult,
+    identity=("tapir", "CreateFavorite"),
 )
 
 
@@ -178,6 +215,8 @@ register_tool_for_dispatch(
         "Available from Archicad 29."
     ),
     params_model=CreateFavoriteFolderParameters,
+    output_model=CreateFavoriteFolderResult,
+    identity=("tapir", "CreateFavoriteFolder"),
 )
 
 
@@ -195,6 +234,8 @@ register_tool_for_dispatch(
     title="CreateFavoritesFromElements",
     description="Create favorites from the given elements.",
     params_model=CreateFavoritesFromElementsParameters,
+    output_model=CreateFavoritesFromElementsResult,
+    identity=("tapir", "CreateFavoritesFromElements"),
 )
 
 
@@ -219,6 +260,8 @@ register_tool_for_dispatch(
         "cannot be deleted. Returns the deleted folder. Available from Archicad 29."
     ),
     params_model=DeleteFavoriteFolderParameters,
+    output_model=DeleteFavoriteFolderResult,
+    identity=("tapir", "DeleteFavoriteFolder"),
 )
 
 
@@ -235,6 +278,8 @@ register_tool_for_dispatch(
     title="DeleteFavorites",
     description="Delete existing favorites.",
     params_model=DeleteFavoritesParameters,
+    output_model=DeleteFavoritesResult,
+    identity=("tapir", "DeleteFavorites"),
 )
 
 
@@ -258,6 +303,8 @@ register_tool_for_dispatch(
         "folder. One execution result for each. Available from Archicad 29."
     ),
     params_model=DeleteFavoritesWithManagerParameters,
+    output_model=DeleteFavoritesWithManagerResult,
+    identity=("tapir", "DeleteFavoritesWithManager"),
 )
 
 
@@ -282,6 +329,8 @@ register_tool_for_dispatch(
         "export to a single file refuses to replace an existing file."
     ),
     params_model=ExportFavoritesParameters,
+    output_model=ExportFavoritesResult,
+    identity=("tapir", "ExportFavorites"),
 )
 
 
@@ -289,9 +338,6 @@ def get_all_favorites(conn_header: ConnHeader, params: GetAllFavoritesParameters
     """
     Returns every Favorite of the project, or only those of the given element type, with its name and element type.
     Available from Archicad 29.
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
     """
     return conn_header.core.post_tapir_command(
         command="GetAllFavorites", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -307,7 +353,8 @@ register_tool_for_dispatch(
         "type. Available from Archicad 29."
     ),
     params_model=GetAllFavoritesParameters,
-    pagination_field="favorites",
+    output_model=GetAllFavoritesResult,
+    identity=("tapir", "GetAllFavorites"),
 )
 
 
@@ -316,9 +363,6 @@ def get_favorite_contents(conn_header: ConnHeader, params: GetFavoriteContentsPa
     Returns the Favorites of a folder of the Favorites palette and of its subfolders (every Favorite when no folder is
     given), each with its folder path, classifications, element category values and property values, read through the
     Favorite manager. Available from Archicad 29.
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
     """
     return conn_header.core.post_tapir_command(
         command="GetFavoriteContents", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -335,7 +379,8 @@ register_tool_for_dispatch(
         "read through the Favorite manager. Available from Archicad 29."
     ),
     params_model=GetFavoriteContentsParameters,
-    pagination_field="favorites",
+    output_model=GetFavoriteContentsResult,
+    identity=("tapir", "GetFavoriteContents"),
 )
 
 
@@ -363,6 +408,8 @@ register_tool_for_dispatch(
         "from Archicad 29."
     ),
     params_model=GetFavoriteDefaultsParameters,
+    output_model=GetFavoriteDefaultsResult,
+    identity=("tapir", "GetFavoriteDefaults"),
 )
 
 
@@ -387,6 +434,8 @@ register_tool_for_dispatch(
         "default-value flag; the value itself is only returned when it has been evaluated."
     ),
     params_model=GetFavoriteDetailsParameters,
+    output_model=GetFavoriteDetailsResult,
+    identity=("tapir", "GetFavoriteDetails"),
 )
 
 
@@ -407,6 +456,8 @@ register_tool_for_dispatch(
         "the names of the Favorites in it. Available from Archicad 29."
     ),
     params_model=None,
+    output_model=GetFavoriteFoldersResult,
+    identity=("tapir", "GetFavoriteFolders"),
 )
 
 
@@ -423,6 +474,8 @@ register_tool_for_dispatch(
     title="GetFavoritePreviewImage",
     description="Returns the preview image of the given favorite.",
     params_model=GetFavoritePreviewImageParameters,
+    output_model=GetFavoritePreviewImageResult,
+    identity=("tapir", "GetFavoritePreviewImage"),
     image_field="previewImage",
 )
 
@@ -433,9 +486,6 @@ def get_favorite_settings(conn_header: ConnHeader, params: GetFavoriteSettingsPa
     folder, the library part and GDL parameters, the marker (library part and parameters) of Window and Door favorites,
     and the sub-elements. A favorite without a marker has no marker field, which is not an error. The other settings of
     the element (pens, layer, structure, etc.) are not returned.
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
     """
     return conn_header.core.post_tapir_command(
         command="GetFavoriteSettings", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -453,7 +503,8 @@ register_tool_for_dispatch(
         "The other settings of the element (pens, layer, structure, etc.) are not returned."
     ),
     params_model=GetFavoriteSettingsParameters,
-    pagination_field="favoriteSettings",
+    output_model=GetFavoriteSettingsResult,
+    identity=("tapir", "GetFavoriteSettings"),
 )
 
 
@@ -470,6 +521,8 @@ register_tool_for_dispatch(
     title="GetFavoritesByType",
     description="Returns a list of the names of all favorites with the given element type",
     params_model=GetFavoritesByTypeParameters,
+    output_model=GetFavoritesByTypeResult,
+    identity=("tapir", "GetFavoritesByType"),
 )
 
 
@@ -496,6 +549,8 @@ register_tool_for_dispatch(
         "Teamwork project the Favorites lockable object set must be reserved first (see ReserveLockableObjectSet)."
     ),
     params_model=ImportFavoritesParameters,
+    output_model=ImportFavoritesResult,
+    identity=("tapir", "ImportFavorites"),
 )
 
 
@@ -519,6 +574,8 @@ register_tool_for_dispatch(
         "Archicad 29."
     ),
     params_model=MoveFavoriteFolderParameters,
+    output_model=MoveFavoriteFolderResult,
+    identity=("tapir", "MoveFavoriteFolder"),
 )
 
 
@@ -541,6 +598,8 @@ register_tool_for_dispatch(
         "execution result for each Favorite. Available from Archicad 29."
     ),
     params_model=MoveFavoritesParameters,
+    output_model=MoveFavoritesResult,
+    identity=("tapir", "MoveFavorites"),
 )
 
 
@@ -565,6 +624,8 @@ register_tool_for_dispatch(
         "before ImportFavorites."
     ),
     params_model=ReadFavoritesFileParameters,
+    output_model=ReadFavoritesFileResult,
+    identity=("tapir", "ReadFavoritesFile"),
 )
 
 
@@ -587,6 +648,8 @@ register_tool_for_dispatch(
         "renamed folder. Available from Archicad 29."
     ),
     params_model=RenameFavoriteFolderParameters,
+    output_model=RenameFavoriteFolderResult,
+    identity=("tapir", "RenameFavoriteFolder"),
 )
 
 
@@ -603,6 +666,8 @@ register_tool_for_dispatch(
     title="RenameFavorites",
     description="Rename existing favorites.",
     params_model=RenameFavoritesParameters,
+    output_model=RenameFavoritesResult,
+    identity=("tapir", "RenameFavorites"),
 )
 
 
@@ -619,6 +684,8 @@ register_tool_for_dispatch(
     title="SearchFavorites",
     description="Searches project favorites by keyword (matching favorite name or folder) and/or element type.",
     params_model=SearchFavoritesParameters,
+    output_model=SearchFavoritesResult,
+    identity=("tapir", "SearchFavorites"),
 )
 
 
@@ -636,4 +703,6 @@ register_tool_for_dispatch(
     title="UpdateFavoritesFromElements",
     description="Update existing favorites from the given elements.",
     params_model=UpdateFavoritesFromElementsParameters,
+    output_model=UpdateFavoritesFromElementsResult,
+    identity=("tapir", "UpdateFavoritesFromElements"),
 )

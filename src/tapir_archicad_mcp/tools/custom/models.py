@@ -66,4 +66,11 @@ class CommandSchema(BaseModel):
     """The detailed JSON schema required to execute a specific Archicad command."""
 
     name: str = Field(description="The name of the command.")
-    input_schema: dict[str, Any] = Field(description="The JSON schema outlining the required arguments for archicad_call_tool.")
+    input_schema: dict[str, Any] = Field(
+        description="The JSON schema outlining the required arguments for archicad_call_tool."
+    )
+    output_schema: dict[str, Any] | None = Field(
+        default=None,
+        exclude_if=lambda value: value is None,
+        description="Schema for command data, separate from job and result handle delivery.",
+    )

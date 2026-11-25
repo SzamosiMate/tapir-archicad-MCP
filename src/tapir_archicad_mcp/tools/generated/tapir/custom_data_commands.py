@@ -2,7 +2,9 @@
 from multiconn_archicad import ConnHeader
 from multiconn_archicad.models.tapir.commands import (
     GetElementUserDataParameters,
+    GetElementUserDataResult,
     SetElementUserDataParameters,
+    SetElementUserDataResult,
 )
 
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
@@ -23,6 +25,8 @@ register_tool_for_dispatch(
         "Reads the values stored on elements by SetElementUserData: every key of each element, or only the given keys."
     ),
     params_model=GetElementUserDataParameters,
+    output_model=GetElementUserDataResult,
+    identity=("tapir", "GetElementUserData"),
 )
 
 
@@ -53,4 +57,6 @@ register_tool_for_dispatch(
         "other's data. One undo step per call; in a Teamwork project the element has to be reserved."
     ),
     params_model=SetElementUserDataParameters,
+    output_model=SetElementUserDataResult,
+    identity=("tapir", "SetElementUserData"),
 )

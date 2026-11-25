@@ -64,7 +64,7 @@ Available commands depend on your installed Archicad and Tapir versions. Instanc
 
 ## Documentation
 
-See [Setup and configuration](docs/setup-and-configuration.md) for client setup, troubleshooting, server options, HTTP transports, jobs, and pagination.
+See [Setup and configuration](docs/setup-and-configuration.md) for client setup, troubleshooting, server options, HTTP transports, and reusable command results.
 
 See [Command discovery](docs/command-discovery.md) for keyword search, follow-up searches, and benchmarks.
 
@@ -83,7 +83,7 @@ Replace `<project>` with the absolute path to your checkout. This runs the local
 
 ### Generated commands
 
-The Archicad command wrappers in `src/tapir_archicad_mcp/tools/generated/` are generated from the exact `multiconn-archicad` version pinned in `pyproject.toml`. The generator reads command metadata from that release's Git tag; `scripts/generator_config.py` controls naming, exclusions, pagination, and image handling, and `scripts/generate_tools.py` produces the wrappers. To change generated behavior, review the generator and its configuration rather than only editing the generated files, since regeneration can overwrite those edits.
+The Archicad command wrappers in `src/tapir_archicad_mcp/tools/generated/` are generated from the exact `multiconn-archicad` version pinned in `pyproject.toml`. See [Command metadata maintenance](.agents/skills/tapir-command-metadata/SKILL.md) for reviewing contracts and regenerating wrappers.
 
 ### Contributions
 

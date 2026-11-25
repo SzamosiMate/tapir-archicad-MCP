@@ -30,17 +30,19 @@ MULTICONN_SOURCE_URL = (
 )
 ORGANIZED_COMMANDS_URL = f"{MULTICONN_SOURCE_URL}/unified/temp_files/01_organized_commands.json"
 
+
 @dataclass
 class ApiSourceConfig:
     """Configuration settings for a single API source."""
+
     name: str
     details_url: str
     model_names_url: str
+    schema_url: str
     output_dir: Path
     api_call_method: str
     group_mapping: dict[str, str]
     prefix_to_strip: str = ""
-    paginated_commands: dict[str, str] = field(default_factory=dict)
     image_fields: dict[str, str | tuple[str, ...]] = field(default_factory=dict)
     image_lists: dict[str, str | tuple[str, ...]] = field(default_factory=dict)
     commands_to_exclude: set[str] = field(default_factory=set)
@@ -50,6 +52,7 @@ TAPIR_CONFIG = ApiSourceConfig(
     name="tapir",
     details_url=ORGANIZED_COMMANDS_URL,
     model_names_url=f"{MULTICONN_SOURCE_URL}/tapir/schema/_command_model_names.json",
+    schema_url=f"{MULTICONN_SOURCE_URL}/tapir/schema/tapir_master_schema.json",
     output_dir=ROOT_DIR / "src" / "tapir_archicad_mcp" / "tools" / "generated" / "tapir",
     api_call_method="post_tapir_command",
     group_mapping={
@@ -59,7 +62,6 @@ TAPIR_CONFIG = ApiSourceConfig(
         "Element Commands": "elements",
         "Element grouping Commands": "grouping",
         "Solid Element Operation Commands": "solid_ops",
-
         # Domain specifics
         "MEP Commands": "mep",
         "MEP Commands (extended)": "mep",
@@ -72,7 +74,6 @@ TAPIR_CONFIG = ApiSourceConfig(
         "Graphic Override Commands": "attributes",
         "Favorites Commands": "favorites",
         "Library Commands": "library",
-
         # Project & App structure
         "Application Commands": "app",
         "Project Commands": "project",
@@ -124,65 +125,6 @@ TAPIR_CONFIG = ApiSourceConfig(
         "ShowIFCExportSettings",  # Application UI workflow
         "SetCurrent3DStyle",  # Always refuses; upstream API crashes Archicad
     },
-    paginated_commands={
-        "GetAllElements": "elements",
-        "GetSelectedElements": "elements",
-        "GetAllProperties": "properties",
-        "GetAttributesByType": "attributes",
-        "GetIssues": "issues",
-        "GetElementsByIFCIds": "elementsByIFCIds",
-        "GetMEPElements": "elements",
-        "GetAvailableLibraryParts": "libraryParts",
-        "GetPropertyValuesOfElements": "propertyValuesForElements",
-        "GetIFCPropertiesOfElements": "elementIFCProperties",
-        "GetRelationsOfElements": "relations",
-        "GetMEPRoutingElements": "routingElements",
-        "GetCollisions": "collisions",
-        "GetGDLParametersOfElements": "gdlParametersOfElements",
-        "Get3DGeometryOfElements": "geometries3D",
-        "GetQuantitiesOfElements": "quantitiesOfElements",
-        "GetGridElements": "gridElements",
-        "GetGraphicOverrideCombinations": "graphicOverrideCombinations",
-        "GetGraphicOverrideRuleGroups": "graphicOverrideRuleGroups",
-        "GetGraphicOverrideRules": "graphicOverrideRules",
-        "GetElectricalCircuits": "electricalCircuits",
-        "GetElectricalDevices": "electricalDevices",
-        "GetElectricalPanels": "electricalPanels",
-        "GetMEPSystemGroups": "systemGroups",
-        "GetDetailsOfElements": "detailsOfElements",
-        "GetHotlinks": "hotlinks",
-        "GetMarkerParametersOfElements": "markerParametersOfElements",
-        "GetSubelementsOfHierarchicalElements": "subelements",
-        "GetAllFavorites": "favorites",
-        "GetCategoryValuesOfElements": "categoryValuesOfElements",
-        "GetDatabases": "databases",
-        "GetElementSetsOfElements": "elementSetsOfElements",
-        "GetElementsInDrawOrder": "elements",
-        "GetFavoriteSettings": "favoriteSettings",
-        "GetGraphicOverrideRulesByName": "graphicOverrideRules",
-        "GetHotlinkProxyElementTable": "proxyElementTables",
-        "GetIFCAttributesOfElements": "elementIFCAttributes",
-        "GetLinksOfElements": "linksOfElements",
-        "GetOpeningDetails": "openings",
-        "GetOpeningFloorPlanParameters": "openings",
-        "GetProjectData": "values",
-        "GetProjectDataKeys": "keys",
-        "GetPropertyDefinitionsOfAttributes": "propertyDefinitionsOfAttributes",
-        "GetSurfaceQuantitiesOfElements": "surfaceQuantitiesOfElements",
-        "GetUserDataOfGroups": "userDataOfGroups",
-        "GetZoneReductions": "reductionsOfZones",
-        "TriangulatePolygonsOfElements": "triangulations",
-        "GetAnalyticalMemberDetails": "analyticalMembers",
-        "GetElementConnections": "connections",
-        "GetElementsInCreationOrder": "elements",
-        "GetPropertyValuesOfElementComponents": "propertyValuesForElementComponents",
-        "FindLibraryParts": "libraryParts",
-        "GetElementsByCriteria": "elements",
-        "GetFavoriteContents": "favorites",
-        "GetLibraryPart2DPrimitives": "primitives",
-        "GetMissingAttributes": "missingAttributes",
-        "GetUnusedLibraryParts": "unusedLibraryParts",
-    },
     image_fields={
         "GetElementPreviewImage": "previewImage",
         "GetFavoritePreviewImage": "previewImage",
@@ -201,6 +143,7 @@ OFFICIAL_CONFIG = ApiSourceConfig(
     name="official",
     details_url=ORGANIZED_COMMANDS_URL,
     model_names_url=f"{MULTICONN_SOURCE_URL}/official/schema/_command_model_names.json",
+    schema_url=f"{MULTICONN_SOURCE_URL}/official/schema/official_api_master_schema.json",
     output_dir=ROOT_DIR / "src" / "tapir_archicad_mcp" / "tools" / "generated" / "official",
     api_call_method="post_command",
     prefix_to_strip="API.",
@@ -244,11 +187,6 @@ OFFICIAL_CONFIG = ApiSourceConfig(
         "GetSurfaceAttributes",  # Tapir adds texture transforms and alpha settings
         "RenameNavigatorItem",  # Tapir also supports customName
         "GetNavigatorItemTree",  # Tapir adds source links and custom-name/ID flags
-    },
-    paginated_commands={
-        "GetAllPropertyIds": "propertyIds",
-        "GetAllPropertyNames": "properties",
-        "GetDetailsOfProperties": "propertyDefinitions",
     },
     image_lists={
         "GetProfileAttributePreview": "previewImages",

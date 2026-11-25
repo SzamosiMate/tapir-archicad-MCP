@@ -1,6 +1,5 @@
 import asyncio
 import inspect
-import json
 import logging
 from typing import Annotated, Any
 
@@ -16,14 +15,13 @@ from multiconn_archicad import (
     TeamworkProjectID,
 )
 from multiconn_archicad.errors import AddOnCommandUnavailable, APIErrorBase
-from pydantic import ValidationError
 
 from tapir_archicad_mcp.app import mcp
 from tapir_archicad_mcp.context import job_store_instance, multi_conn_instance
-from tapir_archicad_mcp.images import build_result, extract_images, to_tool_result
-from tapir_archicad_mcp.jobs import JobStore
-from tapir_archicad_mcp.pagination import PaginationRequest, prepare_result
+from tapir_archicad_mcp.images import build_result
+from tapir_archicad_mcp.jobs import JobStatus, arguments_preview
 from tapir_archicad_mcp.request_lifecycle import DispatchLifecycle
+from tapir_archicad_mcp.tool_results import ResultMode, complete, deliver
 from tapir_archicad_mcp.tools.custom.command_discovery import archicad_list_commands, command_groups
 from tapir_archicad_mcp.tools.custom.models import (
     CommandSchema,
@@ -32,13 +30,15 @@ from tapir_archicad_mcp.tools.custom.models import (
     ReadyInstance,
     UnavailableInstance,
 )
+from tapir_archicad_mcp.tools.normalization import normalize
+from tapir_archicad_mcp.tools.preparation import PreparedCall, prepare_call
 from tapir_archicad_mcp.tools.tool_registry import (
     TOOL_DISCOVERY_CATALOG,
     ToolRegistryEntry,
     get_tool_entry,
     get_tool_input_schema,
+    get_tool_output_schema,
 )
-from tapir_archicad_mcp.validation_errors import format_validation_error
 
 log = logging.getLogger()
 
@@ -75,7 +75,11 @@ def list_active_archicads() -> DiscoveryResult:
     for port, header in multi_conn.open_port_headers.items():
         if not isinstance(header.product_info, ProductInfo):
             unavailable_instances.append(_build_unresponsive_instance(header.product_info))
-        elif not isinstance(header.tapir_info, TapirInfo) or not header.tapir_info.is_installed or not header.tapir_info.version:
+        elif (
+            not isinstance(header.tapir_info, TapirInfo)
+            or not header.tapir_info.is_installed
+            or not header.tapir_info.version
+        ):
             unavailable_instances.append(_build_missing_tapir_instance())
         else:
             active_instances.append(_build_ready_instance(int(port), header))
@@ -94,7 +98,7 @@ def _build_unresponsive_instance(error: APIResponseError) -> UnavailableInstance
         message=(
             f"Archicad API error: '{error.message}'. "
             "If the error message is actionable, please prompt the user to resolve it."
-        )
+        ),
     )
 
 
@@ -107,7 +111,7 @@ def _build_missing_tapir_instance() -> UnavailableInstance:
             "The Tapir Add-On is required for AI automation. "
             "Please prompt the user to download and install it from: "
             "https://github.com/ENZYME-APD/tapir-archicad-automation"
-        )
+        ),
     )
 
 
@@ -175,7 +179,7 @@ mcp.add_tool(
     name="archicad_get_command_schema",
     title="Get Archicad Command Schema",
     description=(
-        "Retrieves the exact JSON schema (required arguments) for a specific Archicad command. "
+        "Retrieves the argument schema and optionally the command data schema for an Archicad command. "
         "Provide the exact 'command_name' obtained from 'archicad_list_commands'. "
         "CRITICAL: You MUST call this tool before executing 'archicad_call_tool' to ensure you provide "
         "the correct parameters. Do NOT guess or hallucinate parameters based on the command name."
@@ -187,7 +191,7 @@ mcp.add_tool(
         openWorldHint=False,
     ),
 )
-def archicad_get_command_schema(command_name: str) -> CommandSchema:
+def archicad_get_command_schema(command_name: str, include_output: bool = False) -> CommandSchema:
     log.info(f"Executing archicad_get_command_schema for: {command_name}")
     try:
         tool = TOOL_DISCOVERY_CATALOG[command_name]
@@ -200,6 +204,7 @@ def archicad_get_command_schema(command_name: str) -> CommandSchema:
     return CommandSchema(
         name=tool["name"],
         input_schema=get_tool_input_schema(command_name),
+        output_schema=get_tool_output_schema(command_name) if include_output else None,
     )
 
 
@@ -211,8 +216,9 @@ def archicad_get_command_schema(command_name: str) -> CommandSchema:
         "CRITICAL WORKFLOW: You MUST use 'archicad_get_command_schema' first to understand the exact "
         "JSON structure required for the 'arguments' parameter. "
         "The 'arguments' dictionary MUST contain a 'port' number (obtained from 'discovery_list_active_archicads'). "
-        "If a tool's response includes a 'next_page_token', call this same tool again with the same parameters "
-        "and add a 'page_token' key to the 'arguments' dictionary. "
+        "Set resultMode='handle' to reuse a result or read it with result_read. In params use "
+        '{"$handle":"result:example","path":["field"]} to select retained data. Aligned batches submit successes '
+        "only and keep skipped positions. Set view='inputs' to reuse successful originating inputs. "
         "Long executions return status='running' and a jobHandle; retrieve them with archicad_get_job. "
         "If a response is lost or cancelled, list jobs with archicad_get_job() before retrying a write. "
         "Cancelling this request does not cancel an admitted execution."
@@ -224,53 +230,49 @@ def archicad_get_command_schema(command_name: str) -> CommandSchema:
         openWorldHint=True,
     ),
 )
-async def archicad_call_tool(name: str, arguments: dict) -> Annotated[CallToolResult, dict]:
-    log.info(f"Executing archicad_call_tool for tool: {name}")
-
-    tool_entry = get_tool_entry(name)
-    try:
-        validated_arguments = tool_entry.arguments_model.model_validate(arguments)
-    except ValidationError as e:
-        message = format_validation_error(name, e)
-        log.error(message)
-        raise ToolError(message) from e
-
+async def archicad_call_tool(
+    name: str, arguments: dict, resultMode: ResultMode = ResultMode.AUTO
+) -> Annotated[CallToolResult, dict]:
+    entry = get_tool_entry(name)
     store = job_store_instance.get()
-    port = validated_arguments.port
-    if tool_entry.pagination_field is not None and validated_arguments.page_token is not None:
-        # Continuations read retained data and do not create execution jobs.
-        return build_result(await asyncio.to_thread(_read_cached_page, name, tool_entry, validated_arguments, store))
-    job = store.submit(
-        name, port, arguments,
-        lambda handle: _execute_tool(name, tool_entry, validated_arguments, handle),
+    mode = ResultMode(resultMode)
+
+    def prepare():
+        return prepare_call(name, entry, arguments, store), arguments_preview(arguments)
+
+    prepared, preview = await asyncio.to_thread(prepare)
+    budget = store.settings.result_budget
+    job = store.submit_prepared(
+        name,
+        prepared.arguments.port,
+        preview,
+        lambda handle: complete(_execute_tool(name, entry, prepared, handle), entry.metadata, mode, budget),
     )
     await store.wait(job)
-    return to_tool_result(tool_entry, store.initial_result(job))
-
-def _read_cached_page(name: str, tool_entry: ToolRegistryEntry, arguments: Any, store: JobStore) -> dict:
-    # MultiConn's public header properties can trigger discovery; keep that work
-    # off the event loop, and never redispatch the original command.
-    multi_conn = multi_conn_instance.get()
-    connection = multi_conn.open_port_headers.get(Port(arguments.port))
-    request = _pagination_request(name, tool_entry, arguments, connection)
-    return store.get_page(arguments.page_token, request)
+    initial = store.initial_result(job)
+    if isinstance(initial, dict):
+        return build_result({**initial, "command": name, "next": "Poll with archicad_get_job using this jobHandle."})
+    return await asyncio.to_thread(deliver, initial, job.result_handle)
 
 
-def _execute_tool(name: str, tool_entry: ToolRegistryEntry, validated_arguments: Any, job_handle: str) -> Any:
-    port = validated_arguments.port
-    conn_header = _get_header(port)
+def _execute_tool(name: str, tool_entry: ToolRegistryEntry, prepared: PreparedCall, job_handle: str):
+    arguments = prepared.arguments
+    port = arguments.port
+    axis = prepared.axis
+    if axis is not None and not any(slot.is_success for slot in axis.outcomes.slots):
+        contract = tool_entry.metadata.positional
+        skipped = {field: [] for field in (contract.output_field, *contract.empty_outputs)}
+        flag = tool_entry.metadata.inline_if_true
+        if flag and getattr(arguments.params, flag, None) is True:
+            skipped[flag] = True
+        return normalize(tool_entry, skipped, axis)
 
-    call_args: dict[str, Any] = {"conn_header": conn_header}
-
+    call_args: dict[str, Any] = {"conn_header": _get_header(port)}
     if tool_entry.params_model:
-        call_args["params"] = validated_arguments.params
-
+        call_args["params"] = arguments.params
     with DispatchLifecycle(name, port, job_handle):
         result = _dispatch_command(name, tool_entry, call_args, port)
-    if tool_entry.pagination_field is None:
-        return result
-    request = _pagination_request(name, tool_entry, validated_arguments, conn_header)
-    return prepare_result(result, request, job_handle.removeprefix("job:"))
+    return normalize(tool_entry, result, axis)
 
 
 def _dispatch_command(name: str, tool_entry: ToolRegistryEntry, call_args: dict, port: int) -> Any:
@@ -288,21 +290,6 @@ def _dispatch_command(name: str, tool_entry: ToolRegistryEntry, call_args: dict,
     except Exception as e:
         log.error(f"Error executing dispatched tool {name}: {e}")
         raise
-
-
-def _pagination_request(
-    name: str, tool_entry: ToolRegistryEntry, arguments: Any, connection: ConnHeader | None,
-) -> PaginationRequest:
-    return PaginationRequest(
-        connection=connection, port=arguments.port, command=name,
-        parameters=_serialized_parameters(arguments.params if tool_entry.params_model else None),
-        field=tool_entry.pagination_field,
-    )
-
-
-def _serialized_parameters(params: Any) -> str:
-    parameters = params.model_dump(mode="json", by_alias=True, exclude_none=True) if params is not None else {}
-    return json.dumps(parameters, sort_keys=True, separators=(",", ":"))
 
 
 def _get_header(port: int) -> ConnHeader:
@@ -323,7 +310,10 @@ def _get_header(port: int) -> ConnHeader:
         "or failed with error. Polling never redispatches commands."
     ),
     annotations=ToolAnnotations(
-        readOnlyHint=True, destructiveHint=False, idempotentHint=True, openWorldHint=False,
+        readOnlyHint=True,
+        destructiveHint=False,
+        idempotentHint=True,
+        openWorldHint=False,
     ),
 )
 async def archicad_get_job(job_handle: str | None = None) -> Annotated[CallToolResult, dict]:
@@ -333,7 +323,6 @@ async def archicad_get_job(job_handle: str | None = None) -> Annotated[CallToolR
     job = store.get(job_handle)
     await store.wait(job)
     response = store.response(job)
-    stripped, images = extract_images(get_tool_entry(job.command), response.get("result", {}))
-    if images:
-        response = {**response, "result": stripped}
-    return build_result(response, images)
+    if response["status"] == JobStatus.COMPLETED:
+        return await asyncio.to_thread(deliver, response["result"], job.result_handle, job_handle=job.handle)
+    return build_result(response)

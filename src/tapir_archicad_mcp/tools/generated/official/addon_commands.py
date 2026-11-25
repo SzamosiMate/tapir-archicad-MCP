@@ -2,6 +2,7 @@
 from multiconn_archicad import ConnHeader
 from multiconn_archicad.models.official.commands import (
     IsAddOnCommandAvailableParameters,
+    IsAddOnCommandAvailableResult,
 )
 
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
@@ -21,4 +22,6 @@ register_tool_for_dispatch(
     title="IsAddOnCommandAvailable",
     description="Checks if the command is available or not.",
     params_model=IsAddOnCommandAvailableParameters,
+    output_model=IsAddOnCommandAvailableResult,
+    identity=("official", "IsAddOnCommandAvailable"),
 )

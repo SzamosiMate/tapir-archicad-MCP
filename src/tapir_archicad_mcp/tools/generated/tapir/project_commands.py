@@ -2,53 +2,116 @@
 from multiconn_archicad import ConnHeader
 from multiconn_archicad.models.tapir.commands import (
     BreakHotlinkNodesParameters,
+    BreakHotlinkNodesResult,
     CalculateSunPositionParameters,
+    CalculateSunPositionResult,
     ChangeHotlinkInstancesParameters,
+    ChangeHotlinkInstancesResult,
     ChangeHotlinkNodesParameters,
+    ChangeHotlinkNodesResult,
     ConvertUnitValuesParameters,
+    ConvertUnitValuesResult,
     CreateHotlinkInstancesParameters,
+    CreateHotlinkInstancesResult,
     CreateHotlinkNodesParameters,
+    CreateHotlinkNodesResult,
     CreateProjectInfoFieldsParameters,
+    CreateProjectInfoFieldsResult,
     CreateProjectInfoGroupsParameters,
+    CreateProjectInfoGroupsResult,
     DeleteHotlinkNodesParameters,
+    DeleteHotlinkNodesResult,
     DeleteProjectInfoFieldsParameters,
+    DeleteProjectInfoFieldsResult,
     DeleteProjectInfoGroupsParameters,
+    DeleteProjectInfoGroupsResult,
     FindDimensionStandardParameters,
+    FindDimensionStandardResult,
+    GetAllAutoTextKeysResult,
+    GetAutoIntersectResult,
     GetAutoTextKeysParameters,
+    GetAutoTextKeysResult,
     GetAutoTextNameParameters,
+    GetAutoTextNameResult,
+    GetCalculationUnitsResult,
+    GetCoordinateOriginsResult,
     GetCurrentViewImageParameters,
+    GetCurrentViewImageResult,
     GetDimensionStandardsParameters,
+    GetDimensionStandardsResult,
+    GetExportToleranceResult,
+    GetGeoLocationResult,
     GetHotlinkOwnersOfElementsParameters,
+    GetHotlinkOwnersOfElementsResult,
     GetHotlinkProxyElementTableParameters,
+    GetHotlinkProxyElementTableResult,
     GetHotlinkSourceStatusParameters,
+    GetHotlinkSourceStatusResult,
+    GetHotlinksResult,
     GetLast3DDefaultLevelsParameters,
+    GetLast3DDefaultLevelsResult,
     GetNoteAutoTextKeywordsParameters,
+    GetNoteAutoTextKeywordsResult,
     GetNoteAutotextsParameters,
+    GetNoteAutotextsResult,
+    GetProjectInfoFieldsResult,
+    GetProjectInfoGroupsResult,
+    GetProjectInfoResult,
+    GetProjectNotesResult,
     GetProjectPreferencesParameters,
+    GetProjectPreferencesResult,
+    GetRenderingScenesResult,
+    GetRenovationStatusNamesResult,
+    GetStoriesResult,
+    GetSunSettingsResult,
+    GetSurveyPointTransformationResult,
     InterpretAutoTextsParameters,
+    InterpretAutoTextsResult,
     MoveProjectInfoFieldsParameters,
+    MoveProjectInfoFieldsResult,
     MoveProjectInfoGroupsParameters,
+    MoveProjectInfoGroupsResult,
     OpenProjectParameters,
+    OpenProjectResult,
     PhotoRenderParameters,
+    PhotoRenderResult,
     PrintViewParameters,
+    PrintViewResult,
     RebuildViewParameters,
+    RebuildViewResult,
     RenameProjectInfoFieldsParameters,
+    RenameProjectInfoFieldsResult,
     RenameProjectInfoGroupsParameters,
+    RenameProjectInfoGroupsResult,
     ResolveNamesParameters,
+    ResolveNamesResult,
     SaveAsModuleFileParameters,
+    SaveAsModuleFileResult,
     SaveCurrentWindowAsImageParameters,
+    SaveCurrentWindowAsImageResult,
     SaveProjectAsArchiveParameters,
+    SaveProjectAsArchiveResult,
     SaveProjectParameters,
+    SaveProjectResult,
     SetAutoIntersectParameters,
+    SetAutoIntersectResult,
     SetCurrentRenderingSceneParameters,
+    SetCurrentRenderingSceneResult,
     SetGeoLocationParameters,
+    SetGeoLocationResult,
     SetLast3DDefaultLevelsParameters,
+    SetLast3DDefaultLevelsResult,
     SetPlaceSettingsParameters,
+    SetPlaceSettingsResult,
     SetProjectInfoFieldParameters,
     SetProjectNotesParameters,
+    SetProjectNotesResult,
     SetProjectPreferencesParameters,
+    SetProjectPreferencesResult,
     SetStoriesParameters,
+    SetStoriesResult,
     UpdateHotlinksParameters,
+    UpdateHotlinksResult,
 )
 
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
@@ -73,6 +136,8 @@ register_tool_for_dispatch(
         "instances stay in the project as ordinary elements, no longer tied to the source file."
     ),
     params_model=BreakHotlinkNodesParameters,
+    output_model=BreakHotlinkNodesResult,
+    identity=("tapir", "BreakHotlinkNodes"),
 )
 
 
@@ -95,6 +160,8 @@ register_tool_for_dispatch(
         "unless another one is given, without changing the project."
     ),
     params_model=CalculateSunPositionParameters,
+    output_model=CalculateSunPositionResult,
+    identity=("tapir", "CalculateSunPosition"),
 )
 
 
@@ -117,6 +184,8 @@ register_tool_for_dispatch(
         "RotateElements do not work on hotlink instances."
     ),
     params_model=ChangeHotlinkInstancesParameters,
+    output_model=ChangeHotlinkInstancesResult,
+    identity=("tapir", "ChangeHotlinkInstances"),
 )
 
 
@@ -139,6 +208,8 @@ register_tool_for_dispatch(
         "with UpdateHotlinks to re-read the content."
     ),
     params_model=ChangeHotlinkNodesParameters,
+    output_model=ChangeHotlinkNodesResult,
+    identity=("tapir", "ChangeHotlinkNodes"),
 )
 
 
@@ -164,6 +235,8 @@ register_tool_for_dispatch(
         "27."
     ),
     params_model=ConvertUnitValuesParameters,
+    output_model=ConvertUnitValuesResult,
+    identity=("tapir", "ConvertUnitValues"),
 )
 
 
@@ -180,6 +253,8 @@ register_tool_for_dispatch(
     title="CreateHotlinkInstances",
     description="Places instances of hotlink module nodes at an origin, rotation and mirroring.",
     params_model=CreateHotlinkInstancesParameters,
+    output_model=CreateHotlinkInstancesResult,
+    identity=("tapir", "CreateHotlinkInstances"),
 )
 
 
@@ -202,6 +277,8 @@ register_tool_for_dispatch(
         "instead of duplicated (Archicad 26 and later; 25 cannot see an unplaced node)."
     ),
     params_model=CreateHotlinkNodesParameters,
+    output_model=CreateHotlinkNodesResult,
+    identity=("tapir", "CreateHotlinkNodes"),
 )
 
 
@@ -224,6 +301,8 @@ register_tool_for_dispatch(
         "given; without it the field goes to the first group."
     ),
     params_model=CreateProjectInfoFieldsParameters,
+    output_model=CreateProjectInfoFieldsResult,
+    identity=("tapir", "CreateProjectInfoFields"),
 )
 
 
@@ -242,6 +321,8 @@ register_tool_for_dispatch(
         "Creates Project Info groups with the given names, at the end of the group list. Available from Archicad 30."
     ),
     params_model=CreateProjectInfoGroupsParameters,
+    output_model=CreateProjectInfoGroupsResult,
+    identity=("tapir", "CreateProjectInfoGroups"),
 )
 
 
@@ -258,6 +339,8 @@ register_tool_for_dispatch(
     title="DeleteHotlinkNodes",
     description="Deletes hotlink nodes together with their placed instances, as the Hotlink Manager's Delete does.",
     params_model=DeleteHotlinkNodesParameters,
+    output_model=DeleteHotlinkNodesResult,
+    identity=("tapir", "DeleteHotlinkNodes"),
 )
 
 
@@ -280,6 +363,8 @@ register_tool_for_dispatch(
         "the fields of the Project Info groups. Hardcoded fields cannot be deleted."
     ),
     params_model=DeleteProjectInfoFieldsParameters,
+    output_model=DeleteProjectInfoFieldsResult,
+    identity=("tapir", "DeleteProjectInfoFields"),
 )
 
 
@@ -302,6 +387,8 @@ register_tool_for_dispatch(
         "Archicad 30."
     ),
     params_model=DeleteProjectInfoGroupsParameters,
+    output_model=DeleteProjectInfoGroupsResult,
+    identity=("tapir", "DeleteProjectInfoGroups"),
 )
 
 
@@ -324,6 +411,8 @@ register_tool_for_dispatch(
         "name and guid. Available from Archicad 27."
     ),
     params_model=FindDimensionStandardParameters,
+    output_model=FindDimensionStandardResult,
+    identity=("tapir", "FindDimensionStandard"),
 )
 
 
@@ -344,6 +433,8 @@ register_tool_for_dispatch(
         "with its current value, resolved without an element context."
     ),
     params_model=None,
+    output_model=GetAllAutoTextKeysResult,
+    identity=("tapir", "GetAllAutoTextKeys"),
 )
 
 
@@ -364,6 +455,8 @@ register_tool_for_dispatch(
         "creation commands produce: with it on, the new elements are joined at their intersections."
     ),
     params_model=None,
+    output_model=GetAutoIntersectResult,
+    identity=("tapir", "GetAutoIntersect"),
 )
 
 
@@ -388,6 +481,8 @@ register_tool_for_dispatch(
         "in a Text or Label content by surrounding it with '<' and '>'."
     ),
     params_model=GetAutoTextKeysParameters,
+    output_model=GetAutoTextKeysResult,
+    identity=("tapir", "GetAutoTextKeys"),
 )
 
 
@@ -410,6 +505,8 @@ register_tool_for_dispatch(
         "direct guid lookup for property-based keys instead of enumerating every property definition."
     ),
     params_model=GetAutoTextNameParameters,
+    output_model=GetAutoTextNameResult,
+    identity=("tapir", "GetAutoTextName"),
 )
 
 
@@ -424,6 +521,8 @@ register_tool_for_dispatch(
     title="GetCalculationUnits",
     description="Gets the project calculation units.",
     params_model=None,
+    output_model=GetCalculationUnitsResult,
+    identity=("tapir", "GetCalculationUnits"),
 )
 
 
@@ -446,6 +545,8 @@ register_tool_for_dispatch(
         "point) are relative to."
     ),
     params_model=None,
+    output_model=GetCoordinateOriginsResult,
+    identity=("tapir", "GetCoordinateOrigins"),
 )
 
 
@@ -468,6 +569,8 @@ register_tool_for_dispatch(
         "size in pixels, without writing a file. Available from Archicad 30."
     ),
     params_model=GetCurrentViewImageParameters,
+    output_model=GetCurrentViewImageResult,
+    identity=("tapir", "GetCurrentViewImage"),
     image_field="image",
 )
 
@@ -493,6 +596,8 @@ register_tool_for_dispatch(
         "Read-only. Available from Archicad 27."
     ),
     params_model=GetDimensionStandardsParameters,
+    output_model=GetDimensionStandardsResult,
+    identity=("tapir", "GetDimensionStandards"),
 )
 
 
@@ -515,6 +620,8 @@ register_tool_for_dispatch(
         "outside an export the command returns an error saying so."
     ),
     params_model=None,
+    output_model=GetExportToleranceResult,
+    identity=("tapir", "GetExportTolerance"),
 )
 
 
@@ -535,6 +642,8 @@ register_tool_for_dispatch(
         "parameters, visibility and lock state (the lock from Archicad 26)."
     ),
     params_model=None,
+    output_model=GetGeoLocationResult,
+    identity=("tapir", "GetGeoLocation"),
 )
 
 
@@ -558,6 +667,8 @@ register_tool_for_dispatch(
         "contains it and the hotlink instance it belongs to. Available from Archicad 27."
     ),
     params_model=GetHotlinkOwnersOfElementsParameters,
+    output_model=GetHotlinkOwnersOfElementsResult,
+    identity=("tapir", "GetHotlinkOwnersOfElements"),
 )
 
 
@@ -565,9 +676,6 @@ def get_hotlink_proxy_element_table(conn_header: ConnHeader, params: GetHotlinkP
     """
     Maps the proxy elements of placed hotlink instances to the elements of the source file they were made from, so an
     element seen in a hotlinked module can be traced back to its source element.
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
     """
     return conn_header.core.post_tapir_command(
         command="GetHotlinkProxyElementTable",
@@ -584,7 +692,8 @@ register_tool_for_dispatch(
         "so an element seen in a hotlinked module can be traced back to its source element."
     ),
     params_model=GetHotlinkProxyElementTableParameters,
-    pagination_field="proxyElementTables",
+    output_model=GetHotlinkProxyElementTableResult,
+    identity=("tapir", "GetHotlinkProxyElementTable"),
 )
 
 
@@ -607,6 +716,8 @@ register_tool_for_dispatch(
         "Available from Archicad 27."
     ),
     params_model=GetHotlinkSourceStatusParameters,
+    output_model=GetHotlinkSourceStatusResult,
+    identity=("tapir", "GetHotlinkSourceStatus"),
 )
 
 
@@ -614,9 +725,6 @@ def get_hotlinks(conn_header: ConnHeader) -> dict:
     """
     Gets the file system locations (path) of the hotlink modules and the instance elements placed from each node. The
     hotlinks can have tree hierarchy in the project.
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
     """
     return conn_header.core.post_tapir_command(command="GetHotlinks", parameters={})
 
@@ -630,7 +738,8 @@ register_tool_for_dispatch(
         "The hotlinks can have tree hierarchy in the project."
     ),
     params_model=None,
-    pagination_field="hotlinks",
+    output_model=GetHotlinksResult,
+    identity=("tapir", "GetHotlinks"),
 )
 
 
@@ -647,6 +756,8 @@ register_tool_for_dispatch(
     title="GetLast3DDefaultLevels",
     description="Gets the last 3D default levels of the given element types' defaults.",
     params_model=GetLast3DDefaultLevelsParameters,
+    output_model=GetLast3DDefaultLevelsResult,
+    identity=("tapir", "GetLast3DDefaultLevels"),
 )
 
 
@@ -669,6 +780,8 @@ register_tool_for_dispatch(
         "numeric API_NoteAutotextID values. Available from Archicad 26."
     ),
     params_model=GetNoteAutoTextKeywordsParameters,
+    output_model=GetNoteAutoTextKeywordsResult,
+    identity=("tapir", "GetNoteAutoTextKeywords"),
 )
 
 
@@ -694,6 +807,8 @@ register_tool_for_dispatch(
         "26 or later."
     ),
     params_model=GetNoteAutotextsParameters,
+    output_model=GetNoteAutotextsResult,
+    identity=("tapir", "GetNoteAutotexts"),
 )
 
 
@@ -708,6 +823,8 @@ register_tool_for_dispatch(
     title="GetProjectInfo",
     description="Retrieves information about the currently loaded project.",
     params_model=None,
+    output_model=GetProjectInfoResult,
+    identity=("tapir", "GetProjectInfo"),
 )
 
 
@@ -722,6 +839,8 @@ register_tool_for_dispatch(
     title="GetProjectInfoFields",
     description="Retrieves the names and values of all project info fields.",
     params_model=None,
+    output_model=GetProjectInfoFieldsResult,
+    identity=("tapir", "GetProjectInfoFields"),
 )
 
 
@@ -744,6 +863,8 @@ register_tool_for_dispatch(
         "from Archicad 30."
     ),
     params_model=None,
+    output_model=GetProjectInfoGroupsResult,
+    identity=("tapir", "GetProjectInfoGroups"),
 )
 
 
@@ -764,6 +885,8 @@ register_tool_for_dispatch(
         "architect, draftsmen, project status, date of issue, keywords and notes."
     ),
     params_model=None,
+    output_model=GetProjectNotesResult,
+    identity=("tapir", "GetProjectNotes"),
 )
 
 
@@ -788,6 +911,8 @@ register_tool_for_dispatch(
         "may follow."
     ),
     params_model=GetProjectPreferencesParameters,
+    output_model=GetProjectPreferencesResult,
+    identity=("tapir", "GetProjectPreferences"),
 )
 
 
@@ -808,6 +933,8 @@ register_tool_for_dispatch(
         "palette), the most recently used first, and the name of the current scene."
     ),
     params_model=None,
+    output_model=GetRenderingScenesResult,
+    identity=("tapir", "GetRenderingScenes"),
 )
 
 
@@ -828,6 +955,8 @@ register_tool_for_dispatch(
         "(localized). Available from Archicad 27."
     ),
     params_model=None,
+    output_model=GetRenovationStatusNamesResult,
+    identity=("tapir", "GetRenovationStatusNames"),
 )
 
 
@@ -848,6 +977,8 @@ register_tool_for_dispatch(
         "level, height and, from Archicad 28, the IFC GlobalId of each story."
     ),
     params_model=None,
+    output_model=GetStoriesResult,
+    identity=("tapir", "GetStories"),
 )
 
 
@@ -868,6 +999,8 @@ register_tool_for_dispatch(
         "Archicad calculates for them at the project location, and the sun and ambient light settings."
     ),
     params_model=None,
+    output_model=GetSunSettingsResult,
+    identity=("tapir", "GetSunSettings"),
 )
 
 
@@ -888,6 +1021,8 @@ register_tool_for_dispatch(
         "coordinate system, row by row, and its inverse when it is invertible. Read only. Available from Archicad 27."
     ),
     params_model=None,
+    output_model=GetSurveyPointTransformationResult,
+    identity=("tapir", "GetSurveyPointTransformation"),
 )
 
 
@@ -910,6 +1045,8 @@ register_tool_for_dispatch(
         "so a key can be tested before it is written into a Text or Label."
     ),
     params_model=InterpretAutoTextsParameters,
+    output_model=InterpretAutoTextsResult,
+    identity=("tapir", "InterpretAutoTexts"),
 )
 
 
@@ -932,6 +1069,8 @@ register_tool_for_dispatch(
         "calculated field moves with its parent field. Available from Archicad 30."
     ),
     params_model=MoveProjectInfoFieldsParameters,
+    output_model=MoveProjectInfoFieldsResult,
+    identity=("tapir", "MoveProjectInfoFields"),
 )
 
 
@@ -954,6 +1093,8 @@ register_tool_for_dispatch(
         "Available from Archicad 30."
     ),
     params_model=MoveProjectInfoGroupsParameters,
+    output_model=MoveProjectInfoGroupsResult,
+    identity=("tapir", "MoveProjectInfoGroups"),
 )
 
 
@@ -976,6 +1117,8 @@ register_tool_for_dispatch(
         "no query for them, so call SaveProject first when they must be kept."
     ),
     params_model=OpenProjectParameters,
+    output_model=OpenProjectResult,
+    identity=("tapir", "OpenProject"),
 )
 
 
@@ -1002,6 +1145,8 @@ register_tool_for_dispatch(
         "only, the scene is not changed. With overwrite false it refuses to replace an existing file."
     ),
     params_model=PhotoRenderParameters,
+    output_model=PhotoRenderResult,
+    identity=("tapir", "PhotoRender"),
 )
 
 
@@ -1018,6 +1163,8 @@ register_tool_for_dispatch(
     title="PrintView",
     description="Prints from the current view.",
     params_model=PrintViewParameters,
+    output_model=PrintViewResult,
+    identity=("tapir", "PrintView"),
 )
 
 
@@ -1034,6 +1181,8 @@ register_tool_for_dispatch(
     title="RebuildView",
     description="Rebuilds the current view.",
     params_model=RebuildViewParameters,
+    output_model=RebuildViewResult,
+    identity=("tapir", "RebuildView"),
 )
 
 
@@ -1056,6 +1205,8 @@ register_tool_for_dispatch(
         "Archicad 30."
     ),
     params_model=RenameProjectInfoFieldsParameters,
+    output_model=RenameProjectInfoFieldsResult,
+    identity=("tapir", "RenameProjectInfoFields"),
 )
 
 
@@ -1072,6 +1223,8 @@ register_tool_for_dispatch(
     title="RenameProjectInfoGroups",
     description="Renames Project Info groups. Available from Archicad 30.",
     params_model=RenameProjectInfoGroupsParameters,
+    output_model=RenameProjectInfoGroupsResult,
+    identity=("tapir", "RenameProjectInfoGroups"),
 )
 
 
@@ -1113,6 +1266,8 @@ register_tool_for_dispatch(
         "deterministic. Read only."
     ),
     params_model=ResolveNamesParameters,
+    output_model=ResolveNamesResult,
+    identity=("tapir", "ResolveNames"),
 )
 
 
@@ -1135,6 +1290,8 @@ register_tool_for_dispatch(
         "refuses to replace an existing file."
     ),
     params_model=SaveAsModuleFileParameters,
+    output_model=SaveAsModuleFileResult,
+    identity=("tapir", "SaveAsModuleFile"),
 )
 
 
@@ -1159,6 +1316,8 @@ register_tool_for_dispatch(
         "instead. With overwrite false it refuses to replace an existing file."
     ),
     params_model=SaveCurrentWindowAsImageParameters,
+    output_model=SaveCurrentWindowAsImageResult,
+    identity=("tapir", "SaveCurrentWindowAsImage"),
 )
 
 
@@ -1181,6 +1340,8 @@ register_tool_for_dispatch(
         "an existing file at the path."
     ),
     params_model=SaveProjectParameters,
+    output_model=SaveProjectResult,
+    identity=("tapir", "SaveProject"),
 )
 
 
@@ -1203,6 +1364,8 @@ register_tool_for_dispatch(
         "it refuses to replace an existing file."
     ),
     params_model=SaveProjectAsArchiveParameters,
+    output_model=SaveProjectAsArchiveResult,
+    identity=("tapir", "SaveProjectAsArchive"),
 )
 
 
@@ -1225,6 +1388,8 @@ register_tool_for_dispatch(
         "restore the previous state afterwards."
     ),
     params_model=SetAutoIntersectParameters,
+    output_model=SetAutoIntersectResult,
+    identity=("tapir", "SetAutoIntersect"),
 )
 
 
@@ -1243,6 +1408,8 @@ register_tool_for_dispatch(
         "Makes the given rendering scene the current one, as selecting it in the PhotoRendering Settings palette does."
     ),
     params_model=SetCurrentRenderingSceneParameters,
+    output_model=SetCurrentRenderingSceneResult,
+    identity=("tapir", "SetCurrentRenderingScene"),
 )
 
 
@@ -1265,6 +1432,8 @@ register_tool_for_dispatch(
         "parameters, visibility and lock state (the lock from Archicad 26). Omitted fields stay unchanged."
     ),
     params_model=SetGeoLocationParameters,
+    output_model=SetGeoLocationResult,
+    identity=("tapir", "SetGeoLocation"),
 )
 
 
@@ -1281,6 +1450,8 @@ register_tool_for_dispatch(
     title="SetLast3DDefaultLevels",
     description="Sets the last 3D default levels of the given element types' defaults.",
     params_model=SetLast3DDefaultLevelsParameters,
+    output_model=SetLast3DDefaultLevelsResult,
+    identity=("tapir", "SetLast3DDefaultLevels"),
 )
 
 
@@ -1305,6 +1476,8 @@ register_tool_for_dispatch(
         "position Archicad calculated for them. Available from Archicad 27."
     ),
     params_model=SetPlaceSettingsParameters,
+    output_model=SetPlaceSettingsResult,
+    identity=("tapir", "SetPlaceSettings"),
 )
 
 
@@ -1321,6 +1494,8 @@ register_tool_for_dispatch(
     title="SetProjectInfoField",
     description="Sets the value of a project info field.",
     params_model=SetProjectInfoFieldParameters,
+    output_model=None,
+    identity=("tapir", "SetProjectInfoField"),
 )
 
 
@@ -1347,6 +1522,8 @@ register_tool_for_dispatch(
         "parts of a name that is not given or not changed are kept."
     ),
     params_model=SetProjectNotesParameters,
+    output_model=SetProjectNotesResult,
+    identity=("tapir", "SetProjectNotes"),
 )
 
 
@@ -1373,6 +1550,8 @@ register_tool_for_dispatch(
         "set has to be reserved first (ReserveLockableObjectSet). Available from Archicad 27."
     ),
     params_model=SetProjectPreferencesParameters,
+    output_model=SetProjectPreferencesResult,
+    identity=("tapir", "SetProjectPreferences"),
 )
 
 
@@ -1389,6 +1568,8 @@ register_tool_for_dispatch(
     title="SetStories",
     description="Sets the story sructure of the currently loaded project.",
     params_model=SetStoriesParameters,
+    output_model=SetStoriesResult,
+    identity=("tapir", "SetStories"),
 )
 
 
@@ -1411,4 +1592,6 @@ register_tool_for_dispatch(
         "Hotlink Manager's Update button does."
     ),
     params_model=UpdateHotlinksParameters,
+    output_model=UpdateHotlinksResult,
+    identity=("tapir", "UpdateHotlinks"),
 )

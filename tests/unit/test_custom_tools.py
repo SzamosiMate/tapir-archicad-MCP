@@ -18,9 +18,9 @@ from multiconn_archicad import (
 )
 from multiconn_archicad.constants import SUPPORTED_TAPIR_VERSION
 from multiconn_archicad.errors import AddOnCommandUnavailable
+from payloads import archicad_call_tool
 from pydantic import BaseModel
 
-from payloads import archicad_call_tool
 from tapir_archicad_mcp.context import multi_conn_instance
 from tapir_archicad_mcp.tools.custom.functions import (
     archicad_get_command_schema,
@@ -98,8 +98,8 @@ def test_archicad_get_command_schema_valid(fake_archicad):
 def test_command_schemas_describe_the_exact_runtime_envelopes(fake_archicad):
     no_params = archicad_get_command_schema("app_get_add_on_version").input_schema
     with_params = archicad_get_command_schema("elements_create_slabs").input_schema
-    paginated_no_params = archicad_get_command_schema("issues_get_issues").input_schema
-    paginated_with_params = archicad_get_command_schema("elements_get_all_elements").input_schema
+    previously_paginated_no_params = archicad_get_command_schema("issues_get_issues").input_schema
+    previously_paginated_with_params = archicad_get_command_schema("elements_get_all_elements").input_schema
 
     assert no_params["additionalProperties"] is False
     assert set(no_params["properties"]) == {"port"}
@@ -109,10 +109,10 @@ def test_command_schemas_describe_the_exact_runtime_envelopes(fake_archicad):
 
     assert set(with_params["properties"]) == {"port", "params"}
     assert set(with_params["required"]) == {"port", "params"}
-    assert set(paginated_no_params["properties"]) == {"port", "page_token"}
-    assert paginated_no_params["required"] == ["port"]
-    assert set(paginated_with_params["properties"]) == {"port", "params", "page_token"}
-    assert set(paginated_with_params["required"]) == {"port", "params"}
+    assert set(previously_paginated_no_params["properties"]) == {"port"}
+    assert previously_paginated_no_params["required"] == ["port"]
+    assert set(previously_paginated_with_params["properties"]) == {"port", "params"}
+    assert set(previously_paginated_with_params["required"]) == {"port", "params"}
 
 
 def test_command_schema_nested_references_are_locally_resolvable(fake_archicad):
@@ -151,7 +151,7 @@ def test_reregistered_command_keeps_discovery_and_runtime_models_in_sync():
     runtime_schema = get_tool_entry(name).arguments_model.model_json_schema()
     discovery_schema = archicad_get_command_schema(name).input_schema
 
-    assert discovery_schema == runtime_schema
+    assert discovery_schema["properties"]["params"]["anyOf"][0] == runtime_schema["properties"]["params"]
     assert set(discovery_schema["required"]) == {"port", "params"}
 
 
@@ -182,8 +182,9 @@ async def test_union_parameter_models_validate_and_dispatch(fake_archicad):
 
     assert result == {}
     assert isinstance(received[0], SecondParams)
-    assert schema == get_tool_entry(name).arguments_model.model_json_schema()
-    assert len(schema["properties"]["params"]["anyOf"]) == 2
+    alternatives = schema["properties"]["params"]["anyOf"]
+    assert len(alternatives[0]["anyOf"]) == 2
+    assert alternatives[1] == {"$ref": "#/$defs/TapirResultReference"}
 
 
 def test_archicad_get_command_schema_invalid(fake_archicad):

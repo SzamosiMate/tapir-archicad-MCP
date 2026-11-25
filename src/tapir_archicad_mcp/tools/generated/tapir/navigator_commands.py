@@ -2,66 +2,140 @@
 from multiconn_archicad import ConnHeader
 from multiconn_archicad.models.tapir.commands import (
     Change3DStylesParameters,
+    Change3DStylesResult,
     ChangeAddOnViewpointsParameters,
+    ChangeAddOnViewpointsResult,
     ChangeDrawingLinkParameters,
+    ChangeDrawingLinkResult,
     Create3DStylesParameters,
+    Create3DStylesResult,
     CreateAddOnViewpointsParameters,
+    CreateAddOnViewpointsResult,
     CreateDetailMarkersParameters,
+    CreateDetailMarkersResult,
     CreateDetailsParameters,
+    CreateDetailsResult,
     CreateDrawingsParameters,
+    CreateDrawingsResult,
     CreateElevationsParameters,
+    CreateElevationsResult,
     CreateInteriorElevationsParameters,
+    CreateInteriorElevationsResult,
     CreateLayoutParameters,
+    CreateLayoutResult,
     CreateSectionsParameters,
+    CreateSectionsResult,
     CreateViewsInViewMapParameters,
+    CreateViewsInViewMapResult,
     CreateWorksheetMarkersParameters,
+    CreateWorksheetMarkersResult,
     CreateWorksheetsParameters,
+    CreateWorksheetsResult,
     DeleteNavigatorItemsParameters,
+    DeleteNavigatorItemsResult,
     FindModelViewOptionParameters,
+    FindModelViewOptionResult,
     FitInWindowParameters,
+    FitInWindowResult,
+    Get3DCutPlanesResult,
     Get3DDocumentSettingsParameters,
+    Get3DDocumentSettingsResult,
+    Get3DProjectionSettingsResult,
     Get3DStyleDetailsParameters,
+    Get3DStyleDetailsResult,
+    Get3DStylesResult,
+    Get3DWindowSettingsResult,
+    GetActiveGraphicalOverrideCombinationResult,
     GetAddOnViewpointChildrenParameters,
+    GetAddOnViewpointChildrenResult,
+    GetAddOnViewpointRootsResult,
     GetAddOnViewpointsParameters,
+    GetAddOnViewpointsResult,
+    GetCamerasResult,
     GetDatabaseIdFromNavigatorItemIdParameters,
+    GetDatabaseIdFromNavigatorItemIdResult,
     GetDatabasesParameters,
+    GetDatabasesResult,
+    GetDocumentFrom3DDefaultsResult,
     GetDrawingContentBoxesParameters,
+    GetDrawingContentBoxesResult,
+    GetDrawingNumberingGridLinesResult,
+    GetGhostStorySettingsResult,
+    GetLayoutCustomSchemeResult,
     GetLayoutSettingsParameters,
+    GetLayoutSettingsResult,
     GetLayoutSubsetSettingsParameters,
+    GetLayoutSubsetSettingsResult,
     GetModelViewOptionDetailsParameters,
+    GetModelViewOptionDetailsResult,
+    GetModelViewOptionsResult,
     GetNavigatorItemTreeParameters,
+    GetNavigatorItemTreeResult,
     GetNavigatorParentItemsParameters,
+    GetNavigatorParentItemsResult,
+    GetPublisherSetsResult,
+    GetRenovationFiltersResult,
+    GetSchedulesResult,
     GetSectionsAndElevationsDetailsParameters,
+    GetSectionsAndElevationsDetailsResult,
+    GetStructureDisplayResult,
     GetView2DTransformationsParameters,
+    GetView2DTransformationsResult,
+    GetViewOptionsResult,
     GetViewSettingsParameters,
+    GetViewSettingsResult,
     ModifyDetailMarkersParameters,
+    ModifyDetailMarkersResult,
     ModifySectionsParameters,
+    ModifySectionsResult,
     PublishPublisherSetParameters,
     RenameNavigatorItemParameters,
+    RenameNavigatorItemResult,
     ReorderNavigatorItemsParameters,
+    ReorderNavigatorItemsResult,
     ResetZoomParameters,
+    ResetZoomResult,
     Set3DCutPlanesParameters,
+    Set3DCutPlanesResult,
     Set3DDocumentSettingsParameters,
+    Set3DDocumentSettingsResult,
     Set3DFilterAndCutSettingsParameters,
     Set3DProjectionSettingsParameters,
+    Set3DProjectionSettingsResult,
     Set3DWindowSettingsParameters,
+    Set3DWindowSettingsResult,
     SetActiveGraphicalOverrideCombinationParameters,
+    SetActiveGraphicalOverrideCombinationResult,
     SetActiveRenovationFilterParameters,
+    SetActiveRenovationFilterResult,
     SetDocumentFrom3DDefaultsParameters,
+    SetDocumentFrom3DDefaultsResult,
     SetGhostStorySettingsParameters,
+    SetGhostStorySettingsResult,
     SetGridSettingsParameters,
     SetLayoutSettingsParameters,
+    SetLayoutSettingsResult,
     SetMasterLayoutContextParameters,
+    SetMasterLayoutContextResult,
     SetSectionsAndElevationsDetailsParameters,
+    SetSectionsAndElevationsDetailsResult,
     SetStructureDisplayParameters,
+    SetStructureDisplayResult,
     SetViewOptionsParameters,
     SetViewRotationParameters,
+    SetViewRotationResult,
     SetViewSettingsParameters,
+    SetViewSettingsResult,
     SetZoomParameters,
+    SetZoomResult,
     ShowElementsIn3DParameters,
+    ShowElementsIn3DResult,
     StoreViewSettingsParameters,
+    StoreViewSettingsResult,
     UpdateDrawingsParameters,
+    UpdateDrawingsResult,
     ZoomToElementsParameters,
+    ZoomToElementsResult,
 )
 
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
@@ -80,6 +154,8 @@ register_tool_for_dispatch(
     title="Change3DStyles",
     description="Changes the given fields of existing 3D styles, identified by name. Available from Archicad 27.",
     params_model=Change3DStylesParameters,
+    output_model=Change3DStylesResult,
+    identity=("tapir", "Change3DStyles"),
 )
 
 
@@ -104,6 +180,8 @@ register_tool_for_dispatch(
         "from Archicad 27."
     ),
     params_model=ChangeAddOnViewpointsParameters,
+    output_model=ChangeAddOnViewpointsResult,
+    identity=("tapir", "ChangeAddOnViewpoints"),
 )
 
 
@@ -134,6 +212,8 @@ register_tool_for_dispatch(
         "(zoom, layers, scale) shown in that window are not restored."
     ),
     params_model=ChangeDrawingLinkParameters,
+    output_model=ChangeDrawingLinkResult,
+    identity=("tapir", "ChangeDrawingLink"),
 )
 
 
@@ -156,6 +236,8 @@ register_tool_for_dispatch(
         "fields. Available from Archicad 27."
     ),
     params_model=Create3DStylesParameters,
+    output_model=Create3DStylesResult,
+    identity=("tapir", "Create3DStyles"),
 )
 
 
@@ -182,6 +264,8 @@ register_tool_for_dispatch(
         "created. Roots and groups can't be created in a Teamwork project. Available from Archicad 27."
     ),
     params_model=CreateAddOnViewpointsParameters,
+    output_model=CreateAddOnViewpointsResult,
+    identity=("tapir", "CreateAddOnViewpoints"),
 )
 
 
@@ -204,6 +288,8 @@ register_tool_for_dispatch(
         "new Detail viewpoint, like the Detail tool. GetDetailsOfElements reads them back."
     ),
     params_model=CreateDetailMarkersParameters,
+    output_model=CreateDetailMarkersResult,
+    identity=("tapir", "CreateDetailMarkers"),
 )
 
 
@@ -225,6 +311,8 @@ register_tool_for_dispatch(
         "detail."
     ),
     params_model=CreateDetailsParameters,
+    output_model=CreateDetailsResult,
+    identity=("tapir", "CreateDetails"),
 )
 
 
@@ -241,6 +329,8 @@ register_tool_for_dispatch(
     title="CreateDrawings",
     description="Creates Drawing elements on the specified or active layout from navigator items.",
     params_model=CreateDrawingsParameters,
+    output_model=CreateDrawingsResult,
+    identity=("tapir", "CreateDrawings"),
 )
 
 
@@ -263,6 +353,8 @@ register_tool_for_dispatch(
         "a Section or Elevation window is active."
     ),
     params_model=CreateElevationsParameters,
+    output_model=CreateElevationsResult,
+    identity=("tapir", "CreateElevations"),
 )
 
 
@@ -287,6 +379,8 @@ register_tool_for_dispatch(
         "that room."
     ),
     params_model=CreateInteriorElevationsParameters,
+    output_model=CreateInteriorElevationsResult,
+    identity=("tapir", "CreateInteriorElevations"),
 )
 
 
@@ -315,6 +409,8 @@ register_tool_for_dispatch(
         "with both its databaseId and the error."
     ),
     params_model=CreateLayoutParameters,
+    output_model=CreateLayoutResult,
+    identity=("tapir", "CreateLayout"),
 )
 
 
@@ -339,6 +435,8 @@ register_tool_for_dispatch(
         "floor plan must be the active window: creation fails while a Section or Elevation window is active."
     ),
     params_model=CreateSectionsParameters,
+    output_model=CreateSectionsResult,
+    identity=("tapir", "CreateSections"),
 )
 
 
@@ -361,6 +459,8 @@ register_tool_for_dispatch(
         "settings from source items."
     ),
     params_model=CreateViewsInViewMapParameters,
+    output_model=CreateViewsInViewMapResult,
+    identity=("tapir", "CreateViewsInViewMap"),
 )
 
 
@@ -383,6 +483,8 @@ register_tool_for_dispatch(
         "new Worksheet viewpoint, like the Worksheet tool. GetDetailsOfElements reads them back."
     ),
     params_model=CreateWorksheetMarkersParameters,
+    output_model=CreateWorksheetMarkersResult,
+    identity=("tapir", "CreateWorksheetMarkers"),
 )
 
 
@@ -405,6 +507,8 @@ register_tool_for_dispatch(
         "new worksheet."
     ),
     params_model=CreateWorksheetsParameters,
+    output_model=CreateWorksheetsResult,
+    identity=("tapir", "CreateWorksheets"),
 )
 
 
@@ -437,6 +541,8 @@ register_tool_for_dispatch(
         "subset, View Map folder that is not empty) without deleting anything."
     ),
     params_model=DeleteNavigatorItemsParameters,
+    output_model=DeleteNavigatorItemsResult,
+    identity=("tapir", "DeleteNavigatorItems"),
 )
 
 
@@ -461,6 +567,8 @@ register_tool_for_dispatch(
         "from Archicad 27."
     ),
     params_model=FindModelViewOptionParameters,
+    output_model=FindModelViewOptionResult,
+    identity=("tapir", "FindModelViewOption"),
 )
 
 
@@ -477,6 +585,8 @@ register_tool_for_dispatch(
     title="FitInWindow",
     description="Zooms to the given elements or fits everything in the window.",
     params_model=FitInWindowParameters,
+    output_model=FitInWindowResult,
+    identity=("tapir", "FitInWindow"),
 )
 
 
@@ -497,6 +607,8 @@ register_tool_for_dispatch(
         "accepted by Set3DCutPlanes."
     ),
     params_model=None,
+    output_model=Get3DCutPlanesResult,
+    identity=("tapir", "Get3DCutPlanes"),
 )
 
 
@@ -521,6 +633,8 @@ register_tool_for_dispatch(
         "boundary contours, with the field names of API_DocumentFrom3DType."
     ),
     params_model=Get3DDocumentSettingsParameters,
+    output_model=Get3DDocumentSettingsResult,
+    identity=("tapir", "Get3DDocumentSettings"),
 )
 
 
@@ -541,6 +655,8 @@ register_tool_for_dispatch(
         "which element types are shown. Available from Archicad 27."
     ),
     params_model=None,
+    output_model=None,
+    identity=("tapir", "Get3DFilterAndCutSettings"),
 )
 
 
@@ -564,6 +680,8 @@ register_tool_for_dispatch(
         "and altitude)."
     ),
     params_model=None,
+    output_model=Get3DProjectionSettingsResult,
+    identity=("tapir", "Get3DProjectionSettings"),
 )
 
 
@@ -587,6 +705,8 @@ register_tool_for_dispatch(
         "27."
     ),
     params_model=Get3DStyleDetailsParameters,
+    output_model=Get3DStyleDetailsResult,
+    identity=("tapir", "Get3DStyleDetails"),
 )
 
 
@@ -603,6 +723,8 @@ register_tool_for_dispatch(
         "Gets the names of the 3D styles of the project and the name of the current one, which the 3D window uses."
     ),
     params_model=None,
+    output_model=Get3DStylesResult,
+    identity=("tapir", "Get3DStyles"),
 )
 
 
@@ -623,6 +745,8 @@ register_tool_for_dispatch(
         "projection."
     ),
     params_model=None,
+    output_model=Get3DWindowSettingsResult,
+    identity=("tapir", "Get3DWindowSettings"),
 )
 
 
@@ -645,6 +769,8 @@ register_tool_for_dispatch(
         "saved view (see GetViewSettings). Available from Archicad 30."
     ),
     params_model=None,
+    output_model=GetActiveGraphicalOverrideCombinationResult,
+    identity=("tapir", "GetActiveGraphicalOverrideCombination"),
 )
 
 
@@ -661,6 +787,8 @@ register_tool_for_dispatch(
     title="GetAddOnViewpointChildren",
     description="Returns the direct children of an add-on viewpoint root or group. Available from Archicad 27.",
     params_model=GetAddOnViewpointChildrenParameters,
+    output_model=GetAddOnViewpointChildrenResult,
+    identity=("tapir", "GetAddOnViewpointChildren"),
 )
 
 
@@ -681,6 +809,8 @@ register_tool_for_dispatch(
         "add-on, as Archicad lists them to Tapir. Available from Archicad 27."
     ),
     params_model=None,
+    output_model=GetAddOnViewpointRootsResult,
+    identity=("tapir", "GetAddOnViewpointRoots"),
 )
 
 
@@ -705,6 +835,8 @@ register_tool_for_dispatch(
         "that cannot be read gets an error. Available from Archicad 27."
     ),
     params_model=GetAddOnViewpointsParameters,
+    output_model=GetAddOnViewpointsResult,
+    identity=("tapir", "GetAddOnViewpoints"),
 )
 
 
@@ -731,6 +863,8 @@ register_tool_for_dispatch(
         "shows its view in the 3D window. Archicad cameras are always perspective; they have no name of their own."
     ),
     params_model=None,
+    output_model=GetCamerasResult,
+    identity=("tapir", "GetCameras"),
 )
 
 
@@ -750,6 +884,8 @@ register_tool_for_dispatch(
     title="GetDatabaseIdFromNavigatorItemId",
     description="Gets the ID of the database associated with the supplied navigator item id",
     params_model=GetDatabaseIdFromNavigatorItemIdParameters,
+    output_model=GetDatabaseIdFromNavigatorItemIdResult,
+    identity=("tapir", "GetDatabaseIdFromNavigatorItemId"),
 )
 
 
@@ -758,9 +894,6 @@ def get_databases(conn_header: ConnHeader, params: GetDatabasesParameters) -> di
     Lists every database of the given types (sections, elevations, interior elevations, details, worksheets, 3D
     documents, layouts, master layouts) with its database ID, name and reference ID, without walking the navigator
     trees.
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
     """
     return conn_header.core.post_tapir_command(
         command="GetDatabases", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -777,7 +910,8 @@ register_tool_for_dispatch(
         "navigator trees."
     ),
     params_model=GetDatabasesParameters,
-    pagination_field="databases",
+    output_model=GetDatabasesResult,
+    identity=("tapir", "GetDatabases"),
 )
 
 
@@ -800,6 +934,8 @@ register_tool_for_dispatch(
         "shadow and hidden edge attributes."
     ),
     params_model=None,
+    output_model=GetDocumentFrom3DDefaultsResult,
+    identity=("tapir", "GetDocumentFrom3DDefaults"),
 )
 
 
@@ -822,6 +958,8 @@ register_tool_for_dispatch(
         "ACAPI_Drawing_GetFullDrawingContentBox reports it. Available from Archicad 27."
     ),
     params_model=GetDrawingContentBoxesParameters,
+    output_model=GetDrawingContentBoxesResult,
+    identity=("tapir", "GetDrawingContentBoxes"),
 )
 
 
@@ -845,6 +983,8 @@ register_tool_for_dispatch(
         "a grid."
     ),
     params_model=None,
+    output_model=GetDrawingNumberingGridLinesResult,
+    identity=("tapir", "GetDrawingNumberingGridLines"),
 )
 
 
@@ -865,6 +1005,8 @@ register_tool_for_dispatch(
         "story above or the one below is shown, which story, its color and the element types shown in it."
     ),
     params_model=None,
+    output_model=GetGhostStorySettingsResult,
+    identity=("tapir", "GetGhostStorySettings"),
 )
 
 
@@ -885,6 +1027,8 @@ register_tool_for_dispatch(
         "database has its own grid settings. Available from Archicad 27."
     ),
     params_model=None,
+    output_model=None,
+    identity=("tapir", "GetGridSettings"),
 )
 
 
@@ -899,6 +1043,8 @@ register_tool_for_dispatch(
     title="GetLayoutCustomScheme",
     description="Gets the Layout Info Panel custom field definitions (name and key) from Book Settings.",
     params_model=None,
+    output_model=GetLayoutCustomSchemeResult,
+    identity=("tapir", "GetLayoutCustomScheme"),
 )
 
 
@@ -915,6 +1061,8 @@ register_tool_for_dispatch(
     title="GetLayoutSettings",
     description="Gets settings of layouts, including their master layout and Layout Info Panel custom data fields.",
     params_model=GetLayoutSettingsParameters,
+    output_model=GetLayoutSettingsResult,
+    identity=("tapir", "GetLayoutSettings"),
 )
 
 
@@ -937,6 +1085,8 @@ register_tool_for_dispatch(
         "prefix, numbering style, ...)."
     ),
     params_model=GetLayoutSubsetSettingsParameters,
+    output_model=GetLayoutSubsetSettingsResult,
+    identity=("tapir", "GetLayoutSubsetSettings"),
 )
 
 
@@ -965,6 +1115,8 @@ register_tool_for_dispatch(
         "options of the current window. Available from Archicad 27."
     ),
     params_model=GetModelViewOptionDetailsParameters,
+    output_model=GetModelViewOptionDetailsResult,
+    identity=("tapir", "GetModelViewOptionDetails"),
 )
 
 
@@ -979,6 +1131,8 @@ register_tool_for_dispatch(
     title="GetModelViewOptions",
     description="Gets all model view options",
     params_model=None,
+    output_model=GetModelViewOptionsResult,
+    identity=("tapir", "GetModelViewOptions"),
 )
 
 
@@ -1001,6 +1155,8 @@ register_tool_for_dispatch(
         "reports the number of its direct children."
     ),
     params_model=GetNavigatorItemTreeParameters,
+    output_model=GetNavigatorItemTreeResult,
+    identity=("tapir", "GetNavigatorItemTree"),
 )
 
 
@@ -1023,6 +1179,8 @@ register_tool_for_dispatch(
         "a map has no parent and gets an error."
     ),
     params_model=GetNavigatorParentItemsParameters,
+    output_model=GetNavigatorParentItemsResult,
+    identity=("tapir", "GetNavigatorParentItems"),
 )
 
 
@@ -1043,6 +1201,8 @@ register_tool_for_dispatch(
         "server path, or the Internet host and directory name."
     ),
     params_model=None,
+    output_model=GetPublisherSetsResult,
+    identity=("tapir", "GetPublisherSets"),
 )
 
 
@@ -1065,6 +1225,8 @@ register_tool_for_dispatch(
         "and SetViewSettings, so a filter listed here can be set on saved views too."
     ),
     params_model=None,
+    output_model=GetRenovationFiltersResult,
+    identity=("tapir", "GetRenovationFilters"),
 )
 
 
@@ -1087,6 +1249,8 @@ register_tool_for_dispatch(
         "set with a spreadsheet format in Archicad and run PublishPublisherSet."
     ),
     params_model=None,
+    output_model=GetSchedulesResult,
+    identity=("tapir", "GetSchedules"),
 )
 
 
@@ -1105,9 +1269,12 @@ register_tool_for_dispatch(
     name="navigator_get_sections_and_elevations_details",
     title="GetSectionsAndElevationsDetails",
     description=(
-        "Gets every configurable setting of the given Section and Elevation elements, with their name and reference ID."
+        "Gets every configurable setting of the given Section and Elevation elements, with their name and reference "
+        "ID."
     ),
     params_model=GetSectionsAndElevationsDetailsParameters,
+    output_model=GetSectionsAndElevationsDetailsResult,
+    identity=("tapir", "GetSectionsAndElevationsDetails"),
 )
 
 
@@ -1130,6 +1297,8 @@ register_tool_for_dispatch(
         "in a saved view (see GetViewSettings). Available from Archicad 27."
     ),
     params_model=None,
+    output_model=GetStructureDisplayResult,
+    identity=("tapir", "GetStructureDisplay"),
 )
 
 
@@ -1146,6 +1315,8 @@ register_tool_for_dispatch(
     title="GetView2DTransformations",
     description="Get zoom and rotation of 2D views",
     params_model=GetView2DTransformationsParameters,
+    output_model=GetView2DTransformationsResult,
+    identity=("tapir", "GetView2DTransformations"),
 )
 
 
@@ -1166,6 +1337,8 @@ register_tool_for_dispatch(
         "the model view option combination it applies."
     ),
     params_model=None,
+    output_model=GetViewOptionsResult,
+    identity=("tapir", "GetViewOptions"),
 )
 
 
@@ -1182,6 +1355,8 @@ register_tool_for_dispatch(
     title="GetViewSettings",
     description="Gets the view settings of navigator items",
     params_model=GetViewSettingsParameters,
+    output_model=GetViewSettingsResult,
+    identity=("tapir", "GetViewSettings"),
 )
 
 
@@ -1211,6 +1386,8 @@ register_tool_for_dispatch(
         "execution result."
     ),
     params_model=ModifyDetailMarkersParameters,
+    output_model=ModifyDetailMarkersResult,
+    identity=("tapir", "ModifyDetailMarkers"),
 )
 
 
@@ -1233,6 +1410,8 @@ register_tool_for_dispatch(
         "markers show. GetDetailsOfElements reads those of a Section back as name and idStr."
     ),
     params_model=ModifySectionsParameters,
+    output_model=ModifySectionsResult,
+    identity=("tapir", "ModifySections"),
 )
 
 
@@ -1251,6 +1430,8 @@ register_tool_for_dispatch(
         "Performs a publish operation on the currently opened project. Only the given publisher set will be published."
     ),
     params_model=PublishPublisherSetParameters,
+    output_model=None,
+    identity=("tapir", "PublishPublisherSet"),
 )
 
 
@@ -1283,6 +1464,8 @@ register_tool_for_dispatch(
         "ID. With customName false the item drops its custom name and follows its Project Map source again."
     ),
     params_model=RenameNavigatorItemParameters,
+    output_model=RenameNavigatorItemResult,
+    identity=("tapir", "RenameNavigatorItem"),
 )
 
 
@@ -1305,6 +1488,8 @@ register_tool_for_dispatch(
         "unable to reposition an item within its current parent, by bouncing it through a sibling."
     ),
     params_model=ReorderNavigatorItemsParameters,
+    output_model=ReorderNavigatorItemsResult,
+    identity=("tapir", "ReorderNavigatorItems"),
 )
 
 
@@ -1321,6 +1506,8 @@ register_tool_for_dispatch(
     title="ResetZoom",
     description="Steps back in the zoom history of the current window, like Archicad's Zoom Back.",
     params_model=ResetZoomParameters,
+    output_model=ResetZoomResult,
+    identity=("tapir", "ResetZoom"),
 )
 
 
@@ -1337,6 +1524,8 @@ register_tool_for_dispatch(
     title="Set3DCutPlanes",
     description="Sets the 3D cut planes. An empty cutPlanes array switches the 3D cut off.",
     params_model=Set3DCutPlanesParameters,
+    output_model=Set3DCutPlanesResult,
+    identity=("tapir", "Set3DCutPlanes"),
 )
 
 
@@ -1359,6 +1548,8 @@ register_tool_for_dispatch(
         "returns; the settings not given are kept. Returns the settings read back after the change."
     ),
     params_model=Set3DDocumentSettingsParameters,
+    output_model=Set3DDocumentSettingsResult,
+    identity=("tapir", "Set3DDocumentSettings"),
 )
 
 
@@ -1381,6 +1572,8 @@ register_tool_for_dispatch(
         "element types change. Returns the settings read back after the change. Available from Archicad 27."
     ),
     params_model=Set3DFilterAndCutSettingsParameters,
+    output_model=None,
+    identity=("tapir", "Set3DFilterAndCutSettings"),
 )
 
 
@@ -1409,6 +1602,8 @@ register_tool_for_dispatch(
         "The 3D window shows the change after a rebuild (RebuildView), e.g. before SaveCurrentWindowAsImage."
     ),
     params_model=Set3DProjectionSettingsParameters,
+    output_model=Set3DProjectionSettingsResult,
+    identity=("tapir", "Set3DProjectionSettings"),
 )
 
 
@@ -1433,6 +1628,8 @@ register_tool_for_dispatch(
         "the 3D window (RebuildView) before it shows the change, e.g. before SaveCurrentWindowAsImage."
     ),
     params_model=Set3DWindowSettingsParameters,
+    output_model=Set3DWindowSettingsResult,
+    identity=("tapir", "Set3DWindowSettings"),
 )
 
 
@@ -1461,6 +1658,8 @@ register_tool_for_dispatch(
         "from Archicad 30."
     ),
     params_model=SetActiveGraphicalOverrideCombinationParameters,
+    output_model=SetActiveGraphicalOverrideCombinationResult,
+    identity=("tapir", "SetActiveGraphicalOverrideCombination"),
 )
 
 
@@ -1485,6 +1684,8 @@ register_tool_for_dispatch(
         "with SetViewSettings."
     ),
     params_model=SetActiveRenovationFilterParameters,
+    output_model=SetActiveRenovationFilterResult,
+    identity=("tapir", "SetActiveRenovationFilter"),
 )
 
 
@@ -1507,6 +1708,8 @@ register_tool_for_dispatch(
         "Documents are not affected. The fields are the ones returned by GetDocumentFrom3DDefaults."
     ),
     params_model=SetDocumentFrom3DDefaultsParameters,
+    output_model=SetDocumentFrom3DDefaultsResult,
+    identity=("tapir", "SetDocumentFrom3DDefaults"),
 )
 
 
@@ -1531,6 +1734,8 @@ register_tool_for_dispatch(
         "story choice the current reference is kept."
     ),
     params_model=SetGhostStorySettingsParameters,
+    output_model=SetGhostStorySettingsResult,
+    identity=("tapir", "SetGhostStorySettings"),
 )
 
 
@@ -1553,6 +1758,8 @@ register_tool_for_dispatch(
         "Returns the settings read back after the change. Available from Archicad 27."
     ),
     params_model=SetGridSettingsParameters,
+    output_model=None,
+    identity=("tapir", "SetGridSettings"),
 )
 
 
@@ -1577,6 +1784,8 @@ register_tool_for_dispatch(
         "API cannot reserve them, and ReserveElements does not. GetTeamworkOwnersOfDatabases shows who holds a layout."
     ),
     params_model=SetLayoutSettingsParameters,
+    output_model=SetLayoutSettingsResult,
+    identity=("tapir", "SetLayoutSettings"),
 )
 
 
@@ -1601,6 +1810,8 @@ register_tool_for_dispatch(
         "does not assign a master layout to a layout. Available from Archicad 27."
     ),
     params_model=SetMasterLayoutContextParameters,
+    output_model=SetMasterLayoutContextResult,
+    identity=("tapir", "SetMasterLayoutContext"),
 )
 
 
@@ -1626,6 +1837,8 @@ register_tool_for_dispatch(
         "model effects, story handles and markers. The name and the reference ID are changed with ModifySections."
     ),
     params_model=SetSectionsAndElevationsDetailsParameters,
+    output_model=SetSectionsAndElevationsDetailsResult,
+    identity=("tapir", "SetSectionsAndElevationsDetails"),
 )
 
 
@@ -1650,6 +1863,8 @@ register_tool_for_dispatch(
         "is not changed (see SetViewSettings for that). Available from Archicad 27."
     ),
     params_model=SetStructureDisplayParameters,
+    output_model=SetStructureDisplayResult,
+    identity=("tapir", "SetStructureDisplay"),
 )
 
 
@@ -1673,6 +1888,8 @@ register_tool_for_dispatch(
         "apply."
     ),
     params_model=SetViewOptionsParameters,
+    output_model=None,
+    identity=("tapir", "SetViewOptions"),
 )
 
 
@@ -1689,6 +1906,8 @@ register_tool_for_dispatch(
     title="SetViewRotation",
     description="Set the rotation angle of 2D views via their floor plan database.",
     params_model=SetViewRotationParameters,
+    output_model=SetViewRotationResult,
+    identity=("tapir", "SetViewRotation"),
 )
 
 
@@ -1705,6 +1924,8 @@ register_tool_for_dispatch(
     title="SetViewSettings",
     description="Sets the view settings of navigator items",
     params_model=SetViewSettingsParameters,
+    output_model=SetViewSettingsResult,
+    identity=("tapir", "SetViewSettings"),
 )
 
 
@@ -1721,6 +1942,8 @@ register_tool_for_dispatch(
     title="SetZoom",
     description="Zooms the current 2D window to the given box in model coordinates.",
     params_model=SetZoomParameters,
+    output_model=SetZoomResult,
+    identity=("tapir", "SetZoom"),
 )
 
 
@@ -1743,6 +1966,8 @@ register_tool_for_dispatch(
         "they are shown. Without elements it shows every element, as Show All in 3D does."
     ),
     params_model=ShowElementsIn3DParameters,
+    output_model=ShowElementsIn3DResult,
+    identity=("tapir", "ShowElementsIn3D"),
 )
 
 
@@ -1767,6 +1992,8 @@ register_tool_for_dispatch(
         "may rebuild the view."
     ),
     params_model=StoreViewSettingsParameters,
+    output_model=StoreViewSettingsResult,
+    identity=("tapir", "StoreViewSettings"),
 )
 
 
@@ -1783,6 +2010,8 @@ register_tool_for_dispatch(
     title="UpdateDrawings",
     description="Performs a drawing update on the given elements.",
     params_model=UpdateDrawingsParameters,
+    output_model=UpdateDrawingsResult,
+    identity=("tapir", "UpdateDrawings"),
 )
 
 
@@ -1807,4 +2036,6 @@ register_tool_for_dispatch(
         "all of them are on another story or on a hidden layer."
     ),
     params_model=ZoomToElementsParameters,
+    output_model=ZoomToElementsResult,
+    identity=("tapir", "ZoomToElements"),
 )

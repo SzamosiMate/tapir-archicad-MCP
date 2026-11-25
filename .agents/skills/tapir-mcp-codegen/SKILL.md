@@ -29,9 +29,9 @@ Preserve a matching manual pin. If explicit targets conflict or no published rel
 
 Read these repository sources as needed:
 
-- `scripts/generator_config.py`: dependency-derived metadata URLs, group prefixes, exclusions, pagination, and images. Read every inline exclusion reason before deciding which release changes affect it.
+- `scripts/generator_config.py`: dependency-derived metadata URLs, group prefixes, exclusions, and images. Read every inline exclusion reason before deciding which release changes affect it.
 - `scripts/generate_tools.py` and `scripts/format.py`: wrapper generation and formatting.
-- `src/tapir_archicad_mcp/pagination.py`, `images.py`, and `tools/tool_registry.py`: the actual supported config behavior.
+- `images.py` and `tools/tool_registry.py` in the runtime package describe image handling and registration.
 - `tools/custom/functions.py` and `tools/custom/models.py` under the same package when assessing discovery overlap; compare what the agent can retrieve, not merely metadata held internally.
 
 Record the initial pin, installed version, generated command names/config, and staged/untracked paths. Preserve session work as the starting point. Distinguish it from HEAD and from the source release's API; earlier changes in the same chat are not new upstream additions.
@@ -68,7 +68,7 @@ The target comes from the exact installed dependency pin. The cache records exac
 
 ## Decide the affected config
 
-Assess every new command against all applicable config fields. Also review changed commands and the consumers of changed models. Existing exclusions get reconsidered only when those changes or a new counterpart affect their stated reason; a complete baseline review needs an explicit request.
+Use the [tapir-command-metadata skill](../tapir-command-metadata/SKILL.md) to review alignment, extraction and presentation together. Assess all applicable config fields for added and changed commands and for consumers of changed models. Reconsider existing exclusions when those changes or a new counterpart affect their stated reason.
 
 ### Exclusions and retirement
 
@@ -83,17 +83,11 @@ For a schema/implementation exclusion affected by the release, consult [known sc
 
 **Remove an exclusion when its stated reason is demonstrably resolved in the target release.** Do not retain it merely because it was previously approved or documented. Verify every independent defect behind that exclusion; fixing one typo is insufficient if the response shape or implementation remains wrong. A merged PR, release note, newer branch, or version number alone is insufficient proof. Ordinary retirement of a resolved schema/duplicate exclusion does not require another human decision.
 
-When restoring a command, reassess its group, pagination and image handling, regenerate its wrapper, and update the tracking entry in the same run. When excluding a command, remove inactive pagination/image entries. Do not permanently suppress a useful general command for one defective branch unless the user chose that policy.
-
-### Pagination
-
-Focus on **Get commands that can return unexpectedly huge amounts of data relative to the request**. Judge approximate token volume, including GUIDs, XML/free text, nested geometry, property matrices and image lists. A large mutation's execution results normally follow an even larger request; do not routinely paginate those results. Coverage may be refined later; do not make exhaustive pagination a prerequisite for completing an update.
-
-Select the response list most likely to dominate tokens if several exist. The current runtime pages one top-level field, in fixed pages of 100, and repeats sibling metadata. A dotted path is not supported, and a nested subtree can still make one item large. Explain material tradeoffs; do not change runtime page sizing or response shapes merely to add config entries.
+When restoring a command, reassess its group, result metadata and image handling, regenerate its wrapper, and update the tracking entry in the same run. When excluding a command, remove inactive image and metadata entries. Do not permanently suppress a useful general command for one defective branch unless the user chose that policy.
 
 ### Base64 images
 
-Inspect returned content and referenced item models. Configure `image_fields` for base64 strings and `image_lists` for arrays of base64 strings or items shaped like `{"image": "..."}`, `{"image": {"content": "..."}}` or an error. Use a tuple when a command returns multiple fields of the same kind. File paths, texture filenames and image-related enum values are not returned images. Image lists may independently need pagination. If a new shape is unsupported, make the smallest necessary generator/runtime change and test it rather than adding an ineffective config field.
+Inspect returned content and referenced item models. Configure `image_fields` for base64 strings and `image_lists` for arrays of base64 strings or items shaped like `{"image": "..."}`, `{"image": {"content": "..."}}` or an error. Use a tuple when a command returns multiple fields of the same kind. File paths, texture filenames and image-related enum values are not returned images. If a new shape is unsupported, make the smallest necessary generator/runtime change and test it.
 
 ### Category mapping
 
@@ -112,12 +106,12 @@ The generator clears its generated source directories. Preserve any initial edit
 Repair demonstrated config/generator problems and regenerate until the intended tools register. Verify:
 
 - Registered command names and counts match the target metadata after exclusions; no duplicate names, stale imports, or unexpected fallback prefixes.
-- Every registered input schema can be built. Configured pagination fields are real top-level lists, image paths match the extractor, and excluded commands have no inactive config entries.
+- Every registered input and output schema can be built. Registered metadata uses the reviewed objects. Image paths match the extractor, and excluded commands have no inactive config entries.
 - Restored/excluded commands actually appear/disappear, and caller-visible identifier/schema changes are understood. MCP wrappers return raw results, so schema-generation success does not prove upstream result correctness.
 
 Rerun the helper with `--check-generated --offline` after generation, using the same arguments/cache. This additionally checks static declarations and package imports before runtime registration can hide duplicates, then dispatch source, parameter models and input schemas. A successful check does not prove upstream result correctness or replace semantic review and the relevant tests.
 
-Run existing generator-config tests and tests covering affected dispatch/pagination/image behavior; broaden to the full suite when changes warrant it. Use a writable `--basetemp` if the Windows sandbox's default pytest temp directory fails. If `uv run` fails on cache permissions, use the verified project interpreter directly rather than repeatedly retrying the cache. Report stalled/limited checks honestly. Do not execute live modifying Archicad commands just to validate code generation.
+Run existing generator-config tests and tests covering affected dispatch, result handle, and image behavior. Broaden to the full suite when changes warrant it. Use a writable `--basetemp` if the Windows sandbox's default pytest temp directory fails. If `uv run` fails on cache permissions, use the verified project interpreter directly. Report stalled or limited checks. Do not execute live modifying Archicad commands just to validate code generation.
 
 ## Report and stage
 

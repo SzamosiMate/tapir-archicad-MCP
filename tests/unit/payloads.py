@@ -3,8 +3,8 @@
 from tapir_archicad_mcp.tools.custom import functions
 
 
-async def archicad_call_tool(name: str, arguments: dict) -> dict:
-    return (await functions.archicad_call_tool(name, arguments)).structured_content
+async def archicad_call_tool(name: str, arguments: dict, resultMode: str = "auto") -> dict:
+    return (await functions.archicad_call_tool(name, arguments, resultMode)).structured_content
 
 
 async def archicad_get_job(job_handle: str | None = None) -> dict:

@@ -1,8 +1,11 @@
 """Server-owned executions, independent of MCP request cancellation."""
 
 import asyncio
+import hashlib
+import hmac
 import json
 import logging
+import secrets
 import time
 import uuid
 from collections import OrderedDict
@@ -13,12 +16,18 @@ from datetime import UTC, datetime
 from enum import StrEnum
 from functools import wraps
 from threading import RLock
-from typing import Any
+from typing import TYPE_CHECKING, Any, NewType
 
 from mcp.server.mcpserver.exceptions import ToolError
 from multiconn_archicad.errors import APIErrorBase, RequestError
 
-from tapir_archicad_mcp.pagination import INVALID_TOKEN, PaginationRequest, PaginationSnapshot
+from tapir_archicad_mcp.result_budget import ResultBudget
+
+if TYPE_CHECKING:
+    from tapir_archicad_mcp.tool_results import Completion
+
+JobHandle = NewType("JobHandle", str)
+ResultHandle = NewType("ResultHandle", str)
 
 log = logging.getLogger(__name__)
 COMMAND_WORKERS = 32
@@ -43,12 +52,21 @@ class JobSettings:
     async_threshold_seconds: float = 45
     job_ttl_seconds: float = 86400
     max_completed_jobs: int = 128
+    result_budget: ResultBudget = field(default_factory=ResultBudget)
 
 
 def arguments_preview(arguments: dict) -> str:
     """Format supplied arguments as a compact snippet for identifying a job."""
-    preview = json.dumps(arguments, ensure_ascii=False, separators=(",", ":"))
-    return preview if len(preview) <= PREVIEW_MAX_CHARS else preview[: PREVIEW_MAX_CHARS - 1] + "…"
+    encoder = json.JSONEncoder(ensure_ascii=False, separators=(",", ":"))
+    chunks = []
+    length = 0
+    for chunk in encoder.iterencode(arguments):
+        if length + len(chunk) > PREVIEW_MAX_CHARS:
+            chunks.append(chunk[: PREVIEW_MAX_CHARS - length])
+            return "".join(chunks)[: PREVIEW_MAX_CHARS - 1] + "…"
+        length += len(chunk)
+        chunks.append(chunk)
+    return "".join(chunks)
 
 
 def _failure_details(exc: BaseException) -> dict:
@@ -72,7 +90,7 @@ class JobStatus(StrEnum):
 
 @dataclass
 class Job:
-    handle: str
+    handle: JobHandle
     command: str
     port: int
     arguments_preview: str
@@ -81,7 +99,6 @@ class Job:
     completed_at: str | None = None
     result: Any = None
     error: dict | None = None
-    exception: Exception | None = None
     future: Future = field(init=False, repr=False)
     completion: asyncio.Future | None = field(default=None, init=False, repr=False)
 
@@ -96,8 +113,9 @@ class Job:
             "argumentsPreview": self.arguments_preview,
         }
 
-    def rendered_result(self) -> Any:
-        return self.result.page() if isinstance(self.result, PaginationSnapshot) else self.result
+    @property
+    def result_handle(self) -> ResultHandle:
+        return ResultHandle("result:" + self.handle.removeprefix("job:"))
 
 
 class JobStore:
@@ -114,16 +132,20 @@ class JobStore:
         self._jobs: dict[str, Job] = {}
         self._completed: OrderedDict[str, float] = OrderedDict()
         self._accepting = True
+        self._read_key = secrets.token_bytes(32)
         self._max_workers = max_workers
         self._executor = ThreadPoolExecutor(max_workers=max_workers, thread_name_prefix="TapirJob")
 
-    @locked
     def submit(self, command: str, port: int, arguments: dict, execute: Callable[[str], Any]) -> Job:
+        return self.submit_prepared(command, port, arguments_preview(arguments), execute)
+
+    @locked
+    def submit_prepared(self, command: str, port: int, preview: str, execute: Callable[[str], Any]) -> Job:
         if not self._accepting:
             raise ToolError("The job store is shutting down; no new commands can be started.")
         if len(self._jobs) - len(self._completed) >= self._max_workers:
             raise ToolError(f"Server busy: all {self._max_workers} command workers are occupied. Try again later.")
-        job = Job("job:" + uuid.uuid4().hex, command, port, arguments_preview(arguments))
+        job = Job(JobHandle("job:" + uuid.uuid4().hex), command, port, preview)
         self._jobs[job.handle] = job
         try:
             job.future = self._executor.submit(self._execute, job, execute)
@@ -135,7 +157,6 @@ class JobStore:
     def _execute(self, job: Job, execute: Callable[[str], Any]) -> None:
         log.info("[%s] Execution start: '%s' on port %s", job.handle, job.command, job.port)
         result = None
-        exception = None
         error = None
         try:
             result = execute(job.handle)
@@ -145,16 +166,14 @@ class JobStore:
             # A worker exiting abnormally must still finalize its admitted job.
             log.exception("[%s] Execution failed: '%s' on port %s", job.handle, job.command, job.port)
             error = _failure_details(exc)
-            exception = exc.with_traceback(None) if isinstance(exc, Exception) else RuntimeError(error["message"])
-        self._complete(job, result, exception, error)
+        self._complete(job, result, error)
         log.info("[%s] Execution end: %s", job.handle, job.status)
 
     @locked
-    def _complete(self, job: Job, result: Any, exception: Exception | None, error: dict | None) -> None:
+    def _complete(self, job: Job, result: Any, error: dict | None) -> None:
         job.result = result
-        job.exception = exception
         job.error = error
-        job.status = JobStatus.FAILED if exception is not None else JobStatus.COMPLETED
+        job.status = JobStatus.FAILED if error is not None else JobStatus.COMPLETED
         job.completed_at = datetime.now(UTC).isoformat()
         self._completed[job.handle] = self._clock()
         self.prune()
@@ -170,12 +189,15 @@ class JobStore:
     def initial_result(self, job: Job) -> dict:
         if job.status == JobStatus.RUNNING:
             return {"status": job.status.value, "jobHandle": job.handle}
-        if job.exception is not None:
-            raise job.exception
-        return job.rendered_result()
+        if job.error is not None:
+            raise ToolError(job.error["message"])
+        return job.result
 
     @locked
     def get(self, handle: str) -> Job:
+        if handle.startswith("result:"):
+            raise ToolError("archicad_get_job requires a jobHandle. Use result_read for a resultHandle.")
+        self.prune()
         try:
             return self._jobs[handle]
         except KeyError:
@@ -183,25 +205,30 @@ class JobStore:
 
     @locked
     def list_jobs(self) -> dict:
+        self.prune()
         return {"jobs": [job.summary() for job in reversed(self._jobs.values())]}
 
     @locked
     def response(self, job: Job) -> dict:
         response = {"jobHandle": job.handle, "status": job.status.value}
         if job.status == JobStatus.COMPLETED:
-            response["result"] = job.rendered_result()
+            response["result"] = job.result
         elif job.status == JobStatus.FAILED:
             response["error"] = dict(job.error)
         return response
 
     @locked
-    def get_page(self, token: str, request: PaginationRequest) -> dict:
-        session, _, raw_offset = token.partition(":")
-        job = self._jobs.get("job:" + session)
-        snapshot = job.result if job is not None else None
-        if isinstance(snapshot, PaginationSnapshot):
-            return snapshot.continuation(request, raw_offset)
-        raise ToolError(INVALID_TOKEN)
+    def get_result(self, handle: str) -> "Completion":
+        if not handle.startswith("result:"):
+            raise ToolError("A resultHandle is required. Use archicad_get_job to poll a jobHandle.")
+        self.prune()
+        job = self._jobs.get("job:" + handle.removeprefix("result:"))
+        if job is None or job.status is not JobStatus.COMPLETED:
+            raise ToolError("Unknown or expired resultHandle. Request resultMode='handle' when executing a command.")
+        return job.result
+
+    def sign_read_cursor(self, value: bytes) -> str:
+        return hmac.new(self._read_key, value, hashlib.sha256).hexdigest()
 
     @locked
     def prune(self) -> None:

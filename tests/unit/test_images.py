@@ -2,10 +2,14 @@ import base64
 import json
 
 import pytest
+from mcp.server.mcpserver.exceptions import ToolError
 from mcp.types import CallToolResult
 
-from tapir_archicad_mcp.images import to_tool_result
+from tapir_archicad_mcp.images import retain_images
+from tapir_archicad_mcp.result_reading import ReadSelection
+from tapir_archicad_mcp.tool_results import encode
 from tapir_archicad_mcp.tools.custom.functions import archicad_call_tool, archicad_get_job
+from tapir_archicad_mcp.tools.custom.result_tools import result_read
 from tapir_archicad_mcp.tools.tool_registry import (
     TOOL_CALLABLE_REGISTRY,
     TOOL_DISCOVERY_CATALOG,
@@ -49,6 +53,16 @@ async def test_image_mapping_comes_from_the_registry(snapshot_command):
     assert PNG_B64 not in result.content[0].text
 
 
+async def test_selected_image_from_handle_uses_native_mcp_content(snapshot_command):
+    completed = await archicad_call_tool(snapshot_command, {"port": 19723}, "handle")
+    assert [block.type for block in completed.content] == ["text"]
+    handle = completed.structured_content["resultHandle"]
+    result = await result_read(handle, ReadSelection(paths=[["snapshot"]]))
+    assert [block.type for block in result.content] == ["text", "image"]
+    assert result.content[-1].data == PNG_B64
+    assert PNG_B64 not in result.content[0].text
+
+
 @pytest.mark.parametrize(("data", "mime_type"), [(PNG_B64, "image/png"), (JPG_B64, "image/jpeg")])
 async def test_png_and_jpeg_mime_types(fake_archicad, data, mime_type):
     fake_archicad.on_tapir_command("GetElementPreviewImage", {"previewImage": data})
@@ -61,9 +75,7 @@ async def test_png_and_jpeg_mime_types(fake_archicad, data, mime_type):
 async def test_current_view_image_dispatches_and_preserves_dimensions(fake_archicad):
     fake_archicad.on_tapir_command("GetCurrentViewImage", {"image": PNG_B64, "width": 1, "height": 1})
 
-    result = await archicad_call_tool(
-        "project_get_current_view_image", {"port": fake_archicad.port, "params": {}}
-    )
+    result = await archicad_call_tool("project_get_current_view_image", {"port": fake_archicad.port, "params": {}})
 
     assert fake_archicad.calls == [("GetCurrentViewImage", {})]
     assert result.content[1].data == PNG_B64
@@ -80,7 +92,7 @@ async def test_profile_previews_keep_errors_and_number_images(fake_archicad):
         ]
     }
 
-    converted = to_tool_result(get_tool_entry("attributes_get_profile_attribute_preview"), result)
+    converted = encode(retain_images(get_tool_entry("attributes_get_profile_attribute_preview"), result), 8192).mcp()
 
     assert [block.type for block in converted.content] == ["text", "image", "image"]
     assert [block.data for block in converted.content[1:]] == [PNG_B64, JPG_B64]
@@ -131,21 +143,19 @@ async def test_converted_images_extract_flat_wrappers_and_preserve_other_results
         ]
     }
     fake_archicad.on_tapir_command("ConvertImages", response)
-    params = {"images": [{"image": PNG_B64, "inputFormat": "PNG", "outputFormat": "JPEG"}]}
+    params = {"images": [{"image": PNG_B64, "inputFormat": "PNG", "outputFormat": "JPEG"}] * 5}
 
     result = await archicad_call_tool("app_convert_images", {"port": fake_archicad.port, "params": params})
 
     assert fake_archicad.calls == [("ConvertImages", params)]
     assert [block.data for block in result.content[1:]] == [PNG_B64, JPG_B64]
-    assert result.structured_content == {
-        "images": [
-            {"image": "returned as MCP image content #1", "futureField": "kept"},
-            response["images"][1],
-            {"image": "returned as MCP image content #2"},
-            {"image": gif},
-            {"image": "invalid"},
-        ]
-    }
+    slots = result.structured_content["images"]
+    assert [slot["state"] for slot in slots] == ["success", "failed", "success", "success", "success"]
+    assert slots[1]["error"]["message"] == "Cannot convert"
+    assert slots[0]["value"] == {"image": "returned as MCP image content #1", "futureField": "kept"}
+    assert slots[2]["value"] == {"image": "returned as MCP image content #2"}
+    assert slots[3]["value"] == {"image": gif}
+    assert slots[4]["value"] == {"image": "invalid"}
     assert response["images"][0]["image"] == PNG_B64
     handle = (await archicad_get_job()).structured_content["jobs"][0]["jobHandle"]
     repeated = await archicad_get_job(handle)
@@ -160,7 +170,7 @@ async def test_non_image_results_are_call_tool_results_with_the_same_content(fak
 
     assert isinstance(result, CallToolResult)
     assert [block.type for block in result.content] == ["text"]
-    assert result.content[0].text == json.dumps({"version": "1.7.2", "name": "Wand Ä"}, indent=2, ensure_ascii=False)
+    assert json.loads(result.content[0].text) == result.structured_content
     assert result.structured_content == {"version": "1.7.2", "name": "Wand Ä"}
 
 
@@ -204,7 +214,7 @@ async def test_job_result_of_an_image_command_is_image_content(fake_archicad):
 async def test_results_without_a_png_or_jpeg_pass_through(fake_archicad, result):
     entry = get_tool_entry("elements_get_element_preview_image")
 
-    converted = to_tool_result(entry, result)
+    converted = encode(retain_images(entry, result), 8192).mcp()
 
     assert [block.type for block in converted.content] == ["text"]
     assert converted.structured_content == result
@@ -217,7 +227,7 @@ async def test_results_without_a_png_or_jpeg_pass_through(fake_archicad, result)
 async def test_profile_previews_without_images_pass_through(fake_archicad, previews):
     entry = get_tool_entry("attributes_get_profile_attribute_preview")
 
-    converted = to_tool_result(entry, {"previewImages": previews})
+    converted = encode(retain_images(entry, {"previewImages": previews}), 8192).mcp()
 
     assert [block.type for block in converted.content] == ["text"]
     assert converted.structured_content == {"previewImages": previews}
@@ -230,7 +240,7 @@ async def test_text_block_keeps_non_ascii_characters(snapshot_command):
 
 
 async def test_failed_image_job_stays_a_plain_response(fake_archicad):
-    with pytest.raises(RuntimeError, match="unexpected Tapir command"):
+    with pytest.raises(ToolError, match="Unexpected execution error"):
         await archicad_call_tool("elements_get_element_preview_image", PREVIEW_ARGS)
     handle = (await archicad_get_job()).structured_content["jobs"][0]["jobHandle"]
 

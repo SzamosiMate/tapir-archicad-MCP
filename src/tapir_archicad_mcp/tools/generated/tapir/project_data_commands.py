@@ -2,15 +2,26 @@
 from multiconn_archicad import ConnHeader
 from multiconn_archicad.models.tapir.commands import (
     DeleteModulDataParameters,
+    DeleteModulDataResult,
     DeleteProjectDataParameters,
+    DeleteProjectDataResult,
     GetModulDataParameters,
+    GetModulDataResult,
+    GetProjectDataKeysResult,
     GetProjectDataParameters,
+    GetProjectDataResult,
     GrantProjectDataParameters,
+    GrantProjectDataResult,
     ReleaseProjectDataParameters,
+    ReleaseProjectDataResult,
     RequestProjectDataParameters,
+    RequestProjectDataResult,
     ReserveProjectDataParameters,
+    ReserveProjectDataResult,
     SetProjectDataParameters,
+    SetProjectDataResult,
     StoreModulDataParameters,
+    StoreModulDataResult,
 )
 
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
@@ -29,6 +40,8 @@ register_tool_for_dispatch(
     title="DeleteModulData",
     description="Deletes the module data with the given names. Deleting module data is not an undoable step.",
     params_model=DeleteModulDataParameters,
+    output_model=DeleteModulDataResult,
+    identity=("tapir", "DeleteModulData"),
 )
 
 
@@ -45,6 +58,8 @@ register_tool_for_dispatch(
     title="DeleteProjectData",
     description="Deletes the project data with the given names.",
     params_model=DeleteProjectDataParameters,
+    output_model=DeleteProjectDataResult,
+    identity=("tapir", "DeleteProjectData"),
 )
 
 
@@ -71,16 +86,13 @@ register_tool_for_dispatch(
         "project data (SetProjectData)."
     ),
     params_model=GetModulDataParameters,
+    output_model=GetModulDataResult,
+    identity=("tapir", "GetModulData"),
 )
 
 
 def get_project_data(conn_header: ConnHeader, params: GetProjectDataParameters) -> dict:
-    """
-    Gets the content of the project data with the given names.
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
-    """
+    """Gets the content of the project data with the given names."""
     return conn_header.core.post_tapir_command(
         command="GetProjectData", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
@@ -92,7 +104,8 @@ register_tool_for_dispatch(
     title="GetProjectData",
     description="Gets the content of the project data with the given names.",
     params_model=GetProjectDataParameters,
-    pagination_field="values",
+    output_model=GetProjectDataResult,
+    identity=("tapir", "GetProjectData"),
 )
 
 
@@ -102,9 +115,6 @@ def get_project_data_keys(conn_header: ConnHeader) -> dict:
     them, whether they are kept on this client only and the Teamwork user who has reserved them. Project data is text
     (for example JSON) saved in the project file by scripts and Grasshopper definitions, such as their settings or the
     mapping of elements to an external system.
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
     """
     return conn_header.core.post_tapir_command(command="GetProjectDataKeys", parameters={})
 
@@ -120,7 +130,8 @@ register_tool_for_dispatch(
         "their settings or the mapping of elements to an external system."
     ),
     params_model=None,
-    pagination_field="keys",
+    output_model=GetProjectDataKeysResult,
+    identity=("tapir", "GetProjectDataKeys"),
 )
 
 
@@ -139,6 +150,8 @@ register_tool_for_dispatch(
         "Grants the project data with the given names, reserved by the current user, to another Teamwork user."
     ),
     params_model=GrantProjectDataParameters,
+    output_model=GrantProjectDataResult,
+    identity=("tapir", "GrantProjectData"),
 )
 
 
@@ -155,6 +168,8 @@ register_tool_for_dispatch(
     title="ReleaseProjectData",
     description="Releases the project data with the given names in Teamwork.",
     params_model=ReleaseProjectDataParameters,
+    output_model=ReleaseProjectDataResult,
+    identity=("tapir", "ReleaseProjectData"),
 )
 
 
@@ -177,6 +192,8 @@ register_tool_for_dispatch(
         "optional message."
     ),
     params_model=RequestProjectDataParameters,
+    output_model=RequestProjectDataResult,
+    identity=("tapir", "RequestProjectData"),
 )
 
 
@@ -199,6 +216,8 @@ register_tool_for_dispatch(
         "users who have already reserved some of it."
     ),
     params_model=ReserveProjectDataParameters,
+    output_model=ReserveProjectDataResult,
+    identity=("tapir", "ReserveProjectData"),
 )
 
 
@@ -224,6 +243,8 @@ register_tool_for_dispatch(
         "overwrite each other's data."
     ),
     params_model=SetProjectDataParameters,
+    output_model=SetProjectDataResult,
+    identity=("tapir", "SetProjectData"),
 )
 
 
@@ -248,4 +269,6 @@ register_tool_for_dispatch(
         "scripts do not overwrite each other's data. Storing module data is not an undoable step."
     ),
     params_model=StoreModulDataParameters,
+    output_model=StoreModulDataResult,
+    identity=("tapir", "StoreModulData"),
 )

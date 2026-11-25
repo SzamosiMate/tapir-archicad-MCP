@@ -2,34 +2,69 @@
 from multiconn_archicad import ConnHeader
 from multiconn_archicad.models.tapir.commands import (
     AddLoadCasesToLoadCombinationParameters,
+    AddLoadCasesToLoadCombinationResult,
     ConvertAnalyticalLinksToNonShortestParameters,
+    ConvertAnalyticalLinksToNonShortestResult,
     CreateAnalyticalLinksParameters,
+    CreateAnalyticalLinksResult,
     CreateAnalyticalLoadCasesParameters,
+    CreateAnalyticalLoadCasesResult,
     CreateAnalyticalLoadCombinationsParameters,
+    CreateAnalyticalLoadCombinationsResult,
     CreateAnalyticalLoadGroupsParameters,
+    CreateAnalyticalLoadGroupsResult,
     CreateAnalyticalLoadsParameters,
+    CreateAnalyticalLoadsResult,
     CreateAnalyticalSupportsParameters,
+    CreateAnalyticalSupportsResult,
     CreateElementsFromAnalyticalMembersParameters,
+    CreateElementsFromAnalyticalMembersResult,
     DeleteAnalyticalLoadCasesParameters,
+    DeleteAnalyticalLoadCasesResult,
     DeleteAnalyticalLoadCombinationsParameters,
+    DeleteAnalyticalLoadCombinationsResult,
     DeleteAnalyticalLoadGroupsParameters,
+    DeleteAnalyticalLoadGroupsResult,
     GetAnalyticalLinksParameters,
+    GetAnalyticalLinksResult,
     GetAnalyticalLoadCasesParameters,
+    GetAnalyticalLoadCasesResult,
+    GetAnalyticalLoadCombinationsResult,
+    GetAnalyticalLoadGroupsResult,
     GetAnalyticalLoadsParameters,
+    GetAnalyticalLoadsResult,
     GetAnalyticalMemberDetailsParameters,
+    GetAnalyticalMemberDetailsResult,
     GetAnalyticalMemberPartGeometriesParameters,
+    GetAnalyticalMemberPartGeometriesResult,
     GetAnalyticalMembersParameters,
+    GetAnalyticalMembersResult,
     GetAnalyticalMemberTypesOfElementsParameters,
+    GetAnalyticalMemberTypesOfElementsResult,
+    GetAnalyticalModelCheckTypeIdResult,
     GetAnalyticalModelParameters,
+    GetAnalyticalModelResult,
     GetAnalyticalModelVariationParameters,
+    GetAnalyticalModelVariationResult,
     GetAnalyticalReleasesParameters,
+    GetAnalyticalReleasesResult,
     GetAnalyticalSupportsParameters,
+    GetAnalyticalSupportsResult,
+    GetAnalyticalVisibilitySettingsResult,
+    GetCurrentAnalyticalModelResult,
     GetCustomCurveMemberStretchParameters,
+    GetCustomCurveMemberStretchResult,
     GetLCSOfAnalyticalMembersParameters,
+    GetLCSOfAnalyticalMembersResult,
+    SetAnalyticalGenerationSettingsToNoRuleResult,
     SetAnalyticalReleasesParameters,
+    SetAnalyticalReleasesResult,
     SetAnalyticalVisibilitySettingsParameters,
+    SetAnalyticalVisibilitySettingsResult,
     SetCustomCurveMemberStretchParameters,
+    SetCustomCurveMemberStretchResult,
     UpdateAnalyticalModelParameters,
+    UpdateAnalyticalModelResult,
 )
 
 from tapir_archicad_mcp.tools.tool_registry import register_tool_for_dispatch
@@ -53,6 +88,8 @@ register_tool_for_dispatch(
         "Adds load cases with their factors to the given structural analysis load combination in one undo step."
     ),
     params_model=AddLoadCasesToLoadCombinationParameters,
+    output_model=AddLoadCasesToLoadCombinationResult,
+    identity=("tapir", "AddLoadCasesToLoadCombination"),
 )
 
 
@@ -79,6 +116,8 @@ register_tool_for_dispatch(
         "Archicad 26."
     ),
     params_model=ConvertAnalyticalLinksToNonShortestParameters,
+    output_model=ConvertAnalyticalLinksToNonShortestResult,
+    identity=("tapir", "ConvertAnalyticalLinksToNonShortest"),
 )
 
 
@@ -101,6 +140,8 @@ register_tool_for_dispatch(
         "in one undo step. Available from Archicad 26."
     ),
     params_model=CreateAnalyticalLinksParameters,
+    output_model=CreateAnalyticalLinksResult,
+    identity=("tapir", "CreateAnalyticalLinks"),
 )
 
 
@@ -122,6 +163,8 @@ register_tool_for_dispatch(
         "identifiers."
     ),
     params_model=CreateAnalyticalLoadCasesParameters,
+    output_model=CreateAnalyticalLoadCasesResult,
+    identity=("tapir", "CreateAnalyticalLoadCases"),
 )
 
 
@@ -147,6 +190,8 @@ register_tool_for_dispatch(
         "returns their identifiers. The combination type is available from Archicad 27."
     ),
     params_model=CreateAnalyticalLoadCombinationsParameters,
+    output_model=CreateAnalyticalLoadCombinationsResult,
+    identity=("tapir", "CreateAnalyticalLoadCombinations"),
 )
 
 
@@ -164,6 +209,8 @@ register_tool_for_dispatch(
     title="CreateAnalyticalLoadGroups",
     description="Creates structural analysis load groups in one undo step and returns their identifiers.",
     params_model=CreateAnalyticalLoadGroupsParameters,
+    output_model=CreateAnalyticalLoadGroupsResult,
+    identity=("tapir", "CreateAnalyticalLoadGroups"),
 )
 
 
@@ -186,6 +233,8 @@ register_tool_for_dispatch(
         "GetAnalyticalLoads returns them, in one undo step. Available from Archicad 26."
     ),
     params_model=CreateAnalyticalLoadsParameters,
+    output_model=CreateAnalyticalLoadsResult,
+    identity=("tapir", "CreateAnalyticalLoads"),
 )
 
 
@@ -208,6 +257,8 @@ register_tool_for_dispatch(
         "them, in one undo step. Available from Archicad 26."
     ),
     params_model=CreateAnalyticalSupportsParameters,
+    output_model=CreateAnalyticalSupportsResult,
+    identity=("tapir", "CreateAnalyticalSupports"),
 )
 
 
@@ -236,6 +287,8 @@ register_tool_for_dispatch(
         "member parts."
     ),
     params_model=CreateElementsFromAnalyticalMembersParameters,
+    output_model=CreateElementsFromAnalyticalMembersResult,
+    identity=("tapir", "CreateElementsFromAnalyticalMembers"),
 )
 
 
@@ -252,6 +305,8 @@ register_tool_for_dispatch(
     title="DeleteAnalyticalLoadCases",
     description="Deletes the given structural analysis load cases in one undo step.",
     params_model=DeleteAnalyticalLoadCasesParameters,
+    output_model=DeleteAnalyticalLoadCasesResult,
+    identity=("tapir", "DeleteAnalyticalLoadCases"),
 )
 
 
@@ -271,6 +326,8 @@ register_tool_for_dispatch(
     title="DeleteAnalyticalLoadCombinations",
     description="Deletes the given structural analysis load combinations in one undo step.",
     params_model=DeleteAnalyticalLoadCombinationsParameters,
+    output_model=DeleteAnalyticalLoadCombinationsResult,
+    identity=("tapir", "DeleteAnalyticalLoadCombinations"),
 )
 
 
@@ -288,6 +345,8 @@ register_tool_for_dispatch(
     title="DeleteAnalyticalLoadGroups",
     description="Deletes the given structural analysis load groups in one undo step.",
     params_model=DeleteAnalyticalLoadGroupsParameters,
+    output_model=DeleteAnalyticalLoadGroupsResult,
+    identity=("tapir", "DeleteAnalyticalLoadGroups"),
 )
 
 
@@ -310,6 +369,8 @@ register_tool_for_dispatch(
         "from Archicad 26."
     ),
     params_model=GetAnalyticalLinksParameters,
+    output_model=GetAnalyticalLinksResult,
+    identity=("tapir", "GetAnalyticalLinks"),
 )
 
 
@@ -332,6 +393,8 @@ register_tool_for_dispatch(
         "given, with all their fields."
     ),
     params_model=GetAnalyticalLoadCasesParameters,
+    output_model=GetAnalyticalLoadCasesResult,
+    identity=("tapir", "GetAnalyticalLoadCases"),
 )
 
 
@@ -348,6 +411,8 @@ register_tool_for_dispatch(
         "Retrieves the structural analysis load combinations of the project with all their fields and load factors."
     ),
     params_model=None,
+    output_model=GetAnalyticalLoadCombinationsResult,
+    identity=("tapir", "GetAnalyticalLoadCombinations"),
 )
 
 
@@ -362,6 +427,8 @@ register_tool_for_dispatch(
     title="GetAnalyticalLoadGroups",
     description="Retrieves the structural analysis load groups of the project with all their fields.",
     params_model=None,
+    output_model=GetAnalyticalLoadGroupsResult,
+    identity=("tapir", "GetAnalyticalLoadGroups"),
 )
 
 
@@ -385,6 +452,8 @@ register_tool_for_dispatch(
         "26."
     ),
     params_model=GetAnalyticalLoadsParameters,
+    output_model=GetAnalyticalLoadsResult,
+    identity=("tapir", "GetAnalyticalLoads"),
 )
 
 
@@ -393,9 +462,6 @@ def get_analytical_member_details(conn_header: ConnHeader, params: GetAnalytical
     Retrieves the curve, surface or segmented surface member of the given elements in a Structural Analytical Model,
     with their connections. Cross sections, curves, nodes and surfaces are returned with every field the Archicad
     version has.
-
-    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
-    and page_token set to that token to get the next page of results.
     """
     return conn_header.core.post_tapir_command(
         command="GetAnalyticalMemberDetails",
@@ -413,7 +479,8 @@ register_tool_for_dispatch(
         "Archicad version has."
     ),
     params_model=GetAnalyticalMemberDetailsParameters,
-    pagination_field="analyticalMembers",
+    output_model=GetAnalyticalMemberDetailsResult,
+    identity=("tapir", "GetAnalyticalMemberDetails"),
 )
 
 
@@ -439,6 +506,8 @@ register_tool_for_dispatch(
         "from Archicad 26."
     ),
     params_model=GetAnalyticalMemberPartGeometriesParameters,
+    output_model=GetAnalyticalMemberPartGeometriesResult,
+    identity=("tapir", "GetAnalyticalMemberPartGeometries"),
 )
 
 
@@ -460,6 +529,8 @@ register_tool_for_dispatch(
         "Retrieves the analytical member type (Beam, Column, Roof, Slab, Wall or Unknown) of the given elements."
     ),
     params_model=GetAnalyticalMemberTypesOfElementsParameters,
+    output_model=GetAnalyticalMemberTypesOfElementsResult,
+    identity=("tapir", "GetAnalyticalMemberTypesOfElements"),
 )
 
 
@@ -482,6 +553,8 @@ register_tool_for_dispatch(
         "of the current view when no model is given (the model is required before Archicad 27)."
     ),
     params_model=GetAnalyticalMembersParameters,
+    output_model=GetAnalyticalMembersResult,
+    identity=("tapir", "GetAnalyticalMembers"),
 )
 
 
@@ -500,6 +573,8 @@ register_tool_for_dispatch(
         "Retrieves the Structural Analytical Model of the given variation, as returned by GetAnalyticalModelVariation."
     ),
     params_model=GetAnalyticalModelParameters,
+    output_model=GetAnalyticalModelResult,
+    identity=("tapir", "GetAnalyticalModel"),
 )
 
 
@@ -514,6 +589,8 @@ register_tool_for_dispatch(
     title="GetAnalyticalModelCheckTypeId",
     description=("Retrieves the type identifier of the Structural Analytical Model check. Available from Archicad 29."),
     params_model=None,
+    output_model=GetAnalyticalModelCheckTypeIdResult,
+    identity=("tapir", "GetAnalyticalModelCheckTypeId"),
 )
 
 
@@ -538,6 +615,8 @@ register_tool_for_dispatch(
         "version."
     ),
     params_model=GetAnalyticalModelVariationParameters,
+    output_model=GetAnalyticalModelVariationResult,
+    identity=("tapir", "GetAnalyticalModelVariation"),
 )
 
 
@@ -554,6 +633,8 @@ register_tool_for_dispatch(
     title="GetAnalyticalReleases",
     description="Retrieves the releases of the given analytical members. Available from Archicad 26.",
     params_model=GetAnalyticalReleasesParameters,
+    output_model=GetAnalyticalReleasesResult,
+    identity=("tapir", "GetAnalyticalReleases"),
 )
 
 
@@ -576,6 +657,8 @@ register_tool_for_dispatch(
         "Available from Archicad 26."
     ),
     params_model=GetAnalyticalSupportsParameters,
+    output_model=GetAnalyticalSupportsResult,
+    identity=("tapir", "GetAnalyticalSupports"),
 )
 
 
@@ -590,6 +673,8 @@ register_tool_for_dispatch(
     title="GetAnalyticalVisibilitySettings",
     description="Retrieves the visibility settings of the Structural Analytical Model. Available from Archicad 26.",
     params_model=None,
+    output_model=GetAnalyticalVisibilitySettingsResult,
+    identity=("tapir", "GetAnalyticalVisibilitySettings"),
 )
 
 
@@ -604,6 +689,8 @@ register_tool_for_dispatch(
     title="GetCurrentAnalyticalModel",
     description=("Retrieves the Structural Analytical Model created for the current view. Available from Archicad 27."),
     params_model=None,
+    output_model=GetCurrentAnalyticalModelResult,
+    identity=("tapir", "GetCurrentAnalyticalModel"),
 )
 
 
@@ -623,6 +710,8 @@ register_tool_for_dispatch(
         "Retrieves the lengths added to the start and end of the given curve members. Available from Archicad 29."
     ),
     params_model=GetCustomCurveMemberStretchParameters,
+    output_model=GetCustomCurveMemberStretchResult,
+    identity=("tapir", "GetCustomCurveMemberStretch"),
 )
 
 
@@ -645,6 +734,8 @@ register_tool_for_dispatch(
         "with another member part. Available from Archicad 26."
     ),
     params_model=GetLCSOfAnalyticalMembersParameters,
+    output_model=GetLCSOfAnalyticalMembersResult,
+    identity=("tapir", "GetLCSOfAnalyticalMembers"),
 )
 
 
@@ -664,6 +755,8 @@ register_tool_for_dispatch(
         "27."
     ),
     params_model=None,
+    output_model=SetAnalyticalGenerationSettingsToNoRuleResult,
+    identity=("tapir", "SetAnalyticalGenerationSettingsToNoRule"),
 )
 
 
@@ -682,6 +775,8 @@ register_tool_for_dispatch(
         "Replaces the releases of the given analytical members, in one undo step. Available from Archicad 26."
     ),
     params_model=SetAnalyticalReleasesParameters,
+    output_model=SetAnalyticalReleasesResult,
+    identity=("tapir", "SetAnalyticalReleases"),
 )
 
 
@@ -707,6 +802,8 @@ register_tool_for_dispatch(
         "Available from Archicad 26."
     ),
     params_model=SetAnalyticalVisibilitySettingsParameters,
+    output_model=SetAnalyticalVisibilitySettingsResult,
+    identity=("tapir", "SetAnalyticalVisibilitySettings"),
 )
 
 
@@ -730,6 +827,8 @@ register_tool_for_dispatch(
         "Archicad 29."
     ),
     params_model=SetCustomCurveMemberStretchParameters,
+    output_model=SetCustomCurveMemberStretchResult,
+    identity=("tapir", "SetCustomCurveMemberStretch"),
 )
 
 
@@ -752,4 +851,6 @@ register_tool_for_dispatch(
         "model is given. Available from Archicad 27."
     ),
     params_model=UpdateAnalyticalModelParameters,
+    output_model=UpdateAnalyticalModelResult,
+    identity=("tapir", "UpdateAnalyticalModel"),
 )
