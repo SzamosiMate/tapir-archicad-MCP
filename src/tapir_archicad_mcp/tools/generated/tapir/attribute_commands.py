@@ -45,6 +45,7 @@ from multiconn_archicad.models.tapir.commands import (
     ImportAttributesFromProjectParameters,
     ModifyGraphicOverrideCombinationsParameters,
     ModifyGraphicOverrideRulesParameters,
+    ModifyLayersParameters,
     ModifyPensParameters,
     MoveAttributesAndFoldersParameters,
     MoveGraphicOverrideRulesParameters,
@@ -398,21 +399,29 @@ register_tool_for_dispatch(
 
 def delete_and_replace_attributes(conn_header: ConnHeader, params: DeleteAndReplaceAttributesParameters) -> dict:
     """
-    Deletes fills, line types, surfaces or building materials and replaces each by another attribute of the same type
-    wherever it was used, like Delete and Replace in the Attribute Manager. Every reference is rewritten to the
-    replacement, the way ReindexAttributes rewrites them: the fields of the elements in the floor plan and in every view
-    and layout, the parameters of library part based elements, their memo data, the tool defaults, the Favorites, the
-    other attributes that refer to it (composites, building materials, surfaces, profiles, MEP systems) and the graphic
-    override rules. Elements on a hidden or locked layer are changed too: their layers are shown and unlocked for the
-    change and put back afterwards (in the current window). If an element cannot be changed (it is locked itself, or not
-    reserved in Teamwork), everything is put back and that attribute is not deleted. Elements from hotlinked modules
-    cannot be changed and are listed. Indices typed into GDL scripts are not found, and the frame and panel classes of
-    curtain wall Favorites and of the Curtain Wall tool default keep the deleted attribute (named in the warnings). If a
-    tool default, Favorite, attribute or rule cannot be rewritten to the replacement, it keeps a copy of the deleted
-    attribute with its name and a new attribute id, named in the warnings. The whole call is one undo step. With dryRun
-    true nothing is changed and no undo step is created: the response has dryRun set to true, and each attribute that
-    passes the checks gets wouldDelete and lists every reference a real run would rewrite (elements, tool defaults,
-    Favorites, other attributes, graphic override rules, elements from hotlinked modules). Available from Archicad 27.
+    Deletes fills, line types, surfaces, building materials, profiles, zone categories or layers and replaces each by
+    another attribute of the same type wherever it was used, like Delete and Replace in the Attribute Manager. Every
+    reference is rewritten to the replacement, the way ReindexAttributes rewrites them: the fields of the elements in
+    the floor plan and in every view and layout, the parameters of library part based elements, their memo data, the
+    tool defaults, the Favorites, the other attributes that refer to it (composites, building materials, surfaces,
+    profiles, MEP systems) and the graphic override rules. A profile is replaced where a wall or a column or beam
+    segment uses the profile structure, and in the Profile parameters of library part based elements; a zone category in
+    zones. A layer is emptied instead, since deleting a layer deletes its elements: every element on it, in the floor
+    plan and in every view and layout, is moved to the replacement layer (as ReindexLayers moves them), then the tool
+    defaults and Favorites on it, and the layer is deleted only once it is empty. The Archicad Layer cannot be deleted,
+    a layer with elements from a hotlinked module is not deleted, and if an element cannot be moved or Archicad does not
+    delete the layer, everything is put back. The sections, elevations, interior elevations and 3D documents that show
+    elements of the deleted layer are listed in viewsToRebuild. Elements on a hidden or locked layer are changed too:
+    their layers are shown and unlocked for the change and put back afterwards (in the current window). If an element
+    cannot be changed (it is locked itself, or not reserved in Teamwork), everything is put back and that attribute is
+    not deleted. Elements from hotlinked modules cannot be changed and are listed. Indices typed into GDL scripts are
+    not found, and the frame and panel classes of curtain wall Favorites and of the Curtain Wall tool default keep the
+    deleted attribute (named in the warnings). If a tool default, Favorite, attribute or rule cannot be rewritten to the
+    replacement, it keeps a copy of the deleted attribute with its name and a new attribute id, named in the warnings.
+    The whole call is one undo step. With dryRun true nothing is changed and no undo step is created: the response has
+    dryRun set to true, and each attribute that passes the checks gets wouldDelete and lists every reference a real run
+    would rewrite (elements, tool defaults, Favorites, other attributes, graphic override rules, elements from hotlinked
+    modules). Available from Archicad 27.
     """
     return conn_header.core.post_tapir_command(
         command="DeleteAndReplaceAttributes",
@@ -425,22 +434,31 @@ register_tool_for_dispatch(
     name="attributes_delete_and_replace_attributes",
     title="DeleteAndReplaceAttributes",
     description=(
-        "Deletes fills, line types, surfaces or building materials and replaces each by another attribute of the same "
-        "type wherever it was used, like Delete and Replace in the Attribute Manager. Every reference is rewritten to "
-        "the replacement, the way ReindexAttributes rewrites them: the fields of the elements in the floor plan and in "
-        "every view and layout, the parameters of library part based elements, their memo data, the tool defaults, the "
-        "Favorites, the other attributes that refer to it (composites, building materials, surfaces, profiles, MEP "
-        "systems) and the graphic override rules. Elements on a hidden or locked layer are changed too: their layers "
-        "are shown and unlocked for the change and put back afterwards (in the current window). If an element cannot "
-        "be changed (it is locked itself, or not reserved in Teamwork), everything is put back and that attribute is "
-        "not deleted. Elements from hotlinked modules cannot be changed and are listed. Indices typed into GDL scripts "
-        "are not found, and the frame and panel classes of curtain wall Favorites and of the Curtain Wall tool default "
-        "keep the deleted attribute (named in the warnings). If a tool default, Favorite, attribute or rule cannot be "
-        "rewritten to the replacement, it keeps a copy of the deleted attribute with its name and a new attribute id, "
-        "named in the warnings. The whole call is one undo step. With dryRun true nothing is changed and no undo step "
-        "is created: the response has dryRun set to true, and each attribute that passes the checks gets wouldDelete "
-        "and lists every reference a real run would rewrite (elements, tool defaults, Favorites, other attributes, "
-        "graphic override rules, elements from hotlinked modules). Available from Archicad 27."
+        "Deletes fills, line types, surfaces, building materials, profiles, zone categories or layers and replaces "
+        "each by another attribute of the same type wherever it was used, like Delete and Replace in the Attribute "
+        "Manager. Every reference is rewritten to the replacement, the way ReindexAttributes rewrites them: the fields "
+        "of the elements in the floor plan and in every view and layout, the parameters of library part based "
+        "elements, their memo data, the tool defaults, the Favorites, the other attributes that refer to it "
+        "(composites, building materials, surfaces, profiles, MEP systems) and the graphic override rules. A profile "
+        "is replaced where a wall or a column or beam segment uses the profile structure, and in the Profile "
+        "parameters of library part based elements; a zone category in zones. A layer is emptied instead, since "
+        "deleting a layer deletes its elements: every element on it, in the floor plan and in every view and layout, "
+        "is moved to the replacement layer (as ReindexLayers moves them), then the tool defaults and Favorites on it, "
+        "and the layer is deleted only once it is empty. The Archicad Layer cannot be deleted, a layer with elements "
+        "from a hotlinked module is not deleted, and if an element cannot be moved or Archicad does not delete the "
+        "layer, everything is put back. The sections, elevations, interior elevations and 3D documents that show "
+        "elements of the deleted layer are listed in viewsToRebuild. Elements on a hidden or locked layer are changed "
+        "too: their layers are shown and unlocked for the change and put back afterwards (in the current window). If "
+        "an element cannot be changed (it is locked itself, or not reserved in Teamwork), everything is put back and "
+        "that attribute is not deleted. Elements from hotlinked modules cannot be changed and are listed. Indices "
+        "typed into GDL scripts are not found, and the frame and panel classes of curtain wall Favorites and of the "
+        "Curtain Wall tool default keep the deleted attribute (named in the warnings). If a tool default, Favorite, "
+        "attribute or rule cannot be rewritten to the replacement, it keeps a copy of the deleted attribute with its "
+        "name and a new attribute id, named in the warnings. The whole call is one undo step. With dryRun true nothing "
+        "is changed and no undo step is created: the response has dryRun set to true, and each attribute that passes "
+        "the checks gets wouldDelete and lists every reference a real run would rewrite (elements, tool defaults, "
+        "Favorites, other attributes, graphic override rules, elements from hotlinked modules). Available from "
+        "Archicad 27."
     ),
     params_model=DeleteAndReplaceAttributesParameters,
 )
@@ -1029,7 +1047,12 @@ register_tool_for_dispatch(
 
 
 def get_profiles(conn_header: ConnHeader, params: GetProfilesParameters) -> dict:
-    """Returns the details of the given Profile attributes."""
+    """
+    Returns the details of the given Profile attributes.
+
+    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
+    and page_token set to that token to get the next page of results.
+    """
     return conn_header.core.post_tapir_command(
         command="GetProfiles", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
@@ -1041,6 +1064,7 @@ register_tool_for_dispatch(
     title="GetProfiles",
     description="Returns the details of the given Profile attributes.",
     params_model=GetProfilesParameters,
+    pagination_field="profiles",
 )
 
 
@@ -1229,6 +1253,37 @@ register_tool_for_dispatch(
         "Archicad 27."
     ),
     params_model=ModifyGraphicOverrideRulesParameters,
+)
+
+
+def modify_layers(conn_header: ConnHeader, params: ModifyLayersParameters) -> dict:
+    """
+    Changes the given settings of existing layers: shown or hidden, locked, wireframe, the intersection group and the
+    name. Only the given fields of a layer are changed; every other setting is kept, so unlike CreateLayers with
+    overwriteExisting the whole layer need not be given. Archicad keeps the shown, locked and wireframe state of a layer
+    per open window; like CreateLayers, this changes it in the current window. A name must not be empty or used by
+    another layer, and the built-in Archicad Layer cannot be renamed. Each layer gets its own execution result. In a
+    Teamwork project the LayerSettingsDialog lockable object set must be reserved first (see ReserveLockableObjectSet).
+    """
+    return conn_header.core.post_tapir_command(
+        command="ModifyLayers", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
+
+
+register_tool_for_dispatch(
+    modify_layers,
+    name="attributes_modify_layers",
+    title="ModifyLayers",
+    description=(
+        "Changes the given settings of existing layers: shown or hidden, locked, wireframe, the intersection group and "
+        "the name. Only the given fields of a layer are changed; every other setting is kept, so unlike CreateLayers "
+        "with overwriteExisting the whole layer need not be given. Archicad keeps the shown, locked and wireframe "
+        "state of a layer per open window; like CreateLayers, this changes it in the current window. A name must not "
+        "be empty or used by another layer, and the built-in Archicad Layer cannot be renamed. Each layer gets its own "
+        "execution result. In a Teamwork project the LayerSettingsDialog lockable object set must be reserved first "
+        "(see ReserveLockableObjectSet)."
+    ),
+    params_model=ModifyLayersParameters,
 )
 
 

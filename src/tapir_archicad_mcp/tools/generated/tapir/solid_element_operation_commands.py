@@ -7,6 +7,7 @@ from multiconn_archicad.models.tapir.commands import (
     GetMergedElementsParameters,
     GetSolidElementLinksParameters,
     MergeElementsParameters,
+    RemoveElementTrimDirectionParameters,
     RemoveElementTrimsParameters,
     RemoveSolidElementLinksParameters,
     TrimElementsParameters,
@@ -135,6 +136,36 @@ register_tool_for_dispatch(
         "decides which elements and type combinations it merges), the result is a failure, not a success."
     ),
     params_model=MergeElementsParameters,
+)
+
+
+def remove_element_trim_direction(conn_header: ConnHeader, params: RemoveElementTrimDirectionParameters) -> dict:
+    """
+    Removes one direction of a trim: the trim of an element by a roof or shell, keeping the other direction when the two
+    trim each other (two roofs or shells). The Archicad API can only remove both directions at once, so the command
+    reads the other direction and its trim type, removes the trim and trims the other direction again, in one undo step,
+    and reads the result back. A pair whose element is not trimmed by its trimming element fails without changing
+    anything; when Archicad fails to remove or trim again, the whole call is undone.
+    """
+    return conn_header.core.post_tapir_command(
+        command="RemoveElementTrimDirection",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    remove_element_trim_direction,
+    name="solid_ops_remove_element_trim_direction",
+    title="RemoveElementTrimDirection",
+    description=(
+        "Removes one direction of a trim: the trim of an element by a roof or shell, keeping the other direction when "
+        "the two trim each other (two roofs or shells). The Archicad API can only remove both directions at once, so "
+        "the command reads the other direction and its trim type, removes the trim and trims the other direction "
+        "again, in one undo step, and reads the result back. A pair whose element is not trimmed by its trimming "
+        "element fails without changing anything; when Archicad fails to remove or trim again, the whole call is "
+        "undone."
+    ),
+    params_model=RemoveElementTrimDirectionParameters,
 )
 
 

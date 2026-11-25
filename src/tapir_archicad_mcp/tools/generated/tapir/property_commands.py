@@ -18,6 +18,7 @@ from multiconn_archicad.models.tapir.commands import (
     GetPropertyValuesOfElementComponentsParameters,
     GetPropertyValuesOfElementDefaultsParameters,
     GetPropertyValuesOfElementsParameters,
+    GetTypedPropertyValuesOfElementsParameters,
     ImportPropertiesXmlParameters,
     MakePropertyAvailableForElementsParameters,
     MakePropertyUnavailableForElementsParameters,
@@ -429,6 +430,47 @@ register_tool_for_dispatch(
         "elements also. With includeAvailability it also tells whether each property is available for the element."
     ),
     params_model=GetPropertyValuesOfElementsParameters,
+    pagination_field="propertyValuesForElements",
+)
+
+
+def get_typed_property_values_of_elements(
+    conn_header: ConnHeader, params: GetTypedPropertyValuesOfElementsParameters
+) -> dict:
+    """
+    Returns the property values of the elements in JSON's own types instead of display text: numbers, integers,
+    booleans, strings, lists of them, and the chosen options of an option set as their identifiers (a list for a
+    multiple choice). Each value comes with its type (number, length, area, volume, angle, integer, string, boolean,
+    their lists, singleEnum, multiEnum), its status (normal, userUndefined or notAvailable) and isDefault, in the
+    PropertyValueDetails shape of Graphisoft's API. Measured values are in SI units (meters, square meters, cubic
+    meters, radians) whatever the project's working units and language, and an option is named by its nonLocalizedValue
+    when it has one. A property that is not found, cannot be evaluated for the element or has a Guid value gets an error
+    item.
+
+    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
+    and page_token set to that token to get the next page of results.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetTypedPropertyValuesOfElements",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
+
+
+register_tool_for_dispatch(
+    get_typed_property_values_of_elements,
+    name="properties_get_typed_property_values_of_elements",
+    title="GetTypedPropertyValuesOfElements",
+    description=(
+        "Returns the property values of the elements in JSON's own types instead of display text: numbers, integers, "
+        "booleans, strings, lists of them, and the chosen options of an option set as their identifiers (a list for a "
+        "multiple choice). Each value comes with its type (number, length, area, volume, angle, integer, string, "
+        "boolean, their lists, singleEnum, multiEnum), its status (normal, userUndefined or notAvailable) and "
+        "isDefault, in the PropertyValueDetails shape of Graphisoft's API. Measured values are in SI units (meters, "
+        "square meters, cubic meters, radians) whatever the project's working units and language, and an option is "
+        "named by its nonLocalizedValue when it has one. A property that is not found, cannot be evaluated for the "
+        "element or has a Guid value gets an error item."
+    ),
+    params_model=GetTypedPropertyValuesOfElementsParameters,
     pagination_field="propertyValuesForElements",
 )
 

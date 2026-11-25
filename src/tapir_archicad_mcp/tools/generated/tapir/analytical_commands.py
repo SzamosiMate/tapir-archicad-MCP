@@ -15,6 +15,8 @@ from multiconn_archicad.models.tapir.commands import (
     DeleteAnalyticalLoadGroupsParameters,
     GetAnalyticalLinksParameters,
     GetAnalyticalLoadCasesParameters,
+    GetAnalyticalLoadCombinationsParameters,
+    GetAnalyticalLoadGroupsParameters,
     GetAnalyticalLoadsParameters,
     GetAnalyticalMemberDetailsParameters,
     GetAnalyticalMemberPartGeometriesParameters,
@@ -335,9 +337,18 @@ register_tool_for_dispatch(
 )
 
 
-def get_analytical_load_combinations(conn_header: ConnHeader) -> dict:
-    """Retrieves the structural analysis load combinations of the project with all their fields and load factors."""
-    return conn_header.core.post_tapir_command(command="GetAnalyticalLoadCombinations", parameters={})
+def get_analytical_load_combinations(conn_header: ConnHeader, params: GetAnalyticalLoadCombinationsParameters) -> dict:
+    """
+    Retrieves the structural analysis load combinations of the project, or the ones given by their ids, with all their
+    fields and load factors.
+
+    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
+    and page_token set to that token to get the next page of results.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetAnalyticalLoadCombinations",
+        parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
+    )
 
 
 register_tool_for_dispatch(
@@ -345,23 +356,36 @@ register_tool_for_dispatch(
     name="analytical_get_analytical_load_combinations",
     title="GetAnalyticalLoadCombinations",
     description=(
-        "Retrieves the structural analysis load combinations of the project with all their fields and load factors."
+        "Retrieves the structural analysis load combinations of the project, or the ones given by their ids, with all "
+        "their fields and load factors."
     ),
-    params_model=None,
+    params_model=GetAnalyticalLoadCombinationsParameters,
+    pagination_field="loadCombinations",
 )
 
 
-def get_analytical_load_groups(conn_header: ConnHeader) -> dict:
-    """Retrieves the structural analysis load groups of the project with all their fields."""
-    return conn_header.core.post_tapir_command(command="GetAnalyticalLoadGroups", parameters={})
+def get_analytical_load_groups(conn_header: ConnHeader, params: GetAnalyticalLoadGroupsParameters) -> dict:
+    """
+    Retrieves the structural analysis load groups of the project, or the ones given by their ids, with all their fields.
+
+    This response is paginated. If 'next_page_token' is returned, call archicad_call_tool again with the same arguments
+    and page_token set to that token to get the next page of results.
+    """
+    return conn_header.core.post_tapir_command(
+        command="GetAnalyticalLoadGroups", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
+    )
 
 
 register_tool_for_dispatch(
     get_analytical_load_groups,
     name="analytical_get_analytical_load_groups",
     title="GetAnalyticalLoadGroups",
-    description="Retrieves the structural analysis load groups of the project with all their fields.",
-    params_model=None,
+    description=(
+        "Retrieves the structural analysis load groups of the project, or the ones given by their ids, with all their "
+        "fields."
+    ),
+    params_model=GetAnalyticalLoadGroupsParameters,
+    pagination_field="loadGroups",
 )
 
 
@@ -445,7 +469,11 @@ register_tool_for_dispatch(
 def get_analytical_member_types_of_elements(
     conn_header: ConnHeader, params: GetAnalyticalMemberTypesOfElementsParameters
 ) -> dict:
-    """Retrieves the analytical member type (Beam, Column, Roof, Slab, Wall or Unknown) of the given elements."""
+    """
+    Retrieves the analytical member type (Beam, Column, Roof, Slab, Wall or Unknown) of the given elements from the
+    Complementary Project, the structural analysis project exchanged with Archicad. Without a Complementary Project
+    every element reads Unknown. An element that does not exist gets an error item.
+    """
     return conn_header.core.post_tapir_command(
         command="GetAnalyticalMemberTypesOfElements",
         parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True),
@@ -457,7 +485,9 @@ register_tool_for_dispatch(
     name="analytical_get_analytical_member_types_of_elements",
     title="GetAnalyticalMemberTypesOfElements",
     description=(
-        "Retrieves the analytical member type (Beam, Column, Roof, Slab, Wall or Unknown) of the given elements."
+        "Retrieves the analytical member type (Beam, Column, Roof, Slab, Wall or Unknown) of the given elements from "
+        "the Complementary Project, the structural analysis project exchanged with Archicad. Without a Complementary "
+        "Project every element reads Unknown. An element that does not exist gets an error item."
     ),
     params_model=GetAnalyticalMemberTypesOfElementsParameters,
 )
@@ -689,7 +719,8 @@ def set_analytical_visibility_settings(
     conn_header: ConnHeader, params: SetAnalyticalVisibilitySettingsParameters
 ) -> dict:
     """
-    Changes the given fields of the Structural Analytical Model visibility settings; the others keep their value.
+    Changes the given fields of the Structural Analytical Model visibility settings; the others keep their value. The
+    settings are read back, and a given field Archicad did not keep is reported as an error with the value it kept.
     Available from Archicad 26.
     """
     return conn_header.core.post_tapir_command(
@@ -704,7 +735,8 @@ register_tool_for_dispatch(
     title="SetAnalyticalVisibilitySettings",
     description=(
         "Changes the given fields of the Structural Analytical Model visibility settings; the others keep their value. "
-        "Available from Archicad 26."
+        "The settings are read back, and a given field Archicad did not keep is reported as an error with the value it "
+        "kept. Available from Archicad 26."
     ),
     params_model=SetAnalyticalVisibilitySettingsParameters,
 )

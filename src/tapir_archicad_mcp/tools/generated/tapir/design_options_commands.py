@@ -178,7 +178,11 @@ register_tool_for_dispatch(
 
 
 def delete_design_option_sets(conn_header: ConnHeader, params: DeleteDesignOptionSetsParameters) -> dict:
-    """Deletes the given design option sets. Available from Archicad 29."""
+    """
+    Deletes the given design option sets. A set with an option that still holds elements is not deleted (its result is
+    an error naming them, because Archicad would open a modal dialog): move them to the main model or another option
+    with MoveElementsToDesignOptions first. Available from Archicad 29.
+    """
     return conn_header.core.post_tapir_command(
         command="DeleteDesignOptionSets", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
@@ -188,13 +192,21 @@ register_tool_for_dispatch(
     delete_design_option_sets,
     name="design_options_delete_design_option_sets",
     title="DeleteDesignOptionSets",
-    description="Deletes the given design option sets. Available from Archicad 29.",
+    description=(
+        "Deletes the given design option sets. A set with an option that still holds elements is not deleted (its "
+        "result is an error naming them, because Archicad would open a modal dialog): move them to the main model or "
+        "another option with MoveElementsToDesignOptions first. Available from Archicad 29."
+    ),
     params_model=DeleteDesignOptionSetsParameters,
 )
 
 
 def delete_design_options(conn_header: ConnHeader, params: DeleteDesignOptionsParameters) -> dict:
-    """Deletes the given design options. Available from Archicad 29."""
+    """
+    Deletes the given design options. An option that still holds elements is not deleted (its result is an error naming
+    them, because Archicad would open a modal dialog): move them to the main model or another option with
+    MoveElementsToDesignOptions first. Available from Archicad 29.
+    """
     return conn_header.core.post_tapir_command(
         command="DeleteDesignOptions", parameters=params.model_dump(mode="json", by_alias=True, exclude_none=True)
     )
@@ -204,7 +216,11 @@ register_tool_for_dispatch(
     delete_design_options,
     name="design_options_delete_design_options",
     title="DeleteDesignOptions",
-    description="Deletes the given design options. Available from Archicad 29.",
+    description=(
+        "Deletes the given design options. An option that still holds elements is not deleted (its result is an error "
+        "naming them, because Archicad would open a modal dialog): move them to the main model or another option with "
+        "MoveElementsToDesignOptions first. Available from Archicad 29."
+    ),
     params_model=DeleteDesignOptionsParameters,
 )
 
@@ -231,6 +247,35 @@ register_tool_for_dispatch(
         "Available from Archicad 29."
     ),
     params_model=DuplicateDesignOptionCombinationsParameters,
+)
+
+
+def get_default_design_option(conn_header: ConnHeader) -> dict:
+    """
+    Retrieves which design option, or the Main Model, is the default that new elements go to. The Archicad API has no
+    function for it, so in a project with design options the command creates a temporary slab in the floor plan, reads
+    its design option, moves it to the Main Model and deletes it (without design options the answer is the Main Model
+    and nothing is created). Archicad puts a new element into the default design option only when the undo step that
+    created it ends, so this takes two undo steps, creating and removing the slab, which together leave the project as
+    it was. Needs a window where design options can be edited. Available from Archicad 29.
+    """
+    return conn_header.core.post_tapir_command(command="GetDefaultDesignOption", parameters={})
+
+
+register_tool_for_dispatch(
+    get_default_design_option,
+    name="design_options_get_default_design_option",
+    title="GetDefaultDesignOption",
+    description=(
+        "Retrieves which design option, or the Main Model, is the default that new elements go to. The Archicad API "
+        "has no function for it, so in a project with design options the command creates a temporary slab in the floor "
+        "plan, reads its design option, moves it to the Main Model and deletes it (without design options the answer "
+        "is the Main Model and nothing is created). Archicad puts a new element into the default design option only "
+        "when the undo step that created it ends, so this takes two undo steps, creating and removing the slab, which "
+        "together leave the project as it was. Needs a window where design options can be edited. Available from "
+        "Archicad 29."
+    ),
+    params_model=None,
 )
 
 
